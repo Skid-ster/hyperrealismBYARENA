@@ -2,7 +2,9 @@
 
 This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
-LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 111
+LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
+Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
+are approximated as described below. The starter catalog contains 111
 experimental outputs based on thirteen CC0 Poly Haven material sources; it is **not** the
 requested 280-texture catalog or a finished photorealistic pack. A separate
 synthetic manifest contains eight test examples. The repository did
