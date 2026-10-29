@@ -7,6 +7,9 @@ material assets, vanilla palette data and texture inventory were not present.
 They are required to reproduce the original pipeline without inventing its
 input format and output recipes.
 
+See [the research and staged rebuild plan](docs/REBUILD_PLAN.md) for the proposed
+independent implementation and its acceptance criteria.
+
 ## Implemented
 
 - LabPBR-style `_n` pixel encoding (normalized DirectX/Y-down normal XY,
