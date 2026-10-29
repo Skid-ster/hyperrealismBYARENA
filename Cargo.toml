@@ -1,0 +1,10 @@
+[package]
+name = "hyperrealism-core"
+version = "0.1.0"
+edition = "2021"
+description = "CPU primitives for a Minecraft LabPBR resource-pack generator"
+
+[lib]
+path = "src/lib.rs"
+# This library has no executable documentation examples.
+doctest = false
