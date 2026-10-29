@@ -27,3 +27,31 @@ jobs:
             pilot_output/contact_sheet.png
           if-no-files-found: error
           retention-days: 30
+
+  publish-preview-1:
+    # This one-time, explicitly requested prerelease only runs for this commit
+    # message on the session branch, after both Windows and Linux tests pass.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && github.event.head_commit.message == 'Publish experimental preview 1'
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo run --locked --release -- --input work --output release_build --cpu-only --threads 2
+      - name: Prepare and check release assets
+        run: |
+          mkdir release_assets
+          cp release_build/dist/HyperRealism128-v1.0-MC26.3.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip
+          cp release_build/build_report.json release_assets/build_report.json
+          cp scripts/Install-HyperRealismPreview.ps1 release_assets/Install-HyperRealismPreview.ps1
+          cd release_assets
+          sha256sum HyperRealism128-MC26.3-EXPERIMENTAL.zip > HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum -c HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          python -c "import zipfile; z=zipfile.ZipFile('HyperRealism128-MC26.3-EXPERIMENTAL.zip'); assert z.testzip() is None; assert len([n for n in z.namelist() if n.endswith('.png')]) == 288; assert 'MATERIAL_CREDITS.txt' in z.namelist(); assert 'pack.mcmeta' in z.namelist()"
+      - name: Publish experimental prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0-preview.1 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json --target "$GITHUB_SHA" --title 'HyperRealism128 — experimental 26.3 preview 1' --notes-file .github/preview-release-notes.md --prerelease
