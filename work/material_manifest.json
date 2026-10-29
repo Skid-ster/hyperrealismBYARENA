@@ -88,6 +88,20 @@
       "normal": "materials/aerial_sand/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/aerial_sand/roughness.jpg"
+    },
+    {
+      "id": "cobble_photo",
+      "source": "Cobblestone Floor 04: https://polyhaven.com/a/cobblestone_floor_04; creator: Rob Tuytel; modified CC0 source",
+      "license": "CC0-1.0",
+      "albedo": "materials/cobble_photo/gray_color.png",
+      "height": "materials/cobble_photo/height.png"
+    },
+    {
+      "id": "mossy_cobble_photo",
+      "source": "Cobblestone Floor 04: https://polyhaven.com/a/cobblestone_floor_04; creator: Rob Tuytel; modified CC0 source",
+      "license": "CC0-1.0",
+      "albedo": "materials/cobble_photo/mossy_color.png",
+      "height": "materials/cobble_photo/height.png"
     }
   ],
   "textures": [
@@ -603,8 +617,8 @@
     },
     {
       "name": "cobblestone",
-      "material": "gravel_concrete",
-      "recipe": "cobble",
+      "material": "cobble_photo",
+      "recipe": "material",
       "tint": [
         255,
         255,
@@ -620,8 +634,8 @@
     },
     {
       "name": "mossy_cobblestone",
-      "material": "gravel_concrete",
-      "recipe": "moss_cobble",
+      "material": "mossy_cobble_photo",
+      "recipe": "material",
       "tint": [
         255,
         255,
@@ -1938,6 +1952,9 @@
     "materials/sandstone_cracks/arm.jpg": "6854b3b5bc2448c86349b21cfa34b5cae9b0c147e2b1085512cd829a56cd4cf2",
     "materials/aerial_sand/color.jpg": "1803d7e2861b304bea6d2e124dcd4c657fcb93843b84c17bb2db98ce48a87e4e",
     "materials/aerial_sand/normal.jpg": "0f35185b7225fe2027897bb7e4586c7deb048817524f1ed104fdae7ce80bdc06",
-    "materials/aerial_sand/roughness.jpg": "318b440c109de7411f9e7443f38ae3cf873f34e90afd762c931bae3b23426da2"
+    "materials/aerial_sand/roughness.jpg": "318b440c109de7411f9e7443f38ae3cf873f34e90afd762c931bae3b23426da2",
+    "materials/cobble_photo/gray_color.png": "901dfa4d390c635dd139251ac525afda3ed04c5d9d9c2510f12b8085931282d7",
+    "materials/cobble_photo/mossy_color.png": "d592624f20d54aad26fe0279ff4e5aa906c2a30075193eeecf182a36966ea9ea",
+    "materials/cobble_photo/height.png": "feb8101a7c7856b953deb296a3e913a63f837258a91fec1b38e444ef26f31f0d"
   }
 }

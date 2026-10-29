@@ -306,12 +306,27 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 29);
+    assert_eq!(hashes.len(), 32);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
     assert_eq!(m.textures.len(), 103);
+    // The tested preview uses a real cobble scan and its aligned height map,
+    // not the previous thin Voronoi wireframe overlay.
+    for (name, expected) in [
+        ("cobblestone", "cobble_photo"),
+        ("mossy_cobblestone", "mossy_cobble_photo"),
+    ] {
+        let texture = m.textures.iter().find(|t| t.name == name).unwrap();
+        assert_eq!(texture.material, expected);
+        assert_eq!(texture.recipe, "material");
+        let material = m.materials.iter().find(|mat| mat.id == expected).unwrap();
+        assert_eq!(
+            material.height.as_deref(),
+            Some("materials/cobble_photo/height.png")
+        );
+    }
     for t in &m.textures {
         let entry = &entries[&t.name];
         assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));

@@ -28,10 +28,10 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  publish-preview-2:
+  publish-preview-3:
     # This one-time, explicitly requested prerelease only runs for this commit
     # message on the session branch, after both Windows and Linux tests pass.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 2')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 3')
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -54,4 +54,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v0.1.0-preview.2 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json --target "$GITHUB_SHA" --title 'HyperRealism128 — experimental 26.3 preview 2' --notes-file .github/preview-release-notes.md --prerelease
+          gh release create v0.1.0-preview.3 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json --target "$GITHUB_SHA" --title 'HyperRealism128 — experimental 26.3 preview 3' --notes-file .github/preview-release-notes.md --prerelease

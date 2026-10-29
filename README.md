@@ -3,7 +3,7 @@
 This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 128×128 Minecraft Java 26.3 block textures and
 LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 103
-experimental outputs based on ten CC0 Poly Haven materials; it is **not** the
+experimental outputs based on eleven CC0 Poly Haven material sources; it is **not** the
 requested 280-texture catalog or a finished photorealistic pack. A separate
 synthetic manifest contains eight test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
@@ -14,19 +14,23 @@ See [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
 ## Download and install the experimental preview
 
 No Rust installation is needed to use the prebuilt pack. Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.2/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.3/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 103 textures replace only a subset of the game; the rest remain vanilla or come
 from other enabled packs. A compatible shader is required for PBR, and optional
-LabPBR features vary by shader. It has not yet been tested in Minecraft.
+LabPBR features vary by shader. The previous preview was tried in-game;
+this cobblestone revision has not yet been validated there. It replaces only
+specified blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
+`stone_bricks`, `oak_planks`, `white_wool`, `gold_ore` and `diamond_ore` to
+compare. See the manifest for the full list. Other textures stay unchanged.
 
 To update manually, check the [releases page](https://github.com/Skid-ster/hyperrealismBYARENA/releases)
 for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.2/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.3/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -66,8 +70,8 @@ Outputs:
   SHA-256 hashes of the manifest and input maps (outside the pack).
 
 The ZIP's name is a target artifact name, **not** an indication that the full
-v1.0 pack is finished. The `work` starter manifest uses ten CC0 Poly Haven
-materials; `test_assets` contains synthetic test inputs. See
+v1.0 pack is finished. The `work` starter manifest uses eleven CC0 Poly Haven
+material sources; `test_assets` contains synthetic test inputs. See
 `work/ASSET_CREDITS.md`. A LabPBR-compatible shader is required for PBR maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
 on your Windows 11 machine remain outstanding.
 

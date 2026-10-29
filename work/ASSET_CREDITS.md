@@ -18,6 +18,7 @@ Haven API. Hashes for every bundled image are pinned in
 | `walnut` | [Walnut Veneer](https://polyhaven.com/a/walnut_veneer) | Poly Haven | albedo, roughness; no normal map |
 | `forest_ground` | [Forest Ground 04](https://polyhaven.com/a/forest_ground_04) | Rob Tuytel, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `sandstone_cracks` | [Sandstone Cracks](https://polyhaven.com/a/sandstone_cracks) | Rob Tuytel | albedo, OpenGL normal, packed AO/roughness/metallic |
+| `cobble_photo`, `mossy_cobble_photo` | [Cobblestone Floor 04](https://polyhaven.com/a/cobblestone_floor_04) | Rob Tuytel | modified albedo, displacement; plain version desaturated |
 | `aerial_sand` | [Aerial Beach 01](https://polyhaven.com/a/aerial_beach_01) | Rob Tuytel | albedo, OpenGL normal, roughness |
 
 The first six materials listed above were sourced from a [documented CC0 redistribution](https://github.com/1493-ZA/Lil-Jeff-Simulator/blob/0e2989916fe5da64015e27b67abbe4464e94abf6/public/models/CREDITS.md)
@@ -38,6 +39,16 @@ metallic) channels. The included files are unmodified from that mirror.
 at commit `df742f903aeced7dd4d9caf9f62b94302f886e03`. Its 30-meter aerial scan
 is an approximate sand stand-in, and rooted dirt uses the same forest-ground
 source as ordinary dirt rather than authentic distinct roots.
+
+The cobblestone inputs derive from [a documented CC0 mirror](https://github.com/VictorZakharov/last-stand/blob/ca08c1817faa703c9a9fb0287b104cf247b8da57/src/core/photos/AGENTS.md)
+at commit `ca08c1817faa703c9a9fb0287b104cf247b8da57`: that mirror's 1K
+color and displacement scans were stored as lossy WebP with a 5px wrap margin.
+We decoded them, removed the margin, selected the middle 512px, blended 64px
+at opposite edges to limit seams and saved PNGs. The plain color was converted
+to grayscale; the mossy version retains color. The scanned displacement is
+used to derive normals; roughness is the generator's default, not a scanned
+roughness map. Edge blending can blur individual stones, and these tiles still
+need in-game review.
 
 The 103 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
