@@ -65,6 +65,11 @@ fn cpu_end_to_end_and_reproducibility() {
         fs::read_to_string(out1.join("pack/assets/minecraft/optifine/texture.properties")).unwrap(),
         "format=lab-pbr/1.3\n"
     );
+    let pack_readme = fs::read_to_string(out1.join("pack/README.txt")).unwrap();
+    assert!(pack_readme.contains("replaces 1 block textures"));
+    let credits = fs::read_to_string(out1.join("pack/MATERIAL_CREDITS.txt")).unwrap();
+    assert!(credits.contains("Material: test"));
+    assert!(credits.contains("not specified"));
     let archive = "dist/HyperRealism128-v1.0-MC26.3.zip";
     let bytes = fs::read(out1.join(archive)).unwrap();
     assert_eq!(bytes, fs::read(out2.join(archive)).unwrap());

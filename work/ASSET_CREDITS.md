@@ -26,7 +26,7 @@ at commit `2cee5cfb6cd7f3e73cfb47259f0106f5fcece65b`, where the diffuse is
 those redistributed versions; the generator resizes and transforms them at
 build time. They are not the original full-resolution Poly Haven files.
 
-The 80 texture names and approximate sRGB color targets were checked against
+The 96 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These

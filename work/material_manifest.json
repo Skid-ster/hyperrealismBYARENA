@@ -3,7 +3,7 @@
   "materials": [
     {
       "id": "concrete_wall",
-      "source": "Concrete Wall 007: https://polyhaven.com/a/concrete_wall_007",
+      "source": "Concrete Wall 007: https://polyhaven.com/a/concrete_wall_007; creator(s): Charlotte Baglioni, Dario Barresi, Rico Cilliers",
       "license": "CC0-1.0",
       "albedo": "materials/concrete_wall/color.jpg",
       "roughness": "materials/concrete_wall/roughness.jpg",
@@ -12,7 +12,7 @@
     },
     {
       "id": "gravel_concrete",
-      "source": "Gravel Concrete 04: https://polyhaven.com/a/gravel_concrete_04",
+      "source": "Gravel Concrete 04: https://polyhaven.com/a/gravel_concrete_04; creator(s): Dimitrios Savva",
       "license": "CC0-1.0",
       "albedo": "materials/gravel_concrete/color.jpg",
       "roughness": "materials/gravel_concrete/roughness.jpg",
@@ -21,7 +21,7 @@
     },
     {
       "id": "brick_red",
-      "source": "Brick Wall 02: https://polyhaven.com/a/brick_wall_02",
+      "source": "Brick Wall 02: https://polyhaven.com/a/brick_wall_02; creator(s): Dimitrios Savva",
       "license": "CC0-1.0",
       "albedo": "materials/brick_red/color.jpg",
       "roughness": "materials/brick_red/roughness.jpg",
@@ -30,14 +30,14 @@
     },
     {
       "id": "walnut",
-      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer",
+      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator(s): Poly Haven",
       "license": "CC0-1.0",
       "albedo": "materials/walnut/color.jpg",
       "roughness": "materials/walnut/roughness.jpg"
     },
     {
       "id": "black_painted_planks",
-      "source": "Black Painted Planks: https://polyhaven.com/a/black_painted_planks",
+      "source": "Black Painted Planks: https://polyhaven.com/a/black_painted_planks; creator(s): Dimitrios Savva",
       "license": "CC0-1.0",
       "albedo": "materials/black_painted_planks/color.jpg",
       "roughness": "materials/black_painted_planks/roughness.jpg",
@@ -46,7 +46,7 @@
     },
     {
       "id": "rusted_shutter",
-      "source": "Rusted Shutter: https://polyhaven.com/a/rusted_shutter",
+      "source": "Rusted Shutter: https://polyhaven.com/a/rusted_shutter; creator(s): Dimitrios Savva",
       "license": "CC0-1.0",
       "albedo": "materials/rusted_shutter/color.jpg",
       "roughness": "materials/rusted_shutter/roughness.jpg",
@@ -55,7 +55,7 @@
     },
     {
       "id": "cotton_jersey",
-      "source": "Cotton Jersey: https://polyhaven.com/a/cotton_jersey (wool stand-in)",
+      "source": "Cotton Jersey: https://polyhaven.com/a/cotton_jersey (wool stand-in); creator(s): Rico Cilliers, colormass",
       "license": "CC0-1.0",
       "albedo": "materials/cotton_jersey/color.jpg",
       "normal": "materials/cotton_jersey/normal.jpg",

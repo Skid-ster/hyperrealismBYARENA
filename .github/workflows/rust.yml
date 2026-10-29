@@ -12,3 +12,18 @@ jobs:
       - run: cargo test --locked
       - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only
       - run: cargo run --locked --release -- --input work --output pilot_output --cpu-only --threads 2
+      - name: Test preview installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tests/install-preview.tests.ps1
+      - name: Upload experimental pack
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: HyperRealism128-MC26.3-experimental
+          path: |
+            pilot_output/dist/HyperRealism128-v1.0-MC26.3.zip
+            pilot_output/build_report.json
+            pilot_output/contact_sheet.png
+          if-no-files-found: error
+          retention-days: 30

@@ -294,6 +294,23 @@ fn build_stage(
     fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n")
         .map_err(|e| e.to_string())?;
     let materials = manifest::by_id(data);
+    // Carry attribution and honest coverage information into the distributable
+    // ZIP. These fields are supplied by the manifest and are not independently
+    // license-verified by the generator.
+    let used: std::collections::BTreeSet<_> =
+        data.textures.iter().map(|t| t.material.as_str()).collect();
+    let mut credits = String::from("HyperRealism128 material credits\n\nGenerated from the following manifest-supplied materials.\nSource and license information is supplied by the manifest, not independently verified.\n\n");
+    for id in used {
+        let m = materials[id];
+        credits.push_str(&format!(
+            "Material: {}\nSource: {}\nLicense: {}\n\n",
+            id,
+            m.source.as_deref().unwrap_or("not specified"),
+            m.license.as_deref().unwrap_or("not specified")
+        ));
+    }
+    fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures, not the full game. Other textures remain vanilla or come from other enabled packs.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len())).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
     let mut sheet = vec![0; cols * SIZE * rows * SIZE * 4];

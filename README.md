@@ -11,7 +11,37 @@ implementation, not a port or a claim of matching its results.
 
 See [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
 
-## Run on Windows 11
+## Download and install the experimental preview
+
+No Rust installation is needed to use the prebuilt pack. Download
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.1/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
+and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
+96 textures replace only a subset of the game; the rest remain vanilla or come
+from other enabled packs. A compatible shader is required for PBR, and optional
+LabPBR features vary by shader. It has not yet been tested in Minecraft.
+
+To update manually, check the [releases page](https://github.com/Skid-ster/hyperrealismBYARENA/releases)
+for a newer preview, download its ZIP, and replace the older preview ZIP in the
+resourcepacks folder. Keep only one preview version enabled.
+
+Alternatively, Windows users can download and review the
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.1/Install-HyperRealismPreview.ps1).
+In PowerShell, from the folder where it was downloaded, run:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\Install-HyperRealismPreview.ps1
+# To update or replace an existing installed preview:
+powershell -ExecutionPolicy Bypass -File .\Install-HyperRealismPreview.ps1 -Force
+```
+
+The script selects the newest published release containing the preview ZIP and
+its SHA-256 file, verifies the download before replacing the existing preview,
+and does not run the downloaded ZIP. The checksum detects corruption; it is not
+an independent signature. `-Destination` chooses a different resourcepacks
+folder. GitHub API rate limits can affect unauthenticated requests.
+
+## Build from source on Windows 11
 
 Install a current stable Rust toolchain from <https://rustup.rs/> (and the
 Microsoft C++ Build Tools if Rust prompts for them). From PowerShell in this
@@ -27,7 +57,7 @@ The output directory must not already contain `pack`, `dist`, or
 for another run.
 Outputs:
 
-- `pilot_output/pack/` — the starter resource pack, including metadata and
+- `pilot_output/pack/` — the starter resource pack, including metadata, material credits and
   `assets/minecraft/textures/block/{name}.png`, `{name}_n.png`, `{name}_s.png`.
 - `pilot_output/dist/HyperRealism128-v1.0-MC26.3.zip` — pack contents at ZIP root.
 - `pilot_output/contact_sheet.png` — the albedo examples in manifest order,
