@@ -168,6 +168,8 @@ internal static class InstallerTests
         string folder = Path.Combine(instance, "minecraft", "resourcepacks");
         Directory.CreateDirectory(folder);
         File.WriteAllText(Path.Combine(instance, "instance.cfg"), "fixture");
+        Throws(() => LauncherIntegration.TargetFromFolder(folder), "Unconfigured launcher data directory accepted.");
+        File.WriteAllText(Path.Combine(data, "elyprismlauncher.cfg"), "fixture");
         LaunchTarget target = LauncherIntegration.TargetFromFolder(folder);
         Assert(target.DataDirectory == data && target.InstanceId == "26.3 (1) & test", "Wrong launcher target inferred.");
         string bad = Path.Combine(root, "resourcepacks"); Directory.CreateDirectory(bad);

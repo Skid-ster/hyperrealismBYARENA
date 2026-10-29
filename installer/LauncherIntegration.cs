@@ -29,6 +29,12 @@ namespace HyperRealismInstaller
             DirectoryInfo data = instances == null ? null : instances.Parent;
             if (instance == null || instances == null || data == null || !String.Equals(instances.Name, "instances", StringComparison.OrdinalIgnoreCase) || !File.Exists(Path.Combine(instance.FullName, "instance.cfg")))
                 throw new InvalidOperationException("Could not identify a PineconeMC instance from this folder. Select a standard instances\\<instance>\\minecraft\\resourcepacks folder, or launch from PineconeMC.");
+            // Refuse to create a fresh launcher data directory by accident. A
+            // configured install has one of these launcher config filenames.
+            bool configured = false;
+            foreach (string config in new string[] { "elyprismlauncher.cfg", "pineconemc.cfg", "prismlauncher.cfg", "polymc.cfg", "multimc.cfg" })
+                if (File.Exists(Path.Combine(data.FullName, config))) { configured = true; break; }
+            if (!configured) throw new InvalidOperationException("No launcher configuration was found alongside this instances folder. Launch this instance from PineconeMC if you use a custom data layout.");
             return new LaunchTarget { DataDirectory = data.FullName, InstanceId = instance.Name };
         }
 

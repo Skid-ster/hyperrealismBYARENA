@@ -188,7 +188,7 @@ namespace HyperRealismInstaller
 
             var main = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
             main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            main.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 125));
+            main.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 118));
             root.Controls.Add(main, 0, 1);
             var left = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 8, Margin = Padding.Empty, Padding = new Padding(6, 0, 6, 0), BackColor = Background };
             left.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
@@ -224,14 +224,14 @@ namespace HyperRealismInstaller
 
             var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 11, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
             side.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 101)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 104)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
             for (int i = 0; i < 4; i++) side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             side.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             main.Controls.Add(side, 1, 0);
             var sideIcon = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
-            var bigBlock = new PictureBox { Image = BlockIcon(67), SizeMode = PictureBoxSizeMode.Normal, Size = new Size(67, 67), Location = new Point(28, 23) };
+            var bigBlock = new PictureBox { Image = BlockIcon(67), SizeMode = PictureBoxSizeMode.Normal, Size = new Size(67, 67), Location = new Point(25, 26) };
             sideIcon.Resize += delegate { bigBlock.Left = (sideIcon.ClientSize.Width - bigBlock.Width) / 2; };
             sideIcon.Controls.Add(bigBlock);
             sideIcon.Paint += delegate(object sender, PaintEventArgs e) {
