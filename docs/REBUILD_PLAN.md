@@ -2,7 +2,7 @@
 
 Status: **work in progress**. An initial CPU-only vertical slice and synthetic
 fixtures, PNG/JPEG material inputs, map filtering, optional JAR path checks
-and an 80-output CC0-material starter catalog are implemented; see the README for current capabilities and gaps. This plan describes a new, independent
+and a 96-output CC0-material starter catalog are implemented; see the README for current capabilities and gaps. This plan describes a new, independent
 implementation: there is no Python pipeline, manifest, palette, material set,
 or 280-texture inventory in the repository to reproduce or compare against.
 

@@ -33,10 +33,18 @@ fn resize(values: &[f32]) -> Result<Vec<f32>, String> {
 }
 type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
 
-fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
+fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String> {
     let n = WORK * WORK;
     let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
     let mut relief_map = vec![0.0; n];
+    let mut ore_map = if t.recipe == "ore" {
+        Some(vec![0.0; n])
+    } else {
+        None
+    };
+    let ore_color = t
+        .ore_color
+        .map(|rgb| rgb.map(|v| material::srgb_to_linear(v as f32 / 255.0)));
     let tint = t.tint.map(|v| material::srgb_to_linear(v as f32 / 255.0));
     // The target matches the approximate average in linear light. It is not a
     // pixel-by-pixel vanilla palette copy; clipping and recipe shading affect it.
@@ -68,7 +76,13 @@ fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
                 // Moss is a separate, seed-stable coherent layer, not a
                 // solid green tint over the entire material.
                 let moss = [0.045, 0.12, 0.025][c] * alpha;
-                channels[c][i] = base * (1.0 - pattern.moss) + moss * pattern.moss;
+                let surface = base * (1.0 - pattern.moss) + moss * pattern.moss;
+                channels[c][i] = if let Some(color) = ore_color {
+                    let grain = (0.90 + pattern.shade * 0.10) * color[c] * alpha;
+                    surface * (1.0 - pattern.ore) + grain * pattern.ore
+                } else {
+                    surface
+                };
             }
             // With no height map, a mild luminance heuristic preserves the old
             // prototype's behavior. A normal map already supplies fine detail,
@@ -89,6 +103,9 @@ fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
             channels[6][i] = (1.0 - relief.abs() * 1.2).clamp(0.0, 1.0)
                 * img.ao.as_ref().map(|v| v[i]).unwrap_or(1.0);
             relief_map[i] = relief;
+            if let Some(map) = &mut ore_map {
+                map[i] = pattern.ore;
+            }
         }
     }
     let height_for_normals = if img.normal.is_some() {
@@ -119,6 +136,19 @@ fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
         .par_iter()
         .map(|c| resize(c))
         .collect::<Result<_, _>>()?;
+    // Filter continuous masks first, then threshold material IDs. Never
+    // interpolate IDs or the 255 no-emission sentinel.
+    let id_mask = t
+        .f0_mask
+        .as_deref()
+        .map(|p| material::scalar(root, p).and_then(|v| resize(&v)))
+        .transpose()?;
+    let ore_mask = ore_map.as_ref().map(|v| resize(v)).transpose()?;
+    let emission = t
+        .emissive_map
+        .as_deref()
+        .map(|p| material::scalar(root, p).and_then(|v| resize(&v)))
+        .transpose()?;
     let mut albedo = Vec::with_capacity(SIZE * SIZE * 4);
     let mut normal = Vec::with_capacity(SIZE * SIZE * 4);
     let mut spec = Vec::with_capacity(SIZE * SIZE * 4);
@@ -137,12 +167,23 @@ fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
             channels[6][i],
             channels[4][i],
         ));
-        spec.extend_from_slice(&specular_pixel(
-            channels[5][i],
-            F0(t.f0),
-            t.porosity,
-            t.emissive,
-        ));
+        let id = if ore_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+            t.ore_f0.expect("validated ore F0")
+        } else if id_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+            t.masked_f0.expect("validated masked F0")
+        } else {
+            t.f0
+        };
+        let blue = if id >= 230 {
+            0
+        } else {
+            t.subsurface.unwrap_or(t.porosity)
+        };
+        let emissive = emission
+            .as_ref()
+            .map(|v| (v[i].clamp(0.0, 1.0) * 254.0).round() as u8)
+            .unwrap_or(t.emissive);
+        spec.extend_from_slice(&specular_pixel(channels[5][i], F0(id), blue, emissive));
     }
     Ok((albedo, normal, spec))
 }
@@ -186,9 +227,11 @@ pub fn generate(input: &Path, output: &Path, minecraft_jar: Option<&Path>) -> Re
     manifest::validate(&data, root)?;
     let hashes = manifest::input_hashes(&data, root)?;
     let manifest_hash = manifest::sha256_file(&path)?;
-    if let Some(jar) = minecraft_jar {
-        manifest::validate_against_jar(&data, jar)?;
-    }
+    let metadata = if let Some(jar) = minecraft_jar {
+        manifest::validate_against_jar(&data, jar)?
+    } else {
+        Default::default()
+    };
     fs::create_dir_all(output).map_err(|e| e.to_string())?;
     for name in ["pack", "dist", "contact_sheet.png", "build_report.json"] {
         if output.join(name).exists() {
@@ -207,6 +250,7 @@ pub fn generate(input: &Path, output: &Path, minecraft_jar: Option<&Path>) -> Re
         &hashes,
         &manifest_hash,
         minecraft_jar.is_some(),
+        &metadata,
     );
     if let Err(err) = result {
         let _ = fs::remove_dir_all(&stage);
@@ -239,6 +283,7 @@ fn build_stage(
     hashes: &std::collections::BTreeMap<String, String>,
     manifest_hash: &str,
     client_paths_checked: bool,
+    metadata: &std::collections::BTreeMap<String, Vec<u8>>,
 ) -> Result<(), String> {
     let pack = stage.join("pack");
     let block = pack.join("assets/minecraft/textures/block");
@@ -262,7 +307,7 @@ fn build_stage(
             cached = Some((m.id.as_str(), material::load(root, m)?));
         }
         let images = &cached.as_ref().expect("material just loaded").1;
-        let (a, n, s) = build(t, images).map_err(|e| format!("{}: {e}", t.name))?;
+        let (a, n, s) = build(t, images, root).map_err(|e| format!("{}: {e}", t.name))?;
         for (suffix, bytes) in [("", &a), ("_n", &n), ("_s", &s)] {
             png_io::write(
                 &block.join(format!("{}{suffix}.png", t.name)),
@@ -270,6 +315,10 @@ fn build_stage(
                 SIZE,
                 bytes,
             )?;
+        }
+        if let Some(meta) = metadata.get(&t.name) {
+            fs::write(block.join(format!("{}.png.mcmeta", t.name)), meta)
+                .map_err(|e| e.to_string())?;
         }
         let ox = index % cols * SIZE;
         let oy = index / cols * SIZE;
@@ -284,7 +333,7 @@ fn build_stage(
         "backend": "cpu",
         "resolution": SIZE,
         "working_resolution": WORK,
-        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "f0": t.f0, "porosity": t.porosity, "emissive": t.emissive})).collect::<Vec<_>>(),
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
         "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "roughness": m.roughness, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,

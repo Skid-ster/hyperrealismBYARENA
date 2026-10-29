@@ -40,10 +40,20 @@ pub struct Texture {
     pub tint: [u8; 3],
     /// Optional approximate sRGB target for the average source color.
     pub target_color: Option<[u8; 3]>,
+    /// Ore recipe's inclusion color and LabPBR F0/metal ID.
+    pub ore_color: Option<[u8; 3]>,
+    pub ore_f0: Option<u8>,
     #[serde(default = "default_f0")]
     pub f0: u8,
     #[serde(default)]
     pub porosity: u8,
+    /// Encoded LabPBR subsurface-scattering byte, 65..=255; mutually exclusive with porosity.
+    pub subsurface: Option<u8>,
+    /// Binary material-ID mask, thresholded after filtering.
+    pub f0_mask: Option<String>,
+    pub masked_f0: Option<u8>,
+    /// Linear grayscale emission strength, mapped to 0..=254.
+    pub emissive_map: Option<String>,
     #[serde(default = "default_emissive")]
     pub emissive: u8,
 }
@@ -127,6 +137,7 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         }
         if ![
             "stone",
+            "ore",
             "brick",
             "cracked_brick",
             "cobble",
@@ -144,11 +155,68 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         {
             return Err(format!("{}: unknown recipe {}", t.name, t.recipe));
         }
+        if t.recipe == "ore" {
+            match (t.ore_color, t.ore_f0) {
+                (Some(_), Some(id))
+                    if !(238..=254).contains(&id)
+                        && t.f0_mask.is_none()
+                        && t.masked_f0.is_none() => {}
+                _ => {
+                    return Err(format!(
+                        "{}: ore requires ore_color and valid ore_f0, without an external F0 mask",
+                        t.name
+                    ))
+                }
+            }
+        } else if t.ore_color.is_some() || t.ore_f0.is_some() {
+            return Err(format!(
+                "{}: ore_color and ore_f0 require the ore recipe",
+                t.name
+            ));
+        }
         if t.porosity > 64 {
             return Err(format!("{}: porosity must be 0..64", t.name));
         }
         if (238..=254).contains(&t.f0) {
             return Err(format!("{}: reserved F0/metal ID", t.name));
+        }
+        let all_metal = t.f0 >= 230
+            && t.masked_f0.map(|id| id >= 230).unwrap_or(true)
+            && t.ore_f0.map(|id| id >= 230).unwrap_or(true);
+        if all_metal && (t.porosity != 0 || t.subsurface.is_some()) {
+            return Err(format!("{}: LabPBR blue channel is reserved for metals; use zero porosity and no subsurface", t.name));
+        }
+        if let Some(sss) = t.subsurface {
+            if sss < 65 || t.porosity != 0 {
+                return Err(format!(
+                    "{}: subsurface must be 65..=255 and cannot be combined with porosity",
+                    t.name
+                ));
+            }
+        }
+        match (&t.f0_mask, t.masked_f0) {
+            (Some(path), Some(id)) => {
+                if (238..=254).contains(&id) {
+                    return Err(format!("{}: reserved masked F0/metal ID", t.name));
+                }
+                safe_file(root, path)?;
+            }
+            (None, None) => (),
+            _ => {
+                return Err(format!(
+                    "{}: f0_mask and masked_f0 must be provided together",
+                    t.name
+                ))
+            }
+        }
+        if let Some(path) = &t.emissive_map {
+            if t.emissive != 255 {
+                return Err(format!(
+                    "{}: emissive and emissive_map cannot both be specified",
+                    t.name
+                ));
+            }
+            safe_file(root, path)?;
         }
     }
     Ok(())
@@ -199,6 +267,25 @@ pub fn input_hashes(m: &Manifest, root: &Path) -> Result<BTreeMap<String, String
             hashes.insert(path.clone(), hash);
         }
     }
+    for texture in &m.textures {
+        for path in texture.f0_mask.iter().chain(texture.emissive_map.iter()) {
+            if hashes.contains_key(path) {
+                continue;
+            }
+            let hash = sha256_file(&safe_file(root, path)?)?;
+            if let Some(expected) = m.checksums.get(path) {
+                if expected.len() != 64 || !expected.bytes().all(|b| b.is_ascii_hexdigit()) {
+                    return Err(format!(
+                        "{path}: expected SHA-256 must contain 64 hexadecimal characters"
+                    ));
+                }
+                if !hash.eq_ignore_ascii_case(expected) {
+                    return Err(format!("{path}: SHA-256 mismatch (actual {hash})"));
+                }
+            }
+            hashes.insert(path.clone(), hash);
+        }
+    }
     for key in m.checksums.keys() {
         if !hashes.contains_key(key) {
             return Err(format!("checksum refers to undeclared input: {key}"));
@@ -221,14 +308,18 @@ pub fn by_id(m: &Manifest) -> HashMap<&str, &Material> {
         .collect()
 }
 
-/// Check target paths against the user's local Minecraft client JAR. This does
-/// not redistribute vanilla assets, infer the JAR's version, or validate color
-/// targets. Sidecar metadata is rejected until animation handling is supported.
-pub fn validate_against_jar(manifest: &Manifest, jar: &Path) -> Result<(), String> {
+/// Check target paths against the user's local Minecraft client JAR. Preserve
+/// safe static texture metadata; fail closed on animation or unknown sections.
+/// This does not verify the JAR version or redistribute vanilla image data.
+pub fn validate_against_jar(
+    manifest: &Manifest,
+    jar: &Path,
+) -> Result<BTreeMap<String, Vec<u8>>, String> {
     let file = fs::File::open(jar).map_err(|e| format!("{}: {e}", jar.display()))?;
     let mut archive = ::zip::ZipArchive::new(file)
         .map_err(|e| format!("{}: invalid ZIP/JAR: {e}", jar.display()))?;
     let mut problems = Vec::new();
+    let mut metadata = BTreeMap::new();
     for texture in &manifest.textures {
         let name = format!("assets/minecraft/textures/block/{}.png", texture.name);
         match archive.by_name(&name) {
@@ -241,13 +332,46 @@ pub fn validate_against_jar(manifest: &Manifest, jar: &Path) -> Result<(), Strin
         }
         let meta = format!("{name}.mcmeta");
         match archive.by_name(&meta) {
-            Ok(_) => problems.push(format!("{meta}: metadata/animation is not supported yet")),
+            Ok(entry) => {
+                if entry.size() > 256 * 1024 {
+                    problems.push(format!("{meta}: metadata is too large"));
+                    continue;
+                }
+                let mut bytes = Vec::new();
+                entry
+                    .take(256 * 1024 + 1)
+                    .read_to_end(&mut bytes)
+                    .map_err(|e| format!("{meta}: {e}"))?;
+                if bytes.len() > 256 * 1024 {
+                    problems.push(format!("{meta}: metadata is too large"));
+                    continue;
+                }
+                let value: serde_json::Value = serde_json::from_slice(&bytes)
+                    .map_err(|e| format!("{meta}: invalid metadata: {e}"))?;
+                let Some(object) = value.as_object() else {
+                    problems.push(format!("{meta}: expected JSON object"));
+                    continue;
+                };
+                if object.contains_key("animation") || object.keys().any(|key| key != "texture") {
+                    problems.push(format!(
+                        "{meta}: animation or unknown metadata is not supported yet"
+                    ));
+                } else if object
+                    .get("texture")
+                    .map(|v| !v.is_object())
+                    .unwrap_or(false)
+                {
+                    problems.push(format!("{meta}: texture metadata must be an object"));
+                } else {
+                    metadata.insert(texture.name.clone(), bytes);
+                }
+            }
             Err(::zip::result::ZipError::FileNotFound) => (),
             Err(e) => return Err(format!("{meta}: {e}")),
         }
     }
     if problems.is_empty() {
-        Ok(())
+        Ok(metadata)
     } else {
         Err(format!(
             "Minecraft target validation failed:\n{}",

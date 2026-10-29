@@ -1423,6 +1423,358 @@
       ],
       "f0": 10,
       "porosity": 50
+    },
+    {
+      "name": "coal_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        106,
+        106,
+        105
+      ],
+      "f0": 10,
+      "ore_color": [
+        30,
+        30,
+        30
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "deepslate_coal_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        74,
+        74,
+        76
+      ],
+      "f0": 10,
+      "ore_color": [
+        30,
+        30,
+        30
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "copper_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        125,
+        126,
+        120
+      ],
+      "f0": 10,
+      "ore_color": [
+        151,
+        102,
+        68
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "deepslate_copper_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        92,
+        93,
+        89
+      ],
+      "f0": 10,
+      "ore_color": [
+        151,
+        102,
+        68
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "diamond_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        121,
+        141,
+        141
+      ],
+      "f0": 10,
+      "ore_color": [
+        50,
+        196,
+        190
+      ],
+      "ore_f0": 43
+    },
+    {
+      "name": "deepslate_diamond_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        83,
+        106,
+        107
+      ],
+      "f0": 10,
+      "ore_color": [
+        50,
+        196,
+        190
+      ],
+      "ore_f0": 43
+    },
+    {
+      "name": "emerald_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        108,
+        136,
+        116
+      ],
+      "f0": 10,
+      "ore_color": [
+        32,
+        164,
+        82
+      ],
+      "ore_f0": 40
+    },
+    {
+      "name": "deepslate_emerald_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        78,
+        104,
+        88
+      ],
+      "f0": 10,
+      "ore_color": [
+        32,
+        164,
+        82
+      ],
+      "ore_f0": 40
+    },
+    {
+      "name": "gold_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        145,
+        134,
+        107
+      ],
+      "f0": 10,
+      "ore_color": [
+        204,
+        161,
+        63
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "deepslate_gold_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        115,
+        103,
+        78
+      ],
+      "f0": 10,
+      "ore_color": [
+        204,
+        161,
+        63
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "iron_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        136,
+        129,
+        123
+      ],
+      "f0": 10,
+      "ore_color": [
+        180,
+        141,
+        119
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "deepslate_iron_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        107,
+        100,
+        95
+      ],
+      "f0": 10,
+      "ore_color": [
+        180,
+        141,
+        119
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "lapis_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        107,
+        118,
+        141
+      ],
+      "f0": 10,
+      "ore_color": [
+        37,
+        74,
+        162
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "deepslate_lapis_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        80,
+        91,
+        115
+      ],
+      "f0": 10,
+      "ore_color": [
+        37,
+        74,
+        162
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "redstone_ore",
+      "material": "concrete_wall",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        140,
+        110,
+        110
+      ],
+      "f0": 10,
+      "ore_color": [
+        169,
+        34,
+        33
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "deepslate_redstone_ore",
+      "material": "gravel_concrete",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        105,
+        73,
+        75
+      ],
+      "f0": 10,
+      "ore_color": [
+        169,
+        34,
+        33
+      ],
+      "ore_f0": 10
     }
   ],
   "checksums": {

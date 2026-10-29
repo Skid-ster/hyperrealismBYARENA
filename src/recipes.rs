@@ -9,6 +9,8 @@ pub struct Pattern {
     pub relief: f32,
     pub opacity: f32,
     pub moss: f32,
+    /// Fractional ore inclusion coverage prior to resampling.
+    pub ore: f32,
 }
 
 /// Stable FNV-1a seed; independent of thread scheduling and platform HashMap seeds.
@@ -186,11 +188,19 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
         }
         _ => (0.96 + 0.08 * n, 0.008 * (fine - 0.5), 1.0, 0.0),
     };
+    // A pair of periodic scales creates scattered irregular mineral inclusions.
+    // Coverage is continuous for color filtering; material IDs remain discrete.
+    let ore = if recipe == "ore" {
+        ((0.72 * n + 0.28 * fine - 0.53) * 9.0).clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
     Pattern {
         shade,
-        relief,
+        relief: relief + ore * 0.045,
         opacity,
         moss,
+        ore,
     }
 }
 
@@ -201,6 +211,7 @@ mod tests {
     fn deterministic_and_periodic() {
         for r in [
             "stone",
+            "ore",
             "brick",
             "cracked_brick",
             "cobble",
@@ -218,8 +229,8 @@ mod tests {
                 let p = evaluate(r, x, y, seed("a"));
                 let q = evaluate(r, x + 512, y + 512, seed("a"));
                 assert_eq!(
-                    (p.shade, p.relief, p.opacity, p.moss),
-                    (q.shade, q.relief, q.opacity, q.moss)
+                    (p.shade, p.relief, p.opacity, p.moss, p.ore),
+                    (q.shade, q.relief, q.opacity, q.moss, q.ore)
                 );
                 assert!(
                     p.shade.is_finite()

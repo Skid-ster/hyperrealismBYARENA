@@ -2,7 +2,7 @@
 
 This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 128×128 Minecraft Java 26.3 block textures and
-LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 80
+LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 96
 experimental outputs based on seven CC0 Poly Haven materials; it is **not** the
 requested 280-texture catalog or a finished photorealistic pack. A separate
 synthetic manifest contains eight test examples. The repository did
@@ -82,7 +82,7 @@ source's average linear color toward an approximate sRGB target; clipping,
 material variation, and recipe layers can change the final average. This is not
 a pixel-level palette match. Supported experimental recipes are `material`
 (preserve the source), `stone`,
-`brick`, `cracked_brick`, `cobble`, `moss_cobble`, `moss_brick`, `plank`,
+`ore`, `brick`, `cracked_brick`, `cobble`, `moss_cobble`, `moss_brick`, `plank`,
 `moss`, `glass`, `metal`, `gem`, and `leaves`. These are simple procedural
 demonstrations,
 not finished material-specific recipes. Names must be lowercase ASCII letters,
@@ -92,14 +92,37 @@ they have not yet been validated in game. Custom names are not checked unless
 `--minecraft-jar` is supplied.
 F0 defaults to 10; 230–237 are hardcoded metal IDs, 255 is custom metal, and
 238–254 are rejected. Porosity defaults to 0 and must be 0–64. Emissive defaults
-to the LabPBR no-emission sentinel 255; values 0–254 are passed through.
+to the LabPBR no-emission sentinel 255; values 0–254 are passed through. For
+`ore`, supply `ore_color` (sRGB RGB bytes) and `ore_f0`; an irregular periodic
+inclusion mask mixes the color and selects the discrete F0/metal ID. Bundled
+ore inclusions and concrete-based host rocks are experimental approximations,
+not scanned ore materials; redstone ore is not emissive by default.
+
+For mixed materials, `f0_mask` specifies a grayscale PNG/JPEG path and
+`masked_f0` supplies the other encoded F0/metal ID. After linear filtering a
+mask value ≥0.5 selects `masked_f0`, otherwise `f0`; IDs are never interpolated.
+These two fields must be supplied together and cannot be used with `ore`.
+`subsurface` is an optional **encoded byte** 65–255 in the B channel, mutually
+exclusive with nonzero `porosity`; the B channel is forced to 0 on metallic
+pixels. `emissive_map` is a grayscale linear map, filtered to the output and
+encoded as 0–254 (black means zero emission); it cannot be combined with a
+non-default `emissive`. The 255 sentinel means emission is disabled. Per-pixel
+map paths use the same validation and SHA-256 reporting as material maps.
+
+LabPBR `_n` channels are DirectX tangent-space X/Y, ambient occlusion and
+height; `_s` channels are `1 - sqrt(roughness)`, F0/metal ID, porosity/SSS,
+and emission. A generated height byte can be zero; the LabPBR specification
+recommends a minimum of 1 to avoid issues with some parallax implementations.
+See the [LabPBR 1.3 material standard](https://shaderlabs.org/wiki/LabPBR_Material_Standard).
+Shader packs vary in support for AO, height, SSS, porosity and emission; map
+encoding alone does not guarantee that any particular shader renders them.
 
 The working size is 512×512. Source maps are periodically resampled using
 Lanczos-3 before recipe processing; albedo filtering uses premultiplied alpha
 and linear light. Continuous channels are then downsampled to 128×128 using a
 scalar periodic Lanczos-3 filter. Normals are filtered as vectors and
-renormalized. Alpha cutout coverage, non-tiling edge modes, animations and
-per-pixel metal/emission masks need further work. Inputs up to 8192×8192 are
+renormalized. Alpha cutout coverage preservation, non-tiling edge modes and
+animations need further work. Inputs up to 8192×8192 are
 supported, but large inputs may use substantial RAM. Only the most recently
 used prepared material is cached. Albedo and normal PNGs currently use 8-bit
 precision; color profiles and EXR/TIFF are not supported. The ZIP currently
@@ -116,16 +139,17 @@ To check texture **names** against a locally installed Minecraft client JAR:
 cargo run --locked --release -- --input work --output pilot_output2 --cpu-only --minecraft-jar "$env:APPDATA\.minecraft\versions\26.3\26.3.jar"
 ```
 
-This fails on missing target paths or any `.png.mcmeta` sidecar, because
-animation/metadata handling is not implemented. It does not check the JAR's
-version, validate palettes, or redistribute game assets. If the flag is omitted,
+This fails on missing target paths, animation metadata or unknown `.png.mcmeta`
+sections. Static `texture` metadata (such as mipmap strategy) is copied to the
+corresponding generated albedo's sidecar and ZIP. It does not check the JAR's
+version, validate palettes, or redistribute game images. If the flag is omitted,
 target names are not checked against Minecraft. You must supply your own client
 JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand the 80-output starter to the requested catalog; acquire appropriate
-  materials for each family and review palette/geometry in game. This 80-output
+- Expand the 96-output starter to the requested catalog; acquire appropriate
+  materials for each family and review palette/geometry in game. This 96-output
   set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.
@@ -136,7 +160,7 @@ JAR and appropriate, lawfully obtained input materials.
   production error handling, and Minecraft/shader visual validation.
 
 Tests include PNG/JPEG decoding, 16-bit scalar inputs, alpha-aware periodic
-filtering, input hashes, JAR preflight, channel values, output layout, metal ID
-230, no-overwrite behavior and matching ZIP bytes across one and two Rayon threads.
+filtering, input hashes, JAR preflight, channel values, output layout, mixed metal IDs, emission masks, SSS, alpha filtering, static metadata,
+no-overwrite behavior and matching ZIP bytes across one and two Rayon threads.
 GitHub Actions passed the suite and CPU smoke run on Linux and Windows runners;
 this is not a substitute for testing on the specified local hardware.

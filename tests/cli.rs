@@ -61,6 +61,10 @@ fn cpu_end_to_end_and_reproducibility() {
         serde_json::from_slice(&fs::read(out1.join("pack/pack.mcmeta")).unwrap()).unwrap();
     assert_eq!(meta["pack"]["min_format"], serde_json::json!([97, 1]));
     assert_eq!(meta["pack"]["max_format"], 97);
+    assert_eq!(
+        fs::read_to_string(out1.join("pack/assets/minecraft/optifine/texture.properties")).unwrap(),
+        "format=lab-pbr/1.3\n"
+    );
     let archive = "dist/HyperRealism128-v1.0-MC26.3.zip";
     let bytes = fs::read(out1.join(archive)).unwrap();
     assert_eq!(bytes, fs::read(out2.join(archive)).unwrap());
@@ -222,12 +226,37 @@ fn local_client_jar_preflight_checks_targets_before_writing() {
     assert!(String::from_utf8_lossy(&failed.stderr).contains("SHA-256 mismatch"));
     assert!(!failed_hash.exists());
     fs::copy("test_assets/sample.jpg", input.join("albedo.jpg")).unwrap();
+    let static_metadata = br#"{"texture":{"mipmap_strategy":"dark_cutout"}}"#;
+    fs::write(blocks.join("stone.png.mcmeta"), static_metadata).unwrap();
+    hyperrealism_core::zip::write(&tree, &jar).unwrap();
+    let out_meta = temp.join("static-metadata");
+    let valid = exec(&out_meta);
+    assert!(
+        valid.status.success(),
+        "{}",
+        String::from_utf8_lossy(&valid.stderr)
+    );
+    assert_eq!(
+        fs::read(out_meta.join("pack/assets/minecraft/textures/block/stone.png.mcmeta")).unwrap(),
+        static_metadata
+    );
+    {
+        use std::io::Read;
+        let zip = fs::File::open(out_meta.join("dist/HyperRealism128-v1.0-MC26.3.zip")).unwrap();
+        let mut zip = zip::ZipArchive::new(zip).unwrap();
+        let mut bytes = Vec::new();
+        zip.by_name("assets/minecraft/textures/block/stone.png.mcmeta")
+            .unwrap()
+            .read_to_end(&mut bytes)
+            .unwrap();
+        assert_eq!(bytes, static_metadata);
+    }
     fs::write(blocks.join("stone.png.mcmeta"), br#"{"animation":{}}"#).unwrap();
     hyperrealism_core::zip::write(&tree, &jar).unwrap();
     let fail_path = temp.join("animated");
     let fail = exec(&fail_path);
     assert!(!fail.status.success());
-    assert!(String::from_utf8_lossy(&fail.stderr).contains("metadata/animation"));
+    assert!(String::from_utf8_lossy(&fail.stderr).contains("animation or unknown metadata"));
     assert!(!fail_path.exists());
     fs::remove_file(blocks.join("stone.png")).unwrap();
     fs::remove_file(blocks.join("stone.png.mcmeta")).unwrap();
@@ -277,7 +306,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 80);
+    assert_eq!(m.textures.len(), 96);
     for t in &m.textures {
         let entry = &entries[&t.name];
         assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));
@@ -287,4 +316,146 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
             serde_json::json!(t.target_color.unwrap())
         );
     }
+}
+
+#[test]
+fn labpbr_masks_preserve_metal_ids_emission_and_subsurface() {
+    use hyperrealism_core::png_io::{read, write};
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-masks-{}-{unique}",
+        std::process::id()
+    ));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    let mut metal = Vec::new();
+    let mut emission = Vec::new();
+    for y in 0..512 {
+        for x in 0..512 {
+            let m = if x >= 256 { 255 } else { 0 };
+            let e = if y >= 256 { 255 } else { 0 };
+            metal.extend_from_slice(&[m, m, m, 255]);
+            emission.extend_from_slice(&[e, e, e, 255]);
+        }
+    }
+    write(&input.join("metal.png"), 512, 512, &metal).unwrap();
+    write(&input.join("emission.png"), 512, 512, &emission).unwrap();
+    fs::copy("test_assets/sample.jpg", input.join("albedo.jpg")).unwrap();
+    fs::write(input.join("material_manifest.json"),r#"{
+      "version":1,
+      "materials":[{"id":"base","albedo":"albedo.jpg"}],
+      "textures":[{"name":"stone","material":"base","recipe":"material","tint":[255,255,255],
+        "f0":10,"f0_mask":"metal.png","masked_f0":230,"subsurface":200,"emissive_map":"emission.png"},
+        {"name":"gold_ore","material":"base","recipe":"ore","tint":[255,255,255],"f0":10,"ore_color":[200,160,60],"ore_f0":231}]
+    }"#).unwrap();
+    let out = temp.join("out");
+    let result = run(&input, &out, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let image = read(&out.join("pack/assets/minecraft/textures/block/stone_s.png")).unwrap();
+    let at = |x: usize, y: usize| &image.pixels[(y * 128 + x) * 4..(y * 128 + x + 1) * 4];
+    assert_eq!(&at(32, 32)[1..], &[10, 200, 0]);
+    assert_eq!(&at(96, 32)[1..], &[230, 0, 0]);
+    assert_eq!(&at(32, 96)[1..], &[10, 200, 254]);
+    assert_eq!(&at(96, 96)[1..], &[230, 0, 254]);
+    assert!(image
+        .pixels
+        .chunks_exact(4)
+        .all(|p| p[1] == 10 || p[1] == 230));
+    assert!(image.pixels.chunks_exact(4).all(|p| p[3] != 255));
+    assert!(image.pixels.chunks_exact(4).any(|p| p[3] > 0 && p[3] < 254));
+    let ore = read(&out.join("pack/assets/minecraft/textures/block/gold_ore_s.png")).unwrap();
+    assert!(ore.pixels.chunks_exact(4).any(|p| p[1] == 10));
+    assert!(ore.pixels.chunks_exact(4).any(|p| p[1] == 231));
+    assert!(ore
+        .pixels
+        .chunks_exact(4)
+        .all(|p| p[1] == 10 || p[1] == 231));
+    let report: serde_json::Value =
+        serde_json::from_slice(&fs::read(out.join("build_report.json")).unwrap()).unwrap();
+    assert!(
+        report["input_sha256"]["metal.png"].is_string()
+            && report["input_sha256"]["emission.png"].is_string()
+    );
+    for (i, extra) in [
+        serde_json::json!({"f0":230,"porosity":12}),
+        serde_json::json!({"f0_mask":"metal.png"}),
+        serde_json::json!({"masked_f0":230}),
+        serde_json::json!({"f0_mask":"metal.png","masked_f0":240}),
+        serde_json::json!({"subsurface":64}),
+        serde_json::json!({"subsurface":100,"porosity":1}),
+        serde_json::json!({"emissive_map":"emission.png","emissive":100}),
+        serde_json::json!({"ore_color":[200,160,60],"ore_f0":231}),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let mut texture = serde_json::json!({"name":"stone","material":"base","recipe":"material","tint":[255,255,255]});
+        texture
+            .as_object_mut()
+            .unwrap()
+            .extend(extra.as_object().unwrap().clone());
+        let manifest = serde_json::json!({"version":1,"materials":[{"id":"base","albedo":"albedo.jpg"}],"textures":[texture]});
+        fs::write(
+            input.join("material_manifest.json"),
+            serde_json::to_vec(&manifest).unwrap(),
+        )
+        .unwrap();
+        let failed = temp.join(format!("invalid-{i}"));
+        assert!(
+            !run(&input, &failed, "2").status.success(),
+            "invalid case {i}"
+        );
+        assert!(!failed.exists());
+    }
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn transparent_albedo_is_filtered_without_color_bleeding() {
+    use hyperrealism_core::png_io::{read, write};
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-alpha-{}-{unique}",
+        std::process::id()
+    ));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    let mut pixels = Vec::new();
+    for _y in 0..512 {
+        for x in 0..512 {
+            pixels.extend_from_slice(if x < 256 {
+                &[255, 0, 0, 255]
+            } else {
+                &[0, 255, 0, 0]
+            });
+        }
+    }
+    write(&input.join("color.png"), 512, 512, &pixels).unwrap();
+    fs::write(input.join("material_manifest.json"),r#"{"version":1,"materials":[{"id":"base","albedo":"color.png"}],"textures":[{"name":"stone","material":"base","recipe":"material","tint":[255,255,255]}]}"#).unwrap();
+    let output = temp.join("out");
+    let result = run(&input, &output, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let a = read(&output.join("pack/assets/minecraft/textures/block/stone.png")).unwrap();
+    assert!(a.pixels.chunks_exact(4).any(|p| p[3] == 0));
+    assert!(a.pixels.chunks_exact(4).any(|p| p[3] == 255));
+    assert!(a
+        .pixels
+        .chunks_exact(4)
+        .filter(|p| p[3] > 0)
+        .all(|p| p[0] >= 253 && p[1] == 0 && p[2] == 0));
+    fs::remove_dir_all(temp).unwrap();
 }

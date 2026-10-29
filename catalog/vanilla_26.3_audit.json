@@ -185,6 +185,19 @@
         173
       ]
     },
+    "coal_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7252ab2c94dc2d3f8ce9a52b282b9a43356860af",
+      "has_mcmeta": false,
+      "target_rgb": [
+        106,
+        106,
+        105
+      ]
+    },
     "cobblestone": {
       "dimensions": [
         16,
@@ -196,6 +209,19 @@
         128,
         127,
         128
+      ]
+    },
+    "copper_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d6b80793e0832cd490346701dc8ff3efd4b4f251",
+      "has_mcmeta": false,
+      "target_rgb": [
+        125,
+        126,
+        120
       ]
     },
     "cracked_stone_bricks": {
@@ -276,6 +302,123 @@
         20
       ]
     },
+    "deepslate_coal_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6e7eaccb36e17fc22e16d442e688cb87ec0b6866",
+      "has_mcmeta": false,
+      "target_rgb": [
+        74,
+        74,
+        76
+      ]
+    },
+    "deepslate_copper_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c3700a4708d6095be3dd97d7dc16783250e35db2",
+      "has_mcmeta": false,
+      "target_rgb": [
+        92,
+        93,
+        89
+      ]
+    },
+    "deepslate_diamond_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6a4cf556fd99f228957f9f8cb728fe7f75cf2fb7",
+      "has_mcmeta": false,
+      "target_rgb": [
+        83,
+        106,
+        107
+      ]
+    },
+    "deepslate_emerald_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f5d647350fb2a3d7da4a020284b66d7ccf671a0e",
+      "has_mcmeta": false,
+      "target_rgb": [
+        78,
+        104,
+        88
+      ]
+    },
+    "deepslate_gold_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "06f472c73cbd4d72938f3d7838306944121377fd",
+      "has_mcmeta": false,
+      "target_rgb": [
+        115,
+        103,
+        78
+      ]
+    },
+    "deepslate_iron_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3443f829317129e50f4e17e1ad7175b06b798023",
+      "has_mcmeta": false,
+      "target_rgb": [
+        107,
+        100,
+        95
+      ]
+    },
+    "deepslate_lapis_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b7939629461082ae94948a52d1188fb58306beaa",
+      "has_mcmeta": false,
+      "target_rgb": [
+        80,
+        91,
+        115
+      ]
+    },
+    "deepslate_redstone_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9c348a5a8d90726491ca70112e235660814d7bca",
+      "has_mcmeta": false,
+      "target_rgb": [
+        105,
+        73,
+        75
+      ]
+    },
+    "diamond_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c2333b773157b7cc6e88751053f54154312f4c74",
+      "has_mcmeta": false,
+      "target_rgb": [
+        121,
+        141,
+        141
+      ]
+    },
     "diorite": {
       "dimensions": [
         16,
@@ -289,6 +432,19 @@
         189
       ]
     },
+    "emerald_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a06b2e76c4fd2fdc1a2900b0e592e0bb2d233494",
+      "has_mcmeta": false,
+      "target_rgb": [
+        108,
+        136,
+        116
+      ]
+    },
     "exposed_copper": {
       "dimensions": [
         16,
@@ -300,6 +456,19 @@
         161,
         126,
         104
+      ]
+    },
+    "gold_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "50658812eabb224e1cae671c3dec82b7f48e11c0",
+      "has_mcmeta": false,
+      "target_rgb": [
+        145,
+        134,
+        107
       ]
     },
     "granite": {
@@ -406,6 +575,19 @@
         28
       ]
     },
+    "iron_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f3f5cd8e7c550d5d647e2c990a9439eda37cbbf5",
+      "has_mcmeta": false,
+      "target_rgb": [
+        136,
+        129,
+        123
+      ]
+    },
     "jungle_planks": {
       "dimensions": [
         16,
@@ -417,6 +599,19 @@
         160,
         115,
         81
+      ]
+    },
+    "lapis_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4e597d9cad82423451f48e39e8fdd297849bcfbd",
+      "has_mcmeta": false,
+      "target_rgb": [
+        107,
+        118,
+        141
       ]
     },
     "light_blue_concrete": {
@@ -872,6 +1067,19 @@
         161,
         39,
         35
+      ]
+    },
+    "redstone_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "634bdde304494ecd8a34f51e94401803bbbe9d1b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        140,
+        110,
+        110
       ]
     },
     "spruce_planks": {

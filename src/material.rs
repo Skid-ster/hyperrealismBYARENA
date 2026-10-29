@@ -36,7 +36,7 @@ fn plane<F: Fn(&[u8]) -> f32>(image: &Rgba, f: F) -> Result<Vec<f32>, String> {
     resize_wrap(&source, image.width, image.height, WORK, WORK).map_err(str::to_string)
 }
 
-fn scalar(root: &Path, name: &str) -> Result<Vec<f32>, String> {
+pub fn scalar(root: &Path, name: &str) -> Result<Vec<f32>, String> {
     let path = manifest::safe_file(root, name)?;
     let (width, height, source) = png_io::read_linear_scalar(&path)?;
     let mut result = if width == WORK && height == WORK {
