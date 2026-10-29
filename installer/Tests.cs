@@ -93,7 +93,7 @@ internal static class InstallerTests
         string staged = SelfUpdater.DownloadUpdate(fake, update, target, out sum);
         Assert(PackInstaller.HashFile(staged) == sum, "App update not staged correctly.");
         File.Delete(staged);
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.3", false, "https://evil.example") });
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.4", false, "https://evil.example") });
         Throws(() => SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag), "Untrusted app release host accepted.");
 
         // End-to-end test of the real cmd -> copied GUI helper -> replace ->

@@ -1,0 +1,27 @@
+# Manual preview releases should get the installer too. Releases created with
+# GITHUB_TOKEN do not fire release events, so their publishing workflow also
+# includes the installer explicitly.
+name: Attach installer to preview releases
+on:
+  release:
+    types: [published]
+jobs:
+  attach:
+    if: startsWith(github.event.release.tag_name, 'v') && contains(github.event.release.tag_name, '-preview.')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download and attach the latest published installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PREVIEW_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          tag=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name'  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-installer\.[0-9]+$' | sort -V | tail -n 1)
+          test -n "$tag"
+          mkdir installer-assets
+          gh release download "$tag" --dir installer-assets --pattern 'HyperRealism128-Installer.exe*'
+          (cd installer-assets && sha256sum -c HyperRealism128-Installer.exe.sha256)
+          gh release upload "$PREVIEW_TAG" installer-assets/HyperRealism128-Installer.exe installer-assets/HyperRealism128-Installer.exe.sha256 --clobber
