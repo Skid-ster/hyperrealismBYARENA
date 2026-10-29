@@ -67,6 +67,27 @@ internal static class InstallerTests
         } };
     }
 
+    private static bool WaitForMarker(string marker, string expected)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            try { if (File.Exists(marker) && File.ReadAllText(marker) == expected) return true; }
+            catch (IOException) { }
+            System.Threading.Thread.Sleep(100);
+        }
+        return false;
+    }
+
+    private static void WaitForRelease(string file)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            try { using (var handle = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.None)) return; }
+            catch (IOException) { System.Threading.Thread.Sleep(100); }
+        }
+        throw new Exception("Restarted executable stayed locked.");
+    }
+
     private static void TestSelfUpdate(string root, string gui)
     {
         var fake = new FakeTransfer { Payload = Encoding.UTF8.GetBytes("verified installer bytes") };
@@ -116,8 +137,8 @@ internal static class InstallerTests
             Assert(!File.Exists(marker), "Restarted while target was locked.");
         }
         Assert(helper.WaitForExit(40000), "Updater helper did not finish.");
-        for (int i = 0; i < 100 && !File.Exists(marker); i++) System.Threading.Thread.Sleep(100);
-        Assert(File.Exists(marker) && File.ReadAllText(marker) == "--updated", "Updated program did not restart.");
+        Assert(WaitForMarker(marker, "--updated"), "Updated program did not restart.");
+        WaitForRelease(target);
         Assert(PackInstaller.HashFile(target) == sum && !File.Exists(staged), "Replacement failed or stage remains.");
 
         // If staged bytes are changed while the old executable is locked, the
@@ -134,8 +155,8 @@ internal static class InstallerTests
             File.AppendAllText(staged, "tampered");
         }
         Assert(helper.WaitForExit(40000), "Failure helper did not finish.");
-        for (int i = 0; i < 100 && !File.Exists(marker); i++) System.Threading.Thread.Sleep(100);
-        Assert(File.Exists(marker) && File.ReadAllText(marker) == "--update-failed", "Old program was not restarted after failure.");
+        Assert(WaitForMarker(marker, "--update-failed"), "Old program was not restarted after failure.");
+        WaitForRelease(target);
         Assert(PackInstaller.HashFile(target) == oldHash && !File.Exists(staged), "Invalid update damaged old executable or stage remains.");
         Environment.SetEnvironmentVariable("HR_UPDATE_TEST_MARKER", null);
     }
