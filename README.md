@@ -34,7 +34,8 @@ Outputs:
 The ZIP's name is a target artifact name, **not** an indication that the full
 v1.0 pack is finished. The bundled PNGs are deliberately synthetic for testing,
 not Poly Haven materials. A LabPBR-compatible shader is required to use the PBR
-maps. In-game and Windows verification remain outstanding.
+maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
+on your Windows 11 machine remain outstanding.
 
 `--threads N` controls the Rayon pool (default: Rayon determines the thread
 count). The current prototype parallelizes scalar channel resampling, not the
@@ -96,5 +97,5 @@ uses the standard uncompressed/store method, not deflate.
 
 Tests include channel values, periodic filtering, output layout, metal ID 230,
 no-overwrite behavior and matching ZIP bytes across one and two Rayon threads.
-GitHub Actions is configured to run the suite on Linux and Windows; it is not a
-substitute for testing on the specified local hardware.
+GitHub Actions passed the suite and CPU smoke run on Linux and Windows runners;
+this is not a substitute for testing on the specified local hardware.
