@@ -42,6 +42,14 @@ internal static class InstallerTests
             string folder = Path.Combine(root, "resourcepacks");
             Directory.CreateDirectory(folder);
             var web = new WebTransfer();
+            InstallerRelease app = SelfUpdater.FindUpdate(web, "v0.1.0-installer.0");
+            Assert(app != null, "Live installer release lookup failed.");
+            string sumText = web.GetText(app.ChecksumUrl).Trim();
+            var sumMatch = System.Text.RegularExpressions.Regex.Match(sumText, @"\A([0-9a-fA-F]{64})\s+\*?HyperRealism128-Installer\.exe\z");
+            Assert(sumMatch.Success, "Live installer checksum format was invalid.");
+            string downloadedApp = Path.Combine(root, "downloaded-installer.exe");
+            web.Download(app.ExeUrl, downloadedApp);
+            Assert(String.Equals(PackInstaller.HashFile(downloadedApp), sumMatch.Groups[1].Value, StringComparison.OrdinalIgnoreCase), "Live installer asset hash mismatch.");
             string result = PackInstaller.Install(web, folder);
             Assert(result.Contains("Installed"), "Live install did not complete.");
             Assert(PackInstaller.Check(web, folder).Contains("Installed file matches"), "Live installed file did not match the published checksum.");
@@ -111,6 +119,24 @@ internal static class InstallerTests
         for (int i = 0; i < 100 && !File.Exists(marker); i++) System.Threading.Thread.Sleep(100);
         Assert(File.Exists(marker) && File.ReadAllText(marker) == "--updated", "Updated program did not restart.");
         Assert(PackInstaller.HashFile(target) == sum && !File.Exists(staged), "Replacement failed or stage remains.");
+
+        // If staged bytes are changed while the old executable is locked, the
+        // helper must reopen the old file rather than replace it with bad bytes.
+        File.Delete(marker);
+        File.Copy(testExe, target, true); File.AppendAllText(target, "old file marker");
+        oldHash = PackInstaller.HashFile(target);
+        staged = Path.Combine(dir, ".hyperrealism-update-mutated.tmp"); File.Copy(testExe, staged);
+        sum = PackInstaller.HashFile(staged);
+        using (var lockFile = new FileStream(target, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            helper = SelfUpdater.LaunchHelper(gui, staged, target, sum);
+            System.Threading.Thread.Sleep(1500);
+            File.AppendAllText(staged, "tampered");
+        }
+        Assert(helper.WaitForExit(40000), "Failure helper did not finish.");
+        for (int i = 0; i < 100 && !File.Exists(marker); i++) System.Threading.Thread.Sleep(100);
+        Assert(File.Exists(marker) && File.ReadAllText(marker) == "--update-failed", "Old program was not restarted after failure.");
+        Assert(PackInstaller.HashFile(target) == oldHash && !File.Exists(staged), "Invalid update damaged old executable or stage remains.");
         Environment.SetEnvironmentVariable("HR_UPDATE_TEST_MARKER", null);
     }
 

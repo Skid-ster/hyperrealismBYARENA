@@ -175,6 +175,10 @@ namespace HyperRealismInstaller
                 Exception last = null;
                 for (int attempt = 0; attempt < 60; attempt++)
                 {
+                    // Recheck after every wait: another process may have modified
+                    // the staged file while the old executable was locked.
+                    if (!String.Equals(PackInstaller.HashFile(stage), hash, StringComparison.OrdinalIgnoreCase))
+                        throw new InvalidDataException("Staged installer changed while waiting; the current installer was not replaced.");
                     try { File.Replace(stage, target, null); replaced = true; break; }
                     catch (IOException ex) { last = ex; }
                     catch (UnauthorizedAccessException ex) { last = ex; }
@@ -184,19 +188,21 @@ namespace HyperRealismInstaller
             }
             catch (Exception ex) { reason = ex.Message; }
             finally { try { if (safeStage && File.Exists(stage)) File.Delete(stage); } catch { } }
-            try
+            Exception launchError = null;
+            for (int attempt = 0; attempt < 20; attempt++)
             {
-                var start = new ProcessStartInfo(target, replaced ? "--updated" : "--update-failed");
-                start.UseShellExecute = true;
-                start.WorkingDirectory = Path.GetDirectoryName(target);
-                Process.Start(start);
+                try
+                {
+                    var start = new ProcessStartInfo(target, replaced ? "--updated" : "--update-failed");
+                    start.UseShellExecute = true;
+                    start.WorkingDirectory = Path.GetDirectoryName(target);
+                    if (Process.Start(start) == null) throw new IOException("Windows did not start the installer.");
+                    return replaced ? 0 : 1;
+                }
+                catch (Exception ex) { launchError = ex; Thread.Sleep(250); }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("The installer could not reopen automatically. " + (reason ?? "") + "\r\n" + ex.Message + "\r\nPlease open the installer again manually.", "HyperRealism Installer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return 1;
-            }
-            return replaced ? 0 : 1;
+            MessageBox.Show("The installer could not reopen automatically. " + (reason ?? "") + "\r\n" + (launchError == null ? "" : launchError.Message) + "\r\nPlease open the installer again manually.", "HyperRealism Installer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return 1;
         }
     }
 }
