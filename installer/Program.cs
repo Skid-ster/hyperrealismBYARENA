@@ -47,6 +47,7 @@ namespace HyperRealismInstaller
     {
         private bool hovered;
         private bool pressed;
+        public bool DropArrow { get; set; }
         protected override void OnMouseEnter(EventArgs e) { base.OnMouseEnter(e); hovered = true; Invalidate(); }
         protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); hovered = false; pressed = false; Invalidate(); }
         protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); if (e.Button == MouseButtons.Left) { pressed = true; Invalidate(); } }
@@ -64,11 +65,39 @@ namespace HyperRealismInstaller
                 else ControlPaint.DrawImageDisabled(e.Graphics, Image, x, y, surface);
                 x += Image.Width + 3;
             }
-            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x - 2), ClientSize.Height);
+            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x - (DropArrow ? 10 : 2)), ClientSize.Height);
             TextRenderer.DrawText(e.Graphics, Text, Font, bounds, Enabled ? ForeColor : Color.FromArgb(145, 145, 145),
                 TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+            if (DropArrow)
+            {
+                using (var brush = new SolidBrush(Color.FromArgb(155, 155, 155)))
+                    e.Graphics.FillPolygon(brush, new Point[] { new Point(Width - 8, Height - 8), new Point(Width - 4, Height - 8), new Point(Width - 6, Height - 6) });
+            }
             if (Focused && ShowFocusCues) ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(ClientRectangle, -2, -2), ForeColor, surface);
         }
+    }
+
+    internal sealed class ToolbarGrip : Control
+    {
+        public ToolbarGrip() { Width = 11; Height = 34; Margin = Padding.Empty; }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            e.Graphics.Clear(BackColor);
+            using (var brush = new SolidBrush(Color.FromArgb(110, 110, 110)))
+                for (int y = 8; y <= 24; y += 3) for (int x = 3; x <= 6; x += 3) e.Graphics.FillRectangle(brush, x, y, 1, 1);
+        }
+    }
+    internal sealed class DarkMenuColors : ProfessionalColorTable
+    {
+        public override Color ToolStripDropDownBackground { get { return Color.FromArgb(49, 49, 49); } }
+        public override Color MenuBorder { get { return Color.FromArgb(78, 78, 78); } }
+        public override Color MenuItemBorder { get { return Color.FromArgb(83, 83, 83); } }
+        public override Color MenuItemSelected { get { return Color.FromArgb(65, 65, 65); } }
+        public override Color MenuItemSelectedGradientBegin { get { return Color.FromArgb(65, 65, 65); } }
+        public override Color MenuItemSelectedGradientEnd { get { return Color.FromArgb(65, 65, 65); } }
+        public override Color ImageMarginGradientBegin { get { return Color.FromArgb(49, 49, 49); } }
+        public override Color ImageMarginGradientMiddle { get { return Color.FromArgb(49, 49, 49); } }
+        public override Color ImageMarginGradientEnd { get { return Color.FromArgb(49, 49, 49); } }
     }
 
     internal sealed class InstallerForm : Form
@@ -86,7 +115,9 @@ namespace HyperRealismInstaller
         private readonly LauncherButton toolBrowse = new LauncherButton();
         private readonly LauncherButton toolOpen = new LauncherButton();
         private readonly LauncherButton toolCheck = new LauncherButton();
-        private readonly LauncherButton toolApp = new LauncherButton();
+        private readonly LauncherButton toolSettings = new LauncherButton();
+        private readonly LauncherButton toolHelp = new LauncherButton();
+        private readonly ToolTip tooltips = new ToolTip();
         private readonly LauncherButton sideBrowse = new LauncherButton();
         private static readonly Color Background = Color.FromArgb(34, 34, 34);
         private static readonly Color Surface = Color.FromArgb(50, 50, 50);
@@ -96,6 +127,8 @@ namespace HyperRealismInstaller
         private readonly Timer updateTimer = new Timer();
         private bool busy;
         private bool checkingApp;
+        private bool automaticUpdates = true;
+        private static readonly string AutoCheckPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "auto-update-checks.txt");
         private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "resourcepacks-path.txt");
 
         internal InstallerForm() : this("") { }
@@ -128,14 +161,18 @@ namespace HyperRealismInstaller
             Controls.Add(root);
 
             var toolbar = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
-            var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(7, 2, 0, 0), BackColor = Surface };
-            StyleButton(toolBrowse, "Choose folder", "folder-add", 120, 34, true);
-            StyleButton(toolOpen, "Open folder", "folder", 110, 34, true);
-            StyleButton(toolCheck, "Pack update", "update", 112, 34, true);
-            StyleButton(toolApp, "Installer update", "update", 136, 34, true);
-            var help = new LauncherButton(); StyleButton(help, "Help", "help", 72, 34, true);
-            tools.Controls.Add(new Label { Text = "⋮", ForeColor = Color.FromArgb(120, 120, 120), Width = 9, Height = 32, TextAlign = ContentAlignment.MiddleCenter, Margin = Padding.Empty });
-            tools.Controls.Add(toolBrowse); tools.Controls.Add(toolOpen); tools.Controls.Add(help); tools.Controls.Add(toolCheck); tools.Controls.Add(toolApp);
+            var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(0, 2, 0, 0), BackColor = Surface };
+            // Match the reference's five compact buttons; each performs an
+            // installer action rather than pretending to manage launcher data.
+            StyleButton(toolBrowse, "Add Instance", "folder-add", 112, 34, true);
+            StyleButton(toolOpen, "Folders", "folder", 82, 34, true); toolOpen.DropArrow = true;
+            StyleButton(toolSettings, "Settings", "settings", 85, 34, true);
+            StyleButton(toolHelp, "Help", "help", 67, 34, true); toolHelp.DropArrow = true;
+            StyleButton(toolCheck, "Update", "update", 70, 34, true);
+            tools.Controls.Add(new ToolbarGrip { BackColor = Surface });
+            tools.Controls.Add(toolBrowse); tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp); tools.Controls.Add(toolCheck);
+            tooltips.SetToolTip(toolBrowse, "Choose an existing instance's resourcepacks folder; this does not create a Minecraft instance.");
+            tooltips.SetToolTip(toolCheck, "Check for installer and resource-pack updates.");
             var brand = new Panel { Dock = DockStyle.Right, Width = 150, BackColor = Surface };
             var brandIcon = new PictureBox { Image = BlockIcon(22), Size = new Size(22, 22), Location = new Point(5, 7), SizeMode = PictureBoxSizeMode.Normal };
             var brandLabel = new Label { Text = "HyperRealism128", ForeColor = Foreground, Location = new Point(31, 2), Size = new Size(115, 32), TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true };
@@ -229,11 +266,29 @@ namespace HyperRealismInstaller
             root.Controls.Add(bottom, 0, 3);
 
             toolBrowse.Click += delegate { browse.PerformClick(); };
-            toolOpen.Click += delegate { openFolder.PerformClick(); };
-            toolCheck.Click += delegate { check.PerformClick(); };
-            toolApp.Click += delegate { appUpdate.PerformClick(); };
             sideBrowse.Click += delegate { browse.PerformClick(); };
-            help.Click += delegate { try { System.Diagnostics.Process.Start("https://github.com/Skid-ster/hyperrealismBYARENA#readme"); } catch (Exception ex) { ShowError(ex); } };
+            var folders = CreateMenu();
+            var chooseFolder = folders.Items.Add("Choose resourcepacks folder...");
+            var openSelected = folders.Items.Add("Open selected folder");
+            var openInstances = folders.Items.Add("Open ElyPrism instances folder");
+            chooseFolder.Click += delegate { browse.PerformClick(); };
+            openSelected.Click += delegate { openFolder.PerformClick(); };
+            openInstances.Click += delegate {
+                string dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElyPrismLauncher", "instances");
+                try { if (!Directory.Exists(dir)) throw new DirectoryNotFoundException("The ElyPrism instances folder was not found."); System.Diagnostics.Process.Start("explorer.exe", "\"" + dir + "\""); }
+                catch (Exception ex) { ShowError(ex); }
+            };
+            toolOpen.Click += delegate { openSelected.Enabled = openFolder.Enabled; folders.Show(toolOpen, 0, toolOpen.Height); };
+            toolSettings.Click += delegate { ShowSettings(); };
+            var helpMenu = CreateMenu();
+            var guide = helpMenu.Items.Add("Installer guide");
+            var shaderGuide = helpMenu.Items.Add("Shader setup guide");
+            var about = helpMenu.Items.Add("About HyperRealism128");
+            guide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA#readme"); };
+            shaderGuide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/e000bf82-hyperrealismbyarena/docs/SHADER_SETUP.md"); };
+            about.Click += delegate { MessageBox.Show(this, "HyperRealism128 Installer " + SelfUpdater.CurrentTag + "\r\n\r\nIndependent resource-pack installer, not PineconeMC.\r\nThe preview pack is experimental and requires a compatible shader for PBR.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information); };
+            toolHelp.Click += delegate { helpMenu.Show(toolHelp, 0, toolHelp.Height); };
+            toolCheck.Click += async delegate { await CheckAllUpdates(); };
             pathBox.TextChanged += delegate { UpdateFolderStatus(); if (!busy) { result.Text = "Ready. Check for updates or install the latest preview."; result.ForeColor = Foreground; } };
             browse.Click += delegate {
                 using (var picker = new FolderBrowserDialog())
@@ -258,11 +313,12 @@ namespace HyperRealismInstaller
             UpdateFolderStatus();
             if (startup == "--updated") result.Text = "Installer updated and reopened successfully.";
             if (startup == "--update-failed") { result.Text = "Installer update failed; the previous installer was reopened. Close other copies and check folder permissions."; result.ForeColor = Color.FromArgb(255, 142, 142); }
-            if (startup != "--capture-ui") Shown += async delegate { await CheckInstallerUpdate(true); };
+            automaticUpdates = LoadAutoChecks();
+            if (startup != "--capture-ui" && automaticUpdates) Shown += async delegate { await CheckInstallerUpdate(true); };
             updateTimer.Interval = 60 * 60 * 1000;
-            updateTimer.Tick += async delegate { await CheckInstallerUpdate(true); };
-            updateTimer.Start();
-            FormClosed += delegate { updateTimer.Stop(); updateTimer.Dispose(); };
+            updateTimer.Tick += async delegate { if (automaticUpdates) await CheckInstallerUpdate(true); };
+            updateTimer.Enabled = automaticUpdates;
+            FormClosed += delegate { updateTimer.Stop(); updateTimer.Dispose(); tooltips.Dispose(); folders.Dispose(); helpMenu.Dispose(); };
         }
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -317,56 +373,176 @@ namespace HyperRealismInstaller
             }
             return image;
         }
+        private static void FillRound(Graphics g, Brush brush, float x, float y, float width, float height, float radius)
+        {
+            using (var path = new GraphicsPath())
+            {
+                float d = radius * 2;
+                path.AddArc(x, y, d, d, 180, 90); path.AddArc(x + width - d, y, d, d, 270, 90);
+                path.AddArc(x + width - d, y + height - d, d, d, 0, 90); path.AddArc(x, y + height - d, d, d, 90, 90); path.CloseFigure();
+                g.FillPath(brush, path);
+            }
+        }
         private static Bitmap Glyph(string name, int size)
         {
             var image = new Bitmap(size, size);
             using (var g = Graphics.FromImage(image))
             {
                 g.Clear(Color.Transparent); g.ScaleTransform(size / 24f, size / 24f); g.SmoothingMode = SmoothingMode.AntiAlias;
-                using (var white = new SolidBrush(Color.FromArgb(245, 245, 237)))
-                using (var green = new SolidBrush(Color.FromArgb(106, 187, 87)))
-                using (var darkGreen = new SolidBrush(Color.FromArgb(53, 125, 59)))
-                using (var dark = new SolidBrush(Color.FromArgb(54, 57, 55)))
-                using (var blue = new SolidBrush(Color.FromArgb(85, 158, 205)))
-                using (var blueDark = new SolidBrush(Color.FromArgb(54, 110, 159)))
-                using (var tan = new SolidBrush(Color.FromArgb(213, 175, 119)))
+                using (var white = new SolidBrush(Color.FromArgb(242, 242, 242)))
+                using (var green = new SolidBrush(Color.FromArgb(57, 181, 74)))
+                using (var darkGreen = new SolidBrush(Color.FromArgb(0, 146, 69)))
+                using (var dark = new SolidBrush(Color.FromArgb(36, 36, 36)))
+                using (var grey = new SolidBrush(Color.FromArgb(112, 112, 112)))
+                using (var blue = new SolidBrush(Color.FromArgb(102, 153, 204)))
+                using (var tan = new SolidBrush(Color.FromArgb(140, 98, 57)))
                 {
-                    if (name == "folder" || name == "folder-add")
+                    if (name == "folder" || name == "folder-add" || name == "settings")
                     {
-                        g.FillRectangle(tan, 2, 3, 9, 4); g.FillRectangle(darkGreen, 1, 6, 22, 16);
-                        g.FillRectangle(green, 2, 5, 20, 16); g.FillRectangle(white, 4, 8, 16, 11);
-                        if (name == "folder-add") { g.FillRectangle(green, 8, 9, 8, 8); g.FillRectangle(white, 11, 10, 2, 6); g.FillRectangle(white, 9, 12, 6, 2); }
+                        // A compact green header, warm backing and light inset,
+                        // drawn at the display size instead of scaled afterwards.
+                        FillRound(g, tan, 1, 2, 22, 21, 3);
+                        FillRound(g, green, 1, 1, 22, 8, 3);
+                        if (name == "folder")
+                        {
+                            FillRound(g, tan, 3, 4, 10, 5, 2);
+                            FillRound(g, white, 3, 6, 19, 15, 2);
+                        }
+                        else
+                        {
+                            FillRound(g, white, 4, 6, 16, 14, 1.5f);
+                            if (name == "folder-add")
+                            {
+                                using (var plus = new Pen(darkGreen, 3) { StartCap = LineCap.Round, EndCap = LineCap.Round })
+                                { g.DrawLine(plus, 12, 10, 12, 17); g.DrawLine(plus, 8.5f, 13.5f, 15.5f, 13.5f); }
+                            }
+                            else
+                            {
+                                g.FillRectangle(dark, 6, 8, 5, 5); g.FillRectangle(dark, 6, 15, 5, 4);
+                                g.FillRectangle(white, 7.5f, 9.5f, 2, 2); g.FillRectangle(white, 7.5f, 16, 2, 2);
+                                g.FillRectangle(grey, 13, 9, 5, 2); g.FillRectangle(grey, 13, 16, 5, 2);
+                            }
+                        }
                     }
                     else if (name == "update")
                     {
-                        g.FillEllipse(blueDark, 2, 7, 17, 12); g.FillEllipse(blue, 4, 7, 16, 10); g.FillEllipse(blue, 8, 2, 11, 12);
-                        g.FillRectangle(darkGreen, 10, 10, 5, 9); g.FillPolygon(darkGreen, new Point[] { new Point(6, 16), new Point(19, 16), new Point(12, 23) });
-                        g.FillRectangle(green, 11, 11, 3, 8); g.FillPolygon(green, new Point[] { new Point(8, 17), new Point(17, 17), new Point(12, 22) });
+                        g.FillEllipse(blue, 0, 6, 15, 13); g.FillEllipse(blue, 6, 1, 13, 16); g.FillEllipse(blue, 14, 7, 10, 12);
+                        FillRound(g, dark, 9, 10, 6, 10, 3); FillRound(g, green, 10, 12, 4, 7, 2);
+                        g.FillPolygon(green, new Point[] { new Point(7, 18), new Point(17, 18), new Point(12, 23) });
                     }
                     else if (name == "install")
                     {
-                        g.FillRectangle(darkGreen, 2, 3, 19, 18); g.FillRectangle(white, 4, 5, 16, 14);
-                        g.FillPolygon(green, new Point[] { new Point(8, 6), new Point(18, 12), new Point(8, 18) });
+                        FillRound(g, green, 1, 2, 22, 20, 3); FillRound(g, white, 4, 5, 16, 14, 1.5f);
+                        g.FillPolygon(darkGreen, new Point[] { new Point(9, 7), new Point(17, 12), new Point(9, 17) });
                     }
                     else if (name == "help")
                     {
-                        g.FillEllipse(tan, 1, 1, 22, 22); g.FillEllipse(white, 4, 4, 16, 16);
-                        using (var f = new Font("Segoe UI", 14, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("?", f, dark, 7, 3);
+                        g.FillEllipse(green, 1, 1, 22, 22); g.FillEllipse(tan, 2, 2, 20, 20); g.FillEllipse(white, 5, 5, 14, 14);
+                        using (var f = new Font("Segoe UI", 14, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("?", f, grey, 7, 3);
                     }
                     else if (name == "news")
                     {
-                        g.FillRectangle(darkGreen, 1, 2, 22, 16); g.FillRectangle(green, 2, 3, 20, 14);
-                        g.FillPolygon(green, new Point[] { new Point(5, 17), new Point(5, 21), new Point(10, 17) });
+                        FillRound(g, green, 1, 2, 22, 16, 2); g.FillPolygon(green, new Point[] { new Point(5, 17), new Point(5, 21), new Point(10, 17) });
                         using (var line = new Pen(dark, 1.5f)) { g.DrawLine(line, 6, 7, 18, 7); g.DrawLine(line, 6, 10, 18, 10); g.DrawLine(line, 6, 13, 15, 13); }
                     }
                     else
                     {
-                        g.FillRectangle(darkGreen, 3, 3, 18, 18); g.FillRectangle(green, 4, 4, 16, 16);
-                        g.FillRectangle(dark, 6, 6, 12, 12); using (var f = new Font("Segoe UI", 12, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("×", f, white, 5, 4);
+                        FillRound(g, green, 3, 3, 18, 18, 2); g.FillRectangle(dark, 6, 6, 12, 12);
+                        using (var f = new Font("Segoe UI", 12, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("×", f, white, 5, 4);
                     }
                 }
             }
             return image;
+        }
+
+        private static ContextMenuStrip CreateMenu()
+        {
+            var menu = new ContextMenuStrip { ShowImageMargin = false, BackColor = Sidebar, ForeColor = Foreground };
+            menu.Renderer = new ToolStripProfessionalRenderer(new DarkMenuColors());
+            return menu;
+        }
+
+        private void OpenWeb(string url)
+        {
+            try { System.Diagnostics.Process.Start(url); }
+            catch (Exception ex) { ShowError(ex); }
+        }
+
+        private static bool LoadAutoChecks()
+        {
+            try { if (File.Exists(AutoCheckPath)) return !String.Equals(File.ReadAllText(AutoCheckPath).Trim(), "off", StringComparison.OrdinalIgnoreCase); }
+            catch { }
+            return true;
+        }
+
+        private void ShowSettings()
+        {
+            using (var dialog = new Form())
+            {
+                dialog.Text = "Installer Settings"; dialog.StartPosition = FormStartPosition.CenterParent;
+                dialog.FormBorderStyle = FormBorderStyle.FixedDialog; dialog.MaximizeBox = false; dialog.MinimizeBox = false;
+                dialog.ClientSize = new Size(430, 175); dialog.BackColor = Background; dialog.ForeColor = Foreground; dialog.Font = Font;
+                var title = new Label { Text = "Update checks", Font = new Font(Font, FontStyle.Bold), AutoSize = true, Location = new Point(18, 16) };
+                var toggle = new CheckBox { Text = "Check for updates at startup and hourly while open", AutoSize = true, Checked = automaticUpdates, Location = new Point(20, 48), ForeColor = Foreground };
+                var detail = new Label { Text = "Updates are never installed without your confirmation.", ForeColor = Color.FromArgb(170, 170, 170), AutoSize = true, Location = new Point(20, 78) };
+                var save = new LauncherButton(); StyleButton(save, "Save", "install", 88, 30, false); save.Location = new Point(237, 125);
+                var cancel = new LauncherButton(); StyleButton(cancel, "Cancel", "close", 88, 30, false); cancel.Location = new Point(330, 125);
+                cancel.Click += delegate { dialog.Close(); };
+                save.Click += delegate {
+                    try {
+                        Directory.CreateDirectory(Path.GetDirectoryName(AutoCheckPath));
+                        File.WriteAllText(AutoCheckPath, toggle.Checked ? "on" : "off");
+                        automaticUpdates = toggle.Checked; updateTimer.Enabled = automaticUpdates;
+                        dialog.Close();
+                    } catch (Exception ex) { MessageBox.Show(dialog, "Could not save settings: " + ex.Message, "Settings", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+                };
+                dialog.Controls.Add(title); dialog.Controls.Add(toggle); dialog.Controls.Add(detail); dialog.Controls.Add(save); dialog.Controls.Add(cancel);
+                dialog.AcceptButton = save; dialog.CancelButton = cancel; dialog.ShowDialog(this);
+            }
+        }
+
+        private sealed class UpdateSummary
+        {
+            public InstallerRelease Installer;
+            public string Pack;
+        }
+
+        // One toolbar action checks both products. It never installs either one
+        // without the same confirmation used by the automatic update prompts.
+        private async Task CheckAllUpdates()
+        {
+            if (busy || checkingApp) return;
+            string folder = null;
+            try { folder = PackInstaller.ValidateFolder(pathBox.Text); } catch { }
+            UpdateSummary summary = null;
+            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
+            UpdateFolderStatus(); progress.Visible = true; result.ForeColor = Foreground; result.Text = "Checking GitHub for installer and pack updates...";
+            try
+            {
+                summary = await Task.Run(() => {
+                    var web = new WebTransfer();
+                    return new UpdateSummary { Installer = SelfUpdater.FindUpdate(web, SelfUpdater.CurrentTag), Pack = folder == null ? "Choose an existing resourcepacks folder to check the pack." : PackInstaller.Check(web, folder) };
+                });
+            }
+            catch (Exception ex) { ShowError(ex); return; }
+            finally
+            {
+                busy = false;
+                if (!IsDisposed) { pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = true; progress.Visible = false; UpdateFolderStatus(); }
+            }
+            if (IsDisposed || summary == null) return;
+            result.Text = summary.Pack; result.ForeColor = Foreground;
+            if (summary.Installer != null)
+            {
+                var choice = MessageBox.Show(this, "Installer " + summary.Installer.Tag + " is available. Download it and restart now?", "Installer update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (choice == DialogResult.Yes) { await ApplyInstallerUpdate(summary.Installer); return; }
+            }
+            if (summary.Pack.Contains("Installed file differs"))
+            {
+                var choice = MessageBox.Show(this, summary.Pack + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (choice == DialogResult.Yes) await RunOperation(true);
+            }
+            else MessageBox.Show(this, (summary.Installer == null ? "Installer: up to date." : "Installer update skipped.") + "\r\n" + summary.Pack, "Update check", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private static string LoadPath(string fallback)
@@ -389,12 +565,12 @@ namespace HyperRealismInstaller
 
         private async Task CheckInstallerUpdate(bool automatic)
         {
-            if (checkingApp || busy) return;
-            checkingApp = true; appUpdate.Enabled = toolApp.Enabled = false;
+            if (checkingApp || busy || (automatic && !automaticUpdates)) return;
+            checkingApp = true; appUpdate.Enabled = false; toolCheck.Enabled = false;
             try
             {
                 InstallerRelease update = await Task.Run(() => SelfUpdater.FindUpdate(new WebTransfer(), SelfUpdater.CurrentTag));
-                if (IsDisposed || busy) return;
+                if (IsDisposed || busy || (automatic && !automaticUpdates)) return;
                 appUpdate.Text = "Installer update";
                 if (update != null)
                 {
@@ -408,8 +584,8 @@ namespace HyperRealismInstaller
                 if (!IsDisposed && !automatic) ShowError(ex);
                 else if (!IsDisposed) appUpdate.Text = "Retry app update";
             }
-            finally { checkingApp = false; if (!IsDisposed) { appUpdate.Enabled = !busy; toolApp.Enabled = !busy; } }
-            if (automatic && !IsDisposed && !busy) await CheckPackOnStartup();
+            finally { checkingApp = false; if (!IsDisposed) { appUpdate.Enabled = !busy; toolCheck.Enabled = !busy; } }
+            if (automatic && automaticUpdates && !IsDisposed && !busy) await CheckPackOnStartup();
         }
 
         private async Task CheckPackOnStartup()
@@ -476,11 +652,11 @@ namespace HyperRealismInstaller
             check.Enabled = valid && !busy;
             install.Enabled = valid && !busy;
             openFolder.Enabled = valid && !busy;
-            toolOpen.Enabled = valid && !busy;
-            toolCheck.Enabled = valid && !busy;
+            toolOpen.Enabled = !busy;
+            toolCheck.Enabled = !busy && !checkingApp;
             toolBrowse.Enabled = !busy;
+            toolSettings.Enabled = !busy;
             sideBrowse.Enabled = !busy;
-            toolApp.Enabled = !busy && !checkingApp;
         }
 
         private async Task RunOperation(bool doInstall)
@@ -523,7 +699,7 @@ namespace HyperRealismInstaller
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Choose folder" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
         }
     }
 }

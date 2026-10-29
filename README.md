@@ -22,13 +22,16 @@ See [shader setup and testing](docs/SHADER_SETUP.md) and [the research and stage
 The launcher's dark interface inspires this installer; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.5/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.6/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
 `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
 browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually
 uses that folder. Use **Check updates** to compare the installed file's
 hash with the latest preview, or **Install / Update** to download and install
-it. Only the named preview ZIP is replaced. At startup and hourly while the
+it. The toolbar mirrors the reference: **Add Instance** selects an existing
+instance's resourcepacks folder (it does not create an instance), **Folders**
+provides folder actions, **Settings** controls automatic update checks,
+**Help** opens project guidance, and **Update** checks both the pack and installer. Only the named preview ZIP is replaced. By default, at startup and hourly while the
 installer is open, it checks for newer installer releases and, if a pack is
 already installed in the chosen folder, for a different latest pack. It asks
 before updating. An installer update is downloaded and checksum-verified,
