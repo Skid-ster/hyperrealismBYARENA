@@ -2,22 +2,26 @@
 
 This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 128×128 Minecraft Java 26.3 block textures and
-LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 103
-experimental outputs based on eleven CC0 Poly Haven material sources; it is **not** the
+LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 106
+experimental outputs based on twelve CC0 Poly Haven material sources; it is **not** the
 requested 280-texture catalog or a finished photorealistic pack. A separate
 synthetic manifest contains eight test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
 implementation, not a port or a claim of matching its results.
 
-See [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
+**Design target:** Windows 11, RTX 5060 Ti 8 GB, i5-13400 and 16 GB RAM.
+This is a target, not a claim of measured performance or GPU acceleration.
+The generator is currently CPU-only; shader rendering uses your GPU.
+
+See [shader setup and testing](docs/SHADER_SETUP.md) and [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
 
 ## Download and install the experimental preview
 
 No Rust installation is needed to use the prebuilt pack. Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.3/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.4/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
-103 textures replace only a subset of the game; the rest remain vanilla or come
+106 textures replace only a subset of the game; the rest remain vanilla or come
 from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
 this cobblestone revision has not yet been validated there. It replaces only
@@ -30,7 +34,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.3/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.4/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -70,7 +74,7 @@ Outputs:
   SHA-256 hashes of the manifest and input maps (outside the pack).
 
 The ZIP's name is a target artifact name, **not** an indication that the full
-v1.0 pack is finished. The `work` starter manifest uses eleven CC0 Poly Haven
+v1.0 pack is finished. The `work` starter manifest uses twelve CC0 Poly Haven
 material sources; `test_assets` contains synthetic test inputs. See
 `work/ASSET_CREDITS.md`. A LabPBR-compatible shader is required for PBR maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
 on your Windows 11 machine remain outstanding.
@@ -148,8 +152,8 @@ map paths use the same validation and SHA-256 reporting as material maps.
 
 LabPBR `_n` channels are DirectX tangent-space X/Y, ambient occlusion and
 height; `_s` channels are `1 - sqrt(roughness)`, F0/metal ID, porosity/SSS,
-and emission. A generated height byte can be zero; the LabPBR specification
-recommends a minimum of 1 to avoid issues with some parallax implementations.
+and emission. Height output is clamped to a minimum byte value of 1 to avoid
+issues with some parallax implementations.
 See the [LabPBR 1.3 material standard](https://shaderlabs.org/wiki/LabPBR_Material_Standard).
 Shader packs vary in support for AO, height, SSS, porosity and emission; map
 encoding alone does not guarantee that any particular shader renders them.
@@ -164,6 +168,19 @@ supported, but large inputs may use substantial RAM. Only the most recently
 used prepared material is cached. Albedo and normal PNGs currently use 8-bit
 precision; color profiles and EXR/TIFF are not supported. The ZIP currently
 uses the standard uncompressed/store method, not deflate.
+
+Each generated pack is checked before packaging for 128×128 RGBA texture
+triples, version metadata, plausible normal XY, nonzero POM height, reserved
+material IDs, and metal blue-channel rules. You can rerun these structural
+checks on an unpacked generated pack:
+
+```powershell
+cargo run --locked --release -- --verify-pack pilot_output/pack
+```
+
+This is **not** an in-game, appearance, license, or shader compatibility test.
+Normals, height and roughness are approximated where the input lacks those maps;
+the verifier cannot determine whether those approximations look realistic.
 
 Optionally add a top-level `"checksums"` object mapping input-relative paths to
 expected SHA-256 hex strings. Mismatches and unknown paths fail before output
@@ -185,8 +202,8 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand the 103-output starter to the requested catalog; acquire appropriate
-  materials for each family and review palette/geometry in game. This 103-output
+- Expand the 106-output starter to the requested catalog; acquire appropriate
+  materials for each family and review palette/geometry in game. This 106-output
   set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.

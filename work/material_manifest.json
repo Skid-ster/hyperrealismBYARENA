@@ -102,6 +102,15 @@
       "license": "CC0-1.0",
       "albedo": "materials/cobble_photo/mossy_color.png",
       "height": "materials/cobble_photo/height.png"
+    },
+    {
+      "id": "rock_face",
+      "source": "Rock Face 03: https://polyhaven.com/a/rock_face_03; creator(s): Dario Barresi, Rico Cilliers",
+      "license": "CC0-1.0",
+      "albedo": "materials/rock_face/color.jpg",
+      "normal": "materials/rock_face/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/rock_face/arm.jpg"
     }
   ],
   "textures": [
@@ -1921,6 +1930,63 @@
         99,
         29
       ]
+    },
+    {
+      "name": "netherrack",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        98,
+        38,
+        38
+      ]
+    },
+    {
+      "name": "nether_gold_ore",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        115,
+        55,
+        42
+      ],
+      "ore_color": [
+        206,
+        163,
+        57
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "nether_quartz_ore",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        118,
+        66,
+        62
+      ],
+      "ore_color": [
+        218,
+        210,
+        204
+      ],
+      "ore_f0": 10
     }
   ],
   "checksums": {
@@ -1955,6 +2021,9 @@
     "materials/aerial_sand/roughness.jpg": "318b440c109de7411f9e7443f38ae3cf873f34e90afd762c931bae3b23426da2",
     "materials/cobble_photo/gray_color.png": "901dfa4d390c635dd139251ac525afda3ed04c5d9d9c2510f12b8085931282d7",
     "materials/cobble_photo/mossy_color.png": "d592624f20d54aad26fe0279ff4e5aa906c2a30075193eeecf182a36966ea9ea",
-    "materials/cobble_photo/height.png": "feb8101a7c7856b953deb296a3e913a63f837258a91fec1b38e444ef26f31f0d"
+    "materials/cobble_photo/height.png": "feb8101a7c7856b953deb296a3e913a63f837258a91fec1b38e444ef26f31f0d",
+    "materials/rock_face/color.jpg": "9d6ab7ce9ba3799f206028fe60678f906d96a8dbb969c738b0061444f265e1d8",
+    "materials/rock_face/normal.jpg": "0e8a49fed84c50e4f8a7f012db06058c73afd6489abb356a9f91c581a8447d6c",
+    "materials/rock_face/arm.jpg": "44a5b8722d400e4693934a998344ea06f6f8075a74dc02ebd39f31fda4bae7ab"
   }
 }

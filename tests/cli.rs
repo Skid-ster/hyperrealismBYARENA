@@ -306,12 +306,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 32);
+    assert_eq!(hashes.len(), 35);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 103);
+    assert_eq!(m.textures.len(), 106);
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [
@@ -544,5 +544,65 @@ fn packed_arm_uses_occlusion_and_roughness_not_metallic() {
     let (_, _, green) = hyperrealism_core::png_io::read_linear_channel(&input16, 1).unwrap();
     assert!((red[0] - 0x1234 as f32 / 65535.0).abs() < 1e-7);
     assert!((green[0] - 0xABCD as f32 / 65535.0).abs() < 1e-7);
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn pack_verifier_detects_broken_or_invalid_pbr_maps() {
+    use hyperrealism_core::png_io::{read, write};
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-verify-{}-{unique}",
+        std::process::id()
+    ));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    fs::copy("test_assets/sample.jpg", input.join("albedo.jpg")).unwrap();
+    fs::write(input.join("material_manifest.json"),r#"{"version":1,"materials":[{"id":"base","albedo":"albedo.jpg"}],"textures":[{"name":"stone","material":"base","recipe":"material","tint":[255,255,255]}]}"#).unwrap();
+    let out = temp.join("out");
+    let run_result = run(&input, &out, "2");
+    assert!(
+        run_result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&run_result.stderr)
+    );
+    let pack = out.join("pack");
+    assert_eq!(hyperrealism_core::verify::pack(&pack).unwrap(), 1);
+    let check = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--verify-pack")
+        .arg(&pack)
+        .output()
+        .unwrap();
+    assert!(check.status.success());
+    let block = pack.join("assets/minecraft/textures/block");
+    let spec = block.join("stone_s.png");
+    let original = read(&spec).unwrap();
+    let mut bad = original.pixels.clone();
+    bad[1] = 240;
+    write(&spec, 128, 128, &bad).unwrap();
+    assert!(hyperrealism_core::verify::pack(&pack)
+        .unwrap_err()
+        .contains("reserved LabPBR"));
+    bad[1] = 230;
+    bad[2] = 12;
+    write(&spec, 128, 128, &bad).unwrap();
+    assert!(hyperrealism_core::verify::pack(&pack)
+        .unwrap_err()
+        .contains("metal"));
+    write(&spec, 128, 128, &original.pixels).unwrap();
+    let normal = block.join("stone_n.png");
+    let data = read(&normal).unwrap();
+    let mut bad = data.pixels.clone();
+    bad[3] = 0;
+    write(&normal, 128, 128, &bad).unwrap();
+    assert!(hyperrealism_core::verify::pack(&pack)
+        .unwrap_err()
+        .contains("zero height"));
+    write(&normal, 128, 128, &data.pixels).unwrap();
+    fs::remove_file(&spec).unwrap();
+    assert!(hyperrealism_core::verify::pack(&pack).is_err());
     fs::remove_dir_all(temp).unwrap();
 }

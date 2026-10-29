@@ -16,6 +16,7 @@ Haven API. Hashes for every bundled image are pinned in
 | `rusted_shutter` | [Rusted Shutter](https://polyhaven.com/a/rusted_shutter) | Dimitrios Savva | albedo, OpenGL normal, roughness |
 | `cotton_jersey` | [Cotton Jersey](https://polyhaven.com/a/cotton_jersey) | Rico Cilliers, colormass | albedo, OpenGL normal, roughness; used as a wool stand-in |
 | `walnut` | [Walnut Veneer](https://polyhaven.com/a/walnut_veneer) | Poly Haven | albedo, roughness; no normal map |
+| `rock_face` | [Rock Face 03](https://polyhaven.com/a/rock_face_03) | Dario Barresi, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic; netherrack stand-in |
 | `forest_ground` | [Forest Ground 04](https://polyhaven.com/a/forest_ground_04) | Rob Tuytel, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `sandstone_cracks` | [Sandstone Cracks](https://polyhaven.com/a/sandstone_cracks) | Rob Tuytel | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `cobble_photo`, `mossy_cobble_photo` | [Cobblestone Floor 04](https://polyhaven.com/a/cobblestone_floor_04) | Rob Tuytel | modified albedo, displacement; plain version desaturated |
@@ -30,7 +31,7 @@ at commit `2cee5cfb6cd7f3e73cfb47259f0106f5fcece65b`, where the diffuse is
 those redistributed versions; the generator resizes and transforms them at
 build time. They are not the original full-resolution Poly Haven files.
 
-`forest_ground` and `sandstone_cracks` were sourced from a [documented
+`forest_ground`, `sandstone_cracks` and `rock_face` were sourced from a [documented
 CC0 redistribution](https://github.com/gotzawal/morglay/blob/b462748f1e2c2cf2288de615089c79d69ce47b08/editor/library/LICENSES.md)
 at commit `b462748f1e2c2cf2288de615089c79d69ce47b08`. The mirror resized and
 JPEG-encoded the maps, using an OpenGL normal and packed ARM (AO, roughness,
@@ -50,7 +51,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 103 texture names and approximate sRGB color targets were checked against
+The 106 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These

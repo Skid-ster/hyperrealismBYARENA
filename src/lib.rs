@@ -10,4 +10,5 @@ pub mod pipeline;
 pub mod png_io;
 pub mod recipes;
 pub mod resample;
+pub mod verify;
 pub mod zip;

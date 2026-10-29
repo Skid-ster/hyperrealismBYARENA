@@ -835,6 +835,45 @@
         105
       ]
     },
+    "nether_gold_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0fce6ff30303cc8a5c5a4914befc7a70e522d2bd",
+      "has_mcmeta": false,
+      "target_rgb": [
+        115,
+        55,
+        42
+      ]
+    },
+    "nether_quartz_ore": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e1cd460025249ff4d9c8c62a2c2cb9f126964dea",
+      "has_mcmeta": false,
+      "target_rgb": [
+        118,
+        66,
+        62
+      ]
+    },
+    "netherrack": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "27a3143cafb3748384f6208916b75b3c68eac674",
+      "has_mcmeta": false,
+      "target_rgb": [
+        98,
+        38,
+        38
+      ]
+    },
     "oak_planks": {
       "dimensions": [
         16,

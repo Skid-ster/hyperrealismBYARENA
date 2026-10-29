@@ -71,6 +71,22 @@ fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String>
             let source_alpha = img.albedo[3][i];
             let alpha = source_alpha * opacity;
             channels[3][i] = alpha;
+            // Normalized photographic luminance gives ore inclusions some of
+            // the underlying scan's fine structure rather than a flat fill.
+            let luminance = if source_alpha > 1e-6 {
+                (0.2126 * img.albedo[0][i] + 0.7152 * img.albedo[1][i] + 0.0722 * img.albedo[2][i])
+                    / source_alpha
+            } else {
+                0.5
+            };
+            let mean_luminance = 0.2126 * img.mean_linear[0]
+                + 0.7152 * img.mean_linear[1]
+                + 0.0722 * img.mean_linear[2];
+            let mineral_detail = if mean_luminance > 1e-6 {
+                (luminance / mean_luminance).clamp(0.55, 1.45)
+            } else {
+                1.0
+            };
             for c in 0..3 {
                 let base = img.albedo[c][i] * gain[c] * shade * opacity;
                 // Moss is a separate, seed-stable coherent layer, not a
@@ -78,7 +94,7 @@ fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String>
                 let moss = [0.045, 0.12, 0.025][c] * alpha;
                 let surface = base * (1.0 - pattern.moss) + moss * pattern.moss;
                 channels[c][i] = if let Some(color) = ore_color {
-                    let grain = (0.90 + pattern.shade * 0.10) * color[c] * alpha;
+                    let grain = pattern.shade * mineral_detail * color[c] * alpha;
                     surface * (1.0 - pattern.ore) + grain * pattern.ore
                 } else {
                     surface
@@ -87,12 +103,6 @@ fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String>
             // With no height map, a mild luminance heuristic preserves the old
             // prototype's behavior. A normal map already supplies fine detail,
             // so its generated normal receives only recipe-level relief.
-            let luminance = if source_alpha > 1e-6 {
-                (0.2126 * img.albedo[0][i] + 0.7152 * img.albedo[1][i] + 0.0722 * img.albedo[2][i])
-                    / source_alpha
-            } else {
-                0.5
-            };
             let base_height = img
                 .height
                 .as_ref()
@@ -165,7 +175,7 @@ fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String>
         normal.extend_from_slice(&normal_pixel(
             [ns[0][i], ns[1][i], ns[2][i]],
             channels[6][i],
-            channels[4][i],
+            channels[4][i].max(1.0 / 255.0),
         ));
         let id = if ore_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
             t.ore_f0.expect("validated ore F0")
@@ -310,7 +320,7 @@ fn build_stage(
         ));
     }
     fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
-    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures, not the full game. Other textures remain vanilla or come from other enabled packs.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len())).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at 128x128, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len())).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
     let mut sheet = vec![0; cols * SIZE * rows * SIZE * 4];
@@ -344,6 +354,13 @@ fn build_stage(
             let src = y * SIZE * 4;
             sheet[dst..dst + SIZE * 4].copy_from_slice(&a[src..src + SIZE * 4]);
         }
+    }
+    let verified = crate::verify::pack(&pack)?;
+    if verified != data.textures.len() {
+        return Err(format!(
+            "pack verification: expected {} textures, got {verified}",
+            data.textures.len()
+        ));
     }
     let report = serde_json::json!({
         "generator_version": env!("CARGO_PKG_VERSION"),

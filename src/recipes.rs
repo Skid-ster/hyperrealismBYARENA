@@ -176,6 +176,14 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
                 (1.0, 0.0, 0.25, 0.0)
             }
         }
+        // Fine, periodic albedo grain prevents procedural ore deposits from
+        // becoming uniform, flat-color patches.
+        "ore" => (
+            0.72 + 0.50 * noise(x, y, 128, seed ^ 0x9b21),
+            0.008 * (fine - 0.5),
+            1.0,
+            0.0,
+        ),
         "metal" => (0.97 + 0.04 * n, 0.003 * (fine - 0.5), 1.0, 0.0),
         "gem" => (0.90 + 0.16 * n, 0.03 * n, 1.0, 0.0),
         "leaves" => {
@@ -191,7 +199,7 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
     // A pair of periodic scales creates scattered irregular mineral inclusions.
     // Coverage is continuous for color filtering; material IDs remain discrete.
     let ore = if recipe == "ore" {
-        ((0.72 * n + 0.28 * fine - 0.53) * 9.0).clamp(0.0, 1.0)
+        ((0.60 * n + 0.40 * fine - 0.62) * 15.0).clamp(0.0, 1.0)
     } else {
         0.0
     };

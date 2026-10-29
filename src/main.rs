@@ -11,11 +11,18 @@ fn run() -> Result<(), String> {
     let mut output = PathBuf::from(".");
     let mut threads = None;
     let mut minecraft_jar = None;
+    let mut verify_pack = None;
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--input" => input = PathBuf::from(args.next().ok_or("--input requires a path")?),
             "--output" => output = PathBuf::from(args.next().ok_or("--output requires a path")?),
             "--cpu-only" => (),
+            "--verify-pack" => {
+                verify_pack = Some(PathBuf::from(
+                    args.next()
+                        .ok_or("--verify-pack requires a pack directory")?,
+                ))
+            }
             "--minecraft-jar" => {
                 minecraft_jar = Some(PathBuf::from(
                     args.next().ok_or("--minecraft-jar requires a path")?,
@@ -32,11 +39,16 @@ fn run() -> Result<(), String> {
                 threads = Some(count);
             }
             "--help" | "-h" => {
-                println!("HyperRealism CPU prototype\n\nUsage: hyperrealism-core [--input MANIFEST_OR_DIR] [--output DIR] [--cpu-only] [--threads N] [--minecraft-jar CLIENT_JAR]\n\nThe input directory must contain material_manifest.json. This prototype supports CPU execution only and does not yet generate the full catalog.");
+                println!("HyperRealism CPU prototype\n\nUsage: hyperrealism-core [--input MANIFEST_OR_DIR] [--output DIR] [--cpu-only] [--threads N] [--minecraft-jar CLIENT_JAR] [--verify-pack PACK_DIR]\n\nThe input directory must contain material_manifest.json. This prototype supports CPU execution only and does not yet generate the full catalog.");
                 return Ok(());
             }
             _ => return Err(format!("unknown option: {arg}; use --help")),
         }
+    }
+    if let Some(path) = verify_pack {
+        let count = hyperrealism_core::verify::pack(&path)?;
+        println!("Verified {count} 128x128 LabPBR texture triples in {} (visual/shader testing still required)", path.display());
+        return Ok(());
     }
     if let Some(count) = threads {
         rayon::ThreadPoolBuilder::new()
