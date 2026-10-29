@@ -24,7 +24,7 @@ jobs:
           $p = Start-Process -FilePath ./installer-output/HyperRealism128-Installer.exe -ArgumentList @('--capture-ui', "`"$image`"") -Wait -PassThru
           if ($p.ExitCode -ne 0) { throw 'Unable to capture GUI' }
           $data = [Convert]::ToBase64String([IO.File]::ReadAllBytes($image))
-          $size = 3500
+          $size = 4000
           for ($i = 0; $i -lt $data.Length; $i += $size) {
             $n = [Math]::Min($size, $data.Length - $i)
             Write-Host ("::notice title=LAYOUT-{0:D3}::{1}" -f ($i / $size), $data.Substring($i, $n))
