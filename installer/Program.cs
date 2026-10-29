@@ -168,7 +168,7 @@ namespace HyperRealismInstaller
             StyleButton(toolOpen, "Folders", "folder", 82, 34, true); toolOpen.DropArrow = true;
             StyleButton(toolSettings, "Settings", "settings", 85, 34, true);
             StyleButton(toolHelp, "Help", "help", 67, 34, true); toolHelp.DropArrow = true;
-            StyleButton(toolCheck, "Update", "update", 70, 34, true);
+            StyleButton(toolCheck, "Update", "update", 76, 34, true);
             tools.Controls.Add(new ToolbarGrip { BackColor = Surface });
             tools.Controls.Add(toolBrowse); tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp); tools.Controls.Add(toolCheck);
             tooltips.SetToolTip(toolBrowse, "Choose an existing instance's resourcepacks folder; this does not create a Minecraft instance.");
