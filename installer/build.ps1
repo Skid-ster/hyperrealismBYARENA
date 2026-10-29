@@ -14,7 +14,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Installer test compilation failed.' }
 & "$out\InstallerTests.exe" "$out\HyperRealism128-Installer.exe"
 if ($LASTEXITCODE -ne 0) { throw 'Installer backend tests failed.' }
 $smoke = Start-Process -FilePath "$out\HyperRealism128-Installer.exe" -ArgumentList '--smoke-test' -Wait -PassThru
-if ($smoke.ExitCode -ne 0) { throw "GUI construction smoke test failed: $($smoke.ExitCode)" }
+if ($smoke.ExitCode -ne 0) {
+    $errorFile = Join-Path $env:TEMP 'hyperrealism-gui-smoke-error.txt'
+    if (Test-Path -LiteralPath $errorFile) { Write-Host (Get-Content -LiteralPath $errorFile -Raw) }
+    throw "GUI construction smoke test failed: $($smoke.ExitCode)"
+}
 # Verify that the full window can be rendered, without doing update checks.
 $image = Join-Path $out 'layout-smoke.png'
 $render = Start-Process -FilePath "$out\HyperRealism128-Installer.exe" -ArgumentList @('--capture-ui', "`"$image`"") -Wait -PassThru

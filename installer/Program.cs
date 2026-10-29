@@ -33,7 +33,7 @@ namespace HyperRealismInstaller
             if (args.Length == 1 && args[0] == "--smoke-test")
             {
                 try { using (var form = new InstallerForm()) form.SmokeTest(); return 0; }
-                catch { return 1; }
+                catch (Exception ex) { try { File.WriteAllText(Path.Combine(Path.GetTempPath(), "hyperrealism-gui-smoke-error.txt"), ex.ToString()); } catch { } return 1; }
             }
             Application.Run(new InstallerForm(args.Length == 1 ? args[0] : ""));
             return 0;
