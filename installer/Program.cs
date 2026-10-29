@@ -65,9 +65,9 @@ namespace HyperRealismInstaller
                 else ControlPaint.DrawImageDisabled(e.Graphics, Image, x, y, surface);
                 x += Image.Width + 3;
             }
-            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x - (DropArrow ? 10 : 2)), ClientSize.Height);
+            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x), ClientSize.Height);
             TextRenderer.DrawText(e.Graphics, Text, Font, bounds, Enabled ? ForeColor : Color.FromArgb(145, 145, 145),
-                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
             if (DropArrow)
             {
                 using (var brush = new SolidBrush(Color.FromArgb(155, 155, 155)))
@@ -154,14 +154,14 @@ namespace HyperRealismInstaller
             // double status strip intentionally echo the user's launcher.
             var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Background };
             root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 40));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 37));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
             Controls.Add(root);
 
             var toolbar = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
-            var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(0, 2, 0, 0), BackColor = Surface };
+            var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = Padding.Empty, BackColor = Surface };
             // Match the reference's five compact buttons; each performs an
             // installer action rather than pretending to manage launcher data.
             StyleButton(toolBrowse, "Add Instance", "folder-add", 112, 34, true);
@@ -406,7 +406,8 @@ namespace HyperRealismInstaller
                         if (name == "folder")
                         {
                             FillRound(g, tan, 3, 4, 10, 5, 2);
-                            FillRound(g, white, 3, 6, 19, 15, 2);
+                            FillRound(g, white, 3, 6, 9, 6, 1.5f);
+                            FillRound(g, white, 3, 8, 19, 13, 2);
                         }
                         else
                         {
@@ -596,7 +597,7 @@ namespace HyperRealismInstaller
                 string folder = PackInstaller.ValidateFolder(path);
                 if (!File.Exists(Path.Combine(folder, PackInstaller.PackName))) return;
                 string state = await Task.Run(() => PackInstaller.Check(new WebTransfer(), folder));
-                if (IsDisposed || busy || !String.Equals(path, pathBox.Text, StringComparison.Ordinal)) return;
+                if (IsDisposed || busy || !automaticUpdates || !String.Equals(path, pathBox.Text, StringComparison.Ordinal)) return;
                 if (state.Contains("Installed file differs"))
                 {
                     var answer = MessageBox.Show(this, state + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
@@ -700,6 +701,10 @@ namespace HyperRealismInstaller
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
             if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
+            foreach (var button in new LauncherButton[] { toolBrowse, toolOpen, toolSettings, toolHelp, toolCheck })
+                if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Image.Width - 3)
+                    throw new Exception("Toolbar button is missing an icon or has clipped text: " + button.Text);
+            if (!toolOpen.DropArrow || !toolHelp.DropArrow || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Update") throw new Exception("Toolbar actions are missing.");
         }
     }
 }
