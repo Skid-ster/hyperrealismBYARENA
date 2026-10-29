@@ -71,7 +71,7 @@ namespace HyperRealismInstaller
             return data.TryGetValue(name, out value) ? value as string : null;
         }
 
-        private static void ValidateUrl(string url)
+        internal static void ValidateUrl(string url)
         {
             Uri uri;
             if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || uri.Scheme != Uri.UriSchemeHttps ||

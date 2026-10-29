@@ -19,14 +19,23 @@ See [shader setup and testing](docs/SHADER_SETUP.md) and [the research and stage
 
 ### Windows GUI installer / updater
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.1/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.2/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
 `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
 browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually
 uses that folder. Use **Check for updates** to compare the installed file's
 hash with the latest preview, or **Install / Update** to download and install
-it. Only the named preview ZIP is replaced. The pack is not enabled
-automatically; enable it in Minecraft. The executable is unsigned, so Windows
+it. Only the named preview ZIP is replaced. At startup and hourly while the
+installer is open, it checks for newer installer releases and, if a pack is
+already installed in the chosen folder, for a different latest pack. It asks
+before updating. An installer update is downloaded and checksum-verified,
+then a short-lived CMD helper replaces the executable and reopens it. No checks
+or notifications run while the app is closed; there is no background service or
+Windows startup entry. Installer version 1 cannot update itself, so download
+version 2 once manually. The selected existing resourcepacks path is remembered
+in `%LOCALAPPDATA%\HyperRealism128\resourcepacks-path.txt`. The pack is not
+enabled automatically; enable it in Minecraft and reload resources after an
+update. The executable is unsigned, so Windows
 may display a SmartScreen warning. The download checksum comes from the same
 release, not an independent signature. GUI source and offline tests are under
 `installer/`; build them on Windows with `powershell -File installer/build.ps1`.

@@ -11,6 +11,7 @@ namespace HyperRealismInstaller
         [STAThread]
         private static int Main(string[] args)
         {
+            if (args.Length == 1 && args[0] == "--apply-update") return SelfUpdater.ApplyUpdateFromEnvironment();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             if (args.Length == 1 && args[0] == "--smoke-test")
@@ -18,7 +19,7 @@ namespace HyperRealismInstaller
                 try { using (var form = new InstallerForm()) form.SmokeTest(); return 0; }
                 catch { return 1; }
             }
-            Application.Run(new InstallerForm());
+            Application.Run(new InstallerForm(args.Length == 1 ? args[0] : ""));
             return 0;
         }
     }
@@ -34,9 +35,15 @@ namespace HyperRealismInstaller
         private readonly Button check = new Button();
         private readonly Button install = new Button();
         private readonly Button close = new Button();
+        private readonly LinkLabel appUpdate = new LinkLabel();
+        private readonly Timer updateTimer = new Timer();
         private bool busy;
+        private bool checkingApp;
+        private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "resourcepacks-path.txt");
 
-        internal InstallerForm()
+        internal InstallerForm() : this("") { }
+
+        internal InstallerForm(string startup)
         {
             Text = "HyperRealism128 Installer";
             StartPosition = FormStartPosition.CenterScreen;
@@ -56,7 +63,10 @@ namespace HyperRealismInstaller
             var header = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(22, 31, 48), Padding = new Padding(22, 12, 22, 8) };
             var title = new Label { Text = "HYPERREALISM 128", AutoSize = true, ForeColor = Color.White, Font = new Font("Segoe UI", 16F, FontStyle.Bold), Location = new Point(22, 9) };
             var subtitle = new Label { Text = "Minecraft Java 26.3  /  Experimental preview", AutoSize = true, ForeColor = Color.FromArgb(184, 200, 221), Location = new Point(25, 49) };
-            header.Controls.Add(title); header.Controls.Add(subtitle); root.Controls.Add(header, 0, 0);
+            appUpdate.Text = "Check installer updates"; appUpdate.LinkColor = Color.FromArgb(167, 204, 255); appUpdate.ActiveLinkColor = Color.White;
+            appUpdate.AutoSize = false; appUpdate.TextAlign = ContentAlignment.MiddleRight; appUpdate.Size = new Size(180, 25);
+            appUpdate.Location = new Point(525, 12); appUpdate.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            header.Controls.Add(title); header.Controls.Add(subtitle); header.Controls.Add(appUpdate); root.Controls.Add(header, 0, 0);
 
             var intro = new Label { Dock = DockStyle.Fill, Padding = new Padding(24, 15, 24, 0), Text = "Install or update the resource pack in your Minecraft instance.\r\nYour configured ElyPrism folder is filled in below; you can change it anytime.", ForeColor = Color.FromArgb(55, 65, 81) };
             root.Controls.Add(intro, 0, 1);
@@ -105,9 +115,106 @@ namespace HyperRealismInstaller
             check.Click += async delegate { await RunOperation(false); };
             install.Click += async delegate { await RunOperation(true); };
             close.Click += delegate { Close(); };
-            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; };
-            pathBox.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElyPrismLauncher", "instances", "26.3(1)", "minecraft", "resourcepacks");
+            appUpdate.LinkClicked += async delegate { await CheckInstallerUpdate(false); };
+            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; else SavePath(); };
+            string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElyPrismLauncher", "instances", "26.3(1)", "minecraft", "resourcepacks");
+            pathBox.Text = LoadPath(defaultPath);
             UpdateFolderStatus();
+            if (startup == "--updated") result.Text = "Installer updated and reopened successfully.";
+            if (startup == "--update-failed") { result.Text = "Installer update failed; the previous installer was reopened. Close other copies and check folder permissions."; result.ForeColor = Color.FromArgb(185, 28, 28); }
+            Shown += async delegate { await CheckInstallerUpdate(true); };
+            updateTimer.Interval = 60 * 60 * 1000;
+            updateTimer.Tick += async delegate { await CheckInstallerUpdate(true); };
+            updateTimer.Start();
+            FormClosed += delegate { updateTimer.Stop(); updateTimer.Dispose(); };
+        }
+
+        private static string LoadPath(string fallback)
+        {
+            try { if (File.Exists(SettingsPath)) { string text = File.ReadAllText(SettingsPath).Trim(); if (text.Length > 0 && text.Length < 32768) return text; } }
+            catch { }
+            return fallback;
+        }
+
+        private void SavePath()
+        {
+            try
+            {
+                string path = PackInstaller.ValidateFolder(pathBox.Text);
+                Directory.CreateDirectory(Path.GetDirectoryName(SettingsPath));
+                File.WriteAllText(SettingsPath, path);
+            }
+            catch { /* Preferences are optional; the path is always editable. */ }
+        }
+
+        private async Task CheckInstallerUpdate(bool automatic)
+        {
+            if (checkingApp || busy) return;
+            checkingApp = true; appUpdate.Enabled = false;
+            try
+            {
+                InstallerRelease update = await Task.Run(() => SelfUpdater.FindUpdate(new WebTransfer(), SelfUpdater.CurrentTag));
+                if (IsDisposed || busy) return;
+                appUpdate.Text = "Check installer updates";
+                if (update != null)
+                {
+                    var answer = MessageBox.Show(this, "A new installer version (" + update.Tag + ") is available on GitHub.\r\n\r\nDownload it, verify it and restart the installer now?", "Installer update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (answer == DialogResult.Yes) { await ApplyInstallerUpdate(update); return; }
+                }
+                else if (!automatic) MessageBox.Show(this, "You have the latest published installer (" + SelfUpdater.CurrentTag + ").", "Installer updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                if (!IsDisposed && !automatic) ShowError(ex);
+                else if (!IsDisposed) appUpdate.Text = "Update check unavailable";
+            }
+            finally { checkingApp = false; if (!IsDisposed) appUpdate.Enabled = true; }
+            if (automatic && !IsDisposed && !busy) await CheckPackOnStartup();
+        }
+
+        private async Task CheckPackOnStartup()
+        {
+            string path = pathBox.Text;
+            try
+            {
+                string folder = PackInstaller.ValidateFolder(path);
+                if (!File.Exists(Path.Combine(folder, PackInstaller.PackName))) return;
+                string state = await Task.Run(() => PackInstaller.Check(new WebTransfer(), folder));
+                if (IsDisposed || busy || !String.Equals(path, pathBox.Text, StringComparison.Ordinal)) return;
+                if (state.Contains("Installed file differs"))
+                {
+                    var answer = MessageBox.Show(this, state + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    if (answer == DialogResult.Yes) await RunOperation(true);
+                }
+            }
+            catch { /* Offline checks are silent; the user can retry via the button. */ }
+        }
+
+        private async Task ApplyInstallerUpdate(InstallerRelease update)
+        {
+            string stage = null;
+            bool handedOff = false;
+            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
+            UpdateFolderStatus(); progress.Visible = true;
+            result.Text = "Downloading and verifying installer " + update.Tag + "...";
+            try
+            {
+                SavePath();
+                string target = Application.ExecutablePath;
+                string checksum = null;
+                stage = await Task.Run(() => SelfUpdater.DownloadUpdate(new WebTransfer(), update, target, out checksum));
+                SelfUpdater.LaunchHelper(target, stage, target, checksum);
+                handedOff = true;
+                busy = false;
+                Application.Exit();
+            }
+            catch (Exception ex) { ShowError(ex); }
+            finally
+            {
+                if (!handedOff && stage != null) { try { if (File.Exists(stage)) File.Delete(stage); } catch { } }
+                busy = false;
+                if (!IsDisposed) { progress.Visible = false; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = true; UpdateFolderStatus(); }
+            }
         }
 
         private void UpdateFolderStatus()
@@ -134,6 +241,7 @@ namespace HyperRealismInstaller
         private async Task RunOperation(bool doInstall)
         {
             string path = pathBox.Text;
+            SavePath();
             busy = true;
             pathBox.Enabled = browse.Enabled = close.Enabled = false;
             UpdateFolderStatus();
@@ -165,7 +273,7 @@ namespace HyperRealismInstaller
 
         internal void SmokeTest()
         {
-            if (!pathBox.Text.EndsWith(Path.Combine("26.3(1)", "minecraft", "resourcepacks"), StringComparison.OrdinalIgnoreCase)) throw new Exception("Incorrect ElyPrism default path.");
+            if (String.IsNullOrEmpty(pathBox.Text)) throw new Exception("No default or saved path.");
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
             if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check for updates") throw new Exception("Expected installer controls are missing.");

@@ -50,8 +50,78 @@ internal static class InstallerTests
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
     }
+    private static object AppRelease(string tag, bool draft, string host)
+    {
+        string prefix = host + "/Skid-ster/hyperrealismBYARENA/releases/download/" + tag + "/";
+        return new { draft = draft, tag_name = tag, assets = new object[] {
+            new { name = SelfUpdater.AssetName, browser_download_url = prefix + SelfUpdater.AssetName },
+            new { name = SelfUpdater.AssetName + ".sha256", browser_download_url = prefix + SelfUpdater.AssetName + ".sha256" }
+        } };
+    }
+
+    private static void TestSelfUpdate(string root, string gui)
+    {
+        var fake = new FakeTransfer { Payload = Encoding.UTF8.GetBytes("verified installer bytes") };
+        var json = new JavaScriptSerializer();
+        fake.Json = json.Serialize(new object[] {
+            AppRelease("v0.1.0-installer.3", false, "https://github.com"),
+            AppRelease("v0.1.0-installer.10", false, "https://github.com"),
+            AppRelease("v0.1.0-installer.11", true, "https://github.com"),
+            Release("v9.0.0-preview.1", "2028-01-01T00:00:00Z", false, "https://github.com")
+        });
+        InstallerRelease update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
+        Assert(update != null && update.Tag == "v0.1.0-installer.10", "Installer version ordering or draft filtering failed.");
+        Assert(SelfUpdater.FindUpdate(fake, "v0.1.0-installer.10") == null, "Current installer falsely reported outdated.");
+        string dir = Path.Combine(root, "self update & 50%! test"); Directory.CreateDirectory(dir);
+        string target = Path.Combine(dir, "The Installer.exe"); File.WriteAllText(target, "old executable");
+        string payload = Path.Combine(root, "app-payload"); File.WriteAllBytes(payload, fake.Payload);
+        fake.Checksum = PackInstaller.HashFile(payload) + "  " + SelfUpdater.AssetName;
+        string sum;
+        fake.Corrupt = true;
+        Throws(() => { string ignored; SelfUpdater.DownloadUpdate(fake, update, target, out ignored); }, "Corrupt app update accepted.");
+        Assert(File.ReadAllText(target) == "old executable", "Failed app download damaged original.");
+        Assert(Directory.GetFiles(dir, ".hyperrealism-update-*.tmp").Length == 0, "Failed app update left a stage.");
+        fake.Corrupt = false;
+        string staged = SelfUpdater.DownloadUpdate(fake, update, target, out sum);
+        Assert(PackInstaller.HashFile(staged) == sum, "App update not staged correctly.");
+        File.Delete(staged);
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.3", false, "https://evil.example") });
+        Throws(() => SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag), "Untrusted app release host accepted.");
+
+        // End-to-end test of the real cmd -> copied GUI helper -> replace ->
+        // restart sequence, without touching the running application or Minecraft.
+        string testExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+        File.Copy(testExe, target, true); File.AppendAllText(target, "old file marker");
+        string oldHash = PackInstaller.HashFile(target);
+        staged = Path.Combine(dir, ".hyperrealism-update-test.tmp"); File.Copy(testExe, staged);
+        sum = PackInstaller.HashFile(staged);
+        Assert(oldHash != sum, "Fixture should differ from replacement.");
+        string marker = Path.Combine(root, "restart-marker.txt");
+        Environment.SetEnvironmentVariable("HR_UPDATE_TEST_MARKER", marker);
+        System.Diagnostics.Process helper;
+        // The target is locked briefly to verify that the helper retries until
+        // the old application has released it.
+        using (var lockFile = new FileStream(target, FileMode.Open, FileAccess.Read, FileShare.None))
+        {
+            helper = SelfUpdater.LaunchHelper(gui, staged, target, sum);
+            System.Threading.Thread.Sleep(1500);
+            Assert(!File.Exists(marker), "Restarted while target was locked.");
+        }
+        Assert(helper.WaitForExit(40000), "Updater helper did not finish.");
+        for (int i = 0; i < 100 && !File.Exists(marker); i++) System.Threading.Thread.Sleep(100);
+        Assert(File.Exists(marker) && File.ReadAllText(marker) == "--updated", "Updated program did not restart.");
+        Assert(PackInstaller.HashFile(target) == sum && !File.Exists(staged), "Replacement failed or stage remains.");
+        Environment.SetEnvironmentVariable("HR_UPDATE_TEST_MARKER", null);
+    }
+
     private static int Main(string[] args)
     {
+        if (args.Length == 1 && (args[0] == "--updated" || args[0] == "--update-failed"))
+        {
+            string marker = Environment.GetEnvironmentVariable("HR_UPDATE_TEST_MARKER");
+            if (!String.IsNullOrEmpty(marker)) File.WriteAllText(marker, args[0]);
+            return 0;
+        }
         if (args.Length == 1 && args[0] == "--live-test") return LiveTest();
         string root = Path.Combine(Path.GetTempPath(), "hr-gui-test-" + Guid.NewGuid().ToString("N"));
         try
@@ -93,7 +163,9 @@ internal static class InstallerTests
             fake.Checksum = PackInstaller.HashFile(source) + "  " + PackInstaller.PackName;
             fake.Json = serializer.Serialize(new object[] { Release("bad", "2026-01-01T00:00:00Z", false, "https://evil.example") });
             Throws(() => PackInstaller.Install(fake, folder), "Untrusted host accepted.");
-            Console.WriteLine("GUI installer backend tests passed.");
+            if (args.Length != 1) throw new Exception("Expected path to the built GUI installer.");
+            TestSelfUpdate(root, args[0]);
+            Console.WriteLine("GUI installer backend and self-update tests passed.");
             return 0;
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
