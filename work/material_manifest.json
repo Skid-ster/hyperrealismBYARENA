@@ -111,6 +111,16 @@
       "normal": "materials/rock_face/normal.jpg",
       "normal_y": "opengl",
       "arm": "materials/rock_face/arm.jpg"
+    },
+    {
+      "id": "bark_willow_02",
+      "source": "Bark Willow 02: https://polyhaven.com/a/bark_willow_02; creator: Charlotte Baglioni; approximate stand-in for tree bark",
+      "license": "CC0-1.0",
+      "albedo": "materials/bark_willow_02/color.jpg",
+      "normal": "materials/bark_willow_02/normal.jpg",
+      "normal_y": "directx",
+      "roughness": "materials/bark_willow_02/roughness.jpg",
+      "height": "materials/bark_willow_02/displacement.jpg"
     }
   ],
   "textures": [
@@ -1987,6 +1997,91 @@
         204
       ],
       "ore_f0": 10
+    },
+    {
+      "name": "oak_log",
+      "material": "bark_willow_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        109,
+        85,
+        51
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "spruce_log",
+      "material": "bark_willow_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        59,
+        38,
+        17
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dark_oak_log",
+      "material": "bark_willow_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        60,
+        47,
+        26
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "acacia_log",
+      "material": "bark_willow_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        103,
+        97,
+        87
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "jungle_log",
+      "material": "bark_willow_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        85,
+        68,
+        25
+      ],
+      "f0": 10,
+      "porosity": 30
     }
   ],
   "checksums": {
@@ -2024,6 +2119,10 @@
     "materials/cobble_photo/height.png": "feb8101a7c7856b953deb296a3e913a63f837258a91fec1b38e444ef26f31f0d",
     "materials/rock_face/color.jpg": "9d6ab7ce9ba3799f206028fe60678f906d96a8dbb969c738b0061444f265e1d8",
     "materials/rock_face/normal.jpg": "0e8a49fed84c50e4f8a7f012db06058c73afd6489abb356a9f91c581a8447d6c",
-    "materials/rock_face/arm.jpg": "44a5b8722d400e4693934a998344ea06f6f8075a74dc02ebd39f31fda4bae7ab"
+    "materials/rock_face/arm.jpg": "44a5b8722d400e4693934a998344ea06f6f8075a74dc02ebd39f31fda4bae7ab",
+    "materials/bark_willow_02/color.jpg": "95e1380566834aab220bd8ea9a5287f3bfff46910c18017fcb46ebbbe832024f",
+    "materials/bark_willow_02/normal.jpg": "80e7983c29ee50e2d1517aff6c6efa87e624056ba393ddc6ed42bc534b9d7208",
+    "materials/bark_willow_02/roughness.jpg": "b9d690f5a5fc411b89c6301273ac03ab0a5910c8a16a96839df223aff4bf794d",
+    "materials/bark_willow_02/displacement.jpg": "59723a918b8d3a2ee20e5f444e006edcd47263e12eb2cacf06f5439b04eba538"
   }
 }

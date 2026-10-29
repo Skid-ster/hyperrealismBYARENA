@@ -38,12 +38,30 @@ include the settings above. Other good free options include Complementary
 Unbound; configure its **RP Support** as labPBR. Individual shaders differ in
 handling emission, AO, SSS, porosity and metal IDs.
 
+## Verify that PBR is active
+
+Vanilla Minecraft without a compatible shader only displays the color maps.
+In Photon, the pack must be enabled **above** competing packs, with normal and
+specular mapping enabled and the texture format set to labPBR. POM is optional
+and requires the shader's parallax setting: height is not visible as geometry
+without it. Compare the same sunlit oak log or cobblestone with Normal Mapping
+on and off; rotate the view/light to check for changes in shading. For specular,
+compare a smooth metallic block in the manifest, with Specular Mapping on/off.
+If nothing changes, check Iris/Photon versions, pack order, and shader settings;
+reload resources with F3+T. Scan-driven height exists on the new bark and
+cobblestone; many older materials still use approximate height, so parallax
+can look wrong. This is a diagnostic procedure, not proof of a test on your PC.
+
+At 512px, shader atlas memory and load times can increase substantially; if you
+see stutter or texture-load errors, reduce shader settings and try the optional
+128px build rather than assuming 8 GB is sufficient.
+
 ## How to evaluate
 
 Compare in daylight and in darker light, with and without the resource pack,
 then with and without the shader. Try stone, cobblestone, oak planks, sand,
 netherrack and Nether gold ore. Ask which details are visible from a normal
 playing distance, whether seams repeat, and whether metals reflect plausibly.
-The 106 covered block textures do not replace the entire game; animations,
+The 111 covered block textures do not replace the entire game; animations,
 most blocks and entities are not supplied. The pack cannot guarantee visual
-quality merely because it contains 128×128 images and valid LabPBR channels.
+quality merely because it contains 512×512 images and valid LabPBR channels.

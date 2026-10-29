@@ -1,6 +1,6 @@
-## Windows GUI installer 6 — experimental pack
+## Windows GUI installer 7 — experimental pack
 
-This update recreates the reference toolbar with five compact, icon-led buttons,
+This update makes the status bar resolution-neutral for the 512px preview. The prior update recreated the reference toolbar with five compact, icon-led buttons,
 matching spacing and dropdown indicators. Add Instance selects an existing
 resourcepacks folder; Folders and Help open menus; Settings controls automatic
 checks; Update checks both installer and pack. It does not create or manage
@@ -28,7 +28,7 @@ same-named installed preview. A checksum from the same release is not an
 independent signature. The installer executable is unsigned, so Windows may
 show a SmartScreen warning; inspect the source and checksum if desired.
 
-The resource pack remains an experimental 106-texture preview, not the complete
+The resource pack remains an experimental 111-texture preview, not the complete
 pack. LabPBR effects require a compatible shader; the maps and visual results
 have not been validated on the target PC or in-game. The GUI is tested with
 mock downloads, a Windows construction smoke test, a live pack download, and

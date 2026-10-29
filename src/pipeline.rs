@@ -12,7 +12,7 @@ use std::{
     path::{Path, PathBuf},
 };
 const WORK: usize = material::WORK;
-const SIZE: usize = 128;
+const SHEET_TILE: usize = 128;
 const ARCHIVE: &str = "HyperRealism128-v1.0-MC26.3.zip";
 
 fn linear_to_srgb(v: f32) -> u8 {
@@ -28,12 +28,15 @@ fn unit(v: f32) -> u8 {
     (v.clamp(0.0, 1.0) * 255.0).round() as u8
 }
 
-fn resize(values: &[f32]) -> Result<Vec<f32>, String> {
-    resize_wrap(values, WORK, WORK, SIZE, SIZE).map_err(str::to_string)
+fn resize(values: &[f32], size: usize) -> Result<Vec<f32>, String> {
+    if size == WORK {
+        return Ok(values.to_vec());
+    }
+    resize_wrap(values, WORK, WORK, size, size).map_err(str::to_string)
 }
 type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
 
-fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String> {
+fn build(t: &Texture, img: &Prepared, root: &Path, size: usize) -> Result<PackedMaps, String> {
     let n = WORK * WORK;
     let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
     let mut relief_map = vec![0.0; n];
@@ -140,29 +143,29 @@ fn build(t: &Texture, img: &Prepared, root: &Path) -> Result<PackedMaps, String>
     }
     let channels: Vec<Vec<f32>> = channels
         .par_iter()
-        .map(|c| resize(c))
+        .map(|c| resize(c, size))
         .collect::<Result<_, _>>()?;
     let ns: Vec<Vec<f32>> = normal_channels
         .par_iter()
-        .map(|c| resize(c))
+        .map(|c| resize(c, size))
         .collect::<Result<_, _>>()?;
     // Filter continuous masks first, then threshold material IDs. Never
     // interpolate IDs or the 255 no-emission sentinel.
     let id_mask = t
         .f0_mask
         .as_deref()
-        .map(|p| material::scalar(root, p).and_then(|v| resize(&v)))
+        .map(|p| material::scalar(root, p).and_then(|v| resize(&v, size)))
         .transpose()?;
-    let ore_mask = ore_map.as_ref().map(|v| resize(v)).transpose()?;
+    let ore_mask = ore_map.as_ref().map(|v| resize(v, size)).transpose()?;
     let emission = t
         .emissive_map
         .as_deref()
-        .map(|p| material::scalar(root, p).and_then(|v| resize(&v)))
+        .map(|p| material::scalar(root, p).and_then(|v| resize(&v, size)))
         .transpose()?;
-    let mut albedo = Vec::with_capacity(SIZE * SIZE * 4);
-    let mut normal = Vec::with_capacity(SIZE * SIZE * 4);
-    let mut spec = Vec::with_capacity(SIZE * SIZE * 4);
-    for i in 0..SIZE * SIZE {
+    let mut albedo = Vec::with_capacity(size * size * 4);
+    let mut normal = Vec::with_capacity(size * size * 4);
+    let mut spec = Vec::with_capacity(size * size * 4);
+    for i in 0..size * size {
         let alpha = channels[3][i].clamp(0.0, 1.0);
         for c in channels.iter().take(3) {
             albedo.push(if alpha > 1e-6 {
@@ -223,7 +226,15 @@ fn combine_normals(base: [f32; 3], detail: [f32; 3]) -> [f32; 3] {
 }
 
 /// Builds into an exclusive staging directory; existing pack/dist output is never overwritten.
-pub fn generate(input: &Path, output: &Path, minecraft_jar: Option<&Path>) -> Result<(), String> {
+pub fn generate(
+    input: &Path,
+    output: &Path,
+    minecraft_jar: Option<&Path>,
+    size: usize,
+) -> Result<(), String> {
+    if size != 128 && size != 512 {
+        return Err("resolution must be 128 or 512".into());
+    }
     let path = if input.is_dir() {
         input.join("material_manifest.json")
     } else {
@@ -253,15 +264,14 @@ pub fn generate(input: &Path, output: &Path, minecraft_jar: Option<&Path>) -> Re
     }
     let stage = output.join(format!(".hyperrealism-stage-{}", std::process::id()));
     fs::create_dir(&stage).map_err(|e| format!("{}: {e}", stage.display()))?;
-    let result = build_stage(
-        &data,
-        root,
-        &stage,
-        &hashes,
-        &manifest_hash,
-        minecraft_jar.is_some(),
-        &metadata,
-    );
+    let info = BuildInfo {
+        hashes: &hashes,
+        manifest_hash: &manifest_hash,
+        client_paths_checked: minecraft_jar.is_some(),
+        metadata: &metadata,
+        size,
+    };
+    let result = build_stage(&data, root, &stage, &info);
     if let Err(err) = result {
         let _ = fs::remove_dir_all(&stage);
         return Err(err);
@@ -286,21 +296,32 @@ pub fn generate(input: &Path, output: &Path, minecraft_jar: Option<&Path>) -> Re
     );
     Ok(())
 }
+struct BuildInfo<'a> {
+    hashes: &'a std::collections::BTreeMap<String, String>,
+    manifest_hash: &'a str,
+    client_paths_checked: bool,
+    metadata: &'a std::collections::BTreeMap<String, Vec<u8>>,
+    size: usize,
+}
 fn build_stage(
     data: &manifest::Manifest,
     root: &Path,
     stage: &Path,
-    hashes: &std::collections::BTreeMap<String, String>,
-    manifest_hash: &str,
-    client_paths_checked: bool,
-    metadata: &std::collections::BTreeMap<String, Vec<u8>>,
+    info: &BuildInfo<'_>,
 ) -> Result<(), String> {
+    let BuildInfo {
+        hashes,
+        manifest_hash,
+        client_paths_checked,
+        metadata,
+        size,
+    } = *info;
     let pack = stage.join("pack");
     let block = pack.join("assets/minecraft/textures/block");
     let optifine = pack.join("assets/minecraft/optifine");
     fs::create_dir_all(&block).map_err(|e| e.to_string())?;
     fs::create_dir_all(&optifine).map_err(|e| e.to_string())?;
-    fs::write(pack.join("pack.mcmeta"),"{\n  \"pack\": {\n    \"description\": \"HyperRealism128 CPU preview\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }\n}\n").map_err(|e|e.to_string())?;
+    fs::write(pack.join("pack.mcmeta"),"{\n  \"pack\": {\n    \"description\": \"HyperRealism LabPBR CPU preview\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }\n}\n").map_err(|e|e.to_string())?;
     fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n")
         .map_err(|e| e.to_string())?;
     let materials = manifest::by_id(data);
@@ -320,10 +341,11 @@ fn build_stage(
         ));
     }
     fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
-    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at 128x128, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len())).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}x{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
-    let mut sheet = vec![0; cols * SIZE * rows * SIZE * 4];
+    // Keep review thumbnails small even for the 512px pack.
+    let mut sheet = vec![0; cols * SHEET_TILE * rows * SHEET_TILE * 4];
     // Keep only the most recently used prepared material; this bounds memory.
     let mut cached: Option<(&str, Prepared)> = None;
     for (index, t) in data.textures.iter().enumerate() {
@@ -334,12 +356,12 @@ fn build_stage(
             cached = Some((m.id.as_str(), material::load(root, m)?));
         }
         let images = &cached.as_ref().expect("material just loaded").1;
-        let (a, n, s) = build(t, images, root).map_err(|e| format!("{}: {e}", t.name))?;
+        let (a, n, s) = build(t, images, root, size).map_err(|e| format!("{}: {e}", t.name))?;
         for (suffix, bytes) in [("", &a), ("_n", &n), ("_s", &s)] {
             png_io::write(
                 &block.join(format!("{}{suffix}.png", t.name)),
-                SIZE,
-                SIZE,
+                size,
+                size,
                 bytes,
             )?;
         }
@@ -347,12 +369,22 @@ fn build_stage(
             fs::write(block.join(format!("{}.png.mcmeta", t.name)), meta)
                 .map_err(|e| e.to_string())?;
         }
-        let ox = index % cols * SIZE;
-        let oy = index / cols * SIZE;
-        for y in 0..SIZE {
-            let dst = ((oy + y) * cols * SIZE + ox) * 4;
-            let src = y * SIZE * 4;
-            sheet[dst..dst + SIZE * 4].copy_from_slice(&a[src..src + SIZE * 4]);
+        let ox = index % cols * SHEET_TILE;
+        let oy = index / cols * SHEET_TILE;
+        let factor = size / SHEET_TILE;
+        for y in 0..SHEET_TILE {
+            for x in 0..SHEET_TILE {
+                let dst = ((oy + y) * cols * SHEET_TILE + ox + x) * 4;
+                for c in 0..4 {
+                    let mut sum = 0u32;
+                    for sy in 0..factor {
+                        for sx in 0..factor {
+                            sum += a[((y * factor + sy) * size + x * factor + sx) * 4 + c] as u32;
+                        }
+                    }
+                    sheet[dst + c] = (sum / (factor * factor) as u32) as u8;
+                }
+            }
         }
     }
     let verified = crate::verify::pack(&pack)?;
@@ -365,7 +397,7 @@ fn build_stage(
     let report = serde_json::json!({
         "generator_version": env!("CARGO_PKG_VERSION"),
         "backend": "cpu",
-        "resolution": SIZE,
+        "resolution": size,
         "working_resolution": WORK,
         "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
         "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "roughness": m.roughness, "arm": m.arm, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
@@ -378,8 +410,8 @@ fn build_stage(
     fs::write(stage.join("build_report.json"), report_data).map_err(|e| e.to_string())?;
     png_io::write(
         &stage.join("contact_sheet.png"),
-        cols * SIZE,
-        rows * SIZE,
+        cols * SHEET_TILE,
+        rows * SHEET_TILE,
         &sheet,
     )?;
     let dist: PathBuf = stage.join("dist");

@@ -1,17 +1,34 @@
-## Experimental preview — not the finished pack
+## Experimental 512×512 LabPBR preview — not a complete pack
 
-This release replaces **106 block textures** for Minecraft Java 26.3, not the requested complete 280-texture pack. The rest of the game remains vanilla or uses other enabled packs. The twelve reused material sources and procedural ore are experimental approximations; in-game visual quality and shader behavior have not been validated. It is a CPU-generated preview, not an RTX-optimized release. Animations, GPU acceleration, and many materials are still missing. This update adds netherrack and two Nether ore textures based on a CC0 rock scan, clamps POM heights to at least 1, and structurally checks every 128×128 albedo/normal/specular texture triple before packaging. Ore inclusions are procedural, with finer grain and sparser distribution than the prior preview; these new appearances have not yet been checked in-game. Preview 3 replaced the previous wireframe-like cobblestone with modified photographic albedo and height inputs.
+This is a **512×512** test pack for Minecraft Java 26.3. Its legacy filename is
+retained so the existing installer can update it. It replaces **111 block
+textures**, not the whole game; all other blocks and entities remain vanilla or
+come from other packs. Higher resolution uses substantially more GPU memory and
+may affect loading and frame rate. It has not been tested on the RTX 5060 Ti.
 
-### Download and install
+The materials are derived from CC0 Poly Haven scans. Many starter inputs are
+1K, but some older inputs are 512px or 2K and several blocks reuse the same
+material. Five log sides now use the original 1K Bark Willow 02 color, DirectX
+normal, roughness and displacement scans, adapted to different colors; log ends
+remain vanilla. The existing cobblestone scan includes height but uses default
+roughness, and several other materials have approximated height or normals.
+Coverage and source hashes are in `build_report.json`; credits are in the ZIP.
+These textures and PBR effects have **not yet been visually validated in game**.
 
-1. Download **HyperRealism128-MC26.3-EXPERIMENTAL.zip** below. Do not extract it.
-2. On Windows, put the ZIP in `%APPDATA%\.minecraft\resourcepacks` and enable it under **Options → Resource Packs** in Minecraft Java 26.3.
-3. To see PBR effects, use a compatible LabPBR shader. Support for optional AO, height, emission and subsurface channels varies by shader.
+### Install and check PBR
 
-To update, download the ZIP from a newer preview release and replace the older preview ZIP. Alternatively, download and inspect `Install-HyperRealismPreview.ps1`, then run it from PowerShell; add `-Force` to replace an existing preview. It downloads the newest release containing the preview, verifies the accompanying SHA-256 file, and leaves an existing pack unchanged if verification fails. The checksum is not an independent signature.
+Use **Install / Update** in the GUI, or put the downloaded ZIP (do not extract)
+in the active instance's `minecraft/resourcepacks` folder, and enable it above
+competing packs under **Options → Resource Packs**. Use Iris and a compatible
+LabPBR shader such as Photon. In Photon enable Normal Mapping and Specular
+Mapping, choose labPBR in Resource Pack Settings, and optionally enable
+Parallax Occlusion Mapping. Compare the same oak log or cobblestone with normal
+mapping on/off in direct light; rotate the view and reload resources with F3+T.
+Shader menus and optional channel support vary. Structural channel tests alone
+do not prove the shader is rendering the maps.
 
-`build_report.json` documents the input hashes and materials. Credits are included in the pack. The source commit is the current development branch; the PR remains draft because this project is incomplete.
-
-### Validation and limitations
-
-Automated CPU tests, release build, ZIP CRC checks, and the offline Windows installer tests passed on Linux and Windows GitHub Actions. The user reported unsatisfactory cobblestone in-game, but the active pack order was not established; this replacement has not been tested in-game. The sandbox has no actual Minecraft client, shader or RTX 5060 Ti. This preview is provided for testing, not as a finished or production-quality release.
+The downloadable PowerShell updater and GUI verify the ZIP's SHA-256 before
+replacing the previous preview. The checksum is not an independent signature;
+the installer is unsigned. GPU acceleration, missing textures, animations,
+target-hardware performance measurements and in-game visual validation remain
+unfinished. A smaller 128px build is available from source via `--resolution 128`.

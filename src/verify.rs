@@ -3,17 +3,22 @@
 use crate::png_io;
 use std::{collections::BTreeSet, fs, path::Path};
 
-fn rgba_128(path: &Path) -> Result<png_io::Rgba, String> {
+fn rgba_at(path: &Path, size: usize) -> Result<png_io::Rgba, String> {
     let file = fs::File::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
     let reader = png::Decoder::new(file)
         .read_info()
         .map_err(|e| format!("{}: {e}", path.display()))?;
     let info = reader.info();
     if (info.width, info.height, info.color_type, info.bit_depth)
-        != (128, 128, png::ColorType::Rgba, png::BitDepth::Eight)
+        != (
+            size as u32,
+            size as u32,
+            png::ColorType::Rgba,
+            png::BitDepth::Eight,
+        )
     {
         return Err(format!(
-            "{}: expected 128x128 8-bit RGBA PNG",
+            "{}: expected {size}x{size} 8-bit RGBA PNG",
             path.display()
         ));
     }
@@ -65,11 +70,18 @@ pub fn pack(root: &Path) -> Result<usize, String> {
     if base.is_empty() {
         return Err("pack has no block textures".into());
     }
+    let first_path = block.join(format!("{}.png", base[0]));
+    let first = png_io::read(&first_path)?;
+    let size = first.width;
+    if (size != 128 && size != 512) || first.height != size {
+        return Err("pack resolution must be 128x128 or 512x512".into());
+    }
+    drop(first);
     for name in &base {
         let color = block.join(format!("{name}.png"));
-        rgba_128(&color)?;
+        rgba_at(&color, size)?;
         let normal_path = block.join(format!("{name}_n.png"));
-        let normal = rgba_128(&normal_path)?;
+        let normal = rgba_at(&normal_path, size)?;
         for pixel in normal.pixels.chunks_exact(4) {
             let x = f32::from(pixel[0]) / 127.5 - 1.0;
             let y = f32::from(pixel[1]) / 127.5 - 1.0;
@@ -84,7 +96,7 @@ pub fn pack(root: &Path) -> Result<usize, String> {
             }
         }
         let spec_path = block.join(format!("{name}_s.png"));
-        let spec = rgba_128(&spec_path)?;
+        let spec = rgba_at(&spec_path, size)?;
         for p in spec.pixels.chunks_exact(4) {
             if (238..=254).contains(&p[1]) {
                 return Err(format!(

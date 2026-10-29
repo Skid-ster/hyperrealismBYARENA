@@ -12,6 +12,8 @@ fn run(input: &Path, output: &Path, threads: &str) -> std::process::Output {
         .arg("--output")
         .arg(output)
         .arg("--cpu-only")
+        .arg("--resolution")
+        .arg("128")
         .arg("--threads")
         .arg(threads)
         .output()
@@ -157,6 +159,57 @@ fn real_material_channels_and_input_downsampling() {
         .pixels
         .chunks_exact(4)
         .all(|p| (126..=128).contains(&p[0]) && p[1] == 230 && p[3] == 255));
+    // The new default is 512px; inspect its actual LabPBR values after a 1K
+    // source is downsampled. Test DX and GL normals, AO, height and smoothness.
+    let output512 = temp.join("output512");
+    let result512 = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--input")
+        .arg(&input)
+        .arg("--output")
+        .arg(&output512)
+        .arg("--cpu-only")
+        .arg("--threads")
+        .arg("2")
+        .output()
+        .unwrap();
+    assert!(
+        result512.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result512.stderr)
+    );
+    let pack512 = output512.join("pack");
+    assert_eq!(hyperrealism_core::verify::pack(&pack512).unwrap(), 2);
+    let block512 = pack512.join("assets/minecraft/textures/block");
+    let albedo512 = read(&block512.join("iron_block.png")).unwrap();
+    let dx512 = read(&block512.join("iron_block_n.png")).unwrap();
+    let gl512 = read(&block512.join("gold_block_n.png")).unwrap();
+    let spec512 = read(&block512.join("iron_block_s.png")).unwrap();
+    for img in [&albedo512, &dx512, &gl512, &spec512] {
+        assert_eq!((img.width, img.height), (512, 512));
+    }
+    assert!(albedo512
+        .pixels
+        .chunks_exact(4)
+        .all(|p| (186..=189).contains(&p[0])));
+    assert!(dx512
+        .pixels
+        .chunks_exact(4)
+        .all(|p| p[1] > 180 && (152..=154).contains(&p[2]) && (63..=65).contains(&p[3])));
+    assert!(gl512
+        .pixels
+        .chunks_exact(4)
+        .all(|p| p[1] < 75 && (152..=154).contains(&p[2]) && (63..=65).contains(&p[3])));
+    assert!(spec512
+        .pixels
+        .chunks_exact(4)
+        .all(|p| (126..=128).contains(&p[0]) && p[1] == 230 && p[3] == 255));
+    // A single mismatched map must fail verification, not silently mix sizes.
+    fs::copy(
+        block.join("gold_block_n.png"),
+        block512.join("gold_block_n.png"),
+    )
+    .unwrap();
+    assert!(hyperrealism_core::verify::pack(&pack512).is_err());
     let jpeg = read_material(Path::new("test_assets/sample.jpg")).unwrap();
     assert_eq!((jpeg.width, jpeg.height), (32, 32));
     assert!(jpeg
@@ -194,6 +247,8 @@ fn local_client_jar_preflight_checks_targets_before_writing() {
             .arg("--output")
             .arg(out)
             .arg("--cpu-only")
+            .arg("--resolution")
+            .arg("128")
             .arg("--threads")
             .arg("2")
             .arg("--minecraft-jar")
@@ -306,12 +361,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 35);
+    assert_eq!(hashes.len(), 39);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 106);
+    assert_eq!(m.textures.len(), 111);
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [

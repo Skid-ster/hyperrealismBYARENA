@@ -3,6 +3,19 @@
   "source": "https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block",
   "source_commit": "6c088630459d8ca369ef0d6c07636d7d63a3b0f1",
   "textures": {
+    "acacia_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0439f5ab4b2866d681d11376273f9b2d87ffa268",
+      "has_mcmeta": false,
+      "target_rgb": [
+        103,
+        97,
+        87
+      ]
+    },
     "acacia_planks": {
       "dimensions": [
         16,
@@ -300,6 +313,19 @@
         21,
         138,
         145
+      ]
+    },
+    "dark_oak_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9992db20f8993c07a05ede329d3afb1c3e49b6db",
+      "has_mcmeta": false,
+      "target_rgb": [
+        60,
+        47,
+        26
       ]
     },
     "dark_oak_planks": {
@@ -614,6 +640,19 @@
         123
       ]
     },
+    "jungle_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a9ca8c6e41b667d4aa1f13d8de90ce5e6939937a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        85,
+        68,
+        25
+      ]
+    },
     "jungle_planks": {
       "dimensions": [
         16,
@@ -872,6 +911,19 @@
         98,
         38,
         38
+      ]
+    },
+    "oak_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ddc88abc3d7f70963715f50c63701b2fb40fc992",
+      "has_mcmeta": false,
+      "target_rgb": [
+        109,
+        85,
+        51
       ]
     },
     "oak_planks": {
@@ -1210,6 +1262,19 @@
         216,
         203,
         156
+      ]
+    },
+    "spruce_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7b3a11b8dd0a540e628407d86a3fe52c332b313c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        59,
+        38,
+        17
       ]
     },
     "spruce_planks": {

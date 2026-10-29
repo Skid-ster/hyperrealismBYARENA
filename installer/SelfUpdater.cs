@@ -25,7 +25,7 @@ namespace HyperRealismInstaller
 
     internal static class SelfUpdater
     {
-        internal const string CurrentTag = "v0.1.0-installer.6";
+        internal const string CurrentTag = "v0.1.0-installer.7";
         internal const string AssetName = "HyperRealism128-Installer.exe";
 
         internal static Version ParseVersion(string tag)
