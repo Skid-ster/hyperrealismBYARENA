@@ -22,6 +22,8 @@ pub struct Material {
     pub license: Option<String>,
     pub albedo: String,
     pub roughness: Option<String>,
+    /// Packed ambient occlusion (R), roughness (G), metallic (B). B is ignored.
+    pub arm: Option<String>,
     pub normal: Option<String>,
     pub height: Option<String>,
     pub ao: Option<String>,
@@ -110,11 +112,18 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         }
         for path in std::iter::once(&material.albedo)
             .chain(material.roughness.iter())
+            .chain(material.arm.iter())
             .chain(material.normal.iter())
             .chain(material.height.iter())
             .chain(material.ao.iter())
         {
             safe_file(root, path)?;
+        }
+        if material.arm.is_some() && (material.roughness.is_some() || material.ao.is_some()) {
+            return Err(format!(
+                "{}: arm cannot be combined with separate roughness or ao maps",
+                material.id
+            ));
         }
         if material.normal_y != "directx" && material.normal_y != "opengl" {
             return Err(format!(
@@ -245,6 +254,7 @@ pub fn input_hashes(m: &Manifest, root: &Path) -> Result<BTreeMap<String, String
     for material in &m.materials {
         for path in std::iter::once(&material.albedo)
             .chain(material.roughness.iter())
+            .chain(material.arm.iter())
             .chain(material.normal.iter())
             .chain(material.height.iter())
             .chain(material.ao.iter())

@@ -16,8 +16,11 @@ Haven API. Hashes for every bundled image are pinned in
 | `rusted_shutter` | [Rusted Shutter](https://polyhaven.com/a/rusted_shutter) | Dimitrios Savva | albedo, OpenGL normal, roughness |
 | `cotton_jersey` | [Cotton Jersey](https://polyhaven.com/a/cotton_jersey) | Rico Cilliers, colormass | albedo, OpenGL normal, roughness; used as a wool stand-in |
 | `walnut` | [Walnut Veneer](https://polyhaven.com/a/walnut_veneer) | Poly Haven | albedo, roughness; no normal map |
+| `forest_ground` | [Forest Ground 04](https://polyhaven.com/a/forest_ground_04) | Rob Tuytel, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic |
+| `sandstone_cracks` | [Sandstone Cracks](https://polyhaven.com/a/sandstone_cracks) | Rob Tuytel | albedo, OpenGL normal, packed AO/roughness/metallic |
+| `aerial_sand` | [Aerial Beach 01](https://polyhaven.com/a/aerial_beach_01) | Rob Tuytel | albedo, OpenGL normal, roughness |
 
-All except `walnut` were sourced from a [documented CC0 redistribution](https://github.com/1493-ZA/Lil-Jeff-Simulator/blob/0e2989916fe5da64015e27b67abbe4464e94abf6/public/models/CREDITS.md)
+The first six materials listed above were sourced from a [documented CC0 redistribution](https://github.com/1493-ZA/Lil-Jeff-Simulator/blob/0e2989916fe5da64015e27b67abbe4464e94abf6/public/models/CREDITS.md)
 at commit `0e2989916fe5da64015e27b67abbe4464e94abf6`. The building and street maps are 1024px JPEGs; the cotton jersey maps are
 512px JPEGs. `walnut` came from the [documented
 CC0 redistribution](https://github.com/jasmine314-dev/dm-portal-assets/tree/2cee5cfb6cd7f3e73cfb47259f0106f5fcece65b)
@@ -26,7 +29,17 @@ at commit `2cee5cfb6cd7f3e73cfb47259f0106f5fcece65b`, where the diffuse is
 those redistributed versions; the generator resizes and transforms them at
 build time. They are not the original full-resolution Poly Haven files.
 
-The 96 texture names and approximate sRGB color targets were checked against
+`forest_ground` and `sandstone_cracks` were sourced from a [documented
+CC0 redistribution](https://github.com/gotzawal/morglay/blob/b462748f1e2c2cf2288de615089c79d69ce47b08/editor/library/LICENSES.md)
+at commit `b462748f1e2c2cf2288de615089c79d69ce47b08`. The mirror resized and
+JPEG-encoded the maps, using an OpenGL normal and packed ARM (AO, roughness,
+metallic) channels. The included files are unmodified from that mirror.
+`aerial_sand` uses 2K original JPEGs from the [documented CC0 redistribution](https://github.com/IOES-Lab/POSIM-Terrain/blob/df742f903aeced7dd4d9caf9f62b94302f886e03/src/posim_terrain/assets/seabed/manifest.json)
+at commit `df742f903aeced7dd4d9caf9f62b94302f886e03`. Its 30-meter aerial scan
+is an approximate sand stand-in, and rooted dirt uses the same forest-ground
+source as ordinary dirt rather than authentic distinct roots.
+
+The 103 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These

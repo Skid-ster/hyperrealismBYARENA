@@ -1,6 +1,6 @@
 ## Experimental preview — not the finished pack
 
-This release replaces **96 block textures** for Minecraft Java 26.3, not the requested complete 280-texture pack. The rest of the game remains vanilla or uses other enabled packs. The seven reused material sets and procedural ore are experimental approximations; in-game visual quality and shader behavior have not been validated. It is a CPU-generated preview, not an RTX-optimized release. Animations, GPU acceleration, and many materials are still missing.
+This release replaces **103 block textures** for Minecraft Java 26.3, not the requested complete 280-texture pack. The rest of the game remains vanilla or uses other enabled packs. The ten reused material sets and procedural ore are experimental approximations; in-game visual quality and shader behavior have not been validated. It is a CPU-generated preview, not an RTX-optimized release. Animations, GPU acceleration, and many materials are still missing. This update adds experimental dirt, sand and sandstone textures, plus packed AO/roughness input support.
 
 ### Download and install
 

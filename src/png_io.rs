@@ -133,6 +133,18 @@ pub fn read_material(path: &Path) -> Result<Rgba, String> {
 /// Decode the red/gray channel as linear data, preserving 16-bit PNG precision.
 /// JPEG and 8-bit PNG samples are interpreted as unorm, with no gamma transform.
 pub fn read_linear_scalar(path: &Path) -> Result<(usize, usize, Vec<f32>), String> {
+    read_linear_channel(path, 0)
+}
+
+/// Decode a linear RGB channel from PNG/JPEG. Grayscale is replicated.
+/// PNG retains 16-bit precision; samples are never gamma-converted.
+pub fn read_linear_channel(
+    path: &Path,
+    channel: usize,
+) -> Result<(usize, usize, Vec<f32>), String> {
+    if channel > 2 {
+        return Err("linear channel must be 0, 1, or 2".into());
+    }
     use std::io::Read;
     let mut file = File::open(path).map_err(|e| format!("{}: {e}", path.display()))?;
     let mut header = [0u8; 8];
@@ -147,7 +159,7 @@ pub fn read_linear_scalar(path: &Path) -> Result<(usize, usize, Vec<f32>), Strin
             image
                 .pixels
                 .chunks_exact(4)
-                .map(|p| p[0] as f32 / 255.0)
+                .map(|p| p[channel] as f32 / 255.0)
                 .collect(),
         ));
     }
@@ -179,6 +191,14 @@ pub fn read_linear_scalar(path: &Path) -> Result<(usize, usize, Vec<f32>), Strin
         png::ColorType::Rgba => 4,
         _ => return Err(format!("{}: unsupported PNG color type", path.display())),
     };
+    let channel = if matches!(
+        info.color_type,
+        png::ColorType::Grayscale | png::ColorType::GrayscaleAlpha
+    ) {
+        0
+    } else {
+        channel
+    };
     let (bytes_per_sample, div) = match info.bit_depth {
         png::BitDepth::Eight => (1, 255.0),
         png::BitDepth::Sixteen => (2, 65535.0),
@@ -188,9 +208,10 @@ pub fn read_linear_scalar(path: &Path) -> Result<(usize, usize, Vec<f32>), Strin
         .chunks_exact(channels * bytes_per_sample)
         .map(|p| {
             if bytes_per_sample == 1 {
-                p[0] as f32 / div
+                p[channel] as f32 / div
             } else {
-                u16::from_be_bytes([p[0], p[1]]) as f32 / div
+                let offset = channel * 2;
+                u16::from_be_bytes([p[offset], p[offset + 1]]) as f32 / div
             }
         })
         .collect();

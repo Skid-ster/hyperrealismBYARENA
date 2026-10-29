@@ -2,8 +2,8 @@
 
 This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 128×128 Minecraft Java 26.3 block textures and
-LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 96
-experimental outputs based on seven CC0 Poly Haven materials; it is **not** the
+LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 103
+experimental outputs based on ten CC0 Poly Haven materials; it is **not** the
 requested 280-texture catalog or a finished photorealistic pack. A separate
 synthetic manifest contains eight test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
@@ -14,10 +14,10 @@ See [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
 ## Download and install the experimental preview
 
 No Rust installation is needed to use the prebuilt pack. Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.1/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.2/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
-96 textures replace only a subset of the game; the rest remain vanilla or come
+103 textures replace only a subset of the game; the rest remain vanilla or come
 from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. It has not yet been tested in Minecraft.
 
@@ -26,7 +26,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.1/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.2/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -66,7 +66,7 @@ Outputs:
   SHA-256 hashes of the manifest and input maps (outside the pack).
 
 The ZIP's name is a target artifact name, **not** an indication that the full
-v1.0 pack is finished. The `work` starter manifest uses seven CC0 Poly Haven
+v1.0 pack is finished. The `work` starter manifest uses ten CC0 Poly Haven
 materials; `test_assets` contains synthetic test inputs. See
 `work/ASSET_CREDITS.md`. A LabPBR-compatible shader is required for PBR maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
 on your Windows 11 machine remain outstanding.
@@ -101,7 +101,10 @@ resolved inside the manifest's directory and must not escape it:
 `normal`, `roughness`, `height`, and `ao` are optional PNG or JPEG maps;
 `normal_y` is `directx` (default) or `opengl`. Roughness, height and AO use the
 red/gray channel as linear 0–1 data; 16-bit PNG precision is preserved for
-these scalar maps. Roughness defaults to 0.8 and AO to 1. If height is absent,
+these scalar maps. Alternatively, `arm` is a packed PNG/JPEG with linear AO
+in red and roughness in green; its metallic blue channel is ignored and LabPBR
+metal IDs must be chosen separately. `arm` cannot be combined with separate
+`ao` or `roughness`. Roughness defaults to 0.8 and AO to 1. If height is absent,
 a luminance-based approximation is used; without a normal map, normals are
 derived from height. When a normal map is present, it is combined with recipe
 relief without adding the height-map gradients twice. JPEG alpha is opaque;
@@ -178,8 +181,8 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand the 96-output starter to the requested catalog; acquire appropriate
-  materials for each family and review palette/geometry in game. This 96-output
+- Expand the 103-output starter to the requested catalog; acquire appropriate
+  materials for each family and review palette/geometry in game. This 103-output
   set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.

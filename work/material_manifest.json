@@ -61,6 +61,33 @@
       "normal": "materials/cotton_jersey/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/cotton_jersey/roughness.jpg"
+    },
+    {
+      "id": "forest_ground",
+      "source": "Forest Ground 04: https://polyhaven.com/a/forest_ground_04; creator(s): Rob Tuytel and Rico Cilliers",
+      "license": "CC0-1.0",
+      "albedo": "materials/forest_ground/color.jpg",
+      "normal": "materials/forest_ground/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/forest_ground/arm.jpg"
+    },
+    {
+      "id": "sandstone_cracks",
+      "source": "Sandstone Cracks: https://polyhaven.com/a/sandstone_cracks; creator(s): Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/sandstone_cracks/color.jpg",
+      "normal": "materials/sandstone_cracks/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/sandstone_cracks/arm.jpg"
+    },
+    {
+      "id": "aerial_sand",
+      "source": "Aerial Beach 01: https://polyhaven.com/a/aerial_beach_01; creator(s): Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/aerial_sand/color.jpg",
+      "normal": "materials/aerial_sand/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/aerial_sand/roughness.jpg"
     }
   ],
   "textures": [
@@ -1775,6 +1802,111 @@
         33
       ],
       "ore_f0": 10
+    },
+    {
+      "name": "dirt",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        134,
+        96,
+        67
+      ]
+    },
+    {
+      "name": "coarse_dirt",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        119,
+        86,
+        59
+      ]
+    },
+    {
+      "name": "rooted_dirt",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        144,
+        104,
+        77
+      ]
+    },
+    {
+      "name": "sand",
+      "material": "aerial_sand",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        219,
+        207,
+        163
+      ]
+    },
+    {
+      "name": "red_sand",
+      "material": "aerial_sand",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        191,
+        103,
+        33
+      ]
+    },
+    {
+      "name": "sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        216,
+        203,
+        156
+      ]
+    },
+    {
+      "name": "red_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        187,
+        99,
+        29
+      ]
     }
   ],
   "checksums": {
@@ -1797,6 +1929,15 @@
     "materials/rusted_shutter/normal.jpg": "c140aafd2fb4f691aecca720c88bd1131f4bb03555efbaf3936997f2f52088a7",
     "materials/cotton_jersey/color.jpg": "ac428ff21d00d3d92f780113c69978de6e8126a6d3b75e5bfba10404b97d981d",
     "materials/cotton_jersey/normal.jpg": "c886ddf51c805aa1a16352fa2e2738944ed6aee79f17a9f1519548caddfa52f3",
-    "materials/cotton_jersey/roughness.jpg": "db14af3239b6f8cde9ab16c01c940eb66615dd7b635086e138494db871a3eb64"
+    "materials/cotton_jersey/roughness.jpg": "db14af3239b6f8cde9ab16c01c940eb66615dd7b635086e138494db871a3eb64",
+    "materials/forest_ground/color.jpg": "892c12442d35cdd01a3b5af56447fa7ed0221157255a040c1442b60b8410cb40",
+    "materials/forest_ground/normal.jpg": "cf4c1793a7cdb81e4fdff220222d42f549c0d2bde680f0f2ee2beccae324b82a",
+    "materials/forest_ground/arm.jpg": "e2f4fe1721748dabe24e7649ce0d870c5c31163e56eea67f1ece4b685b16ed90",
+    "materials/sandstone_cracks/color.jpg": "36d8eb21d3770e11ae2759a9ecda5717423c1fe7b49f26805bea4a68ba4f9b57",
+    "materials/sandstone_cracks/normal.jpg": "da7c48eab161384db47d7ab96ba7680e0cda639aaebd5f6c7574cc59edddd6f1",
+    "materials/sandstone_cracks/arm.jpg": "6854b3b5bc2448c86349b21cfa34b5cae9b0c147e2b1085512cd829a56cd4cf2",
+    "materials/aerial_sand/color.jpg": "1803d7e2861b304bea6d2e124dcd4c657fcb93843b84c17bb2db98ce48a87e4e",
+    "materials/aerial_sand/normal.jpg": "0f35185b7225fe2027897bb7e4586c7deb048817524f1ed104fdae7ce80bdc06",
+    "materials/aerial_sand/roughness.jpg": "318b440c109de7411f9e7443f38ae3cf873f34e90afd762c931bae3b23426da2"
   }
 }

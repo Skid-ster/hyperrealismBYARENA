@@ -306,12 +306,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 20);
+    assert_eq!(hashes.len(), 29);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 96);
+    assert_eq!(m.textures.len(), 103);
     for t in &m.textures {
         let entry = &entries[&t.name];
         assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));
@@ -462,5 +462,72 @@ fn transparent_albedo_is_filtered_without_color_bleeding() {
         .chunks_exact(4)
         .filter(|p| p[3] > 0)
         .all(|p| p[0] >= 253 && p[1] == 0 && p[2] == 0));
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn packed_arm_uses_occlusion_and_roughness_not_metallic() {
+    use hyperrealism_core::png_io::{read, write};
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp =
+        std::env::temp_dir().join(format!("hyperrealism-arm-{}-{unique}", std::process::id()));
+    fs::create_dir_all(&temp).unwrap();
+    let mut albedo = Vec::new();
+    let mut arm = Vec::new();
+    for _ in 0..64 * 64 {
+        albedo.extend_from_slice(&[128, 128, 128, 255]);
+        arm.extend_from_slice(&[64, 144, 255, 255]);
+    }
+    write(&temp.join("color.png"), 64, 64, &albedo).unwrap();
+    write(&temp.join("arm.png"), 64, 64, &arm).unwrap();
+    let base = serde_json::json!({"version":1,"materials":[{"id":"base","albedo":"color.png","arm":"arm.png"}],"textures":[{"name":"stone","material":"base","recipe":"material","tint":[255,255,255],"f0":10}]});
+    fs::write(
+        temp.join("material_manifest.json"),
+        serde_json::to_vec(&base).unwrap(),
+    )
+    .unwrap();
+    let output = temp.join("out");
+    let r = run(&temp, &output, "2");
+    assert!(r.status.success(), "{}", String::from_utf8_lossy(&r.stderr));
+    let n = read(&output.join("pack/assets/minecraft/textures/block/stone_n.png")).unwrap();
+    let s = read(&output.join("pack/assets/minecraft/textures/block/stone_s.png")).unwrap();
+    assert!(n.pixels.chunks_exact(4).all(|p| p[2] == 64));
+    let smooth = ((1.0_f32 - (144.0_f32 / 255.0).sqrt()) * 255.0).round() as u8;
+    assert!(s
+        .pixels
+        .chunks_exact(4)
+        .all(|p| p[0] == smooth && p[1] == 10));
+    let report: serde_json::Value =
+        serde_json::from_slice(&fs::read(output.join("build_report.json")).unwrap()).unwrap();
+    assert!(report["input_sha256"]["arm.png"].is_string());
+    let mut invalid = base;
+    invalid["materials"][0]["roughness"] = "arm.png".into();
+    fs::write(
+        temp.join("material_manifest.json"),
+        serde_json::to_vec(&invalid).unwrap(),
+    )
+    .unwrap();
+    let failed = temp.join("invalid");
+    assert!(!run(&temp, &failed, "2").status.success());
+    assert!(!failed.exists());
+    let input16 = temp.join("arm16.png");
+    {
+        let file = fs::File::create(&input16).unwrap();
+        let mut encoder = png::Encoder::new(file, 1, 1);
+        encoder.set_color(png::ColorType::Rgb);
+        encoder.set_depth(png::BitDepth::Sixteen);
+        encoder
+            .write_header()
+            .unwrap()
+            .write_image_data(&[0x12, 0x34, 0xAB, 0xCD, 0xFF, 0xFE])
+            .unwrap();
+    }
+    let (_, _, red) = hyperrealism_core::png_io::read_linear_channel(&input16, 0).unwrap();
+    let (_, _, green) = hyperrealism_core::png_io::read_linear_channel(&input16, 1).unwrap();
+    assert!((red[0] - 0x1234 as f32 / 65535.0).abs() < 1e-7);
+    assert!((green[0] - 0xABCD as f32 / 65535.0).abs() < 1e-7);
     fs::remove_dir_all(temp).unwrap();
 }

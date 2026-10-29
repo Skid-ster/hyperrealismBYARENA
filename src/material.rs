@@ -37,8 +37,12 @@ fn plane<F: Fn(&[u8]) -> f32>(image: &Rgba, f: F) -> Result<Vec<f32>, String> {
 }
 
 pub fn scalar(root: &Path, name: &str) -> Result<Vec<f32>, String> {
+    scalar_channel(root, name, 0)
+}
+
+fn scalar_channel(root: &Path, name: &str, channel: usize) -> Result<Vec<f32>, String> {
     let path = manifest::safe_file(root, name)?;
-    let (width, height, source) = png_io::read_linear_scalar(&path)?;
+    let (width, height, source) = png_io::read_linear_channel(&path, channel)?;
     let mut result = if width == WORK && height == WORK {
         source
     } else {
@@ -98,21 +102,29 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
     } else {
         None
     };
-    let roughness = material
-        .roughness
-        .as_deref()
-        .map(|p| scalar(root, p))
-        .transpose()?;
+    let roughness = if let Some(arm) = &material.arm {
+        Some(scalar_channel(root, arm, 1)?)
+    } else {
+        material
+            .roughness
+            .as_deref()
+            .map(|p| scalar(root, p))
+            .transpose()?
+    };
     let height = material
         .height
         .as_deref()
         .map(|p| scalar(root, p))
         .transpose()?;
-    let ao = material
-        .ao
-        .as_deref()
-        .map(|p| scalar(root, p))
-        .transpose()?;
+    let ao = if let Some(arm) = &material.arm {
+        Some(scalar_channel(root, arm, 0)?)
+    } else {
+        material
+            .ao
+            .as_deref()
+            .map(|p| scalar(root, p))
+            .transpose()?
+    };
     Ok(Prepared {
         albedo: rgb,
         mean_linear,

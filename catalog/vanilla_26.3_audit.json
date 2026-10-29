@@ -198,6 +198,19 @@
         105
       ]
     },
+    "coarse_dirt": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "dabab84158572b5c881b810107ad5a570ef28f25",
+      "has_mcmeta": false,
+      "target_rgb": [
+        119,
+        86,
+        59
+      ]
+    },
     "cobblestone": {
       "dimensions": [
         16,
@@ -430,6 +443,19 @@
         189,
         188,
         189
+      ]
+    },
+    "dirt": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3f70996d2b9d5094afafc2cd2cdc090d9f38a486",
+      "has_mcmeta": false,
+      "target_rgb": [
+        134,
+        96,
+        67
       ]
     },
     "emerald_ore": {
@@ -1056,6 +1082,32 @@
         51
       ]
     },
+    "red_sand": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a18a40250d9777d751ae0e2630281a82874a6c86",
+      "has_mcmeta": false,
+      "target_rgb": [
+        191,
+        103,
+        33
+      ]
+    },
+    "red_sandstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0b78b05b38054dc61cbedc38695d7e0acc942a87",
+      "has_mcmeta": false,
+      "target_rgb": [
+        187,
+        99,
+        29
+      ]
+    },
     "red_wool": {
       "dimensions": [
         16,
@@ -1080,6 +1132,45 @@
         140,
         110,
         110
+      ]
+    },
+    "rooted_dirt": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "afd6dac79ab787490053a42b9bc682dfa9561b36",
+      "has_mcmeta": false,
+      "target_rgb": [
+        144,
+        104,
+        77
+      ]
+    },
+    "sand": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2b35d75afd774390695173ec7d642cd2e6afdb93",
+      "has_mcmeta": false,
+      "target_rgb": [
+        219,
+        207,
+        163
+      ]
+    },
+    "sandstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "65fa02b25d4ae8bb698f235a5516fd9d67f47e1c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        216,
+        203,
+        156
       ]
     },
     "spruce_planks": {
