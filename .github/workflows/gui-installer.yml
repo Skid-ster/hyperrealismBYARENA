@@ -7,7 +7,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Compile and test installer
         shell: powershell
-        run: ./installer/build.ps1
+        run: |
+          try {
+            & ./installer/build.ps1 *> "$env:RUNNER_TEMP\installer-build.log"
+            if ($LASTEXITCODE -ne 0) { throw "Installer build failed with exit code $LASTEXITCODE" }
+          } catch {
+            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Host "::error::$($_)" }
+            Write-Host "::error::$($_.Exception.Message)"
+            exit 1
+          }
       - name: Test live download to temporary folder
         if: github.event_name == 'push'
         shell: powershell
