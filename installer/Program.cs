@@ -218,7 +218,7 @@ namespace HyperRealismInstaller
             var news = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
             var newsLabel = new Label { Dock = DockStyle.Fill, Padding = new Padding(29, 0, 0, 0), TextAlign = ContentAlignment.MiddleLeft, ForeColor = Foreground, Text = "HyperRealism128  •  Experimental preview" };
             var newsIcon = new PictureBox { Image = Glyph("news", 18), Size = new Size(18, 18), Location = new Point(12, 4), SizeMode = PictureBoxSizeMode.CenterImage };
-            var more = new LinkLabel { Text = "More info", LinkColor = Foreground, ActiveLinkColor = Green, TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Right, Width = 90, Padding = new Padding(0, 0, 9, 0) };
+            var more = new LinkLabel { Text = "More info", LinkBehavior = LinkBehavior.HoverUnderline, LinkColor = Foreground, ActiveLinkColor = Green, TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Right, Width = 90, Padding = new Padding(0, 0, 9, 0) };
             more.LinkClicked += delegate { try { System.Diagnostics.Process.Start("https://github.com/Skid-ster/hyperrealismBYARENA/releases"); } catch (Exception ex) { ShowError(ex); } };
             news.Controls.Add(newsLabel); news.Controls.Add(more); news.Controls.Add(newsIcon); newsIcon.BringToFront();
             news.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(75, 75, 75))) e.Graphics.DrawLine(pen, 0, 0, news.Width, 0); };
