@@ -1,10 +1,11 @@
 # HyperRealism Rust — CPU prototype
 
 This is an **early prototype**, not the requested complete production pack.
-It generates a small, manifest-defined set of 128×128 Minecraft Java 26.3 block
-textures and LabPBR 1.3 maps using a CPU-only pipeline. The included synthetic
-manifest contains eight examples; it does **not** contain the 280-texture catalog,
-real Poly Haven assets, or a photorealistic finished pack. The repository did
+It generates manifest-defined 128×128 Minecraft Java 26.3 block textures and
+LabPBR 1.3 maps using a CPU-only pipeline. The starter catalog contains 80
+experimental outputs based on seven CC0 Poly Haven materials; it is **not** the
+requested 280-texture catalog or a finished photorealistic pack. A separate
+synthetic manifest contains eight test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
 implementation, not a port or a claim of matching its results.
 
@@ -18,25 +19,26 @@ repository:
 
 ```powershell
 cargo test --locked
-cargo run --locked --release -- --input test_assets --output test_output --cpu-only
+cargo run --locked --release -- --input work --output pilot_output --cpu-only
 ```
 
 The output directory must not already contain `pack`, `dist`, or
-`contact_sheet.png`, or `build_report.json`; choose a fresh `--output` directory for another run.
+`contact_sheet.png`, or `build_report.json`; choose a fresh `--output` directory
+for another run.
 Outputs:
 
-- `test_output/pack/` — the example resource pack, including metadata and
+- `pilot_output/pack/` — the starter resource pack, including metadata and
   `assets/minecraft/textures/block/{name}.png`, `{name}_n.png`, `{name}_s.png`.
-- `test_output/dist/HyperRealism128-v1.0-MC26.3.zip` — pack contents at ZIP root.
-- `test_output/contact_sheet.png` — the albedo examples in manifest order,
+- `pilot_output/dist/HyperRealism128-v1.0-MC26.3.zip` — pack contents at ZIP root.
+- `pilot_output/contact_sheet.png` — the albedo examples in manifest order,
   four tiles per row (outside the pack).
-- `test_output/build_report.json` — output recipes, material provenance and
+- `pilot_output/build_report.json` — output recipes, material provenance and
   SHA-256 hashes of the manifest and input maps (outside the pack).
 
 The ZIP's name is a target artifact name, **not** an indication that the full
-v1.0 pack is finished. The bundled PNGs are deliberately synthetic for testing,
-not Poly Haven materials. A LabPBR-compatible shader is required to use the PBR
-maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
+v1.0 pack is finished. The `work` starter manifest uses seven CC0 Poly Haven
+materials; `test_assets` contains synthetic test inputs. See
+`work/ASSET_CREDITS.md`. A LabPBR-compatible shader is required for PBR maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
 on your Windows 11 machine remain outstanding.
 
 `--threads N` controls the Rayon pool (default: Rayon determines the thread
@@ -74,11 +76,20 @@ a luminance-based approximation is used; without a normal map, normals are
 derived from height. When a normal map is present, it is combined with recipe
 relief without adding the height-map gradients twice. JPEG alpha is opaque;
 CMYK JPEG is not supported. Source and license are optional, user-provided
-provenance fields and are recorded, not verified. `tint` is an sRGB multiplier, not a target palette
-match. Supported experimental recipes are `material` (preserve the source), `stone`,
-`brick`, `plank`, `moss`, `glass`, `metal`, `gem`, and `leaves`. These are simple procedural demonstrations,
+provenance fields and are recorded, not verified. `tint` is an sRGB multiplier,
+not a target palette match. An optional `target_color: [R,G,B]` applies a bounded gain to move the
+source's average linear color toward an approximate sRGB target; clipping,
+material variation, and recipe layers can change the final average. This is not
+a pixel-level palette match. Supported experimental recipes are `material`
+(preserve the source), `stone`,
+`brick`, `cracked_brick`, `cobble`, `moss_cobble`, `moss_brick`, `plank`,
+`moss`, `glass`, `metal`, `gem`, and `leaves`. These are simple procedural
+demonstrations,
 not finished material-specific recipes. Names must be lowercase ASCII letters,
-digits or underscores; output names are not validated against a game JAR.
+digits or underscores. The bundled catalog names and color hints were checked
+against a pinned 26.3 asset inventory (see `catalog/vanilla_26.3_audit.json`);
+they have not yet been validated in game. Custom names are not checked unless
+`--minecraft-jar` is supplied.
 F0 defaults to 10; 230–237 are hardcoded metal IDs, 255 is custom metal, and
 238–254 are rejected. Porosity defaults to 0 and must be 0–64. Emissive defaults
 to the LabPBR no-emission sentinel 255; values 0–254 are passed through.
@@ -102,7 +113,7 @@ those hashes alone do not establish a source's license or authenticity.
 To check texture **names** against a locally installed Minecraft client JAR:
 
 ```powershell
-cargo run --locked --release -- --input test_assets --output test_output2 --cpu-only --minecraft-jar "$env:APPDATA\.minecraft\versions\26.3\26.3.jar"
+cargo run --locked --release -- --input work --output pilot_output2 --cpu-only --minecraft-jar "$env:APPDATA\.minecraft\versions\26.3\26.3.jar"
 ```
 
 This fails on missing target paths or any `.png.mcmeta` sidecar, because
@@ -113,8 +124,9 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Automated material acquisition and an audited 280-texture catalog,
-  vanilla-informed palettes and robust recipe definitions.
+- Expand the 80-output starter to the requested catalog; acquire appropriate
+  materials for each family and review palette/geometry in game. This 80-output
+  set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.
 - `fast_image_resize` SIMD, benchmarked CPU/GPU crossover, and safe Windows 11

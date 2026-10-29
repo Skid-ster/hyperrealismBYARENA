@@ -38,6 +38,8 @@ pub struct Texture {
     pub material: String,
     pub recipe: String,
     pub tint: [u8; 3],
+    /// Optional approximate sRGB target for the average source color.
+    pub target_color: Option<[u8; 3]>,
     #[serde(default = "default_f0")]
     pub f0: u8,
     #[serde(default)]
@@ -124,7 +126,19 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             return Err(format!("{}: unknown material {}", t.name, t.material));
         }
         if ![
-            "stone", "brick", "plank", "moss", "glass", "metal", "gem", "leaves", "material",
+            "stone",
+            "brick",
+            "cracked_brick",
+            "cobble",
+            "moss_cobble",
+            "plank",
+            "moss",
+            "moss_brick",
+            "glass",
+            "metal",
+            "gem",
+            "leaves",
+            "material",
         ]
         .contains(&t.recipe.as_str())
         {

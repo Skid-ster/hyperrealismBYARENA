@@ -2,7 +2,7 @@ use crate::{
     labpbr::{normal_pixel, normals_from_height, specular_pixel, F0},
     manifest::{self, Texture},
     material::{self, Prepared},
-    png_io,
+    png_io, recipes,
     resample::resize_wrap,
     zip,
 };
@@ -28,54 +28,6 @@ fn unit(v: f32) -> u8 {
     (v.clamp(0.0, 1.0) * 255.0).round() as u8
 }
 
-fn tile_pattern(recipe: &str, x: usize, y: usize) -> (f32, f32, f32) {
-    let wave = (((x as f32 * std::f32::consts::TAU / 128.0).sin()
-        + (y as f32 * std::f32::consts::TAU / 128.0).cos())
-        * 0.5
-        + 0.5)
-        .clamp(0.0, 1.0);
-    match recipe {
-        "material" => (1.0, 0.0, 1.0),
-        "brick" => {
-            let row = y / 128;
-            let xx = (x + (row % 2) * 64) % 128;
-            let mortar = y % 128 < 7 || xx < 7;
-            if mortar {
-                (0.5, -0.15, 1.0)
-            } else {
-                (1.0, 0.05, 1.0)
-            }
-        }
-        "plank" => {
-            let seam = y % 128 < 5;
-            if seam {
-                (0.45, -0.12, 1.0)
-            } else {
-                (0.91 + 0.09 * wave, 0.04, 1.0)
-            }
-        }
-        "moss" => (0.8 + 0.2 * wave, 0.05 * wave, 1.0),
-        "glass" => {
-            let edge = x % 128 < 5 || y % 128 < 5;
-            if edge {
-                (0.8, 0.03, 0.75)
-            } else {
-                (1.0, 0.0, 0.25)
-            }
-        }
-        "metal" => (0.92 + 0.08 * wave, 0.0, 1.0),
-        "gem" => (0.8 + 0.2 * wave, 0.08 * wave, 1.0),
-        "leaves" => {
-            let a = if ((x / 16 + y / 16) % 7 == 0) && wave < 0.6 {
-                0.0
-            } else {
-                1.0
-            };
-            (0.85 + 0.15 * wave, 0.04 * wave, a)
-        }
-        _ => (0.9 + 0.1 * wave, 0.0, 1.0),
-    }
-}
 fn resize(values: &[f32]) -> Result<Vec<f32>, String> {
     resize_wrap(values, WORK, WORK, SIZE, SIZE).map_err(str::to_string)
 }
@@ -86,15 +38,37 @@ fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
     let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
     let mut relief_map = vec![0.0; n];
     let tint = t.tint.map(|v| material::srgb_to_linear(v as f32 / 255.0));
+    // The target matches the approximate average in linear light. It is not a
+    // pixel-by-pixel vanilla palette copy; clipping and recipe shading affect it.
+    let gain: [f32; 3] = std::array::from_fn(|c| {
+        let target_gain = t
+            .target_color
+            .map(|rgb| {
+                let target = material::srgb_to_linear(rgb[c] as f32 / 255.0);
+                if img.mean_linear[c] > 1e-6 {
+                    (target / img.mean_linear[c]).min(16.0)
+                } else {
+                    0.0
+                }
+            })
+            .unwrap_or(1.0);
+        tint[c] * target_gain
+    });
+    let seed = recipes::seed(&t.name);
     for y in 0..WORK {
         for x in 0..WORK {
             let i = y * WORK + x;
-            let (shade, relief, opacity) = tile_pattern(&t.recipe, x, y);
+            let pattern = recipes::evaluate(&t.recipe, x, y, seed);
+            let (shade, relief, opacity) = (pattern.shade, pattern.relief, pattern.opacity);
             let source_alpha = img.albedo[3][i];
             let alpha = source_alpha * opacity;
             channels[3][i] = alpha;
             for c in 0..3 {
-                channels[c][i] = img.albedo[c][i] * tint[c] * shade * opacity;
+                let base = img.albedo[c][i] * gain[c] * shade * opacity;
+                // Moss is a separate, seed-stable coherent layer, not a
+                // solid green tint over the entire material.
+                let moss = [0.045, 0.12, 0.025][c] * alpha;
+                channels[c][i] = base * (1.0 - pattern.moss) + moss * pattern.moss;
             }
             // With no height map, a mild luminance heuristic preserves the old
             // prototype's behavior. A normal map already supplies fine detail,
@@ -310,7 +284,7 @@ fn build_stage(
         "backend": "cpu",
         "resolution": SIZE,
         "working_resolution": WORK,
-        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "f0": t.f0, "porosity": t.porosity, "emissive": t.emissive})).collect::<Vec<_>>(),
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "f0": t.f0, "porosity": t.porosity, "emissive": t.emissive})).collect::<Vec<_>>(),
         "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "roughness": m.roughness, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,

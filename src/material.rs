@@ -12,6 +12,8 @@ pub const WORK: usize = 512;
 pub struct Prepared {
     /// Linear-light, premultiplied RGB and linear opacity.
     pub albedo: [Vec<f32>; 4],
+    /// Mean linear albedo weighted by alpha; used for optional palette adaptation.
+    pub mean_linear: [f32; 3],
     pub roughness: Option<Vec<f32>>,
     pub normal: Option<[Vec<f32>; 3]>,
     pub height: Option<Vec<f32>>,
@@ -70,6 +72,14 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
             *value = value.clamp(0.0, alpha);
         }
     }
+    let alpha_sum = rgb[3].iter().map(|&v| v as f64).sum::<f64>();
+    let mean_linear = std::array::from_fn(|c| {
+        if alpha_sum > 1e-8 {
+            (rgb[c].iter().map(|&v| v as f64).sum::<f64>() / alpha_sum) as f32
+        } else {
+            0.0
+        }
+    });
     drop(image);
     let normal = if let Some(path) = &material.normal {
         let image = png_io::read_material(&manifest::safe_file(root, path)?)?;
@@ -105,6 +115,7 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
         .transpose()?;
     Ok(Prepared {
         albedo: rgb,
+        mean_linear,
         roughness,
         normal,
         height,

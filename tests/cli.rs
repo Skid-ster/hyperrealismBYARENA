@@ -171,7 +171,7 @@ fn local_client_jar_preflight_checks_targets_before_writing() {
     let input = temp.join("input");
     fs::create_dir_all(&input).unwrap();
     fs::copy("test_assets/sample.jpg", input.join("albedo.jpg")).unwrap();
-    fs::write(input.join("material_manifest.json"),r#"{"version":1,"materials":[{"id":"base","albedo":"albedo.jpg","source":"synthetic fixture","license":"CC0"}],"checksums":{"albedo.jpg":"1a49aa3a280b16ec050937f5d1a6ea55e3f49e73fd48430e5a4cb0fd3101923f"},"textures":[{"name":"stone","material":"base","recipe":"material","tint":[255,255,255]}]}"#).unwrap();
+    fs::write(input.join("material_manifest.json"),r#"{"version":1,"materials":[{"id":"base","albedo":"albedo.jpg","source":"synthetic fixture","license":"CC0"}],"checksums":{"albedo.jpg":"1a49aa3a280b16ec050937f5d1a6ea55e3f49e73fd48430e5a4cb0fd3101923f"},"textures":[{"name":"stone","material":"base","recipe":"material","tint":[255,255,255],"target_color":[120,150,180]}]}"#).unwrap();
     let tree = temp.join("jar-tree");
     let blocks = tree.join("assets/minecraft/textures/block");
     fs::create_dir_all(&blocks).unwrap();
@@ -198,6 +198,16 @@ fn local_client_jar_preflight_checks_targets_before_writing() {
         "{}",
         String::from_utf8_lossy(&valid.stderr)
     );
+    let albedo = hyperrealism_core::png_io::read(
+        &temp.join("ok/pack/assets/minecraft/textures/block/stone.png"),
+    )
+    .unwrap();
+    assert!(albedo
+        .pixels
+        .chunks_exact(4)
+        .all(|p| (119..=121).contains(&p[0])
+            && (149..=151).contains(&p[1])
+            && (179..=181).contains(&p[2])));
     let report: serde_json::Value =
         serde_json::from_slice(&fs::read(temp.join("ok/build_report.json")).unwrap()).unwrap();
     assert_eq!(
@@ -254,4 +264,27 @@ fn scalar_png_16_bit_precision_is_preserved() {
     assert!((values[1] - 32769.0 / 65535.0).abs() < 1e-7);
     assert!(values[1] > values[0]);
     fs::remove_file(temp).unwrap();
+}
+
+#[test]
+fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
+    let root = Path::new("work");
+    let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
+    hyperrealism_core::manifest::validate(&m, root).unwrap();
+    let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
+    assert_eq!(hashes.len(), 20);
+    let audit: serde_json::Value =
+        serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
+    let entries = audit["textures"].as_object().unwrap();
+    assert_eq!(entries.len(), m.textures.len());
+    assert_eq!(m.textures.len(), 80);
+    for t in &m.textures {
+        let entry = &entries[&t.name];
+        assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));
+        assert_eq!(entry["has_mcmeta"], false);
+        assert_eq!(
+            entry["target_rgb"],
+            serde_json::json!(t.target_color.unwrap())
+        );
+    }
 }
