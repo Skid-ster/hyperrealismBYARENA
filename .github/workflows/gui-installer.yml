@@ -16,25 +16,6 @@ jobs:
             Write-Host "::error::$($_.Exception.Message)"
             exit 1
           }
-      - name: Capture sidebar for review
-        if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Review close button')
-        shell: powershell
-        run: |
-          $image = Join-Path $env:RUNNER_TEMP 'layout.png'
-          $p = Start-Process -FilePath ./installer-output/HyperRealism128-Installer.exe -ArgumentList @('--capture-ui', "`"$image`"") -Wait -PassThru
-          if ($p.ExitCode -ne 0) { throw 'Unable to capture GUI' }
-          Add-Type -AssemblyName System.Drawing
-          $bitmap = [System.Drawing.Bitmap]::FromFile($image)
-          $crop = $bitmap.Clone([System.Drawing.Rectangle]::new($bitmap.Width - 126, 69, 118, 360), $bitmap.PixelFormat)
-          $cropped = Join-Path $env:RUNNER_TEMP 'sidebar.png'
-          $crop.Save($cropped, [System.Drawing.Imaging.ImageFormat]::Png)
-          $crop.Dispose(); $bitmap.Dispose()
-          $data = [Convert]::ToBase64String([IO.File]::ReadAllBytes($cropped))
-          $size = 4000
-          for ($i = 0; $i -lt $data.Length; $i += $size) {
-            $n = [Math]::Min($size, $data.Length - $i)
-            Write-Host ("::notice title=SIDEBAR-{0:D3}::{1}" -f ($i / $size), $data.Substring($i, $n))
-          }
       - name: Test live download to temporary folder
         if: github.event_name == 'push'
         shell: powershell
