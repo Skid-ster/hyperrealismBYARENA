@@ -31,7 +31,7 @@ jobs:
   publish-preview-1:
     # This one-time, explicitly requested prerelease only runs for this commit
     # message on the session branch, after both Windows and Linux tests pass.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && github.event.head_commit.message == 'Publish experimental preview 1'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 1')
     needs: test
     runs-on: ubuntu-latest
     permissions:
