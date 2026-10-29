@@ -40,23 +40,54 @@ namespace HyperRealismInstaller
         }
     }
 
+    // WinForms' default disabled-button renderer makes text almost black on a
+    // dark surface. Render the compact launcher-style actions ourselves while
+    // retaining Button's keyboard and accessibility behavior.
+    internal sealed class LauncherButton : Button
+    {
+        private bool hovered;
+        private bool pressed;
+        protected override void OnMouseEnter(EventArgs e) { base.OnMouseEnter(e); hovered = true; Invalidate(); }
+        protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); hovered = false; pressed = false; Invalidate(); }
+        protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); if (e.Button == MouseButtons.Left) { pressed = true; Invalidate(); } }
+        protected override void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); pressed = false; Invalidate(); }
+        protected override void OnEnabledChanged(EventArgs e) { base.OnEnabledChanged(e); Invalidate(); }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            Color surface = Enabled && pressed ? FlatAppearance.MouseDownBackColor : Enabled && hovered ? FlatAppearance.MouseOverBackColor : BackColor;
+            using (var brush = new SolidBrush(surface)) e.Graphics.FillRectangle(brush, ClientRectangle);
+            int x = Padding.Left;
+            if (Image != null)
+            {
+                int y = (ClientSize.Height - Image.Height) / 2;
+                if (Enabled) e.Graphics.DrawImageUnscaled(Image, x, y);
+                else ControlPaint.DrawImageDisabled(e.Graphics, Image, x, y, surface);
+                x += Image.Width + 3;
+            }
+            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x - 2), ClientSize.Height);
+            TextRenderer.DrawText(e.Graphics, Text, Font, bounds, Enabled ? ForeColor : Color.FromArgb(145, 145, 145),
+                TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+            if (Focused && ShowFocusCues) ControlPaint.DrawFocusRectangle(e.Graphics, Rectangle.Inflate(ClientRectangle, -2, -2), ForeColor, surface);
+        }
+    }
+
     internal sealed class InstallerForm : Form
     {
         private readonly TextBox pathBox = new TextBox();
         private readonly Label folderStatus = new Label();
         private readonly Label result = new Label();
         private readonly ProgressBar progress = new ProgressBar();
-        private readonly Button browse = new Button();
-        private readonly Button openFolder = new Button();
-        private readonly Button check = new Button();
-        private readonly Button install = new Button();
-        private readonly Button close = new Button();
-        private readonly Button appUpdate = new Button();
-        private readonly Button toolBrowse = new Button();
-        private readonly Button toolOpen = new Button();
-        private readonly Button toolCheck = new Button();
-        private readonly Button toolApp = new Button();
-        private readonly Button sideBrowse = new Button();
+        private readonly LauncherButton browse = new LauncherButton();
+        private readonly LauncherButton openFolder = new LauncherButton();
+        private readonly LauncherButton check = new LauncherButton();
+        private readonly LauncherButton install = new LauncherButton();
+        private readonly LauncherButton close = new LauncherButton();
+        private readonly LauncherButton appUpdate = new LauncherButton();
+        private readonly LauncherButton toolBrowse = new LauncherButton();
+        private readonly LauncherButton toolOpen = new LauncherButton();
+        private readonly LauncherButton toolCheck = new LauncherButton();
+        private readonly LauncherButton toolApp = new LauncherButton();
+        private readonly LauncherButton sideBrowse = new LauncherButton();
         private static readonly Color Background = Color.FromArgb(34, 34, 34);
         private static readonly Color Surface = Color.FromArgb(50, 50, 50);
         private static readonly Color Sidebar = Color.FromArgb(49, 49, 49);
@@ -72,6 +103,12 @@ namespace HyperRealismInstaller
         internal InstallerForm(string startup)
         {
             Text = "HyperRealism128 Installer";
+            using (var bitmap = BlockIcon(32))
+            {
+                IntPtr handle = bitmap.GetHicon();
+                try { Icon = (Icon)System.Drawing.Icon.FromHandle(handle).Clone(); }
+                finally { DestroyIcon(handle); }
+            }
             StartPosition = FormStartPosition.CenterScreen;
             ClientSize = new Size(805, 502);
             MinimumSize = new Size(760, 535);
@@ -96,14 +133,17 @@ namespace HyperRealismInstaller
             StyleButton(toolOpen, "Open folder", "folder", 110, 34, true);
             StyleButton(toolCheck, "Pack update", "update", 112, 34, true);
             StyleButton(toolApp, "Installer update", "update", 136, 34, true);
-            var help = new Button(); StyleButton(help, "Help", "help", 72, 34, true);
+            var help = new LauncherButton(); StyleButton(help, "Help", "help", 72, 34, true);
             tools.Controls.Add(new Label { Text = "⋮", ForeColor = Color.FromArgb(120, 120, 120), Width = 9, Height = 32, TextAlign = ContentAlignment.MiddleCenter, Margin = Padding.Empty });
             tools.Controls.Add(toolBrowse); tools.Controls.Add(toolOpen); tools.Controls.Add(help); tools.Controls.Add(toolCheck); tools.Controls.Add(toolApp);
             var brand = new Panel { Dock = DockStyle.Right, Width = 150, BackColor = Surface };
             var brandIcon = new PictureBox { Image = BlockIcon(22), Size = new Size(22, 22), Location = new Point(5, 7), SizeMode = PictureBoxSizeMode.Normal };
             var brandLabel = new Label { Text = "HyperRealism128", ForeColor = Foreground, Location = new Point(31, 2), Size = new Size(115, 32), TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true };
             brand.Controls.Add(brandIcon); brand.Controls.Add(brandLabel);
-            toolbar.Controls.Add(tools); toolbar.Controls.Add(brand); brand.BringToFront();
+            var toolbarLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
+            toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
+            tools.Margin = Padding.Empty; brand.Margin = Padding.Empty; brand.Dock = DockStyle.Fill;
+            toolbarLayout.Controls.Add(tools, 0, 0); toolbarLayout.Controls.Add(brand, 1, 0); toolbar.Controls.Add(toolbarLayout);
             toolbar.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(72, 72, 72))) e.Graphics.DrawLine(pen, 0, toolbar.Height - 1, toolbar.Width, toolbar.Height - 1); };
             root.Controls.Add(toolbar, 0, 0);
 
@@ -224,6 +264,9 @@ namespace HyperRealismInstaller
             updateTimer.Start();
             FormClosed += delegate { updateTimer.Stop(); updateTimer.Dispose(); };
         }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern bool DestroyIcon(IntPtr handle);
 
         [DllImport("dwmapi.dll", PreserveSig = true)]
         private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attribute, ref int value, int size);
