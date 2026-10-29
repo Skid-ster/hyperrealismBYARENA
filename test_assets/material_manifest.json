@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "materials": [
+    {
+      "id": "synthetic",
+      "albedo": "diffuse.png",
+      "normal": "normal.png",
+      "normal_y": "directx",
+      "roughness": "roughness.png"
+    }
+  ],
+  "textures": [
+    {
+      "name": "stone",
+      "material": "synthetic",
+      "recipe": "stone",
+      "tint": [
+        210,
+        210,
+        210
+      ],
+      "f0": 10,
+      "porosity": 25
+    },
+    {
+      "name": "bricks",
+      "material": "synthetic",
+      "recipe": "brick",
+      "tint": [
+        205,
+        122,
+        105
+      ],
+      "f0": 10,
+      "porosity": 35
+    },
+    {
+      "name": "oak_planks",
+      "material": "synthetic",
+      "recipe": "plank",
+      "tint": [
+        205,
+        165,
+        105
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "moss_block",
+      "material": "synthetic",
+      "recipe": "moss",
+      "tint": [
+        112,
+        180,
+        103
+      ],
+      "f0": 10,
+      "porosity": 50
+    },
+    {
+      "name": "glass",
+      "material": "synthetic",
+      "recipe": "glass",
+      "tint": [
+        215,
+        235,
+        245
+      ],
+      "f0": 10,
+      "porosity": 0
+    },
+    {
+      "name": "iron_block",
+      "material": "synthetic",
+      "recipe": "metal",
+      "tint": [
+        212,
+        212,
+        212
+      ],
+      "f0": 230,
+      "porosity": 0
+    },
+    {
+      "name": "diamond_block",
+      "material": "synthetic",
+      "recipe": "gem",
+      "tint": [
+        108,
+        236,
+        225
+      ],
+      "f0": 43,
+      "porosity": 0
+    },
+    {
+      "name": "oak_leaves",
+      "material": "synthetic",
+      "recipe": "leaves",
+      "tint": [
+        100,
+        190,
+        100
+      ],
+      "f0": 10,
+      "porosity": 0
+    }
+  ]
+}

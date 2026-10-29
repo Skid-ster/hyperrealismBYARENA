@@ -1,53 +1,100 @@
-# HyperRealism Rust — CPU primitives (work in progress)
+# HyperRealism Rust — CPU prototype
 
-This repository currently contains **only a small CPU library, not a working
-resource-pack generator**. The GitHub `main` revision available during this work
-contained just a README; the Python reference, `work/material_manifest.json`,
-material assets, vanilla palette data and texture inventory were not present.
-They are required to reproduce the original pipeline without inventing its
-input format and output recipes.
+This is an **early prototype**, not the requested complete production pack.
+It generates a small, manifest-defined set of 128×128 Minecraft Java 26.3 block
+textures and LabPBR 1.3 maps using a CPU-only pipeline. The included synthetic
+manifest contains eight examples; it does **not** contain the 280-texture catalog,
+real Poly Haven assets, or a photorealistic finished pack. The repository did
+not contain the earlier Python code or manifest, so this is a new schema and
+implementation, not a port or a claim of matching its results.
 
-See [the research and staged rebuild plan](docs/REBUILD_PLAN.md) for the proposed
-independent implementation and its acceptance criteria.
+See [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
 
-## Implemented
+## Run on Windows 11
 
-- LabPBR-style `_n` pixel encoding (normalized DirectX/Y-down normal XY,
-  ambient occlusion, height) and `_s` encoding (1 − sqrt(roughness), raw F0 or
-  metal ID, raw porosity and emission). Raw bytes preserve reserved values;
-  callers must provide values valid for the desired LabPBR field semantics.
-- A periodic central-difference height-to-normal routine.
-- Scalar, separable, wrap-aware Lanczos-3 resizing for linear continuous data.
-  This routine intentionally does not filter categorical metal IDs; filtering
-  such IDs would create other materials. Resize and renormalize normals before
-  packing; filter color in the appropriate color space, not as raw sRGB.
-- Unit tests for encoding, seams, dimensions and a metal ID of 230.
+Install a current stable Rust toolchain from <https://rustup.rs/> (and the
+Microsoft C++ Build Tools if Rust prompts for them). From PowerShell in this
+repository:
 
-Run `cargo test`. No third-party dependencies are required. Doctests are disabled
-because there are no documentation examples and the sandbox toolchain lacks
-`rustdoc`.
+```powershell
+cargo test --locked
+cargo run --locked --release -- --input test_assets --output test_output --cpu-only
+```
 
-## Not implemented / needed before release
+The output directory must not already contain `pack`, `dist`, or
+`contact_sheet.png`; choose a fresh `--output` directory for another run.
+Outputs:
 
-There is **no CLI**, manifest parser, PNG I/O, recipe implementation, palette,
-packaging, contact sheet, or full texture coverage. There is no wgpu/Vulkan,
-FFT, Voronoi, Rayon, SIMD acceleration, or P/E-core affinity. This code has not
-been benchmarked against Python or tested on an RTX 5060 Ti or i5-13400.
-`--cpu-only` is not available because there is no CLI yet. It cannot generate
-the requested ZIP. The scalar reference filter prioritizes clarity over speed.
+- `test_output/pack/` — the example resource pack, including metadata and
+  `assets/minecraft/textures/block/{name}.png`, `{name}_n.png`, `{name}_s.png`.
+- `test_output/dist/HyperRealism128-v1.0-MC26.3.zip` — pack contents at ZIP root.
+- `test_output/contact_sheet.png` — the albedo examples in manifest order,
+  four tiles per row (outside the pack).
 
-Please provide the Python sources, a representative material manifest and asset
-layout (and the texture/palette inventory if separate). Once available, port
-and compare the recipes and output channel semantics against reference fixtures.
+The ZIP's name is a target artifact name, **not** an indication that the full
+v1.0 pack is finished. The bundled PNGs are deliberately synthetic for testing,
+not Poly Haven materials. A LabPBR-compatible shader is required to use the PBR
+maps. In-game and Windows verification remain outstanding.
 
-## Planned target architecture, not yet implemented
+`--threads N` controls the Rayon pool (default: Rayon determines the thread
+count). The current prototype parallelizes scalar channel resampling, not the
+whole pipeline; the operating system schedules threads. It does not detect or
+pin P-cores/E-cores. `--cpu-only` is accepted explicitly; currently **every**
+run uses CPU, and there is no GPU backend.
 
-A future implementation should use bounded batches and measure real GPU memory
-use against the 8 GiB VRAM budget. Choose CPU/GPU crossover based on benchmarked
-workload and transfer cost rather than assuming a universal 512-pixel threshold.
-Use explicit hybrid-CPU topology detection and a portable fallback before any
-P-core/E-core pinning; CPU IDs are not universally interchangeable across
-platforms. SIMD downsampling needs periodic padding or an equivalent wrap-aware
-implementation, with proper color-space and normal-map handling. GPU parity,
-resource-pack format compatibility, and shader interpretation need validation
-on the target hardware and the actual Minecraft/shader versions.
+## Custom input
+
+`--input` accepts a directory containing `material_manifest.json` or the path to
+that file. The following is a minimal version-1 manifest; relative PNG paths are
+resolved inside the manifest's directory and must not escape it:
+
+```json
+{
+  "version": 1,
+  "materials": [
+    {"id":"base", "albedo":"diffuse.png", "normal":"normal.png",
+     "normal_y":"opengl", "roughness":"rough.png"}
+  ],
+  "textures": [
+    {"name":"iron_block", "material":"base", "recipe":"metal",
+     "tint":[210,210,210], "f0":230, "porosity":0, "emissive":255}
+  ]
+}
+```
+
+`normal` and `roughness` are optional PNGs; `normal_y` is `directx` (default) or
+`opengl`. Roughness is read from the red channel as a linear 0–1 value; if
+omitted, it defaults to 0.8. `tint` is an sRGB multiplier, not a target palette
+match. Supported experimental recipes are `stone`, `brick`, `plank`, `moss`,
+`glass`, `metal`, `gem`, and `leaves`. These are simple procedural demonstrations,
+not finished material-specific recipes. Names must be lowercase ASCII letters,
+digits or underscores; output names are not validated against a game JAR.
+F0 defaults to 10; 230–237 are hardcoded metal IDs, 255 is custom metal, and
+238–254 are rejected. Porosity defaults to 0 and must be 0–64. Emissive defaults
+to the LabPBR no-emission sentinel 255; values 0–254 are passed through.
+
+The working size is 512×512. Input images of other sizes are currently sampled
+with nearest-neighbour scaling before generation; use 512×512 input for best
+results in this prototype. Continuous channels are downsampled with a scalar,
+periodic Lanczos-3 filter. Albedo uses linear-light premultiplied alpha, and
+normals are renormalized before packing. Alpha cutout coverage, non-tiling edge
+modes, animations and per-pixel metal/emission masks need further work. Inputs
+are decoded one material at a time, with no persistent cache. The ZIP currently
+uses the standard uncompressed/store method, not deflate.
+
+## Still needed
+
+- Real material acquisition/provenance and an audited 280-texture catalog,
+  vanilla-informed palettes and robust recipe definitions.
+- wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
+  CPU/GPU parity testing on the RTX 5060 Ti.
+- `fast_image_resize` SIMD, benchmarked CPU/GPU crossover, and safe Windows 11
+  P/E-core detection/scheduling. No hardware-optimization or speed claim has
+  been measured for the target machine.
+- Explicit texture animation handling, broader color/alpha correctness tests,
+  production error handling, and Minecraft/shader visual validation.
+
+Tests include channel values, periodic filtering, output layout, metal ID 230,
+no-overwrite behavior and matching ZIP bytes across one and two Rayon threads.
+GitHub Actions is configured to run the suite on Linux and Windows; it is not a
+substitute for testing on the specified local hardware.

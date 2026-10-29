@@ -1,7 +1,7 @@
 # Rust resource-pack generator: research and implementation plan
 
-Status: **plan, not implemented**. The current code is a small CPU library;
-see the README for what actually exists. This plan describes a new, independent
+Status: **work in progress**. An initial CPU-only vertical slice and synthetic
+fixtures are implemented; see the README for current capabilities and gaps. This plan describes a new, independent
 implementation: there is no Python pipeline, manifest, palette, material set,
 or 280-texture inventory in the repository to reproduce or compare against.
 
@@ -123,7 +123,10 @@ quality requires contact sheets and in-game review, not a file-count check.
 
 ## Implementation milestones and checks
 
-- **M1 – Contract and CPU vertical slice:** Clap CLI, schema/catalog validation,
+- **M1 – Contract and CPU vertical slice:** The basic CPU CLI, manifest validation,
+  PNG I/O, example recipes and packaging now exist. Remaining work includes Clap,
+  a separately audited catalog and more complete safety and integration tests.
+  Original target: Clap CLI, schema/catalog validation,
   PNG load/write, one synthetic recipe, normal/specular encoding, wrap resize,
   pack metadata and ZIP. Integration test extracts the ZIP and verifies files,
   channels, dimensions, reproducibility, path safety and error handling.

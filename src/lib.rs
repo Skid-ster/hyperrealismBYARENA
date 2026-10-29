@@ -4,4 +4,8 @@
 //! The inputs below are linear scalar data, not gamma-encoded image samples.
 
 pub mod labpbr;
+pub mod manifest;
+pub mod pipeline;
+pub mod png_io;
 pub mod resample;
+pub mod zip;
