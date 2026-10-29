@@ -222,12 +222,14 @@ namespace HyperRealismInstaller
             progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; left.Controls.Add(progress, 0, 6);
             left.Controls.Add(new Label { Dock = DockStyle.Bottom, AutoSize = true, Text = "Folder name is a helpful check, not proof this is the active instance.\r\nChecksums detect corruption but are not an independent signature.", ForeColor = Color.FromArgb(155, 155, 155) }, 0, 7);
 
-            var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 11, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
+            var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 12, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
             side.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 104)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
-            for (int i = 0; i < 4; i++) side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+            for (int i = 0; i < 3; i++) side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             side.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             main.Controls.Add(side, 1, 0);
             var sideIcon = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
@@ -253,8 +255,17 @@ namespace HyperRealismInstaller
             var divider = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
             divider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 3, 3, divider.Width - 4, 3); };
             side.Controls.Add(divider, 0, 5);
-            side.Controls.Add(openFolder, 0, 6); side.Controls.Add(sideBrowse, 0, 7); side.Controls.Add(appUpdate, 0, 8); side.Controls.Add(close, 0, 9);
-            side.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Margin = Padding.Empty }, 0, 10);
+            side.Controls.Add(openFolder, 0, 6); side.Controls.Add(sideBrowse, 0, 7); side.Controls.Add(appUpdate, 0, 8);
+            var closeDivider = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
+            closeDivider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 3, 3, closeDivider.Width - 4, 3); };
+            side.Controls.Add(closeDivider, 0, 9); side.Controls.Add(close, 0, 10);
+            side.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Margin = Padding.Empty }, 0, 11);
+            tooltips.SetToolTip(install, "Download and install the latest experimental pack into the selected folder.");
+            tooltips.SetToolTip(check, "Compare the installed pack against the latest published preview.");
+            tooltips.SetToolTip(openFolder, "Open the selected resourcepacks folder.");
+            tooltips.SetToolTip(sideBrowse, "Choose an existing resourcepacks folder.");
+            tooltips.SetToolTip(appUpdate, "Check for a newer version of this installer.");
+            tooltips.SetToolTip(close, "Close the installer.");
 
             var news = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
             var newsLabel = new Label { Dock = DockStyle.Fill, Padding = new Padding(29, 0, 0, 0), TextAlign = ContentAlignment.MiddleLeft, ForeColor = Foreground, Text = "HyperRealism128  •  Experimental preview" };
@@ -400,7 +411,7 @@ namespace HyperRealismInstaller
                 using (var blue = new SolidBrush(Color.FromArgb(102, 153, 204)))
                 using (var tan = new SolidBrush(Color.FromArgb(140, 98, 57)))
                 {
-                    if (name == "folder" || name == "folder-add" || name == "settings")
+                    if (name == "folder" || name == "folder-add" || name == "settings" || name == "close")
                     {
                         // A compact green header, warm backing and light inset,
                         // drawn at the display size instead of scaled afterwards.
@@ -419,6 +430,13 @@ namespace HyperRealismInstaller
                             {
                                 using (var plus = new Pen(darkGreen, 3) { StartCap = LineCap.Round, EndCap = LineCap.Round })
                                 { g.DrawLine(plus, 12, 10, 12, 17); g.DrawLine(plus, 8.5f, 13.5f, 15.5f, 13.5f); }
+                            }
+                            else if (name == "close")
+                            {
+                                // Reference: a dark-green cross on a white inset,
+                                // framed by a green header and warm brown base.
+                                using (var cross = new Pen(darkGreen, 3.6f) { StartCap = LineCap.Round, EndCap = LineCap.Round, LineJoin = LineJoin.Round })
+                                { g.DrawLine(cross, 8, 9, 16, 17); g.DrawLine(cross, 16, 9, 8, 17); }
                             }
                             else
                             {
@@ -750,6 +768,11 @@ namespace HyperRealismInstaller
             foreach (var button in new LauncherButton[] { toolBrowse, toolOpen, toolSettings, toolHelp, toolCheck })
                 if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Image.Width - 3)
                     throw new Exception("Toolbar button is missing an icon or has clipped text: " + button.Text);
+            var closeIcon = close.Image as Bitmap;
+            if (closeIcon == null) throw new Exception("Close icon missing.");
+            Color cross = closeIcon.GetPixel(9, 10), inset = closeIcon.GetPixel(4, 10), header = closeIcon.GetPixel(9, 2);
+            if (cross.G <= cross.R * 1.5 || inset.R < 190 || inset.G < 190 || inset.B < 190 || header.G <= header.R * 1.5)
+                throw new Exception("Close icon must have a green cross, white inset and green header.");
             if (!toolOpen.DropArrow || !toolHelp.DropArrow || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Update") throw new Exception("Toolbar actions are missing.");
         }
     }

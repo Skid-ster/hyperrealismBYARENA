@@ -1,6 +1,8 @@
-## Windows GUI installer 8 — experimental pack
+## Windows GUI installer 9 — experimental pack
 
-The sidebar now uses the original Prism Launcher grass-block instance artwork,
+This update refines the sidebar's action groups and tooltips and redraws the
+Close icon with a green cross on a white inset, matching the supplied close-up.
+The sidebar uses the original Prism Launcher grass-block instance artwork,
 credited under CC BY-SA 4.0. Other glyphs remain independently drawn. The new
 **Launch** button asks an installed PineconeMC to launch the instance matching
 the selected standard resourcepacks folder. If the launcher isn't found, browse
