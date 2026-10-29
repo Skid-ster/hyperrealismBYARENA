@@ -1,12 +1,12 @@
-## Windows GUI installer 3 — experimental pack
+## Windows GUI installer 4 — experimental pack
 
 The GUI uses a dark launcher-inspired layout with a toolbar, selected pack tile,
-right-hand action list and status bars. It is a separate HyperRealism app, not
+narrower right-hand action list, rounded block icons, separators and status bars. It is a separate HyperRealism app, not
 PineconeMC. Download **HyperRealism128-Installer.exe** and double-click it on Windows 11.
 The app pre-fills the ElyPrism `26.3(1)` instance path under the current user's
 AppData, and lets you browse to a different existing `resourcepacks` folder.
 A green message means the folder exists and its name matches; it does **not**
-prove Minecraft is using that instance. Use **Check for updates** or
+prove Minecraft is using that instance. Use **Check updates** or
 **Install / Update** in the right-hand actions, then enable the pack in Minecraft. The
 chosen existing folder is remembered across launches.
 
