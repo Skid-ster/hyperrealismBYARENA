@@ -8,6 +8,12 @@ jobs:
       - name: Compile and test installer
         shell: powershell
         run: ./installer/build.ps1
+      - name: Test live download to temporary folder
+        if: github.event_name == 'push'
+        shell: powershell
+        run: |
+          ./installer-output/InstallerTests.exe --live-test
+          if ($LASTEXITCODE -ne 0) { throw 'Live preview download test failed.' }
       - uses: actions/upload-artifact@v4
         with:
           name: HyperRealism128-Windows-GUI-installer

@@ -32,8 +32,27 @@ internal static class InstallerTests
             new { name = PackInstaller.PackName + ".sha256", browser_download_url = prefix + PackInstaller.PackName + ".sha256" }
         } };
     }
-    private static int Main()
+    // This runs only on CI push, against the real public GitHub API and assets,
+    // in a temporary folder. It never touches a Minecraft installation.
+    private static int LiveTest()
     {
+        string root = Path.Combine(Path.GetTempPath(), "hr-gui-live-" + Guid.NewGuid().ToString("N"));
+        try
+        {
+            string folder = Path.Combine(root, "resourcepacks");
+            Directory.CreateDirectory(folder);
+            var web = new WebTransfer();
+            string result = PackInstaller.Install(web, folder);
+            Assert(result.Contains("Installed"), "Live install did not complete.");
+            Assert(PackInstaller.Check(web, folder).Contains("Installed file matches"), "Live installed file did not match the published checksum.");
+            Console.WriteLine("Live GitHub download and update check passed: " + result);
+            return 0;
+        }
+        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+    }
+    private static int Main(string[] args)
+    {
+        if (args.Length == 1 && args[0] == "--live-test") return LiveTest();
         string root = Path.Combine(Path.GetTempPath(), "hr-gui-test-" + Guid.NewGuid().ToString("N"));
         try
         {
