@@ -1,7 +1,9 @@
 ## Windows GUI installer 4 — experimental pack
 
-The GUI uses a dark launcher-inspired layout with a toolbar, selected pack tile,
-narrower right-hand action list, rounded block icons, separators and status bars. It is a separate HyperRealism app, not
+This update refines the launcher-inspired layout: matched charcoal shades,
+a narrower action rail, rounded grass-block icons, a higher selected tile,
+subtle separators and status bars. The action column is constrained so its
+labels no longer extend outside the sidebar. It is a separate HyperRealism app, not
 PineconeMC. Download **HyperRealism128-Installer.exe** and double-click it on Windows 11.
 The app pre-fills the ElyPrism `26.3(1)` instance path under the current user's
 AppData, and lets you browse to a different existing `resourcepacks` folder.
