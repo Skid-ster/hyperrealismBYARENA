@@ -1,7 +1,8 @@
 # Rust resource-pack generator: research and implementation plan
 
 Status: **work in progress**. An initial CPU-only vertical slice and synthetic
-fixtures are implemented; see the README for current capabilities and gaps. This plan describes a new, independent
+fixtures, PNG/JPEG material inputs, map filtering and optional JAR path checks
+are implemented; see the README for current capabilities and gaps. This plan describes a new, independent
 implementation: there is no Python pipeline, manifest, palette, material set,
 or 280-texture inventory in the repository to reproduce or compare against.
 

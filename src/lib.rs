@@ -5,6 +5,7 @@
 
 pub mod labpbr;
 pub mod manifest;
+pub mod material;
 pub mod pipeline;
 pub mod png_io;
 pub mod resample;

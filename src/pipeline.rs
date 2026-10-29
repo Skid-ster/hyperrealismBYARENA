@@ -1,7 +1,8 @@
 use crate::{
     labpbr::{normal_pixel, normals_from_height, specular_pixel, F0},
-    manifest::{self, Material, Texture},
-    png_io::{self, Rgba},
+    manifest::{self, Texture},
+    material::{self, Prepared},
+    png_io,
     resample::resize_wrap,
     zip,
 };
@@ -10,17 +11,10 @@ use std::{
     fs,
     path::{Path, PathBuf},
 };
-const WORK: usize = 512;
+const WORK: usize = material::WORK;
 const SIZE: usize = 128;
 const ARCHIVE: &str = "HyperRealism128-v1.0-MC26.3.zip";
 
-fn srgb_to_linear(v: f32) -> f32 {
-    if v <= 0.04045 {
-        v / 12.92
-    } else {
-        ((v + 0.055) / 1.055).powf(2.4)
-    }
-}
 fn linear_to_srgb(v: f32) -> u8 {
     let v = v.clamp(0.0, 1.0);
     let x = if v <= 0.0031308 {
@@ -34,30 +28,6 @@ fn unit(v: f32) -> u8 {
     (v.clamp(0.0, 1.0) * 255.0).round() as u8
 }
 
-struct Images {
-    albedo: Rgba,
-    rough: Option<Rgba>,
-    normal: Option<Rgba>,
-}
-fn load(root: &Path, m: &Material) -> Result<Images, String> {
-    let load_one = |s: &str| png_io::read(&manifest::safe_file(root, s)?);
-    Ok(Images {
-        albedo: load_one(&m.albedo)?,
-        rough: m.roughness.as_deref().map(load_one).transpose()?,
-        normal: m.normal.as_deref().map(load_one).transpose()?,
-    })
-}
-fn sample(img: &Rgba, x: usize, y: usize) -> [f32; 4] {
-    let ix = x * img.width / WORK;
-    let iy = y * img.height / WORK;
-    let i = (iy * img.width + ix) * 4;
-    [
-        img.pixels[i] as f32 / 255.0,
-        img.pixels[i + 1] as f32 / 255.0,
-        img.pixels[i + 2] as f32 / 255.0,
-        img.pixels[i + 3] as f32 / 255.0,
-    ]
-}
 fn tile_pattern(recipe: &str, x: usize, y: usize) -> (f32, f32, f32) {
     let wave = (((x as f32 * std::f32::consts::TAU / 128.0).sin()
         + (y as f32 * std::f32::consts::TAU / 128.0).cos())
@@ -65,6 +35,7 @@ fn tile_pattern(recipe: &str, x: usize, y: usize) -> (f32, f32, f32) {
         + 0.5)
         .clamp(0.0, 1.0);
     match recipe {
+        "material" => (1.0, 0.0, 1.0),
         "brick" => {
             let row = y / 128;
             let xx = (x + (row % 2) * 64) % 128;
@@ -110,53 +81,60 @@ fn resize(values: &[f32]) -> Result<Vec<f32>, String> {
 }
 type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
 
-fn build(t: &Texture, m: &Material, img: &Images) -> Result<PackedMaps, String> {
+fn build(t: &Texture, img: &Prepared) -> Result<PackedMaps, String> {
     let n = WORK * WORK;
     let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
+    let mut relief_map = vec![0.0; n];
+    let tint = t.tint.map(|v| material::srgb_to_linear(v as f32 / 255.0));
     for y in 0..WORK {
         for x in 0..WORK {
             let i = y * WORK + x;
-            let source = sample(&img.albedo, x, y);
             let (shade, relief, opacity) = tile_pattern(&t.recipe, x, y);
-            let alpha = source[3] * opacity;
+            let source_alpha = img.albedo[3][i];
+            let alpha = source_alpha * opacity;
             channels[3][i] = alpha;
             for c in 0..3 {
-                channels[c][i] = srgb_to_linear(source[c])
-                    * srgb_to_linear(t.tint[c] as f32 / 255.0)
-                    * shade
-                    * alpha;
+                channels[c][i] = img.albedo[c][i] * tint[c] * shade * opacity;
             }
-            channels[4][i] =
-                (0.5 + 0.22 * (source[0] + source[1] + source[2] - 1.5) + relief).clamp(0.0, 1.0);
-            channels[5][i] = img
-                .rough
+            // With no height map, a mild luminance heuristic preserves the old
+            // prototype's behavior. A normal map already supplies fine detail,
+            // so its generated normal receives only recipe-level relief.
+            let luminance = if source_alpha > 1e-6 {
+                (0.2126 * img.albedo[0][i] + 0.7152 * img.albedo[1][i] + 0.0722 * img.albedo[2][i])
+                    / source_alpha
+            } else {
+                0.5
+            };
+            let base_height = img
+                .height
                 .as_ref()
-                .map(|r| sample(r, x, y)[0])
-                .unwrap_or(0.8);
-            channels[6][i] = (1.0 - relief.abs() * 1.2).clamp(0.0, 1.0);
+                .map(|v| v[i])
+                .unwrap_or(0.5 + 0.22 * (luminance - 0.5));
+            channels[4][i] = (base_height + relief).clamp(0.0, 1.0);
+            channels[5][i] = img.roughness.as_ref().map(|v| v[i]).unwrap_or(0.8);
+            channels[6][i] = (1.0 - relief.abs() * 1.2).clamp(0.0, 1.0)
+                * img.ao.as_ref().map(|v| v[i]).unwrap_or(1.0);
+            relief_map[i] = relief;
         }
     }
-    let normals = normals_from_height(&channels[4], WORK, WORK, 2.5).map_err(str::to_string)?;
+    let height_for_normals = if img.normal.is_some() {
+        &relief_map
+    } else {
+        &channels[4]
+    };
+    let normals =
+        normals_from_height(height_for_normals, WORK, WORK, 2.5).map_err(str::to_string)?;
     let mut normal_channels: Vec<Vec<f32>> = (0..3).map(|_| vec![0.0; n]).collect();
-    for y in 0..WORK {
-        for x in 0..WORK {
-            let i = y * WORK + x;
-            let mut normal = normals[i];
-            if let Some(map) = &img.normal {
-                let p = sample(map, x, y);
-                let nx = p[0] * 2.0 - 1.0;
-                let mut ny = p[1] * 2.0 - 1.0;
-                if m.normal_y == "opengl" {
-                    ny = -ny;
-                }
-                normal[0] += nx;
-                normal[1] += ny;
-            }
-            let len =
-                (normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]).sqrt();
-            for c in 0..3 {
-                normal_channels[c][i] = normal[c] / len;
-            }
+    for i in 0..n {
+        let detail = normals[i];
+        let normal = if let Some(map) = &img.normal {
+            let base = [map[0][i], map[1][i], map[2][i]];
+            combine_normals(base, detail)
+        } else {
+            detail
+        };
+        for c in 0..3 {
+            normal_channels[c][i] = normal[c];
         }
     }
     let channels: Vec<Vec<f32>> = channels
@@ -195,8 +173,32 @@ fn build(t: &Texture, m: &Material, img: &Images) -> Result<PackedMaps, String> 
     Ok((albedo, normal, spec))
 }
 
+/// Reoriented normal mapping: a flat detail normal leaves the source unchanged.
+fn combine_normals(base: [f32; 3], detail: [f32; 3]) -> [f32; 3] {
+    fn normalize(v: [f32; 3]) -> [f32; 3] {
+        let length = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt();
+        if length > 1e-8 && length.is_finite() {
+            [v[0] / length, v[1] / length, v[2] / length]
+        } else {
+            [0.0, 0.0, 1.0]
+        }
+    }
+    let b = normalize(base);
+    let t = [b[0], b[1], b[2] + 1.0];
+    if t[2] < 1e-6 {
+        return b;
+    }
+    let u = [-detail[0], -detail[1], detail[2]];
+    let scale = (t[0] * u[0] + t[1] * u[1] + t[2] * u[2]) / t[2];
+    normalize([
+        t[0] * scale - u[0],
+        t[1] * scale - u[1],
+        t[2] * scale - u[2],
+    ])
+}
+
 /// Builds into an exclusive staging directory; existing pack/dist output is never overwritten.
-pub fn generate(input: &Path, output: &Path) -> Result<(), String> {
+pub fn generate(input: &Path, output: &Path, minecraft_jar: Option<&Path>) -> Result<(), String> {
     let path = if input.is_dir() {
         input.join("material_manifest.json")
     } else {
@@ -208,8 +210,13 @@ pub fn generate(input: &Path, output: &Path) -> Result<(), String> {
         .unwrap_or(Path::new("."));
     let data = manifest::read(&path)?;
     manifest::validate(&data, root)?;
+    let hashes = manifest::input_hashes(&data, root)?;
+    let manifest_hash = manifest::sha256_file(&path)?;
+    if let Some(jar) = minecraft_jar {
+        manifest::validate_against_jar(&data, jar)?;
+    }
     fs::create_dir_all(output).map_err(|e| e.to_string())?;
-    for name in ["pack", "dist", "contact_sheet.png"] {
+    for name in ["pack", "dist", "contact_sheet.png", "build_report.json"] {
         if output.join(name).exists() {
             return Err(format!(
                 "refusing to overwrite {}",
@@ -219,14 +226,21 @@ pub fn generate(input: &Path, output: &Path) -> Result<(), String> {
     }
     let stage = output.join(format!(".hyperrealism-stage-{}", std::process::id()));
     fs::create_dir(&stage).map_err(|e| format!("{}: {e}", stage.display()))?;
-    let result = build_stage(&data, root, &stage);
+    let result = build_stage(
+        &data,
+        root,
+        &stage,
+        &hashes,
+        &manifest_hash,
+        minecraft_jar.is_some(),
+    );
     if let Err(err) = result {
         let _ = fs::remove_dir_all(&stage);
         return Err(err);
     }
     // Move completed outputs only after all generation has succeeded.
     let mut moved = Vec::new();
-    for name in ["pack", "dist", "contact_sheet.png"] {
+    for name in ["pack", "dist", "contact_sheet.png", "build_report.json"] {
         if let Err(e) = fs::rename(stage.join(name), output.join(name)) {
             for previous in moved.iter().rev() {
                 let _ = fs::rename(output.join(previous), stage.join(previous));
@@ -244,7 +258,14 @@ pub fn generate(input: &Path, output: &Path) -> Result<(), String> {
     );
     Ok(())
 }
-fn build_stage(data: &manifest::Manifest, root: &Path, stage: &Path) -> Result<(), String> {
+fn build_stage(
+    data: &manifest::Manifest,
+    root: &Path,
+    stage: &Path,
+    hashes: &std::collections::BTreeMap<String, String>,
+    manifest_hash: &str,
+    client_paths_checked: bool,
+) -> Result<(), String> {
     let pack = stage.join("pack");
     let block = pack.join("assets/minecraft/textures/block");
     let optifine = pack.join("assets/minecraft/optifine");
@@ -257,11 +278,17 @@ fn build_stage(data: &manifest::Manifest, root: &Path, stage: &Path) -> Result<(
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
     let mut sheet = vec![0; cols * SIZE * rows * SIZE * 4];
+    // Keep only the most recently used prepared material; this bounds memory.
+    let mut cached: Option<(&str, Prepared)> = None;
     for (index, t) in data.textures.iter().enumerate() {
         println!("{} ({})", t.name, t.recipe);
         let m = materials[t.material.as_str()];
-        let images = load(root, m)?;
-        let (a, n, s) = build(t, m, &images).map_err(|e| format!("{}: {e}", t.name))?;
+        if cached.as_ref().map(|(id, _)| *id) != Some(m.id.as_str()) {
+            drop(cached.take());
+            cached = Some((m.id.as_str(), material::load(root, m)?));
+        }
+        let images = &cached.as_ref().expect("material just loaded").1;
+        let (a, n, s) = build(t, images).map_err(|e| format!("{}: {e}", t.name))?;
         for (suffix, bytes) in [("", &a), ("_n", &n), ("_s", &s)] {
             png_io::write(
                 &block.join(format!("{}{suffix}.png", t.name)),
@@ -278,6 +305,20 @@ fn build_stage(data: &manifest::Manifest, root: &Path, stage: &Path) -> Result<(
             sheet[dst..dst + SIZE * 4].copy_from_slice(&a[src..src + SIZE * 4]);
         }
     }
+    let report = serde_json::json!({
+        "generator_version": env!("CARGO_PKG_VERSION"),
+        "backend": "cpu",
+        "resolution": SIZE,
+        "working_resolution": WORK,
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "f0": t.f0, "porosity": t.porosity, "emissive": t.emissive})).collect::<Vec<_>>(),
+        "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "roughness": m.roughness, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
+        "manifest_sha256": manifest_hash,
+        "client_paths_checked": client_paths_checked,
+        "input_sha256": hashes,
+    });
+    let mut report_data = serde_json::to_vec_pretty(&report).map_err(|e| e.to_string())?;
+    report_data.push(b'\n');
+    fs::write(stage.join("build_report.json"), report_data).map_err(|e| e.to_string())?;
     png_io::write(
         &stage.join("contact_sheet.png"),
         cols * SIZE,

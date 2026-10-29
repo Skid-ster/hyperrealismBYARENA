@@ -10,11 +10,17 @@ fn run() -> Result<(), String> {
     let mut input = PathBuf::from("work/material_manifest.json");
     let mut output = PathBuf::from(".");
     let mut threads = None;
+    let mut minecraft_jar = None;
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--input" => input = PathBuf::from(args.next().ok_or("--input requires a path")?),
             "--output" => output = PathBuf::from(args.next().ok_or("--output requires a path")?),
             "--cpu-only" => (),
+            "--minecraft-jar" => {
+                minecraft_jar = Some(PathBuf::from(
+                    args.next().ok_or("--minecraft-jar requires a path")?,
+                ))
+            }
             "--threads" => {
                 let text = args.next().ok_or("--threads requires a positive integer")?;
                 let count: usize = text
@@ -26,7 +32,7 @@ fn run() -> Result<(), String> {
                 threads = Some(count);
             }
             "--help" | "-h" => {
-                println!("HyperRealism CPU prototype\n\nUsage: hyperrealism-core [--input MANIFEST_OR_DIR] [--output DIR] [--cpu-only] [--threads N]\n\nThe input directory must contain material_manifest.json. This prototype supports CPU execution only and does not yet generate the full catalog.");
+                println!("HyperRealism CPU prototype\n\nUsage: hyperrealism-core [--input MANIFEST_OR_DIR] [--output DIR] [--cpu-only] [--threads N] [--minecraft-jar CLIENT_JAR]\n\nThe input directory must contain material_manifest.json. This prototype supports CPU execution only and does not yet generate the full catalog.");
                 return Ok(());
             }
             _ => return Err(format!("unknown option: {arg}; use --help")),
@@ -42,5 +48,5 @@ fn run() -> Result<(), String> {
         "Backend: CPU (GPU acceleration not implemented); Rayon threads: {}",
         rayon::current_num_threads()
     );
-    hyperrealism_core::pipeline::generate(&input, &output)
+    hyperrealism_core::pipeline::generate(&input, &output, minecraft_jar.as_deref())
 }
