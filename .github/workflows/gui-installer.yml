@@ -16,6 +16,19 @@ jobs:
             Write-Host "::error::$($_.Exception.Message)"
             exit 1
           }
+      - name: Capture the Windows layout for review
+        if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Capture installer layout')
+        shell: powershell
+        run: |
+          $image = Join-Path $env:RUNNER_TEMP 'installer-layout.png'
+          $p = Start-Process -FilePath ./installer-output/HyperRealism128-Installer.exe -ArgumentList @('--capture-ui', "`"$image`"") -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Unable to capture GUI' }
+          $data = [Convert]::ToBase64String([IO.File]::ReadAllBytes($image))
+          $size = 16000
+          for ($i = 0; $i -lt $data.Length; $i += $size) {
+            $n = [Math]::Min($size, $data.Length - $i)
+            Write-Host ("::notice title=LAYOUT-{0:D3}::{1}" -f ($i / $size), $data.Substring($i, $n))
+          }
       - name: Test live download to temporary folder
         if: github.event_name == 'push'
         shell: powershell

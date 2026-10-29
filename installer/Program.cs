@@ -16,6 +16,20 @@ namespace HyperRealismInstaller
             if (args.Length == 1 && args[0] == "--apply-update") return SelfUpdater.ApplyUpdateFromEnvironment();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            if (args.Length == 2 && args[0] == "--capture-ui")
+            {
+                try
+                {
+                    using (var form = new InstallerForm("--capture-ui"))
+                    {
+                        form.Show(); Application.DoEvents();
+                        using (var bitmap = new Bitmap(form.Width, form.Height)) { form.DrawToBitmap(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height)); bitmap.Save(args[1], System.Drawing.Imaging.ImageFormat.Png); }
+                        form.Close();
+                    }
+                    return 0;
+                }
+                catch { return 1; }
+            }
             if (args.Length == 1 && args[0] == "--smoke-test")
             {
                 try { using (var form = new InstallerForm()) form.SmokeTest(); return 0; }
@@ -78,14 +92,18 @@ namespace HyperRealismInstaller
 
             var toolbar = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
             var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(7, 2, 0, 0), BackColor = Surface };
-            StyleButton(toolBrowse, "Choose folder", "folder", 120, 34, true);
+            StyleButton(toolBrowse, "Choose folder", "folder-add", 120, 34, true);
             StyleButton(toolOpen, "Open folder", "folder", 110, 34, true);
             StyleButton(toolCheck, "Pack update", "update", 112, 34, true);
             StyleButton(toolApp, "Installer update", "update", 136, 34, true);
             var help = new Button(); StyleButton(help, "Help", "help", 72, 34, true);
             tools.Controls.Add(new Label { Text = "⋮", ForeColor = Color.FromArgb(120, 120, 120), Width = 9, Height = 32, TextAlign = ContentAlignment.MiddleCenter, Margin = Padding.Empty });
             tools.Controls.Add(toolBrowse); tools.Controls.Add(toolOpen); tools.Controls.Add(help); tools.Controls.Add(toolCheck); tools.Controls.Add(toolApp);
-            toolbar.Controls.Add(tools);
+            var brand = new Panel { Dock = DockStyle.Right, Width = 150, BackColor = Surface };
+            var brandIcon = new PictureBox { Image = BlockIcon(22), Size = new Size(22, 22), Location = new Point(5, 7), SizeMode = PictureBoxSizeMode.Normal };
+            var brandLabel = new Label { Text = "HyperRealism128", ForeColor = Foreground, Location = new Point(31, 2), Size = new Size(115, 32), TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true };
+            brand.Controls.Add(brandIcon); brand.Controls.Add(brandLabel);
+            toolbar.Controls.Add(tools); toolbar.Controls.Add(brand); brand.BringToFront();
             toolbar.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(72, 72, 72))) e.Graphics.DrawLine(pen, 0, toolbar.Height - 1, toolbar.Width, toolbar.Height - 1); };
             root.Controls.Add(toolbar, 0, 0);
 
@@ -110,7 +128,7 @@ namespace HyperRealismInstaller
             groupHeading.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(54, 54, 54))) e.Graphics.DrawLine(pen, 126, 14, Math.Max(126, groupHeading.Width - 4), 14); };
             left.Controls.Add(groupHeading, 0, 0);
             var tile = new Panel { Dock = DockStyle.Fill, BackColor = Background, Margin = Padding.Empty };
-            var block = new PictureBox { Image = BlockIcon(), SizeMode = PictureBoxSizeMode.StretchImage, Size = new Size(40, 40), Location = new Point(29, 12), AccessibleName = "HyperRealism pack icon" };
+            var block = new PictureBox { Image = BlockIcon(40), SizeMode = PictureBoxSizeMode.Normal, Size = new Size(40, 40), Location = new Point(29, 12), AccessibleName = "HyperRealism pack icon" };
             var tileCaption = new Label { Text = "HyperRealism128", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.FromArgb(30, 30, 30), BackColor = Green, Location = new Point(0, 63), Size = new Size(105, 22), AutoEllipsis = true };
             tile.Controls.Add(block); tile.Controls.Add(tileCaption); left.Controls.Add(tile, 0, 1);
             left.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Resource pack folder", ForeColor = Foreground, TextAlign = ContentAlignment.MiddleLeft }, 0, 2);
@@ -134,9 +152,14 @@ namespace HyperRealismInstaller
             side.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             main.Controls.Add(side, 1, 0);
             var sideIcon = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
-            var bigBlock = new PictureBox { Image = BlockIcon(), SizeMode = PictureBoxSizeMode.StretchImage, Size = new Size(67, 67), Location = new Point(28, 23) };
+            var bigBlock = new PictureBox { Image = BlockIcon(67), SizeMode = PictureBoxSizeMode.Normal, Size = new Size(67, 67), Location = new Point(28, 23) };
             sideIcon.Resize += delegate { bigBlock.Left = (sideIcon.ClientSize.Width - bigBlock.Width) / 2; };
-            sideIcon.Controls.Add(bigBlock); side.Controls.Add(sideIcon, 0, 0);
+            sideIcon.Controls.Add(bigBlock);
+            sideIcon.Paint += delegate(object sender, PaintEventArgs e) {
+                using (var pen = new SolidBrush(Color.FromArgb(111, 111, 111)))
+                    for (int x = -7; x <= 7; x += 3) for (int y = 0; y < 3; y++) e.Graphics.FillRectangle(pen, sideIcon.Width / 2 + x, 5 + y * 3, 1, 1);
+            };
+            side.Controls.Add(sideIcon, 0, 0);
             side.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "HyperRealism128", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Foreground, BackColor = Sidebar, AutoEllipsis = true }, 0, 1);
             StyleButton(install, "Install / Update", "install", 123, 27, false);
             StyleButton(check, "Check updates", "update", 123, 27, false);
@@ -195,7 +218,7 @@ namespace HyperRealismInstaller
             UpdateFolderStatus();
             if (startup == "--updated") result.Text = "Installer updated and reopened successfully.";
             if (startup == "--update-failed") { result.Text = "Installer update failed; the previous installer was reopened. Close other copies and check folder permissions."; result.ForeColor = Color.FromArgb(255, 142, 142); }
-            Shown += async delegate { await CheckInstallerUpdate(true); };
+            if (startup != "--capture-ui") Shown += async delegate { await CheckInstallerUpdate(true); };
             updateTimer.Interval = 60 * 60 * 1000;
             updateTimer.Tick += async delegate { await CheckInstallerUpdate(true); };
             updateTimer.Start();
@@ -225,24 +248,28 @@ namespace HyperRealismInstaller
             button.UseVisualStyleBackColor = false; button.AutoEllipsis = true;
         }
 
-        // Small original pixel-art icons; no launcher assets are redistributed.
-        private static Bitmap BlockIcon()
+        // Independently drawn, native-size icons with crisp geometric details.
+        // The curves are antialiased, but interior pixels are not resampled.
+        private static Bitmap BlockIcon(int size)
         {
-            var image = new Bitmap(48, 48);
+            var image = new Bitmap(size, size);
             using (var g = Graphics.FromImage(image))
             using (var outline = new GraphicsPath())
-            using (var dirt = new SolidBrush(Color.FromArgb(116, 88, 65)))
-            using (var soil = new SolidBrush(Color.FromArgb(128, 96, 70)))
-            using (var grass = new SolidBrush(Color.FromArgb(179, 205, 97)))
-            using (var shade = new SolidBrush(Color.FromArgb(148, 166, 85)))
+            using (var dirt = new LinearGradientBrush(new PointF(0, 0), new PointF(0, 48), Color.FromArgb(134, 103, 79), Color.FromArgb(112, 82, 58)))
+            using (var soil = new SolidBrush(Color.FromArgb(145, 112, 81)))
+            using (var soilDark = new SolidBrush(Color.FromArgb(103, 78, 61)))
+            using (var grass = new LinearGradientBrush(new PointF(0, 0), new PointF(48, 12), Color.FromArgb(185, 205, 99), Color.FromArgb(153, 205, 97)))
+            using (var shade = new SolidBrush(Color.FromArgb(141, 165, 79)))
             {
-                g.Clear(Color.Transparent); g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.Clear(Color.Transparent); g.ScaleTransform(size / 48f, size / 48f); g.SmoothingMode = SmoothingMode.AntiAlias;
                 outline.AddArc(0, 0, 12, 12, 180, 90); outline.AddArc(36, 0, 12, 12, 270, 90);
                 outline.AddArc(36, 36, 12, 12, 0, 90); outline.AddArc(0, 36, 12, 12, 90, 90); outline.CloseFigure();
-                g.SetClip(outline); g.FillRectangle(dirt, 0, 0, 48, 48);
-                g.FillRectangle(soil, 4, 29, 7, 6); g.FillRectangle(soil, 23, 37, 7, 6); g.FillRectangle(soil, 37, 26, 5, 6);
+                g.FillPath(dirt, outline); g.SetClip(outline); g.SmoothingMode = SmoothingMode.None;
+                g.FillRectangle(soil, 4, 29, 6, 6); g.FillRectangle(soil, 24, 37, 7, 7); g.FillRectangle(soil, 38, 25, 6, 6);
+                g.FillRectangle(soilDark, 15, 28, 5, 5); g.FillRectangle(soilDark, 33, 41, 4, 4);
                 g.FillRectangle(shade, 0, 0, 48, 19); g.FillRectangle(grass, 0, 0, 48, 15);
-                g.FillRectangle(grass, 5, 14, 7, 8); g.FillRectangle(grass, 20, 14, 7, 11); g.FillRectangle(grass, 36, 14, 7, 7);
+                g.FillRectangle(grass, 0, 14, 10, 5); g.FillRectangle(grass, 11, 14, 6, 10);
+                g.FillRectangle(grass, 25, 14, 7, 6); g.FillRectangle(grass, 37, 14, 7, 11); g.FillRectangle(grass, 44, 14, 4, 6);
                 g.ResetClip();
             }
             return image;
@@ -252,20 +279,48 @@ namespace HyperRealismInstaller
             var image = new Bitmap(size, size);
             using (var g = Graphics.FromImage(image))
             {
-                g.Clear(Color.Transparent);
-                float k = size / 24f; g.ScaleTransform(k, k);
-                using (var white = new SolidBrush(Color.FromArgb(225, 230, 224)))
-                using (var green = new SolidBrush(Color.FromArgb(119, 190, 84)))
-                using (var dark = new SolidBrush(Color.FromArgb(42, 50, 43)))
-                using (var blue = new SolidBrush(Color.FromArgb(77, 148, 191)))
-                using (var orange = new SolidBrush(Color.FromArgb(205, 154, 88)))
+                g.Clear(Color.Transparent); g.ScaleTransform(size / 24f, size / 24f); g.SmoothingMode = SmoothingMode.AntiAlias;
+                using (var white = new SolidBrush(Color.FromArgb(245, 245, 237)))
+                using (var green = new SolidBrush(Color.FromArgb(106, 187, 87)))
+                using (var darkGreen = new SolidBrush(Color.FromArgb(53, 125, 59)))
+                using (var dark = new SolidBrush(Color.FromArgb(54, 57, 55)))
+                using (var blue = new SolidBrush(Color.FromArgb(85, 158, 205)))
+                using (var blueDark = new SolidBrush(Color.FromArgb(54, 110, 159)))
+                using (var tan = new SolidBrush(Color.FromArgb(213, 175, 119)))
                 {
-                    if (name == "folder") { g.FillRectangle(green, 2, 5, 20, 16); g.FillRectangle(green, 4, 3, 8, 4); g.FillRectangle(white, 4, 8, 16, 11); }
-                    else if (name == "update") { g.FillEllipse(blue, 3, 3, 18, 15); g.FillRectangle(blue, 2, 10, 20, 7); g.FillRectangle(green, 10, 10, 4, 10); g.FillPolygon(green, new Point[] { new Point(6, 17), new Point(18, 17), new Point(12, 23) }); }
-                    else if (name == "install") { g.FillRectangle(green, 2, 3, 19, 18); g.FillRectangle(white, 4, 5, 15, 14); g.FillPolygon(green, new Point[] { new Point(9, 7), new Point(17, 12), new Point(9, 17) }); }
-                    else if (name == "help") { g.FillEllipse(orange, 1, 1, 22, 22); g.FillEllipse(white, 4, 4, 16, 16); using (var f = new Font("Segoe UI", 14, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("?", f, dark, 7, 3); }
-                    else if (name == "news") { g.FillRectangle(green, 2, 3, 20, 14); g.FillPolygon(green, new Point[] { new Point(5, 17), new Point(5, 21), new Point(10, 17) }); using (var line = new Pen(dark, 1.5f)) { g.DrawLine(line, 6, 7, 18, 7); g.DrawLine(line, 6, 10, 18, 10); g.DrawLine(line, 6, 13, 15, 13); } }
-                    else { g.FillRectangle(green, 3, 3, 18, 18); g.FillRectangle(dark, 6, 6, 12, 12); using (var f = new Font("Segoe UI", 12, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("×", f, white, 5, 4); }
+                    if (name == "folder" || name == "folder-add")
+                    {
+                        g.FillRectangle(tan, 2, 3, 9, 4); g.FillRectangle(darkGreen, 1, 6, 22, 16);
+                        g.FillRectangle(green, 2, 5, 20, 16); g.FillRectangle(white, 4, 8, 16, 11);
+                        if (name == "folder-add") { g.FillRectangle(green, 8, 9, 8, 8); g.FillRectangle(white, 11, 10, 2, 6); g.FillRectangle(white, 9, 12, 6, 2); }
+                    }
+                    else if (name == "update")
+                    {
+                        g.FillEllipse(blueDark, 2, 7, 17, 12); g.FillEllipse(blue, 4, 7, 16, 10); g.FillEllipse(blue, 8, 2, 11, 12);
+                        g.FillRectangle(darkGreen, 10, 10, 5, 9); g.FillPolygon(darkGreen, new Point[] { new Point(6, 16), new Point(19, 16), new Point(12, 23) });
+                        g.FillRectangle(green, 11, 11, 3, 8); g.FillPolygon(green, new Point[] { new Point(8, 17), new Point(17, 17), new Point(12, 22) });
+                    }
+                    else if (name == "install")
+                    {
+                        g.FillRectangle(darkGreen, 2, 3, 19, 18); g.FillRectangle(white, 4, 5, 16, 14);
+                        g.FillPolygon(green, new Point[] { new Point(8, 6), new Point(18, 12), new Point(8, 18) });
+                    }
+                    else if (name == "help")
+                    {
+                        g.FillEllipse(tan, 1, 1, 22, 22); g.FillEllipse(white, 4, 4, 16, 16);
+                        using (var f = new Font("Segoe UI", 14, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("?", f, dark, 7, 3);
+                    }
+                    else if (name == "news")
+                    {
+                        g.FillRectangle(darkGreen, 1, 2, 22, 16); g.FillRectangle(green, 2, 3, 20, 14);
+                        g.FillPolygon(green, new Point[] { new Point(5, 17), new Point(5, 21), new Point(10, 17) });
+                        using (var line = new Pen(dark, 1.5f)) { g.DrawLine(line, 6, 7, 18, 7); g.DrawLine(line, 6, 10, 18, 10); g.DrawLine(line, 6, 13, 15, 13); }
+                    }
+                    else
+                    {
+                        g.FillRectangle(darkGreen, 3, 3, 18, 18); g.FillRectangle(green, 4, 4, 16, 16);
+                        g.FillRectangle(dark, 6, 6, 12, 12); using (var f = new Font("Segoe UI", 12, FontStyle.Bold, GraphicsUnit.Pixel)) g.DrawString("×", f, white, 5, 4);
+                    }
                 }
             }
             return image;
@@ -424,7 +479,7 @@ namespace HyperRealismInstaller
             if (String.IsNullOrEmpty(pathBox.Text)) throw new Exception("No default or saved path.");
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
-            using (var icon = BlockIcon()) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
+            using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
             if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Choose folder" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
         }
     }
