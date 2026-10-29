@@ -16,6 +16,25 @@ jobs:
             Write-Host "::error::$($_.Exception.Message)"
             exit 1
           }
+      - name: Capture sidebar for review
+        if: github.event_name == 'push' && startsWith(github.event.head_commit.message, 'Review launcher sidebar')
+        shell: powershell
+        run: |
+          $image = Join-Path $env:RUNNER_TEMP 'layout.png'
+          $p = Start-Process -FilePath ./installer-output/HyperRealism128-Installer.exe -ArgumentList @('--capture-ui', "`"$image`"") -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw 'Unable to capture GUI' }
+          Add-Type -AssemblyName System.Drawing
+          $bitmap = [System.Drawing.Bitmap]::FromFile($image)
+          $crop = $bitmap.Clone([System.Drawing.Rectangle]::new($bitmap.Width - 133, 69, 125, 330), $bitmap.PixelFormat)
+          $cropped = Join-Path $env:RUNNER_TEMP 'sidebar.png'
+          $crop.Save($cropped, [System.Drawing.Imaging.ImageFormat]::Png)
+          $crop.Dispose(); $bitmap.Dispose()
+          $data = [Convert]::ToBase64String([IO.File]::ReadAllBytes($cropped))
+          $size = 4000
+          for ($i = 0; $i -lt $data.Length; $i += $size) {
+            $n = [Math]::Min($size, $data.Length - $i)
+            Write-Host ("::notice title=SIDEBAR-{0:D3}::{1}" -f ($i / $size), $data.Substring($i, $n))
+          }
       - name: Test live download to temporary folder
         if: github.event_name == 'push'
         shell: powershell
@@ -29,7 +48,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   publish-installer:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish GUI installer 7')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish GUI installer 8')
     needs: build-test
     runs-on: ubuntu-latest
     permissions:
@@ -47,11 +66,11 @@ jobs:
           cd installer-assets
           sha256sum HyperRealism128-Installer.exe > HyperRealism128-Installer.exe.sha256
           sha256sum -c HyperRealism128-Installer.exe.sha256
-          gh release create v0.1.0-installer.7 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — Windows GUI installer 7' --notes-file ../.github/installer-release-notes.md --prerelease
+          gh release create v0.1.0-installer.8 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — Windows GUI installer 8' --notes-file ../.github/installer-release-notes.md --prerelease
       - name: Attach installer to existing preview releases
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for tag in v0.1.0-preview.1 v0.1.0-preview.2 v0.1.0-preview.3 v0.1.0-preview.4; do
+          for tag in v0.1.0-preview.1 v0.1.0-preview.2 v0.1.0-preview.3 v0.1.0-preview.4 v0.1.0-preview.5; do
             gh release upload "$tag" installer-assets/HyperRealism128-Installer.exe installer-assets/HyperRealism128-Installer.exe.sha256 --clobber
           done

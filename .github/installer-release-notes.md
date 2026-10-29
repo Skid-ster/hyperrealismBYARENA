@@ -1,11 +1,12 @@
-## Windows GUI installer 7 — experimental pack
+## Windows GUI installer 8 — experimental pack
 
-This update makes the status bar resolution-neutral for the 512px preview. The prior update recreated the reference toolbar with five compact, icon-led buttons,
-matching spacing and dropdown indicators. Add Instance selects an existing
-resourcepacks folder; Folders and Help open menus; Settings controls automatic
-checks; Update checks both installer and pack. It does not create or manage
-Minecraft instances. It is a separate HyperRealism app, not
-PineconeMC. Download **HyperRealism128-Installer.exe** and double-click it on Windows 11.
+The sidebar now uses the original Prism Launcher grass-block instance artwork,
+credited under CC BY-SA 4.0. Other glyphs remain independently drawn. The new
+**Launch** button asks an installed PineconeMC to launch the instance matching
+the selected standard resourcepacks folder. If the launcher isn't found, browse
+to `elyprismlauncher.exe`; the path is remembered. PineconeMC handles accounts,
+Minecraft startup and errors. Custom instance folder layouts should be launched
+from PineconeMC itself. This is a separate application, not PineconeMC. Download **HyperRealism128-Installer.exe** and double-click it on Windows 11.
 The app pre-fills the ElyPrism `26.3(1)` instance path under the current user's
 AppData, and lets you browse to a different existing `resourcepacks` folder.
 A green message means the folder exists and its name matches; it does **not**

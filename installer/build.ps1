@@ -7,9 +7,9 @@ $root = Split-Path -Parent $PSScriptRoot
 $out = Join-Path $root 'installer-output'
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 $common = @('/nologo', '/codepage:65001', '/platform:anycpu', '/optimize+', '/reference:System.Core.dll', '/reference:System.Web.Extensions.dll')
-& $csc @common '/target:winexe' '/reference:System.Drawing.dll' '/reference:System.Windows.Forms.dll' "/out:$out\HyperRealism128-Installer.exe" "$PSScriptRoot\PackInstaller.cs" "$PSScriptRoot\SelfUpdater.cs" "$PSScriptRoot\Program.cs"
+& $csc @common '/target:winexe' "/resource:$PSScriptRoot\assets\prism-grass.png,HyperRealismInstaller.Grass.png" "/resource:$PSScriptRoot\assets\ATTRIBUTION.txt,HyperRealismInstaller.IconCredits.txt" '/reference:System.Drawing.dll' '/reference:System.Windows.Forms.dll' "/out:$out\HyperRealism128-Installer.exe" "$PSScriptRoot\PackInstaller.cs" "$PSScriptRoot\SelfUpdater.cs" "$PSScriptRoot\LauncherIntegration.cs" "$PSScriptRoot\Program.cs"
 if ($LASTEXITCODE -ne 0) { throw 'GUI installer compilation failed.' }
-& $csc @common '/target:exe' '/reference:System.Windows.Forms.dll' "/out:$out\InstallerTests.exe" "$PSScriptRoot\PackInstaller.cs" "$PSScriptRoot\SelfUpdater.cs" "$PSScriptRoot\Tests.cs"
+& $csc @common '/target:exe' '/reference:System.Windows.Forms.dll' "/out:$out\InstallerTests.exe" "$PSScriptRoot\PackInstaller.cs" "$PSScriptRoot\SelfUpdater.cs" "$PSScriptRoot\LauncherIntegration.cs" "$PSScriptRoot\Tests.cs"
 if ($LASTEXITCODE -ne 0) { throw 'Installer test compilation failed.' }
 & "$out\InstallerTests.exe" "$out\HyperRealism128-Installer.exe"
 if ($LASTEXITCODE -ne 0) { throw 'Installer backend tests failed.' }

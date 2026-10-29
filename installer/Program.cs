@@ -110,6 +110,7 @@ namespace HyperRealismInstaller
         private readonly LauncherButton openFolder = new LauncherButton();
         private readonly LauncherButton check = new LauncherButton();
         private readonly LauncherButton install = new LauncherButton();
+        private readonly LauncherButton launch = new LauncherButton();
         private readonly LauncherButton close = new LauncherButton();
         private readonly LauncherButton appUpdate = new LauncherButton();
         private readonly LauncherButton toolBrowse = new LauncherButton();
@@ -129,6 +130,7 @@ namespace HyperRealismInstaller
         private bool checkingApp;
         private bool automaticUpdates = true;
         private static readonly string AutoCheckPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "auto-update-checks.txt");
+        private static readonly string LauncherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "pineconemc-path.txt");
         private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "resourcepacks-path.txt");
 
         internal InstallerForm() : this("") { }
@@ -220,10 +222,10 @@ namespace HyperRealismInstaller
             progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; left.Controls.Add(progress, 0, 6);
             left.Controls.Add(new Label { Dock = DockStyle.Bottom, AutoSize = true, Text = "Folder name is a helpful check, not proof this is the active instance.\r\nChecksums detect corruption but are not an independent signature.", ForeColor = Color.FromArgb(155, 155, 155) }, 0, 7);
 
-            var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 10, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
+            var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 11, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
             side.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 101)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
             for (int i = 0; i < 4; i++) side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
             side.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
@@ -238,19 +240,21 @@ namespace HyperRealismInstaller
             };
             side.Controls.Add(sideIcon, 0, 0);
             side.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "HyperRealism128", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Foreground, BackColor = Sidebar, AutoEllipsis = true }, 0, 1);
+            StyleButton(launch, "Launch", "launch", 123, 27, false);
+            tooltips.SetToolTip(launch, "Launch the selected instance through PineconeMC.");
             StyleButton(install, "Install / Update", "install", 123, 27, false);
             StyleButton(check, "Check updates", "update", 123, 27, false);
             StyleButton(openFolder, "Open folder", "folder", 123, 27, false);
             StyleButton(sideBrowse, "Choose folder", "folder", 123, 27, false);
             StyleButton(appUpdate, "Installer update", "update", 123, 27, false);
             StyleButton(close, "Close", "close", 123, 27, false);
-            foreach (var b in new Button[] { install, check, openFolder, sideBrowse, appUpdate, close }) { b.Dock = DockStyle.Fill; b.Margin = Padding.Empty; }
-            side.Controls.Add(install, 0, 2); side.Controls.Add(check, 0, 3);
+            foreach (var b in new Button[] { launch, install, check, openFolder, sideBrowse, appUpdate, close }) { b.Dock = DockStyle.Fill; b.Margin = Padding.Empty; }
+            side.Controls.Add(launch, 0, 2); side.Controls.Add(install, 0, 3); side.Controls.Add(check, 0, 4);
             var divider = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
             divider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 3, 3, divider.Width - 4, 3); };
-            side.Controls.Add(divider, 0, 4);
-            side.Controls.Add(openFolder, 0, 5); side.Controls.Add(sideBrowse, 0, 6); side.Controls.Add(appUpdate, 0, 7); side.Controls.Add(close, 0, 8);
-            side.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Margin = Padding.Empty }, 0, 9);
+            side.Controls.Add(divider, 0, 5);
+            side.Controls.Add(openFolder, 0, 6); side.Controls.Add(sideBrowse, 0, 7); side.Controls.Add(appUpdate, 0, 8); side.Controls.Add(close, 0, 9);
+            side.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Margin = Padding.Empty }, 0, 10);
 
             var news = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
             var newsLabel = new Label { Dock = DockStyle.Fill, Padding = new Padding(29, 0, 0, 0), TextAlign = ContentAlignment.MiddleLeft, ForeColor = Foreground, Text = "HyperRealism128  •  Experimental preview" };
@@ -283,9 +287,14 @@ namespace HyperRealismInstaller
             var helpMenu = CreateMenu();
             var guide = helpMenu.Items.Add("Installer guide");
             var shaderGuide = helpMenu.Items.Add("Shader setup guide");
+            var credits = helpMenu.Items.Add("Icon credits and license");
             var about = helpMenu.Items.Add("About HyperRealism128");
             guide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA#readme"); };
             shaderGuide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/e000bf82-hyperrealismbyarena/docs/SHADER_SETUP.md"); };
+            credits.Click += delegate {
+                using (var stream = typeof(InstallerForm).Assembly.GetManifestResourceStream("HyperRealismInstaller.IconCredits.txt"))
+                using (var reader = new StreamReader(stream)) MessageBox.Show(this, reader.ReadToEnd(), "Icon credits and license", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            };
             about.Click += delegate { MessageBox.Show(this, "HyperRealism128 Installer " + SelfUpdater.CurrentTag + "\r\n\r\nIndependent resource-pack installer, not PineconeMC.\r\nThe preview pack is experimental and requires a compatible shader for PBR.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information); };
             toolHelp.Click += delegate { helpMenu.Show(toolHelp, 0, toolHelp.Height); };
             toolCheck.Click += async delegate { await CheckAllUpdates(); };
@@ -303,6 +312,7 @@ namespace HyperRealismInstaller
                 try { System.Diagnostics.Process.Start("explorer.exe", "\"" + PackInstaller.ValidateFolder(pathBox.Text) + "\""); }
                 catch (Exception ex) { ShowError(ex); }
             };
+            launch.Click += delegate { LaunchGame(); };
             check.Click += async delegate { await RunOperation(false); };
             install.Click += async delegate { await RunOperation(true); };
             close.Click += delegate { Close(); };
@@ -343,33 +353,26 @@ namespace HyperRealismInstaller
             button.Image = Glyph(glyph, toolbar ? 24 : 18);
             button.TextImageRelation = TextImageRelation.ImageBeforeText;
             button.ImageAlign = ContentAlignment.MiddleLeft; button.TextAlign = ContentAlignment.MiddleLeft;
-            button.Padding = new Padding(toolbar ? 3 : 5, 0, 0, 0);
+            button.Padding = new Padding(toolbar ? 3 : 1, 0, 0, 0);
             button.UseVisualStyleBackColor = false; button.AutoEllipsis = true;
         }
 
-        // Independently drawn, native-size icons with crisp geometric details.
-        // The curves are antialiased, but interior pixels are not resampled.
+        // The embedded CC BY-SA grass block is rasterized and cropped from
+        // Prism Launcher's instance icon. Attribution is included in Help.
         private static Bitmap BlockIcon(int size)
         {
             var image = new Bitmap(size, size);
-            using (var g = Graphics.FromImage(image))
-            using (var outline = new GraphicsPath())
-            using (var dirt = new LinearGradientBrush(new PointF(0, 0), new PointF(0, 48), Color.FromArgb(134, 103, 79), Color.FromArgb(112, 82, 58)))
-            using (var soil = new SolidBrush(Color.FromArgb(145, 112, 81)))
-            using (var soilDark = new SolidBrush(Color.FromArgb(103, 78, 61)))
-            using (var grass = new LinearGradientBrush(new PointF(0, 0), new PointF(48, 12), Color.FromArgb(185, 205, 99), Color.FromArgb(153, 205, 97)))
-            using (var shade = new SolidBrush(Color.FromArgb(141, 165, 79)))
+            using (var stream = typeof(InstallerForm).Assembly.GetManifestResourceStream("HyperRealismInstaller.Grass.png"))
             {
-                g.Clear(Color.Transparent); g.ScaleTransform(size / 48f, size / 48f); g.SmoothingMode = SmoothingMode.AntiAlias;
-                outline.AddArc(0, 0, 12, 12, 180, 90); outline.AddArc(36, 0, 12, 12, 270, 90);
-                outline.AddArc(36, 36, 12, 12, 0, 90); outline.AddArc(0, 36, 12, 12, 90, 90); outline.CloseFigure();
-                g.FillPath(dirt, outline); g.SetClip(outline); g.SmoothingMode = SmoothingMode.None;
-                g.FillRectangle(soil, 4, 29, 6, 6); g.FillRectangle(soil, 24, 37, 7, 7); g.FillRectangle(soil, 38, 25, 6, 6);
-                g.FillRectangle(soilDark, 15, 28, 5, 5); g.FillRectangle(soilDark, 33, 41, 4, 4);
-                g.FillRectangle(shade, 0, 0, 48, 19); g.FillRectangle(grass, 0, 0, 48, 15);
-                g.FillRectangle(grass, 0, 14, 10, 5); g.FillRectangle(grass, 11, 14, 6, 10);
-                g.FillRectangle(grass, 25, 14, 7, 6); g.FillRectangle(grass, 37, 14, 7, 11); g.FillRectangle(grass, 44, 14, 4, 6);
-                g.ResetClip();
+                if (stream == null) throw new InvalidOperationException("Missing grass icon resource.");
+                using (var source = Image.FromStream(stream))
+                using (var g = Graphics.FromImage(image))
+                {
+                    g.Clear(Color.Transparent);
+                    g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    g.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    g.DrawImage(source, new Rectangle(0, 0, size, size));
+                }
             }
             return image;
         }
@@ -431,6 +434,12 @@ namespace HyperRealismInstaller
                         FillRound(g, dark, 9, 10, 6, 10, 3); FillRound(g, green, 10, 12, 4, 7, 2);
                         g.FillPolygon(green, new Point[] { new Point(7, 18), new Point(17, 18), new Point(12, 23) });
                     }
+                    else if (name == "launch")
+                    {
+                        g.FillPolygon(tan, new Point[] { new Point(2, 1), new Point(22, 12), new Point(2, 23) });
+                        g.FillPolygon(green, new Point[] { new Point(3, 3), new Point(20, 12), new Point(3, 21) });
+                        g.FillPolygon(white, new Point[] { new Point(5, 5), new Point(18, 12), new Point(5, 19) });
+                    }
                     else if (name == "install")
                     {
                         FillRound(g, green, 1, 2, 22, 20, 3); FillRound(g, white, 4, 5, 16, 14, 1.5f);
@@ -454,6 +463,33 @@ namespace HyperRealismInstaller
                 }
             }
             return image;
+        }
+
+        private void LaunchGame()
+        {
+            try
+            {
+                LaunchTarget target = LauncherIntegration.TargetFromFolder(pathBox.Text);
+                string exe;
+                // Launcher selection is stored separately from the resourcepacks folder.
+                try { exe = File.Exists(LauncherPath) ? File.ReadAllText(LauncherPath).Trim() : ""; } catch { exe = ""; }
+                if (!File.Exists(exe)) exe = LauncherIntegration.FindInstalled();
+                if (String.IsNullOrEmpty(exe))
+                {
+                    using (var picker = new OpenFileDialog())
+                    {
+                        picker.Title = "Select PineconeMC (elyprismlauncher.exe)";
+                        picker.Filter = "Programs (*.exe)|*.exe"; picker.CheckFileExists = true; picker.Multiselect = false;
+                        if (picker.ShowDialog(this) != DialogResult.OK) return;
+                        exe = picker.FileName;
+                    }
+                }
+                using (var process = LauncherIntegration.Launch(exe, target)) { }
+                try { Directory.CreateDirectory(Path.GetDirectoryName(LauncherPath)); File.WriteAllText(LauncherPath, exe); } catch { }
+                result.ForeColor = Foreground;
+                result.Text = "Launch requested for " + target.InstanceId + ". PineconeMC handles accounts and game startup.";
+            }
+            catch (Exception ex) { ShowError(ex); }
         }
 
         private static ContextMenuStrip CreateMenu()
@@ -482,22 +518,31 @@ namespace HyperRealismInstaller
             {
                 dialog.Text = "Installer Settings"; dialog.StartPosition = FormStartPosition.CenterParent;
                 dialog.FormBorderStyle = FormBorderStyle.FixedDialog; dialog.MaximizeBox = false; dialog.MinimizeBox = false;
-                dialog.ClientSize = new Size(430, 175); dialog.BackColor = Background; dialog.ForeColor = Foreground; dialog.Font = Font;
+                dialog.ClientSize = new Size(430, 255); dialog.BackColor = Background; dialog.ForeColor = Foreground; dialog.Font = Font;
                 var title = new Label { Text = "Update checks", Font = new Font(Font, FontStyle.Bold), AutoSize = true, Location = new Point(18, 16) };
                 var toggle = new CheckBox { Text = "Check for updates at startup and hourly while open", AutoSize = true, Checked = automaticUpdates, Location = new Point(20, 48), ForeColor = Foreground };
                 var detail = new Label { Text = "Updates are never installed without your confirmation.", ForeColor = Color.FromArgb(170, 170, 170), AutoSize = true, Location = new Point(20, 78) };
-                var save = new LauncherButton(); StyleButton(save, "Save", "install", 88, 30, false); save.Location = new Point(237, 125);
-                var cancel = new LauncherButton(); StyleButton(cancel, "Cancel", "close", 88, 30, false); cancel.Location = new Point(330, 125);
+                var launcherLabel = new Label { Text = "PineconeMC executable (blank = auto-detect)", AutoSize = true, Location = new Point(20, 116) };
+                var launcherBox = new TextBox { Location = new Point(20, 141), Width = 292, BackColor = Color.FromArgb(42, 42, 42), ForeColor = Foreground, BorderStyle = BorderStyle.FixedSingle };
+                try { if (File.Exists(LauncherPath)) launcherBox.Text = File.ReadAllText(LauncherPath).Trim(); } catch { }
+                var choose = new LauncherButton(); StyleButton(choose, "Browse", "folder", 88, 27, false); choose.Location = new Point(320, 138);
+                choose.Click += delegate { using (var picker = new OpenFileDialog()) { picker.Title = "Select PineconeMC (elyprismlauncher.exe)"; picker.Filter = "Programs (*.exe)|*.exe"; picker.CheckFileExists = true; if (picker.ShowDialog(dialog) == DialogResult.OK) launcherBox.Text = picker.FileName; } };
+                var save = new LauncherButton(); StyleButton(save, "Save", "install", 88, 30, false); save.Location = new Point(237, 205);
+                var cancel = new LauncherButton(); StyleButton(cancel, "Cancel", "close", 88, 30, false); cancel.Location = new Point(330, 205);
                 cancel.Click += delegate { dialog.Close(); };
                 save.Click += delegate {
                     try {
+                        string selected = launcherBox.Text.Trim().Trim('"');
+                        if (selected.Length > 0 && (!Path.IsPathRooted(selected) || !File.Exists(selected) || !String.Equals(Path.GetExtension(selected), ".exe", StringComparison.OrdinalIgnoreCase)))
+                            throw new InvalidOperationException("Choose an existing launcher .exe, or leave the field blank to auto-detect.");
                         Directory.CreateDirectory(Path.GetDirectoryName(AutoCheckPath));
+                        File.WriteAllText(LauncherPath, selected);
                         File.WriteAllText(AutoCheckPath, toggle.Checked ? "on" : "off");
                         automaticUpdates = toggle.Checked; updateTimer.Enabled = automaticUpdates;
                         dialog.Close();
                     } catch (Exception ex) { MessageBox.Show(dialog, "Could not save settings: " + ex.Message, "Settings", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
                 };
-                dialog.Controls.Add(title); dialog.Controls.Add(toggle); dialog.Controls.Add(detail); dialog.Controls.Add(save); dialog.Controls.Add(cancel);
+                dialog.Controls.Add(title); dialog.Controls.Add(toggle); dialog.Controls.Add(detail); dialog.Controls.Add(launcherLabel); dialog.Controls.Add(launcherBox); dialog.Controls.Add(choose); dialog.Controls.Add(save); dialog.Controls.Add(cancel);
                 dialog.AcceptButton = save; dialog.CancelButton = cancel; dialog.ShowDialog(this);
             }
         }
@@ -656,6 +701,7 @@ namespace HyperRealismInstaller
             toolOpen.Enabled = !busy;
             toolCheck.Enabled = !busy && !checkingApp;
             toolBrowse.Enabled = !busy;
+            launch.Enabled = !busy;
             toolSettings.Enabled = !busy;
             sideBrowse.Enabled = !busy;
         }
@@ -700,7 +746,7 @@ namespace HyperRealismInstaller
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || launch.Text != "Launch" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
             foreach (var button in new LauncherButton[] { toolBrowse, toolOpen, toolSettings, toolHelp, toolCheck })
                 if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Image.Width - 3)
                     throw new Exception("Toolbar button is missing an icon or has clipped text: " + button.Text);

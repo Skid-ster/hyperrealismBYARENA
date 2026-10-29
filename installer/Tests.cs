@@ -114,7 +114,7 @@ internal static class InstallerTests
         string staged = SelfUpdater.DownloadUpdate(fake, update, target, out sum);
         Assert(PackInstaller.HashFile(staged) == sum, "App update not staged correctly.");
         File.Delete(staged);
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.8", false, "https://evil.example") });
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.9", false, "https://evil.example") });
         Throws(() => SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag), "Untrusted app release host accepted.");
 
         // End-to-end test of the real cmd -> copied GUI helper -> replace ->
@@ -161,8 +161,42 @@ internal static class InstallerTests
         Environment.SetEnvironmentVariable("HR_UPDATE_TEST_MARKER", null);
     }
 
+    private static void TestLaunch(string root)
+    {
+        string data = Path.Combine(root, "launcher data & 50%");
+        string instance = Path.Combine(data, "instances", "26.3 (1) & test");
+        string folder = Path.Combine(instance, "minecraft", "resourcepacks");
+        Directory.CreateDirectory(folder);
+        File.WriteAllText(Path.Combine(instance, "instance.cfg"), "fixture");
+        LaunchTarget target = LauncherIntegration.TargetFromFolder(folder);
+        Assert(target.DataDirectory == data && target.InstanceId == "26.3 (1) & test", "Wrong launcher target inferred.");
+        string bad = Path.Combine(root, "resourcepacks"); Directory.CreateDirectory(bad);
+        Throws(() => LauncherIntegration.TargetFromFolder(bad), "Unrelated resourcepacks folder accepted as an instance.");
+        File.Delete(Path.Combine(instance, "instance.cfg"));
+        Throws(() => LauncherIntegration.TargetFromFolder(folder), "Missing instance.cfg accepted.");
+        File.WriteAllText(Path.Combine(instance, "instance.cfg"), "fixture");
+        string marker = Path.Combine(root, "launch-probe.txt");
+        Environment.SetEnvironmentVariable("HR_LAUNCH_TEST_MARKER", marker);
+        try
+        {
+            string testExe = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            using (var process = LauncherIntegration.Launch(testExe, target))
+                Assert(process.WaitForExit(15000) && process.ExitCode == 0, "Launcher process test failed.");
+            var actual = new JavaScriptSerializer().Deserialize<string[]>(File.ReadAllText(marker));
+            Assert(actual.Length == 5 && actual[0] == "--dir" && actual[1] == data && actual[2] == "--launch" && actual[3] == target.InstanceId && actual[4] == "--show-window", "Launcher command-line arguments were not preserved.");
+            Throws(() => LauncherIntegration.StartInfo(Path.Combine(root, "missing.exe"), target), "Missing launcher accepted.");
+        }
+        finally { Environment.SetEnvironmentVariable("HR_LAUNCH_TEST_MARKER", null); }
+    }
+
     private static int Main(string[] args)
     {
+        string launchMarker = Environment.GetEnvironmentVariable("HR_LAUNCH_TEST_MARKER");
+        if (!String.IsNullOrEmpty(launchMarker) && args.Length > 0 && args[0] == "--dir")
+        {
+            File.WriteAllText(launchMarker, new JavaScriptSerializer().Serialize(args));
+            return 0;
+        }
         if (args.Length == 1 && (args[0] == "--updated" || args[0] == "--update-failed"))
         {
             string marker = Environment.GetEnvironmentVariable("HR_UPDATE_TEST_MARKER");
@@ -211,6 +245,7 @@ internal static class InstallerTests
             fake.Json = serializer.Serialize(new object[] { Release("bad", "2026-01-01T00:00:00Z", false, "https://evil.example") });
             Throws(() => PackInstaller.Install(fake, folder), "Untrusted host accepted.");
             if (args.Length != 1) throw new Exception("Expected path to the built GUI installer.");
+            TestLaunch(root);
             TestSelfUpdate(root, args[0]);
             Console.WriteLine("GUI installer backend and self-update tests passed.");
             return 0;
