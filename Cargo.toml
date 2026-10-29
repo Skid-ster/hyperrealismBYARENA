@@ -1,0 +1,19 @@
+[package]
+name = "hyperrealism-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.73"
+description = "CPU primitives for a Minecraft LabPBR resource-pack generator"
+
+[lib]
+path = "src/lib.rs"
+# This library has no executable documentation examples.
+doctest = false
+
+[dependencies]
+png = "0.17"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+crc32fast = "1"
+
+rayon = "1.5"
