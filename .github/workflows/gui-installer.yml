@@ -1,0 +1,36 @@
+name: Windows GUI installer
+on: [push, pull_request]
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test installer
+        shell: powershell
+        run: ./installer/build.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HyperRealism128-Windows-GUI-installer
+          path: installer-output/HyperRealism128-Installer.exe
+          if-no-files-found: error
+          retention-days: 30
+  publish-installer:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish GUI installer 1')
+    needs: build-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: HyperRealism128-Windows-GUI-installer
+          path: installer-assets
+      - name: Checksum and publish installer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd installer-assets
+          sha256sum HyperRealism128-Installer.exe > HyperRealism128-Installer.exe.sha256
+          sha256sum -c HyperRealism128-Installer.exe.sha256
+          gh release create v0.1.0-installer.1 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — Windows GUI installer 1' --notes-file ../.github/installer-release-notes.md --prerelease

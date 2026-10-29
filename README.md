@@ -17,6 +17,22 @@ See [shader setup and testing](docs/SHADER_SETUP.md) and [the research and stage
 
 ## Download and install the experimental preview
 
+### Windows GUI installer / updater
+
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.1/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
+`%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
+browse or type another **existing** `resourcepacks` folder if needed. Green
+means the folder exists and has the expected name—not that the game actually
+uses that folder. Use **Check for updates** to compare the installed file's
+hash with the latest preview, or **Install / Update** to download and install
+it. Only the named preview ZIP is replaced. The pack is not enabled
+automatically; enable it in Minecraft. The executable is unsigned, so Windows
+may display a SmartScreen warning. The download checksum comes from the same
+release, not an independent signature. GUI source and offline tests are under
+`installer/`; build them on Windows with `powershell -File installer/build.ps1`.
+
+### Manual installation
+
 No Rust installation is needed to use the prebuilt pack. Download
 [HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.4/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
