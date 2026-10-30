@@ -11,9 +11,11 @@ strength at 20% and softened door/glass treatments, Preview 15 added
 normal-derived foliage height/AO, Preview 16 refined glass, and Preview 17 fixed
 door-handle UV placement and documented LabPBR setup. Preview 18 raises door
 hardware to the correct full-door height, clarifies Complementary Reimagined
-LabPBR settings and identifies the in-game pack as HyperRealism 512×512. This
-is **not** the requested complete
-pack or a finished photorealistic catalog. A separate synthetic manifest contains eight
+LabPBR settings and identifies the in-game pack as HyperRealism 512×512. Preview
+19 moves stone, andesite, tuff and the overworld ore host surfaces onto the
+existing CC0 rocky scan, reducing the concrete scan's assignments from 51 to
+40 targets. This is **not** the requested complete pack or a finished
+photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
 implementation, not a port or a claim of matching its results.
@@ -57,13 +59,13 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 18 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 19 uses 512×512
 textures (the legacy `HyperRealism128` archive name is retained for updater
 compatibility), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism 512×512 Preview 18 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.18/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism 512×512 Preview 19 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.19/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 308 distinct texture paths replace only a subset of the game; the rest remain
@@ -112,7 +114,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.18/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.19/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
