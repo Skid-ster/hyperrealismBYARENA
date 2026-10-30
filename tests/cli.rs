@@ -516,6 +516,46 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
 }
 
 #[test]
+fn geological_surfaces_and_ore_host_rock_use_rock_face_material() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let textures: std::collections::HashMap<&str, &str> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| {
+            (
+                t["name"].as_str().unwrap(),
+                t["material"].as_str().unwrap(),
+            )
+        })
+        .collect();
+    for name in [
+        "stone",
+        "andesite",
+        "tuff",
+        "coal_ore",
+        "copper_ore",
+        "diamond_ore",
+        "emerald_ore",
+        "gold_ore",
+        "iron_ore",
+        "lapis_ore",
+        "redstone_ore",
+        "deepslate_coal_ore",
+        "deepslate_copper_ore",
+        "deepslate_diamond_ore",
+        "deepslate_emerald_ore",
+        "deepslate_gold_ore",
+        "deepslate_iron_ore",
+        "deepslate_lapis_ore",
+        "deepslate_redstone_ore",
+    ] {
+        assert_eq!(textures[name], "rock_face", "{name}");
+    }
+}
+
+#[test]
 fn representative_26_3_models_share_the_covered_texture_paths() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();

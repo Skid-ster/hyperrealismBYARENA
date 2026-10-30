@@ -314,7 +314,7 @@
   "textures": [
     {
       "name": "stone",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "stone",
       "tint": [
         255,
@@ -331,7 +331,7 @@
     },
     {
       "name": "andesite",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "stone",
       "tint": [
         255,
@@ -399,7 +399,7 @@
     },
     {
       "name": "tuff",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "stone",
       "tint": [
         255,
@@ -1674,7 +1674,7 @@
     },
     {
       "name": "coal_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1718,7 +1718,7 @@
     },
     {
       "name": "copper_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1762,7 +1762,7 @@
     },
     {
       "name": "diamond_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1806,7 +1806,7 @@
     },
     {
       "name": "emerald_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1850,7 +1850,7 @@
     },
     {
       "name": "gold_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1894,7 +1894,7 @@
     },
     {
       "name": "iron_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1938,7 +1938,7 @@
     },
     {
       "name": "lapis_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1982,7 +1982,7 @@
     },
     {
       "name": "redstone_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
