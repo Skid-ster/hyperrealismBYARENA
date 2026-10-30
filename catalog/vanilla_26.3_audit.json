@@ -3938,6 +3938,71 @@
         198,
         40
       ]
+    },
+    "bamboo_planks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "46f2ca2b287feb19e7405757457784c43113404d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        193,
+        173,
+        80
+      ]
+    },
+    "bamboo_fence": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "26f3a884e041c30067fe53442d0e31301296cb33",
+      "has_mcmeta": false,
+      "target_rgb": [
+        207,
+        186,
+        89
+      ]
+    },
+    "bamboo_fence_particle": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a7a64db20f01cb454de1e2422cd70c3c5e18ed3b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        207,
+        186,
+        85
+      ]
+    },
+    "bamboo_fence_gate": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "91d0b062a3e7b401e049d28ee53db08334a83cc0",
+      "has_mcmeta": false,
+      "target_rgb": [
+        206,
+        186,
+        87
+      ]
+    },
+    "bamboo_fence_gate_particle": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a7a64db20f01cb454de1e2422cd70c3c5e18ed3b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        207,
+        186,
+        85
+      ]
     }
   },
   "version": "26.3"

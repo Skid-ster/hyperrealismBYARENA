@@ -4,10 +4,12 @@ This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
 LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
-are approximated as described below. The starter catalog contains 302
-experimental outputs based on CC0 Poly Haven material sources; it is **not** the
-requested 280-texture catalog or a finished photorealistic pack. A separate
-synthetic manifest contains eight test examples. The repository did
+are approximated as described below. The current source catalog contains 307
+distinct block texture targets based on CC0 Poly Haven maps and original
+procedural work; five bamboo-family paths have been added since the published
+Preview 11 (302 targets). This is **not** the requested complete pack or a
+finished photorealistic catalog. A separate synthetic manifest contains eight
+test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
 implementation, not a port or a claim of matching its results.
 
@@ -199,12 +201,18 @@ material variation, and recipe layers can change the final average. This is not
 a pixel-level palette match. Supported experimental recipes are `material`
 (preserve the source), `stone`,
 `ore`, `brick`, `cracked_brick`, `cobble`, `moss_cobble`, `moss_brick`, `plank`,
-`moss`, `glass`, `metal`, `gem`, and `leaves`. These are simple procedural
-demonstrations,
-not finished material-specific recipes. Names must be lowercase ASCII letters,
-digits or underscores. The bundled catalog names and color hints were checked
-against a pinned 26.3 asset inventory (see `catalog/vanilla_26.3_audit.json`);
-they have not yet been validated in game. Custom names are not checked unless
+`bamboo`, `moss`, `glass`, `metal`, `gem`, and `leaves`. The bamboo recipe adds
+periodic board joints, subtle longitudinal fibers and node relief over the CC0
+veneer input; it is an approximation rather than a bamboo scan. These are
+experimental procedural recipes, not all fully validated material-specific
+recipes. An optional lowercase `pattern_seed` lets texture aliases with matching
+inputs and parameters generate identical maps. Names must be lowercase ASCII
+letters, digits or underscores. The bundled catalog names and color hints were checked
+against a pinned 26.3 asset inventory (see `catalog/vanilla_26.3_audit.json`).
+A separate targeted model-reference audit checks how 125 common building-family
+blockstates resolve shared stair/slab/wall, wood and multi-face textures; see
+[the consistency audit](docs/TEXTURE_VARIANT_AUDIT.md). These checks have not
+yet been validated in game. Custom names are not checked unless
 `--minecraft-jar` is supplied.
 F0 defaults to 10; 230–237 are hardcoded metal IDs, 255 is custom metal, and
 238–254 are rejected. Porosity defaults to 0 and must be 0–64. Emissive defaults
@@ -277,8 +285,8 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand the 302-output starter to the requested catalog; acquire appropriate
-  materials for each family and review palette/geometry in game. This 302-output
+- Expand the 307-output starter to broader block coverage; acquire appropriate
+  materials for each family and review palette/geometry in game. This 307-output
   set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.

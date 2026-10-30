@@ -80,7 +80,9 @@ available in this mirror. They came from the unmodified provider 1K JPEGs in
 [H2](https://github.com/noahpeters/H2/tree/768413f5e3bf1f9572208566aab138c957374bc6/public/studio/materials),
 whose provenance files include upstream URLs and original checksums. Veneers
 are approximations for solid planks, with procedural board joints and recoloring;
-not all wood species match the original scans. Generated height combines board
+not all wood species match the original scans. Bamboo textures reuse White
+Maple Veneer with an original periodic bamboo-board/node recipe; they are not
+sourced bamboo photographs. Generated height combines board
 relief with a luminance estimate, not measured displacement.
 
 `leafy_grass` uses [Leafy Grass](https://polyhaven.com/a/leafy_grass) by

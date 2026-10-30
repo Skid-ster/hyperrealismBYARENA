@@ -48,6 +48,8 @@ pub struct Texture {
     pub name: String,
     pub material: String,
     pub recipe: String,
+    /// Optional stable seed key for exact procedural sharing across aliases.
+    pub pattern_seed: Option<String>,
     pub tint: [u8; 3],
     /// Optional approximate sRGB target for the average source color.
     pub target_color: Option<[u8; 3]>,
@@ -209,6 +211,7 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             "cobble",
             "moss_cobble",
             "plank",
+            "bamboo",
             "log_end",
             "stripped_log_end",
             "moss",
@@ -225,6 +228,13 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         .contains(&t.recipe.as_str())
         {
             return Err(format!("{}: unknown recipe {}", t.name, t.recipe));
+        }
+        if t
+            .pattern_seed
+            .as_deref()
+            .is_some_and(|seed| !valid_name(seed))
+        {
+            return Err(format!("{}: pattern_seed must be a lowercase identifier", t.name));
         }
         if t.mipmap_strategy
             .as_deref()

@@ -366,7 +366,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 302);
+    assert_eq!(m.textures.len(), 307);
     assert!((m.pbr_strength - 0.4).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     for wood in [
@@ -403,6 +403,30 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         }
     }
 
+    // Five bamboo texture paths were missing from Preview 11. They now use
+    // the same CC0 maple-veneer inputs with a dedicated, periodic bamboo-board
+    // recipe and version-pinned vanilla average-color targets.
+    for (name, expected_color) in [
+        ("bamboo_planks", [193, 173, 80]),
+        ("bamboo_fence", [207, 186, 89]),
+        ("bamboo_fence_particle", [207, 186, 85]),
+        ("bamboo_fence_gate", [206, 186, 87]),
+        ("bamboo_fence_gate_particle", [207, 186, 85]),
+    ] {
+        let texture = m.textures.iter().find(|t| t.name == name).unwrap();
+        assert_eq!(texture.material, "white_maple_veneer");
+        assert_eq!(texture.recipe, "bamboo");
+        assert_eq!(texture.target_color, Some(expected_color));
+    }
+    for name in ["bamboo_fence_particle", "bamboo_fence_gate_particle"] {
+        let texture = m.textures.iter().find(|t| t.name == name).unwrap();
+        assert_eq!(texture.pattern_seed.as_deref(), Some("bamboo_particle"));
+    }
+    assert_eq!(
+        entries["bamboo_fence_particle"]["git_blob_sha1"],
+        entries["bamboo_fence_gate_particle"]["git_blob_sha1"]
+    );
+
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [
@@ -427,6 +451,137 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
             serde_json::json!(t.target_color.unwrap())
         );
     }
+}
+
+#[test]
+fn representative_26_3_models_share_the_covered_texture_paths() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let names: std::collections::HashSet<&str> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| t["name"].as_str().unwrap())
+        .collect();
+    let audit: serde_json::Value = serde_json::from_slice(
+        &fs::read("catalog/vanilla_26.3_variant_texture_refs.json").unwrap(),
+    )
+    .unwrap();
+    assert_eq!(audit["version"], "26.3");
+    assert_eq!(
+        audit["source_commit"],
+        "6c088630459d8ca369ef0d6c07636d7d63a3b0f1"
+    );
+    let blocks = audit["blocks"].as_object().unwrap();
+    assert_eq!(blocks.len(), 125);
+    for (block, textures) in blocks {
+        let textures = textures.as_array().unwrap();
+        assert!(
+            !textures.is_empty(),
+            "{block}: model audit has no block textures"
+        );
+        for texture in textures {
+            let texture = texture.as_str().unwrap();
+            assert!(
+                names.contains(texture),
+                "{block} references uncovered {texture}"
+            );
+        }
+    }
+
+    // In 26.3, every state/model variant of cobblestone stairs, slabs and
+    // walls resolves to the same cobblestone sprite. PBR sidecars are emitted
+    // once for that path, so the geometry shares the exact same material.
+    for block in [
+        "cobblestone",
+        "cobblestone_stairs",
+        "cobblestone_slab",
+        "cobblestone_wall",
+    ] {
+        assert_eq!(blocks[block], serde_json::json!(["cobblestone"]));
+    }
+    for (block, expected) in [
+        ("stone_stairs", "stone"),
+        ("stone_slab", "stone"),
+        ("stone_brick_stairs", "stone_bricks"),
+        ("stone_brick_slab", "stone_bricks"),
+        ("stone_brick_wall", "stone_bricks"),
+        ("brick_stairs", "bricks"),
+        ("brick_slab", "bricks"),
+        ("brick_wall", "bricks"),
+        ("oak_stairs", "oak_planks"),
+        ("oak_slab", "oak_planks"),
+        ("oak_fence", "oak_planks"),
+        ("oak_fence_gate", "oak_planks"),
+        ("cobbled_deepslate_stairs", "cobbled_deepslate"),
+        ("cobbled_deepslate_slab", "cobbled_deepslate"),
+        ("cobbled_deepslate_wall", "cobbled_deepslate"),
+    ] {
+        assert_eq!(blocks[block], serde_json::json!([expected]), "{block}");
+    }
+    // Models with distinct faces intentionally keep their separate vanilla
+    // texture paths (sandstone top/bottom and deepslate/blackstone end caps).
+    assert_eq!(
+        blocks["sandstone_stairs"],
+        serde_json::json!(["sandstone", "sandstone_bottom", "sandstone_top"])
+    );
+    assert_eq!(
+        blocks["deepslate"],
+        serde_json::json!(["deepslate", "deepslate_top"])
+    );
+    assert_eq!(
+        blocks["blackstone_stairs"],
+        serde_json::json!(["blackstone", "blackstone_top"])
+    );
+    assert_eq!(
+        blocks["oak_door"],
+        serde_json::json!(["oak_door_bottom", "oak_door_top"])
+    );
+    assert_eq!(blocks["oak_trapdoor"], serde_json::json!(["oak_trapdoor"]));
+}
+
+#[test]
+fn shared_pattern_seed_generates_identical_material_aliases() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-shared-pattern-{}-{unique}",
+        std::process::id()
+    ));
+    fs::create_dir_all(&temp).unwrap();
+    for name in ["diffuse.png", "normal.png", "roughness.png"] {
+        fs::copy(Path::new("test_assets").join(name), temp.join(name)).unwrap();
+    }
+    fs::write(
+        temp.join("material_manifest.json"),
+        r#"{
+          "version":1,
+          "materials":[{"id":"base","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],
+          "textures":[
+            {"name":"bamboo_fence_particle","material":"base","recipe":"bamboo","pattern_seed":"bamboo_particle","tint":[255,255,255],"target_color":[207,186,85]},
+            {"name":"bamboo_fence_gate_particle","material":"base","recipe":"bamboo","pattern_seed":"bamboo_particle","tint":[255,255,255],"target_color":[207,186,85]}
+          ]
+        }"#,
+    )
+    .unwrap();
+    let output = temp.join("output");
+    let result = run(&temp, &output, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let block = output.join("pack/assets/minecraft/textures/block");
+    for suffix in ["", "_n", "_s"] {
+        assert_eq!(
+            fs::read(block.join(format!("bamboo_fence_particle{suffix}.png"))).unwrap(),
+            fs::read(block.join(format!("bamboo_fence_gate_particle{suffix}.png"))).unwrap(),
+            "shared vanilla sprite must have identical generated {suffix} maps"
+        );
+    }
+    fs::remove_dir_all(temp).unwrap();
 }
 
 #[test]

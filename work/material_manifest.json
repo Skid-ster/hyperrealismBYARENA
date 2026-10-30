@@ -5617,6 +5617,93 @@
       "layout_metal_id": 230,
       "f0": 10,
       "porosity": 30
+    },
+    {
+      "name": "bamboo_planks",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        193,
+        173,
+        80
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "bamboo_fence",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        186,
+        89
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "bamboo_fence_particle",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        186,
+        85
+      ],
+      "f0": 10,
+      "porosity": 40,
+      "pattern_seed": "bamboo_particle"
+    },
+    {
+      "name": "bamboo_fence_gate",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        206,
+        186,
+        87
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "bamboo_fence_gate_particle",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        186,
+        85
+      ],
+      "f0": 10,
+      "porosity": 40,
+      "pattern_seed": "bamboo_particle"
     }
   ],
   "checksums": {

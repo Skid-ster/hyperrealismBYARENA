@@ -164,6 +164,29 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
                 (0.91 + variation * 0.13, 0.02, 1.0, 0.0)
             }
         }
+        "bamboo" => {
+            // Bamboo-laminate boards: long subtle fibers, staggered board
+            // joints and a restrained node band. The scan underneath supplies
+            // fine photographic grain; this pattern adds broader identity.
+            let row = y / 128;
+            let local_y = (y % 128) as f32;
+            let shifted_x = (x + (row % 2) * 128) % PERIOD;
+            let local_x = (shifted_x % 256) as f32;
+            let seam = y % 128 < 3 || shifted_x % 256 < 3;
+            let node_center = 104.0 + 32.0 * point(shifted_x / 256, row, 4, seed ^ 0x71b3);
+            let node = (1.0 - (local_x - node_center).abs() / 3.0).clamp(0.0, 1.0);
+            let fiber = (local_y * std::f32::consts::TAU / 21.0
+                + 0.35 * noise(x, y, 32, seed ^ 0x528d))
+                .sin();
+            if seam {
+                (0.58, -0.075, 1.0, 0.0)
+            } else {
+                let shade = (0.99 + 0.025 * fiber + 0.02 * (fine - 0.5) - 0.09 * node)
+                    .clamp(0.82, 1.08);
+                let relief = 0.006 * fiber - 0.035 * node + 0.008 * (n - 0.5);
+                (shade, relief, 1.0, 0.0)
+            }
+        }
         "log_end" | "stripped_log_end" => {
             // A wood cross section, not plank joints: subtly irregular annual
             // rings and a darker bark rim. The scan underneath supplies grain.
@@ -268,6 +291,7 @@ mod tests {
             "moss",
             "moss_brick",
             "plank",
+            "bamboo",
             "log_end",
             "stripped_log_end",
             "glass",
@@ -298,6 +322,37 @@ mod tests {
         assert_eq!(seed("stone"), seed("stone"));
         assert_ne!(seed("stone"), seed("bricks"));
     }
+    #[test]
+    fn bamboo_recipe_has_periodic_board_joints_and_subtle_relief() {
+        let seed = seed("bamboo_planks");
+        let mut minimum_shade = f32::MAX;
+        let mut maximum_shade = f32::MIN;
+        let mut recessed = 0;
+        let mut raised = 0;
+        for y in (0..PERIOD).step_by(4) {
+            for x in (0..PERIOD).step_by(4) {
+                let p = evaluate("bamboo", x, y, seed);
+                minimum_shade = minimum_shade.min(p.shade);
+                maximum_shade = maximum_shade.max(p.shade);
+                if p.relief < 0.0 {
+                    recessed += 1;
+                }
+                if p.relief > 0.0 {
+                    raised += 1;
+                }
+                assert_eq!(
+                    (p.shade, p.relief),
+                    (
+                        evaluate("bamboo", x + PERIOD, y, seed).shade,
+                        evaluate("bamboo", x, y + PERIOD, seed).relief
+                    )
+                );
+            }
+        }
+        assert!(maximum_shade - minimum_shade > 0.1);
+        assert!(recessed > 0 && raised > 0);
+    }
+
     #[test]
     fn geometry_has_joints_and_cracks() {
         let seed = seed("stone_bricks");
