@@ -361,7 +361,29 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 138);
+    assert_eq!(hashes.len(), 140);
+    let leaf_material = m
+        .materials
+        .iter()
+        .find(|material| material.id == "tree_leaves")
+        .expect("shared foliage material");
+    assert_eq!(
+        leaf_material.height.as_deref(),
+        Some("materials/tree_leaves/height.png")
+    );
+    assert_eq!(
+        leaf_material.ao.as_deref(),
+        Some("materials/tree_leaves/ao.png")
+    );
+    assert!(hashes.contains_key("materials/tree_leaves/height.png"));
+    assert!(hashes.contains_key("materials/tree_leaves/ao.png"));
+    assert_eq!(
+        m.textures
+            .iter()
+            .filter(|texture| texture.material == "tree_leaves")
+            .count(),
+        9
+    );
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();

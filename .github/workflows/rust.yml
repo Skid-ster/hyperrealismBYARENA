@@ -9,21 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - name: Run cargo test --locked
-        shell: bash
-        run: |
-          set +e
-          cargo test --locked 2>&1 | tee "$RUNNER_TEMP/cargo-test.log"
-          status=${PIPESTATUS[0]}
-          if [ "$status" -ne 0 ]; then
-            python - "$RUNNER_TEMP/cargo-test.log" <<'PY'
-          import pathlib, sys
-          lines = pathlib.Path(sys.argv[1]).read_text(errors="replace").splitlines()[-80:]
-          message = "\\n".join(lines).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-          print(f"::error title=Rust test failure details::{message}")
-          PY
-          fi
-          exit "$status"
+      - run: cargo test --locked
       - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only
       - run: cargo run --locked --release -- --input work --output pilot_output --cpu-only --threads 2
       - name: Verify generated LabPBR pack
