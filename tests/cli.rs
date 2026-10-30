@@ -361,12 +361,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 39);
+    assert_eq!(hashes.len(), 58);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 111);
+    assert_eq!(m.textures.len(), 112);
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [
@@ -659,5 +659,89 @@ fn pack_verifier_detects_broken_or_invalid_pbr_maps() {
     write(&normal, 128, 128, &data.pixels).unwrap();
     fs::remove_file(&spec).unwrap();
     assert!(hyperrealism_core::verify::pack(&pack).is_err());
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
+    use hyperrealism_core::png_io::read;
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-grass-wood-{}-{unique}",
+        std::process::id()
+    ));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    let all: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let materials: Vec<_> = all["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|m| m["id"] == "leafy_grass" || m["id"] == "oak_veneer_02")
+        .cloned()
+        .collect();
+    let textures: Vec<_> = all["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|t| t["name"] == "grass_block_top" || t["name"] == "oak_planks")
+        .cloned()
+        .collect();
+    for material in &materials {
+        for key in ["albedo", "normal", "roughness", "ao"] {
+            if let Some(name) = material[key].as_str() {
+                let target = input.join(name);
+                fs::create_dir_all(target.parent().unwrap()).unwrap();
+                fs::copy(Path::new("work").join(name), target).unwrap();
+            }
+        }
+    }
+    fs::write(
+        input.join("material_manifest.json"),
+        serde_json::to_vec(&serde_json::json!({
+            "version": 1, "materials": materials, "textures": textures
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    let output = temp.join("output");
+    let result = run(&input, &output, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let block = output.join("pack/assets/minecraft/textures/block");
+    let grass = read(&block.join("grass_block_top.png")).unwrap();
+    assert!(grass
+        .pixels
+        .chunks_exact(4)
+        .all(|p| p[0] == p[1] && p[1] == p[2] && p[3] == 255));
+    // Do not replace the separate biome-tinted cutout with an opaque texture.
+    assert!(!block.join("grass_block_side_overlay.png").exists());
+    for name in ["grass_block_top", "oak_planks"] {
+        let n = read(&block.join(format!("{name}_n.png"))).unwrap();
+        let s = read(&block.join(format!("{name}_s.png"))).unwrap();
+        let varied = |pixels: &[u8], channel| {
+            let (mut lo, mut hi) = (255u8, 0u8);
+            for p in pixels.chunks_exact(4) {
+                lo = lo.min(p[channel]);
+                hi = hi.max(p[channel]);
+            }
+            hi - lo > 3
+        };
+        assert!(
+            varied(&n.pixels, 0) && varied(&n.pixels, 1),
+            "normal detail missing: {name}"
+        );
+        assert!(varied(&s.pixels, 0), "roughness detail missing: {name}");
+        if name == "oak_planks" {
+            assert!(varied(&n.pixels, 2), "AO detail missing: {name}");
+        }
+    }
     fs::remove_dir_all(temp).unwrap();
 }

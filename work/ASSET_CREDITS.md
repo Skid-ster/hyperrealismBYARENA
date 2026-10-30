@@ -52,7 +52,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 111 texture names and approximate sRGB color targets were checked against
+The 112 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -66,3 +66,30 @@ at commit `8efed6702632a18f284dcaba5b64cb4b02304fe5`. The mirror script
 retrieves Poly Haven's 1K diffuse, DirectX normal, roughness and displacement
 maps. The same willow scan is adapted to oak, spruce, dark oak, acacia and
 jungle logs; it is not a species-specific scan. Log end textures remain vanilla.
+
+### Preview 6 wood and grass
+
+`oak_veneer_02`, `natural_walnut_veneer`, `white_maple_veneer`, and
+`cherry_veneer` are 1K CC0 Poly Haven veneer scans by **Jenelle van Heerden**:
+[Oak Veneer 02](https://polyhaven.com/a/oak_veneer_02),
+[Natural Walnut Veneer](https://polyhaven.com/a/natural_walnut_veneer),
+[White Maple Veneer](https://polyhaven.com/a/white_maple_veneer), and
+[Cherry Veneer](https://polyhaven.com/a/cherry_veneer). Each includes matched
+albedo, OpenGL normals, roughness and ambient occlusion; no displacement was
+available in this mirror. They came from the unmodified provider 1K JPEGs in
+[H2](https://github.com/noahpeters/H2/tree/768413f5e3bf1f9572208566aab138c957374bc6/public/studio/materials),
+whose provenance files include upstream URLs and original checksums. Veneers
+are approximations for solid planks, with procedural board joints and recoloring;
+not all wood species match the original scans. Generated height combines board
+relief with a luminance estimate, not measured displacement.
+
+`leafy_grass` uses [Leafy Grass](https://polyhaven.com/a/leafy_grass) by
+Charlotte Baglioni, CC0. The 1K color, matched OpenGL normal and roughness came
+from the [RAINY portfolio](https://github.com/ssboroo/Rainy-portfolio/tree/9bb0a831e79574565686571557c3272558a52e1a/public/assets),
+which identifies the maps as Leafy Grass in its README. Their color JPEG SHA-256
+is `cfa40bc9d9417d1852db8753a8d5917f110c40101179f63543c382e39bc05e4a`;
+`scripts/prepare-neutral-grass.py` converts it to grayscale because Minecraft
+applies the biome color to the top face. Matched normal and roughness remain
+unchanged; no scanned height or AO is supplied, so height is estimated and AO
+defaults to white. Only the grass top is replaced: side and transparent tinted
+side overlay remain vanilla, so their visual transition may be imperfect.

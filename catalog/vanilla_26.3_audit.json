@@ -536,6 +536,19 @@
         86
       ]
     },
+    "grass_block_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6abb3a1e5717f8e70b51b2fd1697f0ca0a26152a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        147,
+        147,
+        147
+      ]
+    },
     "gravel": {
       "dimensions": [
         16,

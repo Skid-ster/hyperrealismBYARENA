@@ -1,19 +1,21 @@
 ## Experimental 512×512 LabPBR preview — not a complete pack
 
 This is a **512×512** test pack for Minecraft Java 26.3. Its legacy filename is
-retained so the existing installer can update it. It replaces **111 block
+retained so the existing installer can update it. It replaces **112 block
 textures**, not the whole game; all other blocks and entities remain vanilla or
 come from other packs. Higher resolution uses substantially more GPU memory and
 may affect loading and frame rate. It has not been tested on the RTX 5060 Ti.
 
-The materials are derived from CC0 Poly Haven scans. Many starter inputs are
-1K, but some older inputs are 512px or 2K and several blocks reuse the same
-material. Five log sides now use the original 1K Bark Willow 02 color, DirectX
-normal, roughness and displacement scans, adapted to different colors; log ends
-remain vanilla. The existing cobblestone scan includes height but uses default
-roughness, and several other materials have approximated height or normals.
-Coverage and source hashes are in `build_report.json`; credits are in the ZIP.
-These textures and PBR effects have **not yet been visually validated in game**.
+The materials are derived from CC0 Poly Haven scans. Preview 6 adds a biome-tinted
+photographic grass top and upgrades twelve plank variants with four matched 1K
+wood veneer color, OpenGL normal, roughness and AO sets. Wood board joints are
+procedural; height is estimated, not scanned. Grass uses matched normal and
+roughness but estimated height and default AO. Grass sides and their transparent
+biome-tinted overlays remain vanilla, so the top-to-side transition can differ.
+Several blocks reuse sources and not all scans represent the named species.
+Other existing materials may have approximated channels. Coverage and hashes are
+in `build_report.json`; credits are in the ZIP. This revision has **not yet been
+visually validated in game**.
 
 ### Install and check PBR
 
@@ -22,7 +24,7 @@ in the active instance's `minecraft/resourcepacks` folder, and enable it above
 competing packs under **Options → Resource Packs**. Use Iris and a compatible
 LabPBR shader such as Photon. In Photon enable Normal Mapping and Specular
 Mapping, choose labPBR in Resource Pack Settings, and optionally enable
-Parallax Occlusion Mapping. Compare the same oak log or cobblestone with normal
+Parallax Occlusion Mapping. Compare the same grass top or oak planks with normal
 mapping on/off in direct light; rotate the view and reload resources with F3+T.
 Shader menus and optional channel support vary. Structural channel tests alone
 do not prove the shader is rendering the maps.

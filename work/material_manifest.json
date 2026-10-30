@@ -121,6 +121,55 @@
       "normal_y": "directx",
       "roughness": "materials/bark_willow_02/roughness.jpg",
       "height": "materials/bark_willow_02/displacement.jpg"
+    },
+    {
+      "id": "oak_veneer_02",
+      "source": "Oak Veneer 02: https://polyhaven.com/a/oak_veneer_02; creator: Jenelle van Heerden; approximate plank stand-in",
+      "license": "CC0-1.0",
+      "albedo": "materials/oak_veneer_02/color.jpg",
+      "normal": "materials/oak_veneer_02/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/oak_veneer_02/roughness.jpg",
+      "ao": "materials/oak_veneer_02/ao.jpg"
+    },
+    {
+      "id": "cherry_veneer",
+      "source": "Cherry Veneer: https://polyhaven.com/a/cherry_veneer; creator: Jenelle van Heerden; approximate plank stand-in",
+      "license": "CC0-1.0",
+      "albedo": "materials/cherry_veneer/color.jpg",
+      "normal": "materials/cherry_veneer/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/cherry_veneer/roughness.jpg",
+      "ao": "materials/cherry_veneer/ao.jpg"
+    },
+    {
+      "id": "natural_walnut_veneer",
+      "source": "Natural Walnut Veneer: https://polyhaven.com/a/natural_walnut_veneer; creator: Jenelle van Heerden; approximate plank stand-in",
+      "license": "CC0-1.0",
+      "albedo": "materials/natural_walnut_veneer/color.jpg",
+      "normal": "materials/natural_walnut_veneer/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/natural_walnut_veneer/roughness.jpg",
+      "ao": "materials/natural_walnut_veneer/ao.jpg"
+    },
+    {
+      "id": "white_maple_veneer",
+      "source": "White Maple Veneer: https://polyhaven.com/a/white_maple_veneer; creator: Jenelle van Heerden; approximate plank stand-in",
+      "license": "CC0-1.0",
+      "albedo": "materials/white_maple_veneer/color.jpg",
+      "normal": "materials/white_maple_veneer/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/white_maple_veneer/roughness.jpg",
+      "ao": "materials/white_maple_veneer/ao.jpg"
+    },
+    {
+      "id": "leafy_grass",
+      "source": "Leafy Grass: https://polyhaven.com/a/leafy_grass; creator: Charlotte Baglioni; grayscale albedo for biome tint",
+      "license": "CC0-1.0",
+      "albedo": "materials/leafy_grass/neutral_color.png",
+      "normal": "materials/leafy_grass/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/leafy_grass/roughness.jpg"
     }
   ],
   "textures": [
@@ -959,7 +1008,7 @@
     },
     {
       "name": "oak_planks",
-      "material": "walnut",
+      "material": "oak_veneer_02",
       "recipe": "plank",
       "tint": [
         255,
@@ -976,7 +1025,7 @@
     },
     {
       "name": "spruce_planks",
-      "material": "walnut",
+      "material": "natural_walnut_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -993,7 +1042,7 @@
     },
     {
       "name": "birch_planks",
-      "material": "walnut",
+      "material": "white_maple_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1010,7 +1059,7 @@
     },
     {
       "name": "jungle_planks",
-      "material": "walnut",
+      "material": "cherry_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1027,7 +1076,7 @@
     },
     {
       "name": "acacia_planks",
-      "material": "walnut",
+      "material": "oak_veneer_02",
       "recipe": "plank",
       "tint": [
         255,
@@ -1044,7 +1093,7 @@
     },
     {
       "name": "cherry_planks",
-      "material": "walnut",
+      "material": "cherry_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1061,7 +1110,7 @@
     },
     {
       "name": "mangrove_planks",
-      "material": "walnut",
+      "material": "cherry_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1078,7 +1127,7 @@
     },
     {
       "name": "pale_oak_planks",
-      "material": "walnut",
+      "material": "white_maple_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1095,7 +1144,7 @@
     },
     {
       "name": "poplar_planks",
-      "material": "walnut",
+      "material": "white_maple_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1112,7 +1161,7 @@
     },
     {
       "name": "crimson_planks",
-      "material": "walnut",
+      "material": "natural_walnut_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1129,7 +1178,7 @@
     },
     {
       "name": "warped_planks",
-      "material": "walnut",
+      "material": "white_maple_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1146,7 +1195,7 @@
     },
     {
       "name": "dark_oak_planks",
-      "material": "black_painted_planks",
+      "material": "natural_walnut_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -2082,6 +2131,23 @@
       ],
       "f0": 10,
       "porosity": 30
+    },
+    {
+      "name": "grass_block_top",
+      "material": "leafy_grass",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        147,
+        147,
+        147
+      ],
+      "f0": 10,
+      "porosity": 30
     }
   ],
   "checksums": {
@@ -2123,6 +2189,25 @@
     "materials/bark_willow_02/color.jpg": "95e1380566834aab220bd8ea9a5287f3bfff46910c18017fcb46ebbbe832024f",
     "materials/bark_willow_02/normal.jpg": "80e7983c29ee50e2d1517aff6c6efa87e624056ba393ddc6ed42bc534b9d7208",
     "materials/bark_willow_02/roughness.jpg": "b9d690f5a5fc411b89c6301273ac03ab0a5910c8a16a96839df223aff4bf794d",
-    "materials/bark_willow_02/displacement.jpg": "59723a918b8d3a2ee20e5f444e006edcd47263e12eb2cacf06f5439b04eba538"
+    "materials/bark_willow_02/displacement.jpg": "59723a918b8d3a2ee20e5f444e006edcd47263e12eb2cacf06f5439b04eba538",
+    "materials/oak_veneer_02/color.jpg": "69410573a965898d455f389ede7c0de5709de33430ad489786e5ba70b3e7ba81",
+    "materials/oak_veneer_02/normal.jpg": "4e5444b3fa1f3456891ca06e9f8978f7f303cadaf36cd4041da8e207be7202ce",
+    "materials/oak_veneer_02/roughness.jpg": "e9d438b6d00db37cbf4745cc7ff3b59ee29fd7cc75ce6396356dd004a84d2e43",
+    "materials/oak_veneer_02/ao.jpg": "df47b81e36dba68c378966ca76cc0bee51925db5bf2b41a9752debc6871f314c",
+    "materials/cherry_veneer/color.jpg": "d50fed9f9964721d6b18581cadb6d95717a714b85361b22078e7d913ba5ce4d2",
+    "materials/cherry_veneer/normal.jpg": "d2c722c80651e7c1074d46f27c18a78de5bce9ced1c8afc82ea3aa555555e57a",
+    "materials/cherry_veneer/roughness.jpg": "25dc671f72a5c78c2fec855b95a009d1c948a9616007887a653c2c695ee1b7a6",
+    "materials/cherry_veneer/ao.jpg": "7984387f664a272b33d33206ac2d4763cea9311762ae8c9af8751a172a5d5c20",
+    "materials/natural_walnut_veneer/color.jpg": "41fe45f6457bddd4d97627bc610d2980d91683bc521c9692a6c4f2a6a3b05efd",
+    "materials/natural_walnut_veneer/normal.jpg": "da621d3c7e96740313b459a034a30f46271d91a9dcad0c0c657a1485e32d336b",
+    "materials/natural_walnut_veneer/roughness.jpg": "a5c7353aa7886a383b04506145548f9d2ffb9753c3d0b6cf52d972c18e5578d9",
+    "materials/natural_walnut_veneer/ao.jpg": "371e9290844fd434d0e68e9b2c6846e17f03850d50f4fefbee4e4d55ffc67173",
+    "materials/white_maple_veneer/color.jpg": "0cdcb6d726ca7e6039ab0eeb2b1828a0ef188b43c2370972cf6eebeaff76aaa0",
+    "materials/white_maple_veneer/normal.jpg": "fb63ac49ab9a8f1e650a7886e570bfb46a1970d73b9a943c29015f3f111078fc",
+    "materials/white_maple_veneer/roughness.jpg": "6bacc0bae40c52759e91d77555baad27f9e8cb2bec471d755726262539e6df02",
+    "materials/white_maple_veneer/ao.jpg": "460d347f2c97609c3815bd599b61ac9d3e474f8d6d781346fb2a14ecb4b22f7e",
+    "materials/leafy_grass/neutral_color.png": "038388b3d69c8ddb389ca812afaf41bac46ab0691093e27eb50b7a4e3a737379",
+    "materials/leafy_grass/normal.jpg": "832328216adc0a7e1f70a31d5ee48c9ab7f2152d83816122736cf42ac4b2ebd6",
+    "materials/leafy_grass/roughness.jpg": "0c2a1d91aacb8e54a496051b59854e51e456fe858abeade778e308359ef16463"
   }
 }
