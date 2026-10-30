@@ -361,12 +361,14 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 82);
+    assert_eq!(hashes.len(), 85);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 124);
+    assert_eq!(m.textures.len(), 184);
+    assert!((m.pbr_strength - 0.4).abs() < 1e-6);
+    assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [
@@ -851,5 +853,77 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
         snow_normal.pixels.chunks_exact(4).map(|p| p[3]).min()
             != snow_normal.pixels.chunks_exact(4).map(|p| p[3]).max()
     );
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
+    use hyperrealism_core::png_io::{read, write};
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!("pbr-strength-{}-{unique}", std::process::id()));
+    fs::create_dir_all(&temp).unwrap();
+    let image = |name: &str, pixel: [u8; 4]| {
+        let mut data = Vec::new();
+        for _ in 0..64 * 64 {
+            data.extend_from_slice(&pixel);
+        }
+        write(&temp.join(name), 64, 64, &data).unwrap();
+    };
+    image("color.png", [120, 150, 180, 255]);
+    image("normal.png", [128, 192, 238, 255]);
+    image("height.png", [64, 64, 64, 255]);
+    image("ao.png", [153, 153, 153, 255]);
+    image("rough.png", [64, 64, 64, 255]);
+    let mut m = serde_json::json!({"version":1,
+        "materials":[{"id":"base","albedo":"color.png","normal":"normal.png","height":"height.png","ao":"ao.png","roughness":"rough.png"}],
+        "textures":[{"name":"gold_block","material":"base","recipe":"material","tint":[255,255,255],"f0":231}]
+    });
+    for (name, strength) in [("full", 1.0), ("soft", 0.4)] {
+        m["pbr_strength"] = strength.into();
+        fs::write(
+            temp.join("material_manifest.json"),
+            serde_json::to_vec(&m).unwrap(),
+        )
+        .unwrap();
+        let output = temp.join(name);
+        let result = run(&temp, &output, "2");
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+    }
+    let pixel = |which: &str, suffix: &str| {
+        let p = temp.join(which).join(format!(
+            "pack/assets/minecraft/textures/block/gold_block{suffix}.png"
+        ));
+        let image = read(&p).unwrap();
+        image.pixels[..4].to_vec()
+    };
+    assert_eq!(pixel("full", ""), pixel("soft", ""));
+    let (full, soft) = (pixel("full", "_n"), pixel("soft", "_n"));
+    let slope = |p: &[u8]| {
+        let x = p[0] as f32 / 127.5 - 1.0;
+        let y = p[1] as f32 / 127.5 - 1.0;
+        y / (1.0 - x * x - y * y).max(0.0001).sqrt()
+    };
+    assert!((slope(&soft) / slope(&full) - 0.4).abs() < 0.03);
+    assert!((i32::from(soft[3]) - 102).abs() <= 1);
+    assert!((i32::from(soft[2]) - 214).abs() <= 1);
+    let (full_s, soft_s) = (pixel("full", "_s"), pixel("soft", "_s"));
+    assert!((i32::from(soft_s[0]) - (f32::from(full_s[0]) * 0.4).round() as i32).abs() <= 1);
+    assert_eq!(&full_s[1..], &soft_s[1..]);
+    for invalid in [-0.1, 1.1] {
+        m["pbr_strength"] = invalid.into();
+        fs::write(
+            temp.join("material_manifest.json"),
+            serde_json::to_vec(&m).unwrap(),
+        )
+        .unwrap();
+        assert!(!run(&temp, &temp.join("invalid"), "2").status.success());
+    }
     fs::remove_dir_all(temp).unwrap();
 }

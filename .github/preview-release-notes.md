@@ -1,24 +1,24 @@
 ## Experimental 512×512 LabPBR preview — not a complete pack
 
 This is a **512×512** test pack for Minecraft Java 26.3. Its legacy filename is
-retained so the existing installer can update it. It replaces **124 block
+retained so the existing installer can update it. It replaces **184 block
 textures**, not the whole game; all other blocks and entities remain vanilla or
 come from other packs. Higher resolution uses substantially more GPU memory and
 may affect loading and frame rate. It has not been tested on the RTX 5060 Ti.
 
-Preview 7 prioritizes commonly seen overworld surfaces:
+Preview 8 reduces PBR intensity to **0.4×**: normal slopes, height variation,
+AO contrast and perceptual smoothness are scaled down. Color and discrete
+material/emission IDs are unchanged; shader settings affect the perceived result.
+Water is not changed.
 
-- Grass sides use a soil base and a separate, transparent, biome-tinted grass
-  fringe. Six common broadleaf blocks share a photographic leaf cutout atlas.
-- Dirt, coarse dirt and gravel have new matched scans; snow, mud, dirt paths
-  and podzol tops are also covered. Their 1K source sets include normal,
-  roughness, AO and displacement maps.
-- Leaf normal and roughness maps follow the cutout atlas; leaf height is
-  estimated and subsurface is a constant. The atlas is a shared stand-in, not
-  species-specific foliage. Log end faces remain vanilla.
+It adds 60 textures: deepslate and stone variants, clay and all terracotta
+colors, sandstone and Nether masonry, and ten log ends with approximate
+procedural rings. Existing deepslate ores use a rock scan. Most materials are
+reused approximations; log rings are procedural, not measured wood end-grain.
 
-The materials are CC0 Poly Haven scans with procedural adaptations. Several
-blocks reuse sources; some channels in older materials are estimated. Coverage
+This is still **not a complete all-block pack**. Doors, plants, animated
+textures and many others remain vanilla, as does water. The 512px textures use
+more GPU memory and target-hardware performance has not been measured. Coverage
 and input hashes are in `build_report.json`; credits are in the ZIP. This
 revision has **not yet been visually validated in game**.
 

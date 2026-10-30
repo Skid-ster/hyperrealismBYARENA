@@ -52,7 +52,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 124 texture names and approximate sRGB color targets were checked against
+The 184 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -125,4 +125,18 @@ the fringe shape is procedural. `scripts/prepare-overworld-materials.py`
 recreates both derivatives with Pillow and numpy from the pinned GLB and
 previously bundled neutral grass. The leaves and grass side need in-game review,
 including seams and shader rendering; the source photos alone do not establish
-visual quality in Minecraft. Log end faces are still vanilla.
+visual quality in Minecraft. Log ends were still vanilla in preview 7.
+
+### Preview 8 clay and common materials
+
+`clay_floor` is derived from [Clay Floor 001](https://polyhaven.com/a/clay_floor_001)
+by Dimitrios Savva and Rico Cilliers, CC0. The 1K color and normal and 512px
+ARM files are decoded lossless PNGs of the WebP derivatives from
+[Plinth](https://github.com/x0finch/Plinth/tree/382c1dbc17008b97c9d34badd685f6785426f56c/libraries/textures/clay)
+at commit `382c1dbc17008b97c9d34badd685f6785426f56c`. The same clay scan is
+recolored as terracotta variants and clay, an approximation. Stone, deepslate,
+Nether bricks and sandstone variants reuse existing scans and procedural patterns;
+they are not scans of the named blocks. Log ends combine wood veneer with
+procedural rings and a bark rim, rather than scanned cross sections. The PBR
+strength is reduced; height remains estimated for materials without displacement.
+Water is deliberately not replaced.

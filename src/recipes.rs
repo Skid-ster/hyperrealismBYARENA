@@ -164,6 +164,20 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
                 (0.91 + variation * 0.13, 0.02, 1.0, 0.0)
             }
         }
+        "log_end" => {
+            // A wood cross section, not plank joints: subtly irregular annual
+            // rings and a darker bark rim. The scan underneath supplies grain.
+            let dx = (x as f32 - 256.0) / 256.0;
+            let dy = (y as f32 - 256.0) / 256.0;
+            let radius = (dx * dx + dy * dy).sqrt();
+            let square_radius = dx.abs().max(dy.abs());
+            let warped = radius + (n - 0.5) * 0.035;
+            let ring = (warped * 46.0).sin().abs().powi(8);
+            let bark = ((square_radius - 0.78) * 12.0).clamp(0.0, 1.0);
+            let shade = (1.0 - 0.18 * ring) * (1.0 - 0.45 * bark);
+            let relief = 0.015 * ring + 0.035 * bark * (fine - 0.5);
+            (shade, relief, 1.0, 0.0)
+        }
         "moss" => {
             let m = ((n - 0.32) * 1.8).clamp(0.0, 0.7);
             (1.0, m * 0.06, 1.0, m)
@@ -227,6 +241,7 @@ mod tests {
             "moss",
             "moss_brick",
             "plank",
+            "log_end",
             "glass",
             "metal",
             "gem",

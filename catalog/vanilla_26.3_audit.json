@@ -30,6 +30,19 @@
         87
       ]
     },
+    "acacia_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "24b585474a7e911b7888ad6371b89a35be7a4092",
+      "has_mcmeta": false,
+      "target_rgb": [
+        151,
+        89,
+        55
+      ]
+    },
     "acacia_planks": {
       "dimensions": [
         16,
@@ -56,6 +69,19 @@
         137
       ]
     },
+    "bedrock": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "70b614ffa13131616f4a7dda22c2c7777327dac9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        85,
+        85,
+        85
+      ]
+    },
     "birch_leaves": {
       "dimensions": [
         16,
@@ -69,6 +95,19 @@
         130
       ],
       "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
+    },
+    "birch_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0fa35388b287101725ef2165f0f580d052181149",
+      "has_mcmeta": false,
+      "target_rgb": [
+        193,
+        179,
+        135
+      ]
     },
     "birch_planks": {
       "dimensions": [
@@ -109,6 +148,19 @@
         32
       ]
     },
+    "black_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "bb3377ebe8f803702870599e0f8afbe9ca4494b8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        37,
+        23,
+        16
+      ]
+    },
     "black_wool": {
       "dimensions": [
         16,
@@ -120,6 +172,32 @@
         21,
         21,
         26
+      ]
+    },
+    "blackstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "314a2df0e85319d0493a3b10d8b692e23ae6cdd2",
+      "has_mcmeta": false,
+      "target_rgb": [
+        42,
+        36,
+        41
+      ]
+    },
+    "blackstone_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0dbc81f6e3045cfdfb1b58aa32d710f6fbaa286b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        42,
+        36,
+        42
       ]
     },
     "blue_concrete": {
@@ -146,6 +224,19 @@
         70,
         73,
         167
+      ]
+    },
+    "blue_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4088eaa696de7d9ec35115becc7c00bd1ea3b867",
+      "has_mcmeta": false,
+      "target_rgb": [
+        74,
+        60,
+        91
       ]
     },
     "blue_wool": {
@@ -200,6 +291,19 @@
         54
       ]
     },
+    "brown_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "34ea685a5e3e91c71d3e0bf7f8c2d8e6005ee065",
+      "has_mcmeta": false,
+      "target_rgb": [
+        77,
+        51,
+        36
+      ]
+    },
     "brown_wool": {
       "dimensions": [
         16,
@@ -213,6 +317,32 @@
         41
       ]
     },
+    "calcite": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "fd874046b318bce427bdc5175bc8ce00b473240a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        223,
+        224,
+        221
+      ]
+    },
+    "cherry_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4b0a475ffcc06abd1ed006e53cef418733657ab0",
+      "has_mcmeta": false,
+      "target_rgb": [
+        185,
+        141,
+        137
+      ]
+    },
     "cherry_planks": {
       "dimensions": [
         16,
@@ -224,6 +354,19 @@
         227,
         179,
         173
+      ]
+    },
+    "clay": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5488b0e6cf0b5cb9fb2f4ca8c10043e3adbdc8c9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        161,
+        166,
+        179
       ]
     },
     "coal_ore": {
@@ -252,6 +395,19 @@
         59
       ]
     },
+    "cobbled_deepslate": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0f4035050b95c61d5e490dcc282b452e69742fac",
+      "has_mcmeta": false,
+      "target_rgb": [
+        77,
+        77,
+        81
+      ]
+    },
     "cobblestone": {
       "dimensions": [
         16,
@@ -276,6 +432,58 @@
         125,
         126,
         120
+      ]
+    },
+    "cracked_deepslate_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "547c40a5a8e6d6376a268758fbda981a3130a8a9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        65,
+        65,
+        65
+      ]
+    },
+    "cracked_deepslate_tiles": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "60c3f579e0446d6566ae22936de61e093d40d872",
+      "has_mcmeta": false,
+      "target_rgb": [
+        53,
+        53,
+        53
+      ]
+    },
+    "cracked_nether_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "73510e420909bf98135732506f249ed92a4f1163",
+      "has_mcmeta": false,
+      "target_rgb": [
+        40,
+        20,
+        24
+      ]
+    },
+    "cracked_polished_blackstone_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ba5650e4ea037fa8283a8c6978b75306ce2cf4a3",
+      "has_mcmeta": false,
+      "target_rgb": [
+        44,
+        38,
+        44
       ]
     },
     "cracked_stone_bricks": {
@@ -304,6 +512,32 @@
         71
       ]
     },
+    "cut_red_sandstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d69cf2ffc5a7374d993585528e823587eeb97fd2",
+      "has_mcmeta": false,
+      "target_rgb": [
+        189,
+        102,
+        32
+      ]
+    },
+    "cut_sandstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f8ec517410354805c5390dc8d763fc3bbff6221a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        218,
+        206,
+        160
+      ]
+    },
     "cyan_concrete": {
       "dimensions": [
         16,
@@ -328,6 +562,19 @@
         37,
         148,
         157
+      ]
+    },
+    "cyan_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "38cca98aae8a90baae1732a98c92d12342bc883b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        87,
+        91,
+        91
       ]
     },
     "cyan_wool": {
@@ -370,6 +617,19 @@
         26
       ]
     },
+    "dark_oak_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7d288d1a9579c06a2516642e91312afc230a0f06",
+      "has_mcmeta": false,
+      "target_rgb": [
+        68,
+        45,
+        22
+      ]
+    },
     "dark_oak_planks": {
       "dimensions": [
         16,
@@ -381,6 +641,32 @@
         67,
         43,
         20
+      ]
+    },
+    "deepslate": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "bb7dc9ced1943d1dc86ab0cded598e8541fd280a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        80,
+        80,
+        83
+      ]
+    },
+    "deepslate_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "51c7352fe11f5271198ae06ba4e674ccd9a203af",
+      "has_mcmeta": false,
+      "target_rgb": [
+        71,
+        71,
+        71
       ]
     },
     "deepslate_coal_ore": {
@@ -487,6 +773,32 @@
         75
       ]
     },
+    "deepslate_tiles": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e7f36f6d883cb5e4372e29bb385e5fa8a65f6542",
+      "has_mcmeta": false,
+      "target_rgb": [
+        55,
+        55,
+        55
+      ]
+    },
+    "deepslate_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a560ccfb90cae70a1df6d2fd89d0c6405c2c4347",
+      "has_mcmeta": false,
+      "target_rgb": [
+        87,
+        87,
+        89
+      ]
+    },
     "diamond_ore": {
       "dimensions": [
         16,
@@ -539,6 +851,19 @@
         65
       ]
     },
+    "dripstone_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "511d9ee94f0d8446cdb8a3478dabd080c1584c24",
+      "has_mcmeta": false,
+      "target_rgb": [
+        134,
+        108,
+        93
+      ]
+    },
     "emerald_ore": {
       "dimensions": [
         16,
@@ -550,6 +875,32 @@
         108,
         136,
         116
+      ]
+    },
+    "end_stone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2665f46d3fdb941f4a0e682587c40ca4a1356de4",
+      "has_mcmeta": false,
+      "target_rgb": [
+        220,
+        223,
+        158
+      ]
+    },
+    "end_stone_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0854d6acec08745c3d84767391dcf716f4769b61",
+      "has_mcmeta": false,
+      "target_rgb": [
+        218,
+        224,
+        162
       ]
     },
     "exposed_copper": {
@@ -669,6 +1020,19 @@
         85
       ]
     },
+    "gray_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "89e7edb3b00d1c5a08e11452a70a8f8dd87b32cc",
+      "has_mcmeta": false,
+      "target_rgb": [
+        58,
+        42,
+        36
+      ]
+    },
     "gray_wool": {
       "dimensions": [
         16,
@@ -706,6 +1070,19 @@
         97,
         119,
         45
+      ]
+    },
+    "green_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c71e655228f5fc70bfabaab1a67d3162a5078ad9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        76,
+        83,
+        42
       ]
     },
     "green_wool": {
@@ -761,6 +1138,19 @@
         25
       ]
     },
+    "jungle_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2476336745cecb1574cb6044e7e6ea5f309db90d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        150,
+        109,
+        71
+      ]
+    },
     "jungle_planks": {
       "dimensions": [
         16,
@@ -813,6 +1203,19 @@
         213
       ]
     },
+    "light_blue_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "dde37291aeb90e126740b58b3db3602435669c48",
+      "has_mcmeta": false,
+      "target_rgb": [
+        113,
+        109,
+        138
+      ]
+    },
     "light_blue_wool": {
       "dimensions": [
         16,
@@ -850,6 +1253,19 @@
         155,
         155,
         148
+      ]
+    },
+    "light_gray_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "49aadd68b6c52d14735eef2bd1f70c5ca3f1f91a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        135,
+        107,
+        98
       ]
     },
     "light_gray_wool": {
@@ -891,6 +1307,19 @@
         42
       ]
     },
+    "lime_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "01dfdac04fc97fdd84cb9718bb78056783a42822",
+      "has_mcmeta": false,
+      "target_rgb": [
+        104,
+        118,
+        53
+      ]
+    },
     "lime_wool": {
       "dimensions": [
         16,
@@ -930,6 +1359,19 @@
         185
       ]
     },
+    "magenta_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8afcf1cff44f9255170632d38b4502c3e9564be7",
+      "has_mcmeta": false,
+      "target_rgb": [
+        150,
+        88,
+        109
+      ]
+    },
     "magenta_wool": {
       "dimensions": [
         16,
@@ -956,6 +1398,19 @@
         129
       ],
       "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
+    },
+    "mangrove_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a5e6a2fc763164dae52bb7d9dffce5cd2bec6afc",
+      "has_mcmeta": false,
+      "target_rgb": [
+        103,
+        49,
+        42
+      ]
     },
     "mangrove_planks": {
       "dimensions": [
@@ -1007,6 +1462,32 @@
         60,
         57,
         61
+      ]
+    },
+    "mud_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a42a018b61425aabc9de31a3747078df641046d3",
+      "has_mcmeta": false,
+      "target_rgb": [
+        137,
+        104,
+        79
+      ]
+    },
+    "nether_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "13afd1a5d15f47dd5b0f2874399ea43f00821640",
+      "has_mcmeta": false,
+      "target_rgb": [
+        44,
+        22,
+        26
       ]
     },
     "nether_gold_ore": {
@@ -1075,6 +1556,19 @@
         51
       ]
     },
+    "oak_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "aa035afdfacab415d48cc97121a8ce8f1b19de09",
+      "has_mcmeta": false,
+      "target_rgb": [
+        151,
+        122,
+        73
+      ]
+    },
     "oak_planks": {
       "dimensions": [
         16,
@@ -1114,6 +1608,19 @@
         32
       ]
     },
+    "orange_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4dd8081875fef2dce3c5adb3d4422b995f1a0931",
+      "has_mcmeta": false,
+      "target_rgb": [
+        162,
+        84,
+        38
+      ]
+    },
     "orange_wool": {
       "dimensions": [
         16,
@@ -1138,6 +1645,32 @@
         82,
         163,
         133
+      ]
+    },
+    "packed_mud": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d6f1b73e169f829390e9a2d0663efd54230efd51",
+      "has_mcmeta": false,
+      "target_rgb": [
+        142,
+        107,
+        80
+      ]
+    },
+    "pale_oak_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "11dec36b7f614b4c5f4969b7216b8829ee5bbff5",
+      "has_mcmeta": false,
+      "target_rgb": [
+        199,
+        189,
+        188
       ]
     },
     "pale_oak_planks": {
@@ -1179,6 +1712,19 @@
         181
       ]
     },
+    "pink_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f5957baa5356ddd230ed0755c7aababc5339a25c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        162,
+        78,
+        79
+      ]
+    },
     "pink_wool": {
       "dimensions": [
         16,
@@ -1216,6 +1762,45 @@
         132,
         135,
         134
+      ]
+    },
+    "polished_blackstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "caa25fa5199428cef03c3e257440b8f03f20a095",
+      "has_mcmeta": false,
+      "target_rgb": [
+        53,
+        49,
+        57
+      ]
+    },
+    "polished_blackstone_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "25eae77583d70ba60faf6a92778b672b219e575f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        48,
+        43,
+        50
+      ]
+    },
+    "polished_deepslate": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8fff7cecc2906452e95cfae9f0da618fde51019a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        72,
+        73,
+        73
       ]
     },
     "polished_diorite": {
@@ -1257,6 +1842,19 @@
         100
       ]
     },
+    "poplar_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "933d784872c883c1f88d0181569b6501bbd19715",
+      "has_mcmeta": false,
+      "target_rgb": [
+        136,
+        122,
+        110
+      ]
+    },
     "poplar_planks": {
       "dimensions": [
         16,
@@ -1294,6 +1892,19 @@
         132,
         56,
         178
+      ]
+    },
+    "purple_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5195872aaaec52ee04c4c95d5bfe992b72da4419",
+      "has_mcmeta": false,
+      "target_rgb": [
+        118,
+        70,
+        86
       ]
     },
     "purple_wool": {
@@ -1335,6 +1946,19 @@
         51
       ]
     },
+    "red_nether_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2c3dd96e780bf0f71d2aca622f7bea50e940620f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        70,
+        7,
+        9
+      ]
+    },
     "red_sand": {
       "dimensions": [
         16,
@@ -1359,6 +1983,45 @@
         187,
         99,
         29
+      ]
+    },
+    "red_sandstone_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8c73795ca677bd75d73ee456f2531241de983383",
+      "has_mcmeta": false,
+      "target_rgb": [
+        186,
+        98,
+        28
+      ]
+    },
+    "red_sandstone_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "860b441cb815fea98cefe0cfaec813108dcf2c8c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        181,
+        98,
+        31
+      ]
+    },
+    "red_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e0e800b606702843b3728809a555d7d5cb014f63",
+      "has_mcmeta": false,
+      "target_rgb": [
+        143,
+        61,
+        47
       ]
     },
     "red_wool": {
@@ -1426,6 +2089,71 @@
         156
       ]
     },
+    "sandstone_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a397c6fde5628f16089d85c0355ed6baa4bdfd9f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        216,
+        202,
+        154
+      ]
+    },
+    "sandstone_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1823bdfcd0af22af0943ad435473b5bc5c0e895a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        224,
+        214,
+        170
+      ]
+    },
+    "smooth_basalt": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "175b74a9c2d43de3b8bab6b3b1941db6d53fc808",
+      "has_mcmeta": false,
+      "target_rgb": [
+        73,
+        72,
+        78
+      ]
+    },
+    "smooth_stone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "176b3fa04a3e206a19892aee5daf2379170feeff",
+      "has_mcmeta": false,
+      "target_rgb": [
+        159,
+        159,
+        159
+      ]
+    },
+    "smooth_stone_slab_side": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4ab432cf61703eccd652347d1552fa53c4ae888f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        168,
+        168,
+        168
+      ]
+    },
     "snow": {
       "dimensions": [
         16,
@@ -1450,6 +2178,19 @@
         59,
         38,
         17
+      ]
+    },
+    "spruce_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "fcf8c66f6f70dd949b165ef6c9fc5007201ca3ef",
+      "has_mcmeta": false,
+      "target_rgb": [
+        109,
+        80,
+        47
       ]
     },
     "spruce_planks": {
@@ -1489,6 +2230,19 @@
         122,
         122,
         122
+      ]
+    },
+    "terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4bb00863b656bdf3641d7d7fb64fe935d9d6e1d8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        152,
+        94,
+        68
       ]
     },
     "tuff": {
@@ -1569,6 +2323,19 @@
         228
       ]
     },
+    "white_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "47ac87250e25365a12dc0e18d51ab5af36d55326",
+      "has_mcmeta": false,
+      "target_rgb": [
+        210,
+        178,
+        161
+      ]
+    },
     "white_wool": {
       "dimensions": [
         16,
@@ -1606,6 +2373,19 @@
         233,
         199,
         55
+      ]
+    },
+    "yellow_terracotta": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "48d004d198c1f6c521ed7622b5ac567f68be02c7",
+      "has_mcmeta": false,
+      "target_rgb": [
+        186,
+        133,
+        35
       ]
     },
     "yellow_wool": {

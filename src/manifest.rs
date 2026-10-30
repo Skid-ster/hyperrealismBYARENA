@@ -9,6 +9,9 @@ use std::path::{Component, Path, PathBuf};
 #[serde(deny_unknown_fields)]
 pub struct Manifest {
     pub version: u32,
+    /// Global PBR intensity: 1 preserves the source, 0 removes relief and shine.
+    #[serde(default = "default_pbr_strength")]
+    pub pbr_strength: f32,
     pub materials: Vec<Material>,
     pub textures: Vec<Texture>,
     #[serde(default)]
@@ -32,6 +35,9 @@ pub struct Material {
 }
 fn default_normal_y() -> String {
     "directx".into()
+}
+fn default_pbr_strength() -> f32 {
+    1.0
 }
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -101,6 +107,9 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
     if m.version != 1 {
         return Err("manifest version must be 1".into());
     }
+    if !m.pbr_strength.is_finite() || !(0.0..=1.0).contains(&m.pbr_strength) {
+        return Err("pbr_strength must be finite and in 0..=1".into());
+    }
     if m.materials.len() > 1024 || m.textures.len() > 1024 {
         return Err("at most 1024 materials and textures are supported".into());
     }
@@ -154,6 +163,7 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             "cobble",
             "moss_cobble",
             "plank",
+            "log_end",
             "moss",
             "moss_brick",
             "glass",

@@ -238,6 +238,15 @@
       "normal": "materials/tree_leaves/normal.png",
       "normal_y": "opengl",
       "roughness": "materials/tree_leaves/roughness.png"
+    },
+    {
+      "id": "clay_floor",
+      "source": "Clay Floor 001: https://polyhaven.com/a/clay_floor_001; Dimitrios Savva, Rico Cilliers; adapted floor clay for terracotta and clay",
+      "license": "CC0-1.0",
+      "albedo": "materials/clay_floor/color.png",
+      "normal": "materials/clay_floor/normal.png",
+      "normal_y": "opengl",
+      "arm": "materials/clay_floor/arm.png"
     }
   ],
   "textures": [
@@ -1625,7 +1634,7 @@
     },
     {
       "name": "deepslate_coal_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1669,7 +1678,7 @@
     },
     {
       "name": "deepslate_copper_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1713,7 +1722,7 @@
     },
     {
       "name": "deepslate_diamond_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1757,7 +1766,7 @@
     },
     {
       "name": "deepslate_emerald_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1801,7 +1810,7 @@
     },
     {
       "name": "deepslate_gold_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1845,7 +1854,7 @@
     },
     {
       "name": "deepslate_iron_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1889,7 +1898,7 @@
     },
     {
       "name": "deepslate_lapis_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1933,7 +1942,7 @@
     },
     {
       "name": "deepslate_redstone_ore",
-      "material": "gravel_concrete",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -2426,6 +2435,1026 @@
       "f0": 10,
       "subsurface": 128,
       "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        152,
+        94,
+        68
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "white_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        210,
+        178,
+        161
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "orange_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        162,
+        84,
+        38
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "magenta_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        150,
+        88,
+        109
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "light_blue_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        113,
+        109,
+        138
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "yellow_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        186,
+        133,
+        35
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "lime_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        104,
+        118,
+        53
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "pink_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        162,
+        78,
+        79
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "gray_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        58,
+        42,
+        36
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "light_gray_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        135,
+        107,
+        98
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cyan_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        87,
+        91,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "purple_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        118,
+        70,
+        86
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "blue_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        74,
+        60,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "brown_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        77,
+        51,
+        36
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "green_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        76,
+        83,
+        42
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "red_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        143,
+        61,
+        47
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "black_terracotta",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        37,
+        23,
+        16
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "clay",
+      "material": "clay_floor",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        161,
+        166,
+        179
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "deepslate",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        80,
+        80,
+        83
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "deepslate_top",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        87,
+        87,
+        89
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "polished_deepslate",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        72,
+        73,
+        73
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "blackstone",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        42,
+        36,
+        41
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "blackstone_top",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        42,
+        36,
+        42
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "polished_blackstone",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        53,
+        49,
+        57
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "smooth_basalt",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        72,
+        78
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "bedrock",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        85,
+        85,
+        85
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cobbled_deepslate",
+      "material": "cobble_photo",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        77,
+        77,
+        81
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "deepslate_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        71,
+        71,
+        71
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "deepslate_tiles",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        55,
+        55,
+        55
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "polished_blackstone_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        48,
+        43,
+        50
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "end_stone_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        218,
+        224,
+        162
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "nether_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        44,
+        22,
+        26
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "red_nether_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        70,
+        7,
+        9
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "mud_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        137,
+        104,
+        79
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cracked_deepslate_bricks",
+      "material": "concrete_wall",
+      "recipe": "cracked_brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        65,
+        65,
+        65
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cracked_deepslate_tiles",
+      "material": "concrete_wall",
+      "recipe": "cracked_brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        53,
+        53,
+        53
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cracked_polished_blackstone_bricks",
+      "material": "concrete_wall",
+      "recipe": "cracked_brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        44,
+        38,
+        44
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cracked_nether_bricks",
+      "material": "concrete_wall",
+      "recipe": "cracked_brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        40,
+        20,
+        24
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "smooth_stone",
+      "material": "concrete_wall",
+      "recipe": "stone",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        159,
+        159,
+        159
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "smooth_stone_slab_side",
+      "material": "concrete_wall",
+      "recipe": "stone",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        168,
+        168,
+        168
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "calcite",
+      "material": "concrete_wall",
+      "recipe": "stone",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        223,
+        224,
+        221
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "end_stone",
+      "material": "concrete_wall",
+      "recipe": "stone",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        220,
+        223,
+        158
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dripstone_block",
+      "material": "concrete_wall",
+      "recipe": "stone",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        134,
+        108,
+        93
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "sandstone_top",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        224,
+        214,
+        170
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "sandstone_bottom",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        216,
+        202,
+        154
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "red_sandstone_top",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        181,
+        98,
+        31
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "red_sandstone_bottom",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        186,
+        98,
+        28
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cut_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        218,
+        206,
+        160
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cut_red_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        189,
+        102,
+        32
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "packed_mud",
+      "material": "brown_mud_dry",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        142,
+        107,
+        80
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oak_log_top",
+      "material": "oak_veneer_02",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        151,
+        122,
+        73
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "acacia_log_top",
+      "material": "oak_veneer_02",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        151,
+        89,
+        55
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "spruce_log_top",
+      "material": "natural_walnut_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        109,
+        80,
+        47
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dark_oak_log_top",
+      "material": "natural_walnut_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        68,
+        45,
+        22
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "jungle_log_top",
+      "material": "cherry_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        150,
+        109,
+        71
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cherry_log_top",
+      "material": "cherry_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        185,
+        141,
+        137
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "mangrove_log_top",
+      "material": "cherry_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        103,
+        49,
+        42
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "birch_log_top",
+      "material": "white_maple_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        193,
+        179,
+        135
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "pale_oak_log_top",
+      "material": "white_maple_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        199,
+        189,
+        188
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "poplar_log_top",
+      "material": "white_maple_veneer",
+      "recipe": "log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        136,
+        122,
+        110
+      ],
+      "f0": 10,
+      "porosity": 30
     }
   ],
   "checksums": {
@@ -2510,6 +3539,10 @@
     "materials/leafy_grass/side_overlay.png": "185441408688488127979795fe43e2bc6f480ad3dea65a1aec764ecaade0191b",
     "materials/tree_leaves/neutral_color.png": "7bdfe6f0870255864016d18a785329d9936683dad451dc20941adac0e886bd00",
     "materials/tree_leaves/normal.png": "0934731a00ab07bef798563b68dec36c6b41bbbb10f68d3b47692f936eecfa93",
-    "materials/tree_leaves/roughness.png": "c5f52ad0df50a22e224a3b7fc72df573a76c360cc4d2555dcc124937bb6e0a75"
-  }
+    "materials/tree_leaves/roughness.png": "c5f52ad0df50a22e224a3b7fc72df573a76c360cc4d2555dcc124937bb6e0a75",
+    "materials/clay_floor/color.png": "6e6fea841e1dbeea44c301f3980ae13335f79dad0e7d645ceacdaa57e9d1555c",
+    "materials/clay_floor/normal.png": "4ea09cf431d66e61e4a2090e2af66e2ad564a63484add01cd3e74100fdeb9b2c",
+    "materials/clay_floor/arm.png": "7d1023800e6f29e694f76cd996116df083fb5be9d85a115fa39c03781eba629f"
+  },
+  "pbr_strength": 0.4
 }

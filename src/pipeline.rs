@@ -36,7 +36,13 @@ fn resize(values: &[f32], size: usize) -> Result<Vec<f32>, String> {
 }
 type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
 
-fn build(t: &Texture, img: &Prepared, root: &Path, size: usize) -> Result<PackedMaps, String> {
+fn build(
+    t: &Texture,
+    img: &Prepared,
+    root: &Path,
+    size: usize,
+    pbr_strength: f32,
+) -> Result<PackedMaps, String> {
     let n = WORK * WORK;
     let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
     let mut relief_map = vec![0.0; n];
@@ -175,10 +181,13 @@ fn build(t: &Texture, img: &Prepared, root: &Path, size: usize) -> Result<Packed
             });
         }
         albedo.push(unit(alpha));
+        // Scale tangent slopes (rather than encoded XY bytes) and compress the
+        // displacement around its midplane. AO fades toward unoccluded white.
+        // Keep normals unit length via normal_pixel and never emit zero height.
         normal.extend_from_slice(&normal_pixel(
-            [ns[0][i], ns[1][i], ns[2][i]],
-            channels[6][i],
-            channels[4][i].max(1.0 / 255.0),
+            [ns[0][i] * pbr_strength, ns[1][i] * pbr_strength, ns[2][i]],
+            1.0 - (1.0 - channels[6][i].clamp(0.0, 1.0)) * pbr_strength,
+            (0.5 + (channels[4][i] - 0.5) * pbr_strength).max(1.0 / 255.0),
         ));
         let id = if ore_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
             t.ore_f0.expect("validated ore F0")
@@ -196,7 +205,11 @@ fn build(t: &Texture, img: &Prepared, root: &Path, size: usize) -> Result<Packed
             .as_ref()
             .map(|v| (v[i].clamp(0.0, 1.0) * 254.0).round() as u8)
             .unwrap_or(t.emissive);
-        spec.extend_from_slice(&specular_pixel(channels[5][i], F0(id), blue, emissive));
+        // LabPBR red is perceptual smoothness (1 - sqrt(roughness)). Scale
+        // that value, not the metal-ID, F0, subsurface, or emission channels.
+        let smoothness = (1.0 - channels[5][i].clamp(0.0, 1.0).sqrt()) * pbr_strength;
+        let roughness = (1.0 - smoothness).powi(2);
+        spec.extend_from_slice(&specular_pixel(roughness, F0(id), blue, emissive));
     }
     Ok((albedo, normal, spec))
 }
@@ -356,7 +369,8 @@ fn build_stage(
             cached = Some((m.id.as_str(), material::load(root, m)?));
         }
         let images = &cached.as_ref().expect("material just loaded").1;
-        let (a, n, s) = build(t, images, root, size).map_err(|e| format!("{}: {e}", t.name))?;
+        let (a, n, s) = build(t, images, root, size, data.pbr_strength)
+            .map_err(|e| format!("{}: {e}", t.name))?;
         for (suffix, bytes) in [("", &a), ("_n", &n), ("_s", &s)] {
             png_io::write(
                 &block.join(format!("{}{suffix}.png", t.name)),
@@ -407,6 +421,7 @@ fn build_stage(
     let report = serde_json::json!({
         "generator_version": env!("CARGO_PKG_VERSION"),
         "backend": "cpu",
+        "pbr_strength": data.pbr_strength,
         "resolution": size,
         "working_resolution": WORK,
         "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
