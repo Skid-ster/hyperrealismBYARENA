@@ -32,14 +32,17 @@ class Layout:
   self.rect((x1+.5,y1+.5,x2-.5,y2-.5),248,124)
   if open:self.hole((x1+.55,y1+.55,x2-.55,y2-.55))
  def handle(self):
-  # Recessed escutcheon, raised knob and two small fasteners. All details
-  # stay within the existing opaque hardware area and remain a metal ID mask.
-  self.rect((2.4,9.6,3.9,11.1),122,144,True)
-  self.rect((2.55,9.74,3.75,10.96),196,162,True)
-  self.ellipse((2.7,9.8,3.6,10.7),242,181,True)
-  self.ellipse((2.86,9.96,3.44,10.54),151,137,True)
-  self.ellipse((2.58,9.7,2.82,9.94),222,170,True)
-  self.ellipse((3.48,10.76,3.72,11.0),222,170,True)
+  # Put the knob against the latch-side edge, matching the vanilla door UV
+  # island. Door hinge models mirror this UV for the opposite hinge/face, so a
+  # single edge-anchored handle lands on the correct side in every state.
+  # All details stay in the opaque edge stile and carry the metal-ID mask.
+  dx=-2.4
+  self.rect((2.4+dx,9.6,3.9+dx,11.1),122,144,True)
+  self.rect((2.55+dx,9.74,3.75+dx,10.96),196,162,True)
+  self.ellipse((2.7+dx,9.8,3.6+dx,10.7),242,181,True)
+  self.ellipse((2.86+dx,9.96,3.44+dx,10.54),151,137,True)
+  self.ellipse((2.58+dx,9.7,2.82+dx,9.94),222,170,True)
+  self.ellipse((3.48+dx,10.76,3.72+dx,11.0),222,170,True)
  def frame(self):
   self.rect((0,0,1.4,16),182,153);self.rect((14.6,0,16,16),182,153)
   self.rect((1.2,0,1.4,16),219,161);self.rect((14.6,0,14.8,16),219,161)
@@ -61,7 +64,7 @@ def door(wood,part):
    a.line([(3.0,3),(13,13)],1.2,205,169)
    a.line([(13,3),(3,13)],1.2,205,169)
   else:
-   a.panel((1.8,1.5,14.2,14.7));a.rect((10.5,1.8,13,4.5),165,169,True);a.rect((11.2,2.1,12.4,3.7),235,180,True)
+   a.panel((1.8,1.5,14.2,14.7));a.handle()
  elif wood=='acacia':
   a.rect((1.3,2,14.7,12.5),175,148)
   for x in (3,6.5,10): a.hole((x,2.6,x+2.1,11.7))

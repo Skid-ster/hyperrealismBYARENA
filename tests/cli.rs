@@ -1354,6 +1354,7 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
         "oak_door_bottom",
         "oak_trapdoor",
         "copper_door_top",
+        "copper_door_bottom",
         "lever",
         "ladder",
         "iron_bars",
@@ -1426,8 +1427,11 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
         .pixels
         .chunks_exact(4)
         .any(|p| p[0] != 128 || p[1] != 128));
-    // Wood keeps dielectric F0; the drawn latch becomes a discrete iron ID.
-    assert_eq!(at("oak_door_bottom", "_s", 25, 82)[1], 230);
+    // Wood keeps dielectric F0; the edge-aligned knob becomes a discrete iron
+    // ID. Its old, three-pixel-inboard location is intentionally plain wood.
+    assert_eq!(at("oak_door_bottom", "_s", 5, 82)[1], 230);
+    assert_eq!(at("oak_door_bottom", "_s", 25, 82)[1], 10);
+    assert_eq!(at("copper_door_bottom", "_s", 5, 82)[1], 230);
     assert_eq!(at("oak_door_bottom", "_s", 64, 64)[1], 10);
     assert_eq!(at("iron_bars", "_s", 20, 60)[1], 230);
     assert_eq!(at("copper_door_top", "_s", 16, 40)[1], 234);

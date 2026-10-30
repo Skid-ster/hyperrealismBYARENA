@@ -28,9 +28,19 @@ included in this project.
 - **Doors need coherent microdetail, not displaced panels.** Keep the vanilla
   sprite layout, hinges, opening states, UVs and transparency masks; align grain,
   normal, roughness and shallow panel bevel cues. Avoid strong height steps that
-  make a flat door look inflated. The pack's global strength is 0.2, and the
-  47 existing door/trapdoor/ladder/bar opacity masks remain unchanged from the
-  previous preview.
+  make a flat door look inflated. The pinned [Java 26.3 door model UVs](https://github.com/InventivetalentDev/minecraft-assets/blob/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/models/block/door_bottom_left.json)
+  and matching right-hinge model mirror the large faces. The fixed procedural
+  handle was consequently moved to the latch-side UV edge so the model's
+  left/right hinge and face flips place it on the correct side; the panel's
+  alpha/cutout remains unchanged. The pack's global strength is 0.2, and the
+  47 door/trapdoor/ladder/bar opacity masks are unchanged.
+- **Use aligned sidecars for partial/cutout sprites too.** The public
+  [Vanilla Normals Renewed tree](https://github.com/Poudingue/Vanilla-Normals-Renewed/tree/70d89ee4d401a27c4518ebab3b13897c2a6b6921/assets/minecraft/textures/block)
+  includes separate `_n` and `_s` files alongside door top/bottom and trapdoor
+  sprites. We adopt that conventional Java shader-pack layout, but generate our
+  own maps from licensed/source-controlled material data and construction
+  masks; no artwork from that repository is copied. Its repository has no
+  declared license, so it is treated only as a path-convention reference.
 - **Glass benefits from restraint.** Preserve transparency and the pane-cap
   model/UV silhouettes, but avoid painted frame bands; keep the surface response
   uniform and let shader reflections provide subtle highlights. Connected-texture

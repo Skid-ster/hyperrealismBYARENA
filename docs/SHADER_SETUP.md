@@ -38,6 +38,24 @@ include the settings above. Other good free options include Complementary
 Unbound; configure its **RP Support** as labPBR. Individual shaders differ in
 handling emission, AO, SSS, porosity and metal IDs.
 
+### BSL Shaders
+
+The screenshot supplied for the door report shows BSL selected. Selecting the
+shader alone does not activate resource-pack maps: in BSL's **Shader Pack
+Settings → Materials**, turn **Advanced Materials** on and set **Material
+Format** to **LabPBR 1.3**. Verify normal and specular mapping are enabled in
+the advanced material options, then press F3+T to reload assets. BSL is listed
+as LabPBR 1.3-compatible by the [shaderLABS supported-packs list](https://shaderlabs.org/wiki/LabPBR_Supported_Packs).
+The exact menu path may differ between BSL versions.
+
+Doors and trapdoors are not excluded because their sprites contain cutout
+transparency or because their models are not full cubes. This pack emits
+aligned `<texture>_n.png` and `<texture>_s.png` LabPBR sidecars for every
+covered block sprite, including those shapes. The color-map alpha continues to
+define the door/window cutouts; shader support and correct resource-pack order
+are still required for the extra maps to show. A visible before/after
+comparison is still needed to confirm your specific BSL version and settings.
+
 ## Verify that PBR is active
 
 Vanilla Minecraft without a compatible shader only displays the color maps.
