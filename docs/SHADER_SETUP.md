@@ -20,7 +20,7 @@ pack unless its license permits it.
 2. Put it in your Minecraft instance's `minecraft/shaderpacks` folder. For the
    supplied ElyPrism instance that is
    `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\shaderpacks`.
-3. Enable HyperRealism128 in **Options → Resource Packs**; put it above any
+3. Enable **HyperRealism 512×512** in **Options → Resource Packs**; put it above any
    competing pack, or disable other packs for an isolated test.
 4. With the already-installed Iris, select Photon in **Options → Video
    Settings → Shader Packs** and open **Shader Pack Settings**.
@@ -38,15 +38,34 @@ include the settings above. Other good free options include Complementary
 Unbound; configure its **RP Support** as labPBR. Individual shaders differ in
 handling emission, AO, SSS, porosity and metal IDs.
 
+### Complementary Reimagined (Iris)
+
+The latest supplied screenshot shows **Complementary Reimagined r5.9.3**, not
+BSL. In **Options → Video Settings → Shader Packs → Shader Pack Settings**,
+set the main **RP Support** option to **labPBR (RP Required)**. Do not leave it
+at **Basic** (which disables PBR) or **Integrated PBR+** (which uses generated
+material properties rather than fully reading this pack's LabPBR maps). Then
+open **Materials → labPBR/seuspbr Materials** and leave **Normal Map Strength**
+enabled at a moderate value. For specular highlights, make sure
+**Performance Settings → Block Reflection Quality** is not **OFF**; the High
+profile shown in the screenshot normally selects High reflection quality, but
+check the actual option. Put HyperRealism 512×512 above conflicting resource
+packs and press F3+T.
+
+**POM is optional**: normal and specular PBR do not depend on it. First verify
+mapping with POM off. If you later enable **POM on Cutout Surfaces**, it allows
+parallax on cutout regions such as door windows, but the shader warns that it
+can be expensive; leave it off unless you specifically want that effect. It is
+not required for the door's normal map or reflections. These option names are
+confirmed in Complementary Reimagined's [pinned English settings](https://github.com/ComplementaryDevelopment/ComplementaryReimagined/blob/c09950df0650b27dac260c1b0f69afc11387aa6f/shaders/lang/en_US.lang)
+and [shader settings](https://github.com/ComplementaryDevelopment/ComplementaryReimagined/blob/c09950df0650b27dac260c1b0f69afc11387aa6f/shaders/shaders.properties).
+
 ### BSL Shaders
 
-The screenshot supplied for the door report shows BSL selected. Selecting the
-shader alone does not activate resource-pack maps: in BSL's **Shader Pack
-Settings → Materials**, turn **Advanced Materials** on and set **Material
-Format** to **LabPBR 1.3**. Verify normal and specular mapping are enabled in
-the advanced material options, then press F3+T to reload assets. BSL is listed
-as LabPBR 1.3-compatible by the [shaderLABS supported-packs list](https://shaderlabs.org/wiki/LabPBR_Supported_Packs).
-The exact menu path may differ between BSL versions.
+In BSL's **Shader Pack Settings → Materials**, turn **Advanced Materials** on
+and set **Material Format** to **LabPBR 1.3**. BSL is listed as LabPBR 1.3
+compatible by the [shaderLABS supported-packs list](https://shaderlabs.org/wiki/LabPBR_Supported_Packs).
+Exact menu paths may differ by shader version.
 
 Doors and trapdoors are not excluded because their sprites contain cutout
 transparency or because their models are not full cubes. This pack emits
@@ -54,13 +73,14 @@ aligned `<texture>_n.png` and `<texture>_s.png` LabPBR sidecars for every
 covered block sprite, including those shapes. The color-map alpha continues to
 define the door/window cutouts; shader support and correct resource-pack order
 are still required for the extra maps to show. A visible before/after
-comparison is still needed to confirm your specific BSL version and settings.
+comparison is still needed to confirm your specific shader version and settings.
 
 ## Verify that PBR is active
 
 Vanilla Minecraft without a compatible shader only displays the color maps.
-In Photon, the pack must be enabled **above** competing packs, with normal and
-specular mapping enabled and the texture format set to labPBR. POM is optional
+In Complementary Reimagined, the pack must be enabled **above** competing packs
+and **RP Support** must be **labPBR (RP Required)**; in Photon, set the texture
+format to labPBR and enable normal/specular mapping. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
 without it. Preview 14 sets one global PBR strength of `0.2` for all 308
 texture targets, with no per-texture overrides. In this generator that scales

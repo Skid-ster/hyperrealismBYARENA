@@ -1,4 +1,4 @@
-# HyperRealism Rust — CPU prototype
+# HyperRealism 512×512 — Minecraft Java LabPBR pack
 
 This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
@@ -8,8 +8,11 @@ are approximated as described below. The current source catalog contains 308
 distinct block texture targets based on CC0 Poly Haven maps and original
 procedural work; Preview 13 added the lever texture, Preview 14 unified PBR
 strength at 20% and softened door/glass treatments, Preview 15 added
-normal-derived foliage height/AO, and Preview 16 removes decorative glass rims
-and slightly darkens every glass sprite. This is **not** the requested complete
+normal-derived foliage height/AO, Preview 16 refined glass, and Preview 17 fixed
+door-handle UV placement and documented LabPBR setup. Preview 18 raises door
+hardware to the correct full-door height, clarifies Complementary Reimagined
+LabPBR settings and identifies the in-game pack as HyperRealism 512×512. This
+is **not** the requested complete
 pack or a finished photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
@@ -28,7 +31,7 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [Continuity compatibility 
 The launcher's dark interface inspires this installer; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.9/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.10/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
 `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
 browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually
@@ -54,12 +57,13 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 16 uses 512×512
-textures (despite the legacy filename), which requires substantially more GPU
+No Rust installation is needed to use the prebuilt pack. Preview 18 uses 512×512
+textures (the legacy `HyperRealism128` archive name is retained for updater
+compatibility), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.16/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism 512×512 Preview 18 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.18/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 308 distinct texture paths replace only a subset of the game; the rest remain
@@ -88,8 +92,14 @@ edge bands from clear, stained, tinted and connected glass, and lowers the
 average target color by 4% for all 35 glass-block and pane-cap sprites. Clear
 glass has uniform 12% opacity; stained/tinted glass retains uniform 40% opacity.
 Pane-cap alpha silhouettes, models and UVs remain unchanged because they define
-the vanilla pane shape, not a decorative rim. Door/trapdoor cutout masks,
-models, UVs and states are unchanged. Water is unchanged. Foliage remains a
+the vanilla pane shape, not a decorative rim. Preview 17 moved the door handle
+to the latch-side UV edge; Preview 18 raises it within the lower-block sprite
+so it sits near full-door mid-height and removes a pale-oak band that obscured
+its handle. Door/trapdoor cutout alpha, Minecraft
+models, UVs and states remain unchanged. The resource-pack menu name is now
+**HyperRealism 512×512**. For Complementary Reimagined, set **RP Support** to
+**labPBR (RP Required)**; the shader's Integrated PBR+ mode does not fully read
+this pack's LabPBR maps. POM is optional. Water is unchanged. Foliage remains a
 single broadleaf source shared among species. Research notes:
 [competing PBR techniques and licensing](docs/PBR_TECHNIQUE_RESEARCH.md). It
 replaces only specified
@@ -102,7 +112,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.16/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.18/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell

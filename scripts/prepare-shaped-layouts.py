@@ -38,12 +38,13 @@ class Layout:
   # single edge-anchored handle lands on the correct side in every state.
   # All details stay in the opaque edge stile and carry the metal-ID mask.
   dx=-2.4
-  self.rect((2.4+dx,9.6,3.9+dx,11.1),122,144,True)
-  self.rect((2.55+dx,9.74,3.75+dx,10.96),196,162,True)
-  self.ellipse((2.7+dx,9.8,3.6+dx,10.7),242,181,True)
-  self.ellipse((2.86+dx,9.96,3.44+dx,10.54),151,137,True)
-  self.ellipse((2.58+dx,9.7,2.82+dx,9.94),222,170,True)
-  self.ellipse((3.48+dx,10.76,3.72+dx,11.0),222,170,True)
+  dy=-6.8  # the bottom sprite is one block high; y≈3.5 sits near full-door mid-height
+  self.rect((2.4+dx,9.6+dy,3.9+dx,11.1+dy),122,144,True)
+  self.rect((2.55+dx,9.74+dy,3.75+dx,10.96+dy),196,162,True)
+  self.ellipse((2.7+dx,9.8+dy,3.6+dx,10.7+dy),242,181,True)
+  self.ellipse((2.86+dx,9.96+dy,3.44+dx,10.54+dy),151,137,True)
+  self.ellipse((2.58+dx,9.7+dy,2.82+dx,9.94+dy),222,170,True)
+  self.ellipse((3.48+dx,10.76+dy,3.72+dx,11.0+dy),222,170,True)
  def frame(self):
   self.rect((0,0,1.4,16),182,153);self.rect((14.6,0,16,16),182,153)
   self.rect((1.2,0,1.4,16),219,161);self.rect((14.6,0,14.8,16),219,161)
@@ -113,7 +114,6 @@ def door(wood,part):
    a.panel((2,1.3,14,14.8));a.ellipse((4,3.5,12,12.5),185,117);a.ellipse((4.5,4,11.5,12),232,130)
   else:a.panel((2,1.4,14,14.6))
   if not top:a.handle()
-  if wood=='pale_oak':a.rect((0,2.3,11.5,3.4),165,164,True)
  else:raise ValueError(wood)
  return a
 

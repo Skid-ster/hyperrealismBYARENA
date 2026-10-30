@@ -64,6 +64,10 @@ fn cpu_end_to_end_and_reproducibility() {
     assert_eq!(meta["pack"]["min_format"], serde_json::json!([97, 1]));
     assert_eq!(meta["pack"]["max_format"], 97);
     assert_eq!(
+        meta["pack"]["description"],
+        "HyperRealism 128×128 — LabPBR 1.3 (experimental)"
+    );
+    assert_eq!(
         fs::read_to_string(out1.join("pack/assets/minecraft/optifine/texture.properties")).unwrap(),
         "format=lab-pbr/1.3\n"
     );
@@ -1352,6 +1356,7 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
     let names = [
         "oak_door_top",
         "oak_door_bottom",
+        "pale_oak_door_bottom",
         "oak_trapdoor",
         "copper_door_top",
         "copper_door_bottom",
@@ -1429,9 +1434,12 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
         .any(|p| p[0] != 128 || p[1] != 128));
     // Wood keeps dielectric F0; the edge-aligned knob becomes a discrete iron
     // ID. Its old, three-pixel-inboard location is intentionally plain wood.
-    assert_eq!(at("oak_door_bottom", "_s", 5, 82)[1], 230);
-    assert_eq!(at("oak_door_bottom", "_s", 25, 82)[1], 10);
-    assert_eq!(at("copper_door_bottom", "_s", 5, 82)[1], 230);
+    assert_eq!(at("oak_door_bottom", "_s", 5, 28)[1], 230);
+    assert_eq!(at("oak_door_bottom", "_s", 25, 28)[1], 10);
+    assert_eq!(at("oak_door_bottom", "_s", 5, 82)[1], 10);
+    assert_eq!(at("pale_oak_door_bottom", "_s", 5, 28)[1], 230);
+    assert_eq!(at("pale_oak_door_bottom", "_s", 25, 28)[1], 10);
+    assert_eq!(at("copper_door_bottom", "_s", 5, 28)[1], 230);
     assert_eq!(at("oak_door_bottom", "_s", 64, 64)[1], 10);
     assert_eq!(at("iron_bars", "_s", 20, 60)[1], 230);
     assert_eq!(at("copper_door_top", "_s", 16, 40)[1], 234);

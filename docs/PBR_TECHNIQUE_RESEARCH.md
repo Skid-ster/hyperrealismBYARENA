@@ -30,9 +30,10 @@ included in this project.
   normal, roughness and shallow panel bevel cues. Avoid strong height steps that
   make a flat door look inflated. The pinned [Java 26.3 door model UVs](https://github.com/InventivetalentDev/minecraft-assets/blob/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/models/block/door_bottom_left.json)
   and matching right-hinge model mirror the large faces. The fixed procedural
-  handle was consequently moved to the latch-side UV edge so the model's
-  left/right hinge and face flips place it on the correct side; the panel's
-  alpha/cutout remains unchanged. The pack's global strength is 0.2, and the
+  handle was moved to the latch-side UV edge and raised within the lower-block
+  sprite so it sits near mid-height on the assembled two-block door; hinge and
+  face flips place it on the correct side. The panel's alpha/cutout remains
+  unchanged. The pack's global strength is 0.2, and the
   47 door/trapdoor/ladder/bar opacity masks are unchanged.
 - **Use aligned sidecars for partial/cutout sprites too.** The public
   [Vanilla Normals Renewed tree](https://github.com/Poudingue/Vanilla-Normals-Renewed/tree/70d89ee4d401a27c4518ebab3b13897c2a6b6921/assets/minecraft/textures/block)

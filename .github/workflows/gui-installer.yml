@@ -29,7 +29,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   publish-installer:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish GUI installer 9')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 18')
     needs: build-test
     runs-on: ubuntu-latest
     permissions:
@@ -47,7 +47,7 @@ jobs:
           cd installer-assets
           sha256sum HyperRealism128-Installer.exe > HyperRealism128-Installer.exe.sha256
           sha256sum -c HyperRealism128-Installer.exe.sha256
-          gh release create v0.1.0-installer.9 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — Windows GUI installer 9' --notes-file ../.github/installer-release-notes.md --prerelease
+          gh release create v0.1.0-installer.10 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 — Windows installer 10' --notes-file ../.github/installer-release-notes.md --prerelease
       - name: Attach installer to existing preview releases
         env:
           GH_TOKEN: ${{ github.token }}

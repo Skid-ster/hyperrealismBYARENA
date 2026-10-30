@@ -370,7 +370,10 @@ fn build_stage(
     let optifine = pack.join("assets/minecraft/optifine");
     fs::create_dir_all(&block).map_err(|e| e.to_string())?;
     fs::create_dir_all(&optifine).map_err(|e| e.to_string())?;
-    fs::write(pack.join("pack.mcmeta"),"{\n  \"pack\": {\n    \"description\": \"HyperRealism LabPBR CPU preview\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }\n}\n").map_err(|e|e.to_string())?;
+    let metadata_json = format!(
+        "{{\n  \"pack\": {{\n    \"description\": \"HyperRealism {size}×{size} — LabPBR 1.3 (experimental)\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }}\n}}\n"
+    );
+    fs::write(pack.join("pack.mcmeta"), metadata_json).map_err(|e| e.to_string())?;
     fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n")
         .map_err(|e| e.to_string())?;
     let materials = manifest::by_id(data);
@@ -379,7 +382,7 @@ fn build_stage(
     // license-verified by the generator.
     let used: std::collections::BTreeSet<_> =
         data.textures.iter().map(|t| t.material.as_str()).collect();
-    let mut credits = String::from("HyperRealism128 material credits\n\nGenerated from the following manifest-supplied materials.\nSource and license information is supplied by the manifest, not independently verified.\n\n");
+    let mut credits = format!("HyperRealism {size}×{size} material credits\n\nGenerated from the following manifest-supplied materials.\nSource and license information is supplied by the manifest, not independently verified.\n\n");
     for id in used {
         let m = materials[id];
         credits.push_str(&format!(
@@ -390,7 +393,7 @@ fn build_stage(
         ));
     }
     fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
-    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}x{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism {size}×{size} experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}×{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible LabPBR 1.3 shader setting is needed for normal/specular maps; support for optional channels varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
     // Keep review thumbnails small even for the 512px pack.

@@ -137,7 +137,7 @@ namespace HyperRealismInstaller
 
         internal InstallerForm(string startup)
         {
-            Text = "HyperRealism128 Installer";
+            Text = "HyperRealism 512×512 Installer";
             using (var bitmap = BlockIcon(32))
             {
                 IntPtr handle = bitmap.GetHicon();
@@ -177,7 +177,7 @@ namespace HyperRealismInstaller
             tooltips.SetToolTip(toolCheck, "Check for installer and resource-pack updates.");
             var brand = new Panel { Dock = DockStyle.Right, Width = 150, BackColor = Surface };
             var brandIcon = new PictureBox { Image = BlockIcon(22), Size = new Size(22, 22), Location = new Point(5, 7), SizeMode = PictureBoxSizeMode.Normal };
-            var brandLabel = new Label { Text = "HyperRealism128", ForeColor = Foreground, Location = new Point(31, 2), Size = new Size(115, 32), TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true };
+            var brandLabel = new Label { Text = "HyperRealism 512", ForeColor = Foreground, Location = new Point(31, 2), Size = new Size(115, 32), TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true };
             brand.Controls.Add(brandIcon); brand.Controls.Add(brandLabel);
             var toolbarLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
             toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); toolbarLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
@@ -207,8 +207,8 @@ namespace HyperRealismInstaller
             groupHeading.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(54, 54, 54))) e.Graphics.DrawLine(pen, 126, 14, Math.Max(126, groupHeading.Width - 4), 14); };
             left.Controls.Add(groupHeading, 0, 0);
             var tile = new Panel { Dock = DockStyle.Fill, BackColor = Background, Margin = Padding.Empty };
-            var block = new PictureBox { Image = BlockIcon(40), SizeMode = PictureBoxSizeMode.Normal, Size = new Size(40, 40), Location = new Point(29, 12), AccessibleName = "HyperRealism pack icon" };
-            var tileCaption = new Label { Text = "HyperRealism128", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.FromArgb(30, 30, 30), BackColor = Green, Location = new Point(0, 63), Size = new Size(105, 22), AutoEllipsis = true };
+            var block = new PictureBox { Image = BlockIcon(40), SizeMode = PictureBoxSizeMode.Normal, Size = new Size(40, 40), Location = new Point(29, 12), AccessibleName = "HyperRealism 512×512 pack icon" };
+            var tileCaption = new Label { Text = "HyperRealism 512", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.FromArgb(30, 30, 30), BackColor = Green, Location = new Point(0, 63), Size = new Size(105, 22), AutoEllipsis = true };
             tile.Controls.Add(block); tile.Controls.Add(tileCaption); left.Controls.Add(tile, 0, 1);
             left.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "Resource pack folder", ForeColor = Foreground, TextAlign = ContentAlignment.MiddleLeft }, 0, 2);
             var pathRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty };
@@ -241,7 +241,7 @@ namespace HyperRealismInstaller
                     for (int x = -7; x <= 7; x += 3) for (int y = 0; y < 3; y++) e.Graphics.FillRectangle(pen, sideIcon.Width / 2 + x, 5 + y * 3, 1, 1);
             };
             side.Controls.Add(sideIcon, 0, 0);
-            side.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "HyperRealism128", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Foreground, BackColor = Sidebar, AutoEllipsis = true }, 0, 1);
+            side.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "HyperRealism 512", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Foreground, BackColor = Sidebar, AutoEllipsis = true }, 0, 1);
             StyleButton(launch, "Launch", "launch", 123, 27, false);
             tooltips.SetToolTip(launch, "Launch the selected instance through PineconeMC.");
             StyleButton(install, "Install / Update", "install", 123, 27, false);
@@ -268,7 +268,7 @@ namespace HyperRealismInstaller
             tooltips.SetToolTip(close, "Close the installer.");
 
             var news = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
-            var newsLabel = new Label { Dock = DockStyle.Fill, Padding = new Padding(29, 0, 0, 0), TextAlign = ContentAlignment.MiddleLeft, ForeColor = Foreground, Text = "HyperRealism128  •  Experimental preview" };
+            var newsLabel = new Label { Dock = DockStyle.Fill, Padding = new Padding(29, 0, 0, 0), TextAlign = ContentAlignment.MiddleLeft, ForeColor = Foreground, Text = "HyperRealism 512×512  •  Experimental preview" };
             var newsIcon = new PictureBox { Image = Glyph("news", 18), Size = new Size(18, 18), Location = new Point(12, 4), SizeMode = PictureBoxSizeMode.CenterImage };
             var more = new LinkLabel { Text = "More info", LinkBehavior = LinkBehavior.HoverUnderline, LinkColor = Foreground, ActiveLinkColor = Green, TextAlign = ContentAlignment.MiddleRight, Dock = DockStyle.Right, Width = 90, Padding = new Padding(0, 0, 9, 0) };
             more.LinkClicked += delegate { try { System.Diagnostics.Process.Start("https://github.com/Skid-ster/hyperrealismBYARENA/releases"); } catch (Exception ex) { ShowError(ex); } };
@@ -299,14 +299,14 @@ namespace HyperRealismInstaller
             var guide = helpMenu.Items.Add("Installer guide");
             var shaderGuide = helpMenu.Items.Add("Shader setup guide");
             var credits = helpMenu.Items.Add("Icon credits and license");
-            var about = helpMenu.Items.Add("About HyperRealism128");
+            var about = helpMenu.Items.Add("About HyperRealism 512×512");
             guide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA#readme"); };
-            shaderGuide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/e000bf82-hyperrealismbyarena/docs/SHADER_SETUP.md"); };
+            shaderGuide.Click += delegate { OpenWeb("https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/docs/SHADER_SETUP.md"); };
             credits.Click += delegate {
                 using (var stream = typeof(InstallerForm).Assembly.GetManifestResourceStream("HyperRealismInstaller.IconCredits.txt"))
                 using (var reader = new StreamReader(stream)) MessageBox.Show(this, reader.ReadToEnd(), "Icon credits and license", MessageBoxButtons.OK, MessageBoxIcon.Information);
             };
-            about.Click += delegate { MessageBox.Show(this, "HyperRealism128 Installer " + SelfUpdater.CurrentTag + "\r\n\r\nIndependent resource-pack installer, not PineconeMC.\r\nThe preview pack is experimental and requires a compatible shader for PBR.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information); };
+            about.Click += delegate { MessageBox.Show(this, "HyperRealism 512×512 Installer " + SelfUpdater.CurrentTag + "\r\n\r\nIndependent resource-pack installer, not PineconeMC.\r\nThe preview is 512×512 and experimental. LabPBR requires a compatible shader; for Complementary Reimagined set RP Support to labPBR (RP Required).", "About", MessageBoxButtons.OK, MessageBoxIcon.Information); };
             toolHelp.Click += delegate { helpMenu.Show(toolHelp, 0, toolHelp.Height); };
             toolCheck.Click += async delegate { await CheckAllUpdates(); };
             pathBox.TextChanged += delegate { UpdateFolderStatus(); if (!busy) { result.Text = "Ready. Check for updates or install the latest preview."; result.ForeColor = Foreground; } };
