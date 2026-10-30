@@ -1,7 +1,7 @@
 ## Experimental 512×512 LabPBR preview — not a complete pack
 
 This is a **512×512** test pack for Minecraft Java 26.3. Its legacy filename is
-retained so the existing installer can update it. It replaces **184 block
+retained so the existing installer can update it. It replaces **241 block
 textures**, not the whole game; all other blocks and entities remain vanilla or
 come from other packs. Higher resolution uses substantially more GPU memory and
 may affect loading and frame rate. It has not been tested on the RTX 5060 Ti.
@@ -11,10 +11,12 @@ AO contrast and perceptual smoothness are scaled down. Color and discrete
 material/emission IDs are unchanged; shader settings affect the perceived result.
 Water is not changed.
 
-It adds 60 textures: deepslate and stone variants, clay and all terracotta
-colors, sandstone and Nether masonry, and ten log ends with approximate
-procedural rings. Existing deepslate ores use a rock scan. Most materials are
-reused approximations; log rings are procedural, not measured wood end-grain.
+Preview 9 adds **57 texture files**: ten stripped log sides and ends, clear
+and sixteen stained glass blocks and their pane caps, plus spruce, pale oak and
+cherry leaves. Glass is procedural, with a cutout rim on clear glass, transparent
+stained glass and narrow pane caps. Stripped logs use rotated veneer scans and
+approximate procedural rings. The three leaves reuse a broadleaf atlas, not
+species-specific scans. These are approximations and need in-game visual testing.
 
 This is still **not a complete all-block pack**. Doors, plants, animated
 textures and many others remain vanilla, as does water. The 512px textures use

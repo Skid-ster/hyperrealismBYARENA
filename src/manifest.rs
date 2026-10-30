@@ -30,6 +30,9 @@ pub struct Material {
     pub normal: Option<String>,
     pub height: Option<String>,
     pub ao: Option<String>,
+    /// Rotate aligned maps clockwise by 90 degrees after preparation.
+    #[serde(default)]
+    pub rotate_cw: bool,
     #[serde(default = "default_normal_y")]
     pub normal_y: String,
 }
@@ -110,8 +113,10 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
     if !m.pbr_strength.is_finite() || !(0.0..=1.0).contains(&m.pbr_strength) {
         return Err("pbr_strength must be finite and in 0..=1".into());
     }
-    if m.materials.len() > 1024 || m.textures.len() > 1024 {
-        return Err("at most 1024 materials and textures are supported".into());
+    // Vanilla 26.3 alone has 1,300 block sprites. Bound untrusted manifests
+    // while leaving room for future game versions and non-block textures.
+    if m.materials.len() > 1024 || m.textures.len() > 4096 {
+        return Err("at most 1024 materials and 4096 textures are supported".into());
     }
     if m.materials.is_empty() || m.textures.is_empty() {
         return Err("materials and textures must not be empty".into());
@@ -164,9 +169,13 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             "moss_cobble",
             "plank",
             "log_end",
+            "stripped_log_end",
             "moss",
             "moss_brick",
             "glass",
+            "glass_clear",
+            "glass_stained",
+            "glass_pane_cap",
             "metal",
             "gem",
             "leaves",
@@ -178,7 +187,7 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         }
         if t.mipmap_strategy
             .as_deref()
-            .is_some_and(|s| s != "dark_cutout")
+            .is_some_and(|s| s != "dark_cutout" && s != "mean")
         {
             return Err(format!("{}: unsupported mipmap strategy", t.name));
         }

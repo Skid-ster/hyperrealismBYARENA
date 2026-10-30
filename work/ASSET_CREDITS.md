@@ -1,6 +1,6 @@
 # Bundled material sources
 
-These maps are **CC0-1.0** assets derived from Poly Haven. Their files are
+Most maps are **CC0-1.0** assets derived from Poly Haven. Their files are
 provided solely as a compact, reproducible starter set for the in-progress
 resource-pack generator. Poly Haven's asset license permits redistribution:
 <https://polyhaven.com/license>. This repository does not use the live Poly
@@ -52,7 +52,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 184 texture names and approximate sRGB color targets were checked against
+The 241 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -65,7 +65,7 @@ appearance remains experimental.
 at commit `8efed6702632a18f284dcaba5b64cb4b02304fe5`. The mirror script
 retrieves Poly Haven's 1K diffuse, DirectX normal, roughness and displacement
 maps. The same willow scan is adapted to oak, spruce, dark oak, acacia and
-jungle logs; it is not a species-specific scan. Log end textures remain vanilla.
+jungle logs; it is not a species-specific scan. Log ends were vanilla at preview 5.
 
 ### Preview 6 wood and grass
 
@@ -140,3 +140,15 @@ they are not scans of the named blocks. Log ends combine wood veneer with
 procedural rings and a bark rim, rather than scanned cross sections. The PBR
 strength is reduced; height remains estimated for materials without displacement.
 Water is deliberately not replaced.
+
+### Preview 9 glass, stripped logs and foliage
+
+Glass is procedurally generated from a neutral, flat color and a constant
+roughness map created for this project (CC0); it is not a photographic scan.
+Clear glass uses cutout geometry, stained glass is translucent, and pane caps
+are narrow strips. Real shader and game testing is still needed. Stripped log
+sides use the existing veneer scans, rotated with all aligned maps and normal
+vectors. Their ends use approximate procedural rings without a bark rim. Three
+new leaf variants reuse the neutral broadleaf atlas and may not resemble their
+real species; cherry is tinted pink rather than biome-neutral. None is a
+species-specific scan. Water is unchanged.

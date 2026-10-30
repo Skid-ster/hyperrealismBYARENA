@@ -148,6 +148,32 @@
         32
       ]
     },
+    "black_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c10c4050f055723253a3198f05655863614cb0ac",
+      "has_mcmeta": false,
+      "target_rgb": [
+        25,
+        25,
+        25
+      ]
+    },
+    "black_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "bb1d9fc2742270b993f46c060bbe8d4ded0aac07",
+      "has_mcmeta": false,
+      "target_rgb": [
+        24,
+        24,
+        24
+      ]
+    },
     "black_terracotta": {
       "dimensions": [
         16,
@@ -226,6 +252,32 @@
         167
       ]
     },
+    "blue_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b7d273a814de425441ea0ab4f13ce96a74476f4b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        51,
+        76,
+        178
+      ]
+    },
+    "blue_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7b4bb739744071a1db80d48547e08122364b4166",
+      "has_mcmeta": false,
+      "target_rgb": [
+        49,
+        74,
+        171
+      ]
+    },
     "blue_terracotta": {
       "dimensions": [
         16,
@@ -291,6 +343,32 @@
         54
       ]
     },
+    "brown_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d62efccd3699b7db7373cb502b590607bf89da80",
+      "has_mcmeta": false,
+      "target_rgb": [
+        102,
+        76,
+        51
+      ]
+    },
+    "brown_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "004c0fb3f2761ee27ff95fb14283ca347f763609",
+      "has_mcmeta": false,
+      "target_rgb": [
+        98,
+        74,
+        49
+      ]
+    },
     "brown_terracotta": {
       "dimensions": [
         16,
@@ -329,6 +407,20 @@
         224,
         221
       ]
+    },
+    "cherry_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "99be52daa7d1303c9558a27a1b5d05f1558bae4c",
+      "has_mcmeta": true,
+      "target_rgb": [
+        229,
+        173,
+        194
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
     },
     "cherry_log_top": {
       "dimensions": [
@@ -562,6 +654,32 @@
         37,
         148,
         157
+      ]
+    },
+    "cyan_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a4ac9aee9cabf296ede6c56fbf4c59f1b7229fe3",
+      "has_mcmeta": false,
+      "target_rgb": [
+        76,
+        127,
+        153
+      ]
+    },
+    "cyan_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a4eaff849b49c46ec03315257aa69210c91d9f6f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        74,
+        123,
+        147
       ]
     },
     "cyan_terracotta": {
@@ -916,6 +1034,33 @@
         104
       ]
     },
+    "glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7270ac16982135d318c237805b3630655d5b0526",
+      "has_mcmeta": true,
+      "target_rgb": [
+        176,
+        214,
+        219
+      ],
+      "mcmeta_git_blob_sha1": "5cb0fb739d59e745149bd602cc0d3cc2ee4f2d5b"
+    },
+    "glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f9490392fabed429d789a6a3ae70ffd991504dbe",
+      "has_mcmeta": false,
+      "target_rgb": [
+        170,
+        210,
+        217
+      ]
+    },
     "gold_ore": {
       "dimensions": [
         16,
@@ -1020,6 +1165,32 @@
         85
       ]
     },
+    "gray_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "752bc7c0de4455a28cc8f1eeb215bc87554d516c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        76,
+        76,
+        76
+      ]
+    },
+    "gray_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d41f80a20a6220858d99d09151a344116fd87e1a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        74,
+        74,
+        74
+      ]
+    },
     "gray_terracotta": {
       "dimensions": [
         16,
@@ -1070,6 +1241,32 @@
         97,
         119,
         45
+      ]
+    },
+    "green_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e4c0eba962a1c1a5c52b70630d6738f95b87a4e9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        102,
+        127,
+        51
+      ]
+    },
+    "green_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "61981c2f43be8ae6d4fee67ad3d6efffd0db2b5c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        98,
+        123,
+        49
       ]
     },
     "green_terracotta": {
@@ -1203,6 +1400,32 @@
         213
       ]
     },
+    "light_blue_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7d74ebc54f322b3c4e51b05a9d8abbceb5bbd1fb",
+      "has_mcmeta": false,
+      "target_rgb": [
+        102,
+        153,
+        216
+      ]
+    },
+    "light_blue_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "dc1fa9326c83770152e90ec6600fde5fc025bd9d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        98,
+        147,
+        209
+      ]
+    },
     "light_blue_terracotta": {
       "dimensions": [
         16,
@@ -1253,6 +1476,32 @@
         155,
         155,
         148
+      ]
+    },
+    "light_gray_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "952448904e7047fb057139272de6e5b678f2ecba",
+      "has_mcmeta": false,
+      "target_rgb": [
+        153,
+        153,
+        153
+      ]
+    },
+    "light_gray_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e08451f699bf29536a26e324528d1cbe8385d112",
+      "has_mcmeta": false,
+      "target_rgb": [
+        147,
+        147,
+        147
       ]
     },
     "light_gray_terracotta": {
@@ -1307,6 +1556,32 @@
         42
       ]
     },
+    "lime_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d2dc1bd17227138bee6e9bc0796cbb7a64de60fb",
+      "has_mcmeta": false,
+      "target_rgb": [
+        127,
+        204,
+        25
+      ]
+    },
+    "lime_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2f7c93a9f871e7d8c2ccf086806df3f7d90a9058",
+      "has_mcmeta": false,
+      "target_rgb": [
+        123,
+        197,
+        24
+      ]
+    },
     "lime_terracotta": {
       "dimensions": [
         16,
@@ -1357,6 +1632,32 @@
         193,
         84,
         185
+      ]
+    },
+    "magenta_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "87dd7ba777e73e15eb27155b704cbbf9e036c818",
+      "has_mcmeta": false,
+      "target_rgb": [
+        178,
+        76,
+        216
+      ]
+    },
+    "magenta_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f0fb4f50f4ba515d77d8c8bb65c83691e0a6a1d8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        171,
+        74,
+        209
       ]
     },
     "magenta_terracotta": {
@@ -1608,6 +1909,32 @@
         32
       ]
     },
+    "orange_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "31c4465ba91d5e762278cd336ee2de25b2e54886",
+      "has_mcmeta": false,
+      "target_rgb": [
+        216,
+        127,
+        51
+      ]
+    },
+    "orange_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4f9ffa975f07fda4600f99fbef3c06a13e337ced",
+      "has_mcmeta": false,
+      "target_rgb": [
+        209,
+        123,
+        49
+      ]
+    },
     "orange_terracotta": {
       "dimensions": [
         16,
@@ -1660,6 +1987,20 @@
         80
       ]
     },
+    "pale_oak_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9f6fbfa90d4878662354d2fbe4ef82b206261040",
+      "has_mcmeta": true,
+      "target_rgb": [
+        117,
+        122,
+        115
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
+    },
     "pale_oak_log_top": {
       "dimensions": [
         16,
@@ -1710,6 +2051,32 @@
         229,
         153,
         181
+      ]
+    },
+    "pink_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "85dd6a0d8bd7d43f102af9bfb929a1af43d86f43",
+      "has_mcmeta": false,
+      "target_rgb": [
+        242,
+        127,
+        165
+      ]
+    },
+    "pink_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2c55175e6961be938493bbfad89ab1b9cbf79e6d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        233,
+        123,
+        160
       ]
     },
     "pink_terracotta": {
@@ -1894,6 +2261,32 @@
         178
       ]
     },
+    "purple_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "fed02859225ac644efe9dd691b650d9f50f482f9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        127,
+        63,
+        178
+      ]
+    },
+    "purple_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3dc97f64aef5ac1ba453677f294e3653d2e83427",
+      "has_mcmeta": false,
+      "target_rgb": [
+        123,
+        61,
+        171
+      ]
+    },
     "purple_terracotta": {
       "dimensions": [
         16,
@@ -2009,6 +2402,32 @@
         181,
         98,
         31
+      ]
+    },
+    "red_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5a534376843a8b315d09c95b56e75f3ef79676db",
+      "has_mcmeta": false,
+      "target_rgb": [
+        153,
+        51,
+        51
+      ]
+    },
+    "red_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d0b33bc32561bfb161d6ea83682cc768c6fcb936",
+      "has_mcmeta": false,
+      "target_rgb": [
+        147,
+        49,
+        49
       ]
     },
     "red_terracotta": {
@@ -2167,6 +2586,20 @@
         254
       ]
     },
+    "spruce_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "85e413b57168a3dc0334326c9a19c5bd0d954740",
+      "has_mcmeta": true,
+      "target_rgb": [
+        126,
+        126,
+        126
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
+    },
     "spruce_log": {
       "dimensions": [
         16,
@@ -2230,6 +2663,266 @@
         122,
         122,
         122
+      ]
+    },
+    "stripped_acacia_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "29cca3ad04c155e1c0a45ac4ae5a17b2ab2d34ea",
+      "has_mcmeta": false,
+      "target_rgb": [
+        175,
+        93,
+        60
+      ]
+    },
+    "stripped_acacia_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "beb3fe06ff0c829415473abd5a69c41d36f239b0",
+      "has_mcmeta": false,
+      "target_rgb": [
+        166,
+        91,
+        52
+      ]
+    },
+    "stripped_birch_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7e081cef60d63ee7e5cc6f24c9369975a33aae7d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        197,
+        176,
+        118
+      ]
+    },
+    "stripped_birch_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "185b9757732c76a4250034ea3948d29dbd23e85a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        191,
+        172,
+        116
+      ]
+    },
+    "stripped_cherry_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c60455bef3429a58171601682619234c0eee7425",
+      "has_mcmeta": false,
+      "target_rgb": [
+        215,
+        145,
+        149
+      ]
+    },
+    "stripped_cherry_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c304229b1601b8b5059b05d1d19596abe7062f93",
+      "has_mcmeta": false,
+      "target_rgb": [
+        221,
+        165,
+        158
+      ]
+    },
+    "stripped_dark_oak_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c9bdfcce674b21b67e9d34e07ca6ce0ba4962a5b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        73,
+        57,
+        36
+      ]
+    },
+    "stripped_dark_oak_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "56ac30a88f0c18fd43d817ad024acf57488b89a4",
+      "has_mcmeta": false,
+      "target_rgb": [
+        66,
+        44,
+        23
+      ]
+    },
+    "stripped_jungle_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e2360156151ee38e1df3d7b68557c329c53294ca",
+      "has_mcmeta": false,
+      "target_rgb": [
+        171,
+        133,
+        85
+      ]
+    },
+    "stripped_jungle_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b86b0e95916b622bf5ecb6c7101f38dd7e28cef8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        166,
+        123,
+        82
+      ]
+    },
+    "stripped_mangrove_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e7c3ce46a09f7018028b6fa1c8e6ea0bcb762318",
+      "has_mcmeta": false,
+      "target_rgb": [
+        120,
+        54,
+        48
+      ]
+    },
+    "stripped_mangrove_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0cd705d6799063b6d27c83bad6bb70756c1f7525",
+      "has_mcmeta": false,
+      "target_rgb": [
+        109,
+        44,
+        43
+      ]
+    },
+    "stripped_oak_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "dcd8427ed7b8fc5f857b21c40686ef31baad35ea",
+      "has_mcmeta": false,
+      "target_rgb": [
+        177,
+        144,
+        86
+      ]
+    },
+    "stripped_oak_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2cd36b76ca06a4e04f9450cc7a1db50ef5fc2162",
+      "has_mcmeta": false,
+      "target_rgb": [
+        160,
+        130,
+        77
+      ]
+    },
+    "stripped_pale_oak_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ddfff87b1967af2b4eaeb3bbfc4c268b4086d756",
+      "has_mcmeta": false,
+      "target_rgb": [
+        246,
+        238,
+        237
+      ]
+    },
+    "stripped_pale_oak_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "933f96a3b5442c4a1d1fd67ecc955aae5f49a352",
+      "has_mcmeta": false,
+      "target_rgb": [
+        235,
+        227,
+        226
+      ]
+    },
+    "stripped_poplar_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "36c32b6d3398d9100a8fe8c6915ad40afa5f0f0a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        165,
+        153,
+        140
+      ]
+    },
+    "stripped_poplar_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7c64a6b9336b43ea52810860d7fc0e50003b3099",
+      "has_mcmeta": false,
+      "target_rgb": [
+        152,
+        139,
+        129
+      ]
+    },
+    "stripped_spruce_log": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1c7f276b0d88b69ccf23626cd4e6aa6147427390",
+      "has_mcmeta": false,
+      "target_rgb": [
+        116,
+        90,
+        52
+      ]
+    },
+    "stripped_spruce_log_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "14b295f2b1b460f58f00500bade3528541e2f2d6",
+      "has_mcmeta": false,
+      "target_rgb": [
+        113,
+        87,
+        50
       ]
     },
     "terracotta": {
@@ -2323,6 +3016,32 @@
         228
       ]
     },
+    "white_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8b2e08d62ac333b0b88d7b8e54ef92dd06a8d7b0",
+      "has_mcmeta": false,
+      "target_rgb": [
+        255,
+        255,
+        255
+      ]
+    },
+    "white_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3c2acacb616de3b5f166bfc2ecbb463b75ce9a8b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        246,
+        246,
+        246
+      ]
+    },
     "white_terracotta": {
       "dimensions": [
         16,
@@ -2373,6 +3092,32 @@
         233,
         199,
         55
+      ]
+    },
+    "yellow_stained_glass": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "07c4d1bd3af6eda074f3b310ffbc7ead07e80aee",
+      "has_mcmeta": false,
+      "target_rgb": [
+        229,
+        229,
+        51
+      ]
+    },
+    "yellow_stained_glass_pane_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "47fc1019dafdfb2a51d63f68c59148008a6545ee",
+      "has_mcmeta": false,
+      "target_rgb": [
+        221,
+        221,
+        49
       ]
     },
     "yellow_terracotta": {

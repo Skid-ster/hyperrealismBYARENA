@@ -247,6 +247,57 @@
       "normal": "materials/clay_floor/normal.png",
       "normal_y": "opengl",
       "arm": "materials/clay_floor/arm.png"
+    },
+    {
+      "id": "cherry_veneer_vertical",
+      "source": "Cherry Veneer: https://polyhaven.com/a/cherry_veneer; creator: Jenelle van Heerden; approximate plank stand-in; aligned maps rotated for vertical stripped wood",
+      "license": "CC0-1.0",
+      "albedo": "materials/cherry_veneer/color.jpg",
+      "normal": "materials/cherry_veneer/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/cherry_veneer/roughness.jpg",
+      "ao": "materials/cherry_veneer/ao.jpg",
+      "rotate_cw": true
+    },
+    {
+      "id": "natural_walnut_veneer_vertical",
+      "source": "Natural Walnut Veneer: https://polyhaven.com/a/natural_walnut_veneer; creator: Jenelle van Heerden; approximate plank stand-in; aligned maps rotated for vertical stripped wood",
+      "license": "CC0-1.0",
+      "albedo": "materials/natural_walnut_veneer/color.jpg",
+      "normal": "materials/natural_walnut_veneer/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/natural_walnut_veneer/roughness.jpg",
+      "ao": "materials/natural_walnut_veneer/ao.jpg",
+      "rotate_cw": true
+    },
+    {
+      "id": "oak_veneer_02_vertical",
+      "source": "Oak Veneer 02: https://polyhaven.com/a/oak_veneer_02; creator: Jenelle van Heerden; approximate plank stand-in; aligned maps rotated for vertical stripped wood",
+      "license": "CC0-1.0",
+      "albedo": "materials/oak_veneer_02/color.jpg",
+      "normal": "materials/oak_veneer_02/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/oak_veneer_02/roughness.jpg",
+      "ao": "materials/oak_veneer_02/ao.jpg",
+      "rotate_cw": true
+    },
+    {
+      "id": "white_maple_veneer_vertical",
+      "source": "White Maple Veneer: https://polyhaven.com/a/white_maple_veneer; creator: Jenelle van Heerden; approximate plank stand-in; aligned maps rotated for vertical stripped wood",
+      "license": "CC0-1.0",
+      "albedo": "materials/white_maple_veneer/color.jpg",
+      "normal": "materials/white_maple_veneer/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/white_maple_veneer/roughness.jpg",
+      "ao": "materials/white_maple_veneer/ao.jpg",
+      "rotate_cw": true
+    },
+    {
+      "id": "procedural_glass",
+      "source": "Original procedural neutral glass base; no photographic scan",
+      "license": "CC0-1.0",
+      "albedo": "materials/procedural_glass/color.png",
+      "roughness": "materials/procedural_glass/roughness.png"
     }
   ],
   "textures": [
@@ -3455,6 +3506,945 @@
       ],
       "f0": 10,
       "porosity": 30
+    },
+    {
+      "name": "stripped_acacia_log",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        175,
+        93,
+        60
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_acacia_log_top",
+      "material": "oak_veneer_02",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        166,
+        91,
+        52
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_birch_log",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        197,
+        176,
+        118
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_birch_log_top",
+      "material": "white_maple_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        191,
+        172,
+        116
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_cherry_log",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        215,
+        145,
+        149
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_cherry_log_top",
+      "material": "cherry_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        221,
+        165,
+        158
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_dark_oak_log",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        57,
+        36
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_dark_oak_log_top",
+      "material": "natural_walnut_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        66,
+        44,
+        23
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_jungle_log",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        171,
+        133,
+        85
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_jungle_log_top",
+      "material": "cherry_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        166,
+        123,
+        82
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_mangrove_log",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        120,
+        54,
+        48
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_mangrove_log_top",
+      "material": "cherry_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        109,
+        44,
+        43
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_oak_log",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        177,
+        144,
+        86
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_oak_log_top",
+      "material": "oak_veneer_02",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        160,
+        130,
+        77
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_pale_oak_log",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        246,
+        238,
+        237
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_pale_oak_log_top",
+      "material": "white_maple_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        235,
+        227,
+        226
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_poplar_log",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        165,
+        153,
+        140
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_poplar_log_top",
+      "material": "white_maple_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        152,
+        139,
+        129
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_spruce_log",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        116,
+        90,
+        52
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "stripped_spruce_log_top",
+      "material": "natural_walnut_veneer",
+      "recipe": "stripped_log_end",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        113,
+        87,
+        50
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "glass",
+      "material": "procedural_glass",
+      "recipe": "glass_clear",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        176,
+        214,
+        219
+      ],
+      "f0": 10,
+      "mipmap_strategy": "mean"
+    },
+    {
+      "name": "white_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        255,
+        255,
+        255
+      ],
+      "f0": 10
+    },
+    {
+      "name": "orange_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        216,
+        127,
+        51
+      ],
+      "f0": 10
+    },
+    {
+      "name": "magenta_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        178,
+        76,
+        216
+      ],
+      "f0": 10
+    },
+    {
+      "name": "light_blue_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        102,
+        153,
+        216
+      ],
+      "f0": 10
+    },
+    {
+      "name": "yellow_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        229,
+        229,
+        51
+      ],
+      "f0": 10
+    },
+    {
+      "name": "lime_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        127,
+        204,
+        25
+      ],
+      "f0": 10
+    },
+    {
+      "name": "pink_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        242,
+        127,
+        165
+      ],
+      "f0": 10
+    },
+    {
+      "name": "gray_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        76,
+        76,
+        76
+      ],
+      "f0": 10
+    },
+    {
+      "name": "light_gray_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        153,
+        153,
+        153
+      ],
+      "f0": 10
+    },
+    {
+      "name": "cyan_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        76,
+        127,
+        153
+      ],
+      "f0": 10
+    },
+    {
+      "name": "purple_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        127,
+        63,
+        178
+      ],
+      "f0": 10
+    },
+    {
+      "name": "blue_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        51,
+        76,
+        178
+      ],
+      "f0": 10
+    },
+    {
+      "name": "brown_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        102,
+        76,
+        51
+      ],
+      "f0": 10
+    },
+    {
+      "name": "green_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        102,
+        127,
+        51
+      ],
+      "f0": 10
+    },
+    {
+      "name": "red_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        153,
+        51,
+        51
+      ],
+      "f0": 10
+    },
+    {
+      "name": "black_stained_glass",
+      "material": "procedural_glass",
+      "recipe": "glass_stained",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        25,
+        25,
+        25
+      ],
+      "f0": 10
+    },
+    {
+      "name": "glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        170,
+        210,
+        217
+      ],
+      "f0": 10
+    },
+    {
+      "name": "white_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        246,
+        246,
+        246
+      ],
+      "f0": 10
+    },
+    {
+      "name": "orange_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        209,
+        123,
+        49
+      ],
+      "f0": 10
+    },
+    {
+      "name": "magenta_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        171,
+        74,
+        209
+      ],
+      "f0": 10
+    },
+    {
+      "name": "light_blue_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        98,
+        147,
+        209
+      ],
+      "f0": 10
+    },
+    {
+      "name": "yellow_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        221,
+        221,
+        49
+      ],
+      "f0": 10
+    },
+    {
+      "name": "lime_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        123,
+        197,
+        24
+      ],
+      "f0": 10
+    },
+    {
+      "name": "pink_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        233,
+        123,
+        160
+      ],
+      "f0": 10
+    },
+    {
+      "name": "gray_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        74,
+        74,
+        74
+      ],
+      "f0": 10
+    },
+    {
+      "name": "light_gray_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        147,
+        147,
+        147
+      ],
+      "f0": 10
+    },
+    {
+      "name": "cyan_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        74,
+        123,
+        147
+      ],
+      "f0": 10
+    },
+    {
+      "name": "purple_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        123,
+        61,
+        171
+      ],
+      "f0": 10
+    },
+    {
+      "name": "blue_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        49,
+        74,
+        171
+      ],
+      "f0": 10
+    },
+    {
+      "name": "brown_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        98,
+        74,
+        49
+      ],
+      "f0": 10
+    },
+    {
+      "name": "green_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        98,
+        123,
+        49
+      ],
+      "f0": 10
+    },
+    {
+      "name": "red_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        147,
+        49,
+        49
+      ],
+      "f0": 10
+    },
+    {
+      "name": "black_stained_glass_pane_top",
+      "material": "procedural_glass",
+      "recipe": "glass_pane_cap",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        24,
+        24,
+        24
+      ],
+      "f0": 10
+    },
+    {
+      "name": "spruce_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        126,
+        126,
+        126
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "pale_oak_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        117,
+        122,
+        115
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "cherry_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        229,
+        173,
+        194
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
     }
   ],
   "checksums": {
@@ -3542,7 +4532,9 @@
     "materials/tree_leaves/roughness.png": "c5f52ad0df50a22e224a3b7fc72df573a76c360cc4d2555dcc124937bb6e0a75",
     "materials/clay_floor/color.png": "6e6fea841e1dbeea44c301f3980ae13335f79dad0e7d645ceacdaa57e9d1555c",
     "materials/clay_floor/normal.png": "4ea09cf431d66e61e4a2090e2af66e2ad564a63484add01cd3e74100fdeb9b2c",
-    "materials/clay_floor/arm.png": "7d1023800e6f29e694f76cd996116df083fb5be9d85a115fa39c03781eba629f"
+    "materials/clay_floor/arm.png": "7d1023800e6f29e694f76cd996116df083fb5be9d85a115fa39c03781eba629f",
+    "materials/procedural_glass/color.png": "28d42333599aea5d3d7c1476f17a5ae50bcc0e8d3f1dd09f0d77359b667adcde",
+    "materials/procedural_glass/roughness.png": "c80b03e59db65ff6c5e7bf07d3e6f91c5aa3425b1a746df4420c7919a4179623"
   },
   "pbr_strength": 0.4
 }

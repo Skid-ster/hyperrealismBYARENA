@@ -361,12 +361,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 85);
+    assert_eq!(hashes.len(), 87);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 184);
+    assert_eq!(m.textures.len(), 241);
     assert!((m.pbr_strength - 0.4).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     // The tested preview uses a real cobble scan and its aligned height map,
@@ -768,6 +768,7 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
             [
                 "tree_leaves",
                 "grass_side_overlay",
+                "procedural_glass",
                 "brown_mud_dry",
                 "snow_02",
             ]
@@ -786,6 +787,9 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
                 "grass_block_side",
                 "grass_block_side_overlay",
                 "snow",
+                "glass",
+                "blue_stained_glass",
+                "blue_stained_glass_pane_top",
             ]
             .iter()
             .any(|name| t["name"] == *name)
@@ -848,6 +852,20 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
     let meta: serde_json::Value =
         serde_json::from_slice(&fs::read(block.join("oak_leaves.png.mcmeta")).unwrap()).unwrap();
     assert_eq!(meta["texture"]["mipmap_strategy"], "dark_cutout");
+    let clear = read(&block.join("glass.png")).unwrap();
+    let stained = read(&block.join("blue_stained_glass.png")).unwrap();
+    let pane = read(&block.join("blue_stained_glass_pane_top.png")).unwrap();
+    let alpha = |image: &hyperrealism_core::png_io::Rgba, x: usize, y: usize| {
+        image.pixels[(y * image.width + x) * 4 + 3]
+    };
+    assert_eq!(alpha(&clear, 64, 64), 0);
+    assert!(alpha(&clear, 1, 64) > 200);
+    assert!((90..120).contains(&alpha(&stained, 64, 64)));
+    assert_eq!(alpha(&pane, 5, 64), 0);
+    assert!(alpha(&pane, 64, 64) > 200);
+    let glass_meta: serde_json::Value =
+        serde_json::from_slice(&fs::read(block.join("glass.png.mcmeta")).unwrap()).unwrap();
+    assert_eq!(glass_meta["texture"]["mipmap_strategy"], "mean");
     let snow_normal = read(&block.join("snow_n.png")).unwrap();
     assert!(
         snow_normal.pixels.chunks_exact(4).map(|p| p[3]).min()
@@ -926,4 +944,39 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
         assert!(!run(&temp, &temp.join("invalid"), "2").status.success());
     }
     fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn rotated_wood_keeps_all_maps_and_normal_vectors_aligned() {
+    use hyperrealism_core::material::{load, WORK};
+    let root = Path::new("work");
+    let manifest = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
+    let original = manifest
+        .materials
+        .iter()
+        .find(|m| m.id == "oak_veneer_02")
+        .unwrap();
+    let rotated = manifest
+        .materials
+        .iter()
+        .find(|m| m.id == "oak_veneer_02_vertical")
+        .unwrap();
+    let a = load(root, original).unwrap();
+    let b = load(root, rotated).unwrap();
+    for &(x, y) in &[(0, 0), (17, 111), (511, 511), (256, 309)] {
+        let dst = y * WORK + x;
+        let src = (WORK - 1 - x) * WORK + y;
+        for c in 0..4 {
+            assert!((b.albedo[c][dst] - a.albedo[c][src]).abs() < 1e-6);
+        }
+        assert!(
+            (b.roughness.as_ref().unwrap()[dst] - a.roughness.as_ref().unwrap()[src]).abs() < 1e-6
+        );
+        assert!((b.ao.as_ref().unwrap()[dst] - a.ao.as_ref().unwrap()[src]).abs() < 1e-6);
+        let a = a.normal.as_ref().unwrap();
+        let b = b.normal.as_ref().unwrap();
+        assert!((b[0][dst] + a[1][src]).abs() < 1e-6);
+        assert!((b[1][dst] - a[0][src]).abs() < 1e-6);
+        assert!((b[2][dst] - a[2][src]).abs() < 1e-6);
+    }
 }

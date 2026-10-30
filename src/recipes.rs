@@ -164,7 +164,7 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
                 (0.91 + variation * 0.13, 0.02, 1.0, 0.0)
             }
         }
-        "log_end" => {
+        "log_end" | "stripped_log_end" => {
             // A wood cross section, not plank joints: subtly irregular annual
             // rings and a darker bark rim. The scan underneath supplies grain.
             let dx = (x as f32 - 256.0) / 256.0;
@@ -173,7 +173,11 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             let square_radius = dx.abs().max(dy.abs());
             let warped = radius + (n - 0.5) * 0.035;
             let ring = (warped * 46.0).sin().abs().powi(8);
-            let bark = ((square_radius - 0.78) * 12.0).clamp(0.0, 1.0);
+            let bark = if recipe == "stripped_log_end" {
+                0.0
+            } else {
+                ((square_radius - 0.78) * 12.0).clamp(0.0, 1.0)
+            };
             let shade = (1.0 - 0.18 * ring) * (1.0 - 0.45 * bark);
             let relief = 0.015 * ring + 0.035 * bark * (fine - 0.5);
             (shade, relief, 1.0, 0.0)
@@ -189,6 +193,32 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             } else {
                 (1.0, 0.0, 0.25, 0.0)
             }
+        }
+        // The clear block uses a cutout layer, not alpha blending.
+        "glass_clear" => {
+            let rim = x < 24 || y < 24 || x >= 488 || y >= 488;
+            let glint = (x > 70 && x < 105 && y > 70 && y < 105)
+                || (x > 400 && x < 430 && y > 400 && y < 430);
+            (
+                1.0,
+                if rim { 0.02 } else { 0.0 },
+                if rim || glint { 1.0 } else { 0.0 },
+                0.0,
+            )
+        }
+        "glass_stained" => {
+            let rim = x < 20 || y < 20 || x >= 492 || y >= 492;
+            (
+                1.0,
+                if rim { 0.02 } else { 0.0 },
+                if rim { 0.60 } else { 0.40 },
+                0.0,
+            )
+        }
+        // Pane top/bottom sprites are only two vanilla pixels wide.
+        "glass_pane_cap" => {
+            let strip = (224..288).contains(&x);
+            (1.0, 0.0, if strip { 1.0 } else { 0.0 }, 0.0)
         }
         // Fine, periodic albedo grain prevents procedural ore deposits from
         // becoming uniform, flat-color patches.
@@ -230,6 +260,15 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
 mod tests {
     use super::*;
     #[test]
+    fn glass_preserves_cutout_translucency_and_pane_shape() {
+        let sample = |r, x, y| evaluate(r, x, y, 1).opacity;
+        assert_eq!(sample("glass_clear", 0, 256), 1.0);
+        assert_eq!(sample("glass_clear", 256, 256), 0.0);
+        assert_eq!(sample("glass_stained", 256, 256), 0.4);
+        assert_eq!(sample("glass_pane_cap", 0, 256), 0.0);
+        assert_eq!(sample("glass_pane_cap", 256, 256), 1.0);
+    }
+    #[test]
     fn deterministic_and_periodic() {
         for r in [
             "stone",
@@ -242,7 +281,11 @@ mod tests {
             "moss_brick",
             "plank",
             "log_end",
+            "stripped_log_end",
             "glass",
+            "glass_clear",
+            "glass_stained",
+            "glass_pane_cap",
             "metal",
             "gem",
             "leaves",

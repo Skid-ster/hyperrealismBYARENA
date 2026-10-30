@@ -125,12 +125,49 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
             .map(|p| scalar(root, p))
             .transpose()?
     };
-    Ok(Prepared {
+    let mut prepared = Prepared {
         albedo: rgb,
         mean_linear,
         roughness,
         normal,
         height,
         ao,
-    })
+    };
+    if material.rotate_cw {
+        // Rotate every registered channel together. Normal XY is already in
+        // DirectX/image coordinates: clockwise maps (x,y) to (-y,x).
+        fn rotate(plane: &mut Vec<f32>) {
+            let mut out = vec![0.0; WORK * WORK];
+            for y in 0..WORK {
+                for x in 0..WORK {
+                    out[y * WORK + x] = plane[(WORK - 1 - x) * WORK + y];
+                }
+            }
+            *plane = out;
+        }
+        for c in &mut prepared.albedo {
+            rotate(c);
+        }
+        for channel in [
+            &mut prepared.roughness,
+            &mut prepared.height,
+            &mut prepared.ao,
+        ] {
+            if let Some(plane) = channel {
+                rotate(plane);
+            }
+        }
+        if let Some(normals) = &mut prepared.normal {
+            for plane in normals.iter_mut() {
+                rotate(plane);
+            }
+            let [x, y, _] = normals;
+            for (x, y) in x.iter_mut().zip(y.iter_mut()) {
+                let old_x = *x;
+                *x = -*y;
+                *y = old_x;
+            }
+        }
+    }
+    Ok(prepared)
 }
