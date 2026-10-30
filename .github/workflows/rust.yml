@@ -11,3 +11,59 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --locked
       - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only
+      - run: cargo run --locked --release -- --input work --output pilot_output --cpu-only --threads 2
+      - name: Verify generated LabPBR pack
+        run: cargo run --locked --release -- --verify-pack pilot_output/pack
+      - name: Test preview installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tests/install-preview.tests.ps1
+      - name: Upload experimental pack
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: HyperRealism128-MC26.3-experimental
+          path: |
+            pilot_output/dist/HyperRealism128-v1.0-MC26.3.zip
+            pilot_output/build_report.json
+            pilot_output/contact_sheet.png
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-preview-11:
+    # This one-time, explicitly requested prerelease only runs for this commit
+    # message on the session branch, after both Windows and Linux tests pass.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 11')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo run --locked --release -- --input work --output release_build --cpu-only --threads 2
+      - name: Fetch the latest GUI installer for the pack release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release_assets
+          tag=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name'  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-installer\.[0-9]+$' | sort -V | tail -n 1)
+          test -n "$tag"
+          gh release download "$tag" --dir release_assets --pattern 'HyperRealism128-Installer.exe*'
+          cd release_assets
+          sha256sum -c HyperRealism128-Installer.exe.sha256
+      - name: Prepare and check release assets
+        run: |
+          mkdir -p release_assets
+          cp release_build/dist/HyperRealism128-v1.0-MC26.3.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip
+          cp release_build/build_report.json release_assets/build_report.json
+          cp scripts/Install-HyperRealismPreview.ps1 release_assets/Install-HyperRealismPreview.ps1
+          cd release_assets
+          sha256sum HyperRealism128-MC26.3-EXPERIMENTAL.zip > HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum -c HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          python -c "import zipfile; z=zipfile.ZipFile('HyperRealism128-MC26.3-EXPERIMENTAL.zip'); assert z.testzip() is None; assert len([n for n in z.namelist() if n.endswith('.png')]) == 1176; assert 'MATERIAL_CREDITS.txt' in z.namelist(); assert 'pack.mcmeta' in z.namelist()"
+      - name: Publish experimental prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0-preview.11 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — experimental 26.3 preview 11' --notes-file .github/preview-release-notes.md --prerelease

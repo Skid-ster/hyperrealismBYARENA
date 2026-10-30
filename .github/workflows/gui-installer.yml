@@ -1,0 +1,57 @@
+name: Windows GUI installer
+on: [push, pull_request]
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test installer
+        shell: powershell
+        run: |
+          try {
+            & ./installer/build.ps1 *> "$env:RUNNER_TEMP\installer-build.log"
+            if ($LASTEXITCODE -ne 0) { throw "Installer build failed with exit code $LASTEXITCODE" }
+          } catch {
+            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Host "::error::$($_)" }
+            Write-Host "::error::$($_.Exception.Message)"
+            exit 1
+          }
+      - name: Test live download to temporary folder
+        if: github.event_name == 'push'
+        shell: powershell
+        run: |
+          ./installer-output/InstallerTests.exe --live-test
+          if ($LASTEXITCODE -ne 0) { throw 'Live preview download test failed.' }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HyperRealism128-Windows-GUI-installer
+          path: installer-output/HyperRealism128-Installer.exe
+          if-no-files-found: error
+          retention-days: 30
+  publish-installer:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish GUI installer 9')
+    needs: build-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: HyperRealism128-Windows-GUI-installer
+          path: installer-assets
+      - name: Checksum and publish installer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd installer-assets
+          sha256sum HyperRealism128-Installer.exe > HyperRealism128-Installer.exe.sha256
+          sha256sum -c HyperRealism128-Installer.exe.sha256
+          gh release create v0.1.0-installer.9 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — Windows GUI installer 9' --notes-file ../.github/installer-release-notes.md --prerelease
+      - name: Attach installer to existing preview releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for tag in v0.1.0-preview.1 v0.1.0-preview.2 v0.1.0-preview.3 v0.1.0-preview.4 v0.1.0-preview.5; do
+            gh release upload "$tag" installer-assets/HyperRealism128-Installer.exe installer-assets/HyperRealism128-Installer.exe.sha256 --clobber
+          done

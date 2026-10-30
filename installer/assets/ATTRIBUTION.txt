@@ -1,0 +1,12 @@
+Grass block instance icon: Prism Launcher contributors AutiOne, Boba, ely,
+Fulmine, gon sawa, Pankakes, tobimori and Zeke; Prism Launcher. Distributed
+under Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0):
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Original SVG: https://github.com/ElyPrismLauncher/Launcher/blob/5ea65f7a8057f06382845b870a378e8b35e62559/launcher/resources/multimc/scalable/instances/grass.svg
+The bundled PNG is rasterized and cropped from the original SVG; the original
+SVG and the PNG are available under the same license in this project's source:
+https://github.com/Skid-ster/hyperrealismBYARENA/tree/arena/e000bf82-hyperrealismbyarena/installer/assets
+
+This installer is an independent project and is not endorsed by or affiliated
+with Prism Launcher or PineconeMC. Other installer glyphs are independently drawn.
