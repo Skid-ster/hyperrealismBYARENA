@@ -694,6 +694,69 @@ fn nether_surface_coverage_uses_matching_cc0_materials_and_keeps_animations() {
 }
 
 #[test]
+fn adult_chicken_entity_pilot_has_uv_aligned_labpbr_maps() {
+    let root = Path::new("experiments/chicken_adult/pack");
+    let metadata: serde_json::Value =
+        serde_json::from_slice(&fs::read(root.join("pack.mcmeta")).unwrap()).unwrap();
+    assert_eq!(metadata["pack"]["min_format"], serde_json::json!([97, 1]));
+    assert_eq!(metadata["pack"]["max_format"], 97);
+    assert!(metadata["pack"]["description"].as_str().unwrap().contains("adult chicken"));
+    assert_eq!(
+        fs::read_to_string(root.join("assets/minecraft/optifine/texture.properties")).unwrap(),
+        "format=lab-pbr/1.3\n"
+    );
+
+    let texture_root = root.join("assets/minecraft/textures/entity/chicken");
+    let mut texture_files: Vec<_> = fs::read_dir(&texture_root)
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+        .collect();
+    texture_files.sort();
+    assert_eq!(
+        texture_files,
+        vec![
+            "chicken_temperate.png".to_owned(),
+            "chicken_temperate_n.png".to_owned(),
+            "chicken_temperate_s.png".to_owned(),
+        ]
+    );
+    let color = hyperrealism_core::png_io::read(&texture_root.join("chicken_temperate.png")).unwrap();
+    let normal = hyperrealism_core::png_io::read(&texture_root.join("chicken_temperate_n.png")).unwrap();
+    let specular = hyperrealism_core::png_io::read(&texture_root.join("chicken_temperate_s.png")).unwrap();
+    assert_eq!((color.width, color.height), (512, 256));
+    assert_eq!((normal.width, normal.height), (color.width, color.height));
+    assert_eq!((specular.width, specular.height), (color.width, color.height));
+    assert!(color.pixels.chunks_exact(4).all(|p| p[3] == 0 || p[3] == 255));
+    // Exact 8x expansion of the adult 64x32 UV islands: 516 opaque atlas texels.
+    assert_eq!(
+        color.pixels.chunks_exact(4).filter(|p| p[3] == 255).count(),
+        516 * 64
+    );
+    for pixel in normal.pixels.chunks_exact(4) {
+        let nx = f32::from(pixel[0]) / 127.5 - 1.0;
+        let ny = f32::from(pixel[1]) / 127.5 - 1.0;
+        assert!(nx * nx + ny * ny <= 1.02, "invalid entity normal XY");
+        assert_ne!(pixel[3], 0, "entity height must not use zero sentinel");
+    }
+    assert!(specular.pixels.chunks_exact(4).all(|p| p[1] == 10 && p[2] == 0 && p[3] == 255));
+
+    let archive_path = "experiments/chicken_adult/HyperRealism-Chicken-Adult-Pilot.zip";
+    let bytes = fs::read(archive_path).unwrap();
+    let mut archive = zip::ZipArchive::new(std::io::Cursor::new(bytes)).unwrap();
+    for name in [
+        "pack.mcmeta",
+        "README.txt",
+        "assets/minecraft/optifine/texture.properties",
+        "assets/minecraft/textures/entity/chicken/chicken_temperate.png",
+        "assets/minecraft/textures/entity/chicken/chicken_temperate_n.png",
+        "assets/minecraft/textures/entity/chicken/chicken_temperate_s.png",
+    ] {
+        assert!(archive.by_name(name).is_ok(), "ZIP is missing {name}");
+    }
+    assert!(archive.by_name("assets/minecraft/textures/entity/chicken/chicken_temperate_baby.png").is_err());
+}
+
+#[test]
 fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
     let catalog: serde_json::Value = serde_json::from_slice(
         &fs::read("catalog/vanilla_26.3_full_block_coverage.json").unwrap(),
