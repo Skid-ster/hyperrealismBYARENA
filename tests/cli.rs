@@ -694,6 +694,38 @@ fn nether_surface_coverage_uses_matching_cc0_materials_and_keeps_animations() {
 }
 
 #[test]
+fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
+    let catalog: serde_json::Value = serde_json::from_slice(
+        &fs::read("catalog/vanilla_26.3_full_block_coverage.json").unwrap(),
+    )
+    .unwrap();
+    assert_eq!(catalog["version"], 1);
+    assert_eq!(
+        catalog["source_commit"],
+        "6c088630459d8ca369ef0d6c07636d7d63a3b0f1"
+    );
+    let summary = &catalog["summary"];
+    assert_eq!(summary["blockstates"], 1290);
+    assert_eq!(summary["block_model_files"], 2885);
+    assert_eq!(summary["unique_block_texture_references"], 1236);
+    assert_eq!(summary["currently_covered_block_texture_references"], 311);
+    assert_eq!(summary["uncovered_block_texture_references"], 925);
+    assert_eq!(summary["states_with_uncovered_textures"], 644);
+
+    let states = catalog["blockstates"].as_object().unwrap();
+    assert_eq!(states.len(), 1290);
+    for (block, state) in states {
+        let referenced = state["block_textures"].as_array().unwrap();
+        let missing = state["uncovered_block_textures"].as_array().unwrap();
+        assert!(
+            missing.iter().all(|name| referenced.contains(name)),
+            "{block}: uncovered list must be a subset of the block texture references"
+        );
+    }
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 925);
+}
+
+#[test]
 fn representative_26_3_models_share_the_covered_texture_paths() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();

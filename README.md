@@ -28,7 +28,7 @@ implementation, not a port or a claim of matching its results.
 This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU.
 
-See [shader setup and testing](docs/SHADER_SETUP.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
+See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,236 distinct block texture references; this prototype covers 311 of them, so complete vanilla block coverage remains a substantial staged project.
 
 ## Download and install the experimental preview
 
