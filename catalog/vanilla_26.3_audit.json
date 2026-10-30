@@ -3,6 +3,20 @@
   "source": "https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block",
   "source_commit": "6c088630459d8ca369ef0d6c07636d7d63a3b0f1",
   "textures": {
+    "acacia_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "08a03380b6a61ad20776f581e74ae8dba47e1618",
+      "has_mcmeta": true,
+      "target_rgb": [
+        149,
+        149,
+        149
+      ],
+      "mcmeta_git_blob_sha1": "910e87d565e34330de248b4dbc207bd7225b405d"
+    },
     "acacia_log": {
       "dimensions": [
         16,
@@ -41,6 +55,20 @@
         136,
         137
       ]
+    },
+    "birch_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1ea855f93be7379eec41199cb63afd994db8f5bc",
+      "has_mcmeta": true,
+      "target_rgb": [
+        131,
+        129,
+        130
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
     },
     "birch_planks": {
       "dimensions": [
@@ -315,6 +343,20 @@
         145
       ]
     },
+    "dark_oak_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "99ee5c25911ac36c0e69f1341254ee33267eaba6",
+      "has_mcmeta": true,
+      "target_rgb": [
+        151,
+        151,
+        151
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
+    },
     "dark_oak_log": {
       "dimensions": [
         16,
@@ -484,6 +526,19 @@
         67
       ]
     },
+    "dirt_path_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5b2082175e440ad90c9eea332bf1033108554529",
+      "has_mcmeta": false,
+      "target_rgb": [
+        148,
+        122,
+        65
+      ]
+    },
     "emerald_ore": {
       "dimensions": [
         16,
@@ -534,6 +589,32 @@
         149,
         103,
         86
+      ]
+    },
+    "grass_block_side": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4e3ae001818611f0949a1294e804ac65a606a5a5",
+      "has_mcmeta": false,
+      "target_rgb": [
+        127,
+        107,
+        66
+      ]
+    },
+    "grass_block_side_overlay": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0e60ccc34e458bf30ea19a2dff4e013e5cb8b314",
+      "has_mcmeta": false,
+      "target_rgb": [
+        155,
+        155,
+        155
       ]
     },
     "grass_block_top": {
@@ -652,6 +733,20 @@
         129,
         123
       ]
+    },
+    "jungle_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f3c513a51e1b7867d2a12d09bb4708c28fca9528",
+      "has_mcmeta": true,
+      "target_rgb": [
+        157,
+        154,
+        144
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
     },
     "jungle_log": {
       "dimensions": [
@@ -848,6 +943,20 @@
         180
       ]
     },
+    "mangrove_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b85bfd39664b8f226887eb15023bb36877c9177a",
+      "has_mcmeta": true,
+      "target_rgb": [
+        130,
+        129,
+        129
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
+    },
     "mangrove_planks": {
       "dimensions": [
         16,
@@ -885,6 +994,19 @@
         115,
         121,
         105
+      ]
+    },
+    "mud": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "078b7030caaa50c72f7cf7f86dae70ede053de42",
+      "has_mcmeta": false,
+      "target_rgb": [
+        60,
+        57,
+        61
       ]
     },
     "nether_gold_ore": {
@@ -925,6 +1047,20 @@
         38,
         38
       ]
+    },
+    "oak_leaves": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0f1793d68df14a8551ca59d4c428bba24acb9c50",
+      "has_mcmeta": true,
+      "target_rgb": [
+        144,
+        144,
+        144
+      ],
+      "mcmeta_git_blob_sha1": "214e9838146f3f889c141f358a77c0dfa38bbea4"
     },
     "oak_log": {
       "dimensions": [
@@ -1054,6 +1190,19 @@
         238,
         141,
         172
+      ]
+    },
+    "podzol_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1ce952a8bec048de1bcaf3cf248f06aec5d20ed6",
+      "has_mcmeta": false,
+      "target_rgb": [
+        92,
+        63,
+        24
       ]
     },
     "polished_andesite": {
@@ -1275,6 +1424,19 @@
         216,
         203,
         156
+      ]
+    },
+    "snow": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "23b40acaa3cbd3af0eba6a4698aafa47a7cdf346",
+      "has_mcmeta": false,
+      "target_rgb": [
+        249,
+        254,
+        254
       ]
     },
     "spruce_log": {

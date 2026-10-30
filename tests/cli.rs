@@ -361,12 +361,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 58);
+    assert_eq!(hashes.len(), 82);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 112);
+    assert_eq!(m.textures.len(), 124);
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [
@@ -385,7 +385,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     for t in &m.textures {
         let entry = &entries[&t.name];
         assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));
-        assert_eq!(entry["has_mcmeta"], false);
+        assert_eq!(entry["has_mcmeta"], t.mipmap_strategy.is_some());
         assert_eq!(
             entry["target_rgb"],
             serde_json::json!(t.target_color.unwrap())
@@ -743,5 +743,113 @@ fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
             assert!(varied(&n.pixels, 2), "AO detail missing: {name}");
         }
     }
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn overworld_cutouts_and_scanned_terrain_are_generated() {
+    use hyperrealism_core::png_io::read;
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!("overworld-{}-{unique}", std::process::id()));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    let all: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let materials: Vec<_> = all["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|m| {
+            [
+                "tree_leaves",
+                "grass_side_overlay",
+                "brown_mud_dry",
+                "snow_02",
+            ]
+            .iter()
+            .any(|id| m["id"] == *id)
+        })
+        .cloned()
+        .collect();
+    let textures: Vec<_> = all["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|t| {
+            [
+                "oak_leaves",
+                "grass_block_side",
+                "grass_block_side_overlay",
+                "snow",
+            ]
+            .iter()
+            .any(|name| t["name"] == *name)
+        })
+        .cloned()
+        .collect();
+    for mat in &materials {
+        for key in ["albedo", "normal", "roughness", "arm", "height", "ao"] {
+            if let Some(name) = mat[key].as_str() {
+                let dest = input.join(name);
+                fs::create_dir_all(dest.parent().unwrap()).unwrap();
+                fs::copy(Path::new("work").join(name), dest).unwrap();
+            }
+        }
+    }
+    fs::write(
+        input.join("material_manifest.json"),
+        serde_json::to_vec(&serde_json::json!({
+            "version": 1, "materials": materials, "textures": textures
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    let output = temp.join("output");
+    let result = run(&input, &output, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let block = output.join("pack/assets/minecraft/textures/block");
+    let side = read(&block.join("grass_block_side.png")).unwrap();
+    assert!(side.pixels.chunks_exact(4).all(|p| p[3] == 255));
+    for name in ["oak_leaves", "grass_block_side_overlay"] {
+        let color = read(&block.join(format!("{name}.png"))).unwrap();
+        let opaque = color.pixels.chunks_exact(4).filter(|p| p[3] >= 128).count();
+        assert!(
+            opaque > 100 && opaque < color.width * color.height - 100,
+            "cutout alpha missing: {name}"
+        );
+        assert!(
+            color
+                .pixels
+                .chunks_exact(4)
+                .filter(|p| p[3] > 220)
+                .all(|p| p[0] == p[1] && p[1] == p[2]),
+            "biome tint base not neutral: {name}"
+        );
+        let normal = read(&block.join(format!("{name}_n.png"))).unwrap();
+        let spec = read(&block.join(format!("{name}_s.png"))).unwrap();
+        assert!(normal
+            .pixels
+            .chunks_exact(4)
+            .any(|p| p[0] != 128 || p[1] != 128));
+        assert!(spec.pixels.chunks_exact(4).any(|p| p[0] != 0));
+        if name == "oak_leaves" {
+            assert!(spec.pixels.chunks_exact(4).all(|p| p[2] == 128));
+        }
+    }
+    let meta: serde_json::Value =
+        serde_json::from_slice(&fs::read(block.join("oak_leaves.png.mcmeta")).unwrap()).unwrap();
+    assert_eq!(meta["texture"]["mipmap_strategy"], "dark_cutout");
+    let snow_normal = read(&block.join("snow_n.png")).unwrap();
+    assert!(
+        snow_normal.pixels.chunks_exact(4).map(|p| p[3]).min()
+            != snow_normal.pixels.chunks_exact(4).map(|p| p[3]).max()
+    );
     fs::remove_dir_all(temp).unwrap();
 }

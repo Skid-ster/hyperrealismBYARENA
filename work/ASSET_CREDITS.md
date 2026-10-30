@@ -52,7 +52,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 112 texture names and approximate sRGB color targets were checked against
+The 124 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -93,3 +93,36 @@ applies the biome color to the top face. Matched normal and roughness remain
 unchanged; no scanned height or AO is supplied, so height is estimated and AO
 defaults to white. Only the grass top is replaced: side and transparent tinted
 side overlay remain vanilla, so their visual transition may be imperfect.
+
+### Preview 7: everyday overworld surfaces
+
+The five 1K sets [Snow 02](https://polyhaven.com/a/snow_02),
+[Gravel Ground 01](https://polyhaven.com/a/gravel_ground_01),
+[Brown Mud Dry](https://polyhaven.com/a/brown_mud_dry),
+[Brown Mud 03](https://polyhaven.com/a/brown_mud_03) and
+[Forest Leaves 04](https://polyhaven.com/a/forest_leaves_04) are CC0 scans by
+Rob Tuytel. Each includes albedo, OpenGL normal, packed AO/roughness/metallic
+(blue ignored) and displacement. They are original 1K JPEGs from the
+[documented CrumpleZone redistribution](https://github.com/awittmannTech/CrumpleZone/tree/1c62ca1e91051b6d42b9910a31a364837537c827/assets/ground)
+at commit `1c62ca1e91051b6d42b9910a31a364837537c827`; input SHA-256 hashes
+are in the manifest. Snow, mud, gravel, dirt/path and podzol are approximate
+Minecraft adaptations, not voxel-perfect reconstructions.
+
+The broadleaf cutout atlas is composed from three fragments of the 1K leaves
+of [Tree Small 02](https://polyhaven.com/a/tree_small_02) by Rico Cilliers,
+CC0. It is derived from the WebP-compressed GLB in the
+[documented London redistribution](https://github.com/take44444/london/tree/ede3b8850b307f5ba95eacd587a0663446212f61/dist/assets)
+at commit `ede3b8850b307f5ba95eacd587a0663446212f61`, SHA-256
+`9eb662fd339645584a69f176643dca8f7d2a16e2daff6ca1b7049b0b9ed6b747`.
+The fragments and their OpenGL normals/roughness are rotated and layered with
+periodic wrapping; their albedo is neutralized for biome tint. This is one
+shared broadleaf scan, not species-accurate oak, birch, jungle, acacia, mangrove
+or dark-oak foliage. Normals and roughness are aligned; height is estimated,
+AO is flat and subsurface is a chosen constant. The audit's static
+`dark_cutout` mip strategy is included. The grass side now has a soil base and
+a separately generated, transparent, biome-tinted fringe from Leafy Grass;
+the fringe shape is procedural. `scripts/prepare-overworld-materials.py`
+recreates both derivatives with Pillow and numpy from the pinned GLB and
+previously bundled neutral grass. The leaves and grass side need in-game review,
+including seams and shader rendering; the source photos alone do not establish
+visual quality in Minecraft. Log end faces are still vanilla.

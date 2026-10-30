@@ -42,6 +42,8 @@ pub struct Texture {
     pub tint: [u8; 3],
     /// Optional approximate sRGB target for the average source color.
     pub target_color: Option<[u8; 3]>,
+    /// Static texture mipmap strategy for cutouts when no client JAR is supplied.
+    pub mipmap_strategy: Option<String>,
     /// Ore recipe's inclusion color and LabPBR F0/metal ID.
     pub ore_color: Option<[u8; 3]>,
     pub ore_f0: Option<u8>,
@@ -163,6 +165,12 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         .contains(&t.recipe.as_str())
         {
             return Err(format!("{}: unknown recipe {}", t.name, t.recipe));
+        }
+        if t.mipmap_strategy
+            .as_deref()
+            .is_some_and(|s| s != "dark_cutout")
+        {
+            return Err(format!("{}: unsupported mipmap strategy", t.name));
         }
         if t.recipe == "ore" {
             match (t.ore_color, t.ore_f0) {

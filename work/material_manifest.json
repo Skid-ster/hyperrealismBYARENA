@@ -170,6 +170,74 @@
       "normal": "materials/leafy_grass/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/leafy_grass/roughness.jpg"
+    },
+    {
+      "id": "snow_02",
+      "source": "Snow 02: https://polyhaven.com/a/snow_02; creator: Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/snow_02/color.jpg",
+      "normal": "materials/snow_02/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/snow_02/arm.jpg",
+      "height": "materials/snow_02/height.jpg"
+    },
+    {
+      "id": "gravel_ground_01",
+      "source": "Gravel Ground 01: https://polyhaven.com/a/gravel_ground_01; creator: Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/gravel_ground_01/color.jpg",
+      "normal": "materials/gravel_ground_01/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/gravel_ground_01/arm.jpg",
+      "height": "materials/gravel_ground_01/height.jpg"
+    },
+    {
+      "id": "brown_mud_dry",
+      "source": "Brown Mud Dry: https://polyhaven.com/a/brown_mud_dry; creator: Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/brown_mud_dry/color.jpg",
+      "normal": "materials/brown_mud_dry/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/brown_mud_dry/arm.jpg",
+      "height": "materials/brown_mud_dry/height.jpg"
+    },
+    {
+      "id": "brown_mud_03",
+      "source": "Brown Mud 03: https://polyhaven.com/a/brown_mud_03; creator: Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/brown_mud_03/color.jpg",
+      "normal": "materials/brown_mud_03/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/brown_mud_03/arm.jpg",
+      "height": "materials/brown_mud_03/height.jpg"
+    },
+    {
+      "id": "forest_leaves_04",
+      "source": "Forest Leaves 04: https://polyhaven.com/a/forest_leaves_04; creator: Rob Tuytel",
+      "license": "CC0-1.0",
+      "albedo": "materials/forest_leaves_04/color.jpg",
+      "normal": "materials/forest_leaves_04/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/forest_leaves_04/arm.jpg",
+      "height": "materials/forest_leaves_04/height.jpg"
+    },
+    {
+      "id": "grass_side_overlay",
+      "source": "Leafy Grass: https://polyhaven.com/a/leafy_grass; Charlotte Baglioni; grayscale with procedural cutout",
+      "license": "CC0-1.0",
+      "albedo": "materials/leafy_grass/side_overlay.png",
+      "normal": "materials/leafy_grass/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/leafy_grass/roughness.jpg"
+    },
+    {
+      "id": "tree_leaves",
+      "source": "Tree Small 02 leaves: https://polyhaven.com/a/tree_small_02; Rico Cilliers; cutout atlas composed and neutralized for Minecraft biome tint",
+      "license": "CC0-1.0",
+      "albedo": "materials/tree_leaves/neutral_color.png",
+      "normal": "materials/tree_leaves/normal.png",
+      "normal_y": "opengl",
+      "roughness": "materials/tree_leaves/roughness.png"
     }
   ],
   "textures": [
@@ -668,8 +736,8 @@
     },
     {
       "name": "gravel",
-      "material": "gravel_concrete",
-      "recipe": "stone",
+      "material": "gravel_ground_01",
+      "recipe": "material",
       "tint": [
         255,
         255,
@@ -1887,7 +1955,7 @@
     },
     {
       "name": "dirt",
-      "material": "forest_ground",
+      "material": "brown_mud_dry",
       "recipe": "material",
       "tint": [
         255,
@@ -1902,7 +1970,7 @@
     },
     {
       "name": "coarse_dirt",
-      "material": "forest_ground",
+      "material": "brown_mud_dry",
       "recipe": "material",
       "tint": [
         255,
@@ -2148,6 +2216,216 @@
       ],
       "f0": 10,
       "porosity": 30
+    },
+    {
+      "name": "grass_block_side",
+      "material": "brown_mud_dry",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        127,
+        107,
+        66
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "grass_block_side_overlay",
+      "material": "grass_side_overlay",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        155,
+        155,
+        155
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "snow",
+      "material": "snow_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        249,
+        254,
+        254
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dirt_path_top",
+      "material": "brown_mud_dry",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        148,
+        122,
+        65
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "podzol_top",
+      "material": "forest_leaves_04",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        92,
+        63,
+        24
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "mud",
+      "material": "brown_mud_03",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        60,
+        57,
+        61
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oak_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        144,
+        144,
+        144
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "birch_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        131,
+        129,
+        130
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "jungle_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        157,
+        154,
+        144
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "dark_oak_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        151,
+        151,
+        151
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "acacia_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        149,
+        149,
+        149
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
+    },
+    {
+      "name": "mangrove_leaves",
+      "material": "tree_leaves",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        130,
+        129,
+        129
+      ],
+      "f0": 10,
+      "subsurface": 128,
+      "mipmap_strategy": "dark_cutout"
     }
   ],
   "checksums": {
@@ -2208,6 +2486,30 @@
     "materials/white_maple_veneer/ao.jpg": "460d347f2c97609c3815bd599b61ac9d3e474f8d6d781346fb2a14ecb4b22f7e",
     "materials/leafy_grass/neutral_color.png": "038388b3d69c8ddb389ca812afaf41bac46ab0691093e27eb50b7a4e3a737379",
     "materials/leafy_grass/normal.jpg": "832328216adc0a7e1f70a31d5ee48c9ab7f2152d83816122736cf42ac4b2ebd6",
-    "materials/leafy_grass/roughness.jpg": "0c2a1d91aacb8e54a496051b59854e51e456fe858abeade778e308359ef16463"
+    "materials/leafy_grass/roughness.jpg": "0c2a1d91aacb8e54a496051b59854e51e456fe858abeade778e308359ef16463",
+    "materials/snow_02/color.jpg": "523a4e69c90b96d787dd69b897f29a2b3761a017024405c60aa630d1e8e9009a",
+    "materials/snow_02/normal.jpg": "9495ec680616b8340e2cbecbd151bff84c690cfad4209e90cc98d2d0ba81f810",
+    "materials/snow_02/arm.jpg": "1bf5380767702c1ea758f60585c1db1d655d99a2468d359b55d654e6272cc633",
+    "materials/snow_02/height.jpg": "aa3e8bcb3158bd27ce69c60aa6ba73370c3f15009788d4b95371e53b4d8e6214",
+    "materials/gravel_ground_01/color.jpg": "c3a12b0e3a9399913158dd5cfa1d67ede066970acd1f99e5b89969ac13f89089",
+    "materials/gravel_ground_01/normal.jpg": "3a832b27276d1457031b164147434558bd245469dc27fd1ff6ae075bde0b12b2",
+    "materials/gravel_ground_01/arm.jpg": "cf78bb8dd9c0079874ebceba2cbb58fc3eccf03d84204b3fccdcf0549b808e03",
+    "materials/gravel_ground_01/height.jpg": "9c496aef8c0bc684cf77a40fe2f211c0521734b33bf19c54615d7864e6266690",
+    "materials/brown_mud_dry/color.jpg": "a56281b644de614787340f3db45e28d2f72ec32fc19a442f99002bae0ab11398",
+    "materials/brown_mud_dry/normal.jpg": "4dd82ecb3e810d4de49d34c7d6cc30152129434a58b3bd786bc9952bc8874877",
+    "materials/brown_mud_dry/arm.jpg": "4521708cf2976046be3c8f968c5e64e32aa269f5fb9d04b2360269f9f49b9861",
+    "materials/brown_mud_dry/height.jpg": "b903d2b713606b6b5cb5c21628f40399f2be58b4a63ee7b87896138c7a486465",
+    "materials/brown_mud_03/color.jpg": "6da4fbd6fc5d21044dcbdbd96e098fb464ed544b42c982e72ce8ccd1d53686c5",
+    "materials/brown_mud_03/normal.jpg": "b53758dbc93f1ab3ad2884ca07a217dd90450e6a70d055f34573573668812a2a",
+    "materials/brown_mud_03/arm.jpg": "5ccf63481d1e10893d389a55280c764034e218de173dd6a40610f1b111e06249",
+    "materials/brown_mud_03/height.jpg": "f39d2cc8fe899517234efc62ae87cdda2535f8b8cff6c182f439baa9915482d6",
+    "materials/forest_leaves_04/color.jpg": "a898e6ef0668a40faaf1bcbc6b024f6ef437ec424a10fa47aa6d35d013c9dade",
+    "materials/forest_leaves_04/normal.jpg": "6b7c4086fc28b7b1f11f4d04aedcc27772ce3bb894cfc00835b4637092c1bb0c",
+    "materials/forest_leaves_04/arm.jpg": "e253ba0615d1da2376a18d8edf26dd02a0be92e5729efd3402be02f7f2ae53be",
+    "materials/forest_leaves_04/height.jpg": "2d434700f1c38bc3ec49eb5ec0b27aeed2e4a0b42c71c0390f0e55ecbfc5cc72",
+    "materials/leafy_grass/side_overlay.png": "185441408688488127979795fe43e2bc6f480ad3dea65a1aec764ecaade0191b",
+    "materials/tree_leaves/neutral_color.png": "7bdfe6f0870255864016d18a785329d9936683dad451dc20941adac0e886bd00",
+    "materials/tree_leaves/normal.png": "0934731a00ab07bef798563b68dec36c6b41bbbb10f68d3b47692f936eecfa93",
+    "materials/tree_leaves/roughness.png": "c5f52ad0df50a22e224a3b7fc72df573a76c360cc4d2555dcc124937bb6e0a75"
   }
 }
