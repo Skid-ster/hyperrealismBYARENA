@@ -1,6 +1,11 @@
-## Windows GUI installer 10 — HyperRealism 512×512
+## Windows GUI installer 11 — HyperRealism 512×512
 
-The installer UI now consistently names the pack **HyperRealism 512×512** and
+Installer 11 fixes a self-update version-reporting defect that could make an
+updated installer repeatedly offer the same update. It now identifies itself
+as `v0.1.0-installer.11` and can advance from installer 9 or 10 without
+repeating the prompt.
+
+The installer UI consistently names the pack **HyperRealism 512×512** and
 links to the current shader setup guide. The executable filename, installed
 settings directory, and legacy preview ZIP asset name remain `HyperRealism128`
 for compatibility with existing updater installations. The Minecraft resource
