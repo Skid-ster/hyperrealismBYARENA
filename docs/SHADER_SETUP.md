@@ -59,11 +59,11 @@ see stutter or texture-load errors, reduce shader settings and try the optional
 ## How to evaluate
 
 Compare in daylight and in darker light, with and without the resource pack,
-then with and without the shader. Try stone, cobblestone, oak planks, sand,
-netherrack and Nether gold ore. Ask which details are visible from a normal
-playing distance, whether seams repeat, and whether metals reflect plausibly.
-The 302 covered block texture files do not replace the entire game; animations,
-most blocks and entities are not supplied. The pack cannot guarantee visual
+then with and without the shader. Try stone, cobblestone stairs/slabs/walls,
+oak and bamboo planks/fences, sand, netherrack and Nether gold ore. Ask which
+details are visible from a normal playing distance, whether seams repeat, and
+whether metals reflect plausibly. The 307 covered block texture paths do not
+replace the entire game; animations, most blocks and entities are not supplied. The pack cannot guarantee visual
 quality merely because it contains 512×512 images and valid LabPBR channels.
 
 ## Connected glass

@@ -52,16 +52,16 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 11 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 12 uses 512×512
 textures (despite the legacy filename), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.11/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.12/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
-302 textures replace only a subset of the game; the rest remain vanilla or come
-from other enabled packs. A compatible shader is required for PBR, and optional
+307 distinct texture paths replace only a subset of the game; the rest remain
+vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
 this new revision has not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
@@ -72,9 +72,10 @@ other building blocks and ten log ends with approximate procedural rings. Previe
 stripped wood, clear and stained glass/pane caps, and three leaf variants. Preview 10 adds tinted glass, connected-glass support and a modest stone PBR boost.
 Preview 11 adds doors and trapdoors, ladders and iron/copper bars with custom
 cutout layouts, photographic materials and PBR maps; their geometry remains
-Minecraft’s original block models. Their designs are approximations. Glass is
-procedural and leaves share an approximate broadleaf source. Water is unchanged. It replaces only
-specified blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
+Minecraft’s original block models. Preview 12 adds bamboo planks, fences and
+gates plus matching particle sprites, using an approximate procedural bamboo
+material over a CC0 veneer scan. Water is unchanged. It replaces only specified
+blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
 `stone_bricks`, `oak_planks`, `white_wool`, `gold_ore` and `diamond_ore` to
 compare. See the manifest for the full list. Other textures stay unchanged.
 
@@ -83,7 +84,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.11/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.12/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
