@@ -361,12 +361,12 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 137);
+    assert_eq!(hashes.len(), 138);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 307);
+    assert_eq!(m.textures.len(), 308);
     assert!((m.pbr_strength - 0.4).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     for wood in [
@@ -402,6 +402,26 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
             );
         }
     }
+    let toggled: Vec<_> = m
+        .textures
+        .iter()
+        .filter(|t| {
+            t.name == "lever"
+                || t.name.ends_with("_door_top")
+                || t.name.ends_with("_door_bottom")
+                || t.name.ends_with("_trapdoor")
+        })
+        .collect();
+    assert_eq!(toggled.len(), 55);
+    assert!(toggled.iter().all(|t| {
+        t.pbr_strength
+            .map(|v| (v - 0.16).abs() < 1e-6)
+            .unwrap_or(false)
+    }));
+    let lever = toggled.iter().find(|t| t.name == "lever").unwrap();
+    assert_eq!(lever.material, "oak_veneer_02_vertical");
+    assert_eq!(lever.target_color, Some([111, 93, 67]));
+    assert_eq!(entries["lever"]["git_blob_sha1"], "47121f2ecc25270b3b90f2bcbb2aaf6460a5c9ab");
 
     // Five bamboo texture paths were missing from Preview 11. They now use
     // the same CC0 maple-veneer inputs with a dedicated, periodic bamboo-board
@@ -473,7 +493,7 @@ fn representative_26_3_models_share_the_covered_texture_paths() {
         "6c088630459d8ca369ef0d6c07636d7d63a3b0f1"
     );
     let blocks = audit["blocks"].as_object().unwrap();
-    assert_eq!(blocks.len(), 125);
+    assert_eq!(blocks.len(), 126);
     for (block, textures) in blocks {
         let textures = textures.as_array().unwrap();
         assert!(
@@ -538,6 +558,19 @@ fn representative_26_3_models_share_the_covered_texture_paths() {
         serde_json::json!(["oak_door_bottom", "oak_door_top"])
     );
     assert_eq!(blocks["oak_trapdoor"], serde_json::json!(["oak_trapdoor"]));
+    assert_eq!(blocks["lever"], serde_json::json!(["cobblestone", "lever"]));
+    let states = audit["interactive_states"].as_object().unwrap();
+    assert_eq!(states["lever"]["variant_count"], 24);
+    assert_eq!(
+        states["lever"]["powered_false_models"],
+        serde_json::json!(["minecraft:block/lever_on"])
+    );
+    assert_eq!(
+        states["lever"]["powered_true_models"],
+        serde_json::json!(["minecraft:block/lever"])
+    );
+    assert_eq!(states["oak_door"]["variant_count"], 32);
+    assert_eq!(states["oak_trapdoor"]["variant_count"], 16);
 }
 
 #[test]
@@ -971,17 +1004,16 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
         .unwrap()
         .iter()
         .filter(|t| {
-            [
-                "oak_leaves",
-                "grass_block_side",
-                "grass_block_side_overlay",
-                "snow",
-                "glass",
-                "blue_stained_glass",
-                "blue_stained_glass_pane_top",
-            ]
-            .iter()
-            .any(|name| t["name"] == *name)
+            t["connected_glass"] == true
+                || [
+                    "oak_leaves",
+                    "grass_block_side",
+                    "grass_block_side_overlay",
+                    "snow",
+                    "blue_stained_glass_pane_top",
+                ]
+                .iter()
+                .any(|name| t["name"] == *name)
         })
         .cloned()
         .collect();
@@ -1055,30 +1087,48 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
     let glass_meta: serde_json::Value =
         serde_json::from_slice(&fs::read(block.join("glass.png.mcmeta")).unwrap()).unwrap();
     assert_eq!(glass_meta["texture"]["mipmap_strategy"], "mean");
-    // CTM tiles and maps must be packaged, not just listed in properties.
+    // Continuity's OptiFine-compatible compact loader consumes properties in
+    // assets/minecraft/optifine/ctm. Verify every covered clear/stained/tinted
+    // glass sprite has all five aligned LabPBR tiles, plus pane side rules.
     let ctm = output.join("pack/assets/minecraft/optifine/ctm");
-    for name in ["glass", "blue_stained_glass"] {
+    let connected: Vec<_> = textures
+        .iter()
+        .filter(|t| t["connected_glass"] == true)
+        .map(|t| t["name"].as_str().unwrap())
+        .collect();
+    assert_eq!(connected.len(), 18);
+    for name in connected {
         let dir = ctm.join(name);
         let properties = fs::read_to_string(dir.join("glass.properties")).unwrap();
         assert!(properties.contains("method=ctm_compact"));
+        assert!(properties.contains("tiles=0-4"));
+        assert!(properties.contains("connect=block"));
         assert!(properties.contains(&format!("matchTiles={name}")));
         assert!(properties.contains(&format!("matchBlocks={name}")));
-        let pane_rule = fs::read_to_string(dir.join("pane.properties")).unwrap();
-        assert!(pane_rule.contains(&format!("matchBlocks={name}_pane")));
-        assert!(pane_rule.contains("faces=sides"));
+        if name != "tinted_glass" {
+            let pane_rule = fs::read_to_string(dir.join("pane.properties")).unwrap();
+            assert!(pane_rule.contains(&format!("matchBlocks={name}_pane")));
+            assert!(pane_rule.contains(&format!("matchTiles={name}")));
+            assert!(pane_rule.contains("faces=sides"));
+        } else {
+            assert!(!dir.join("pane.properties").exists());
+        }
         for i in 0..5 {
             for suffix in ["", "_n", "_s"] {
                 let image = read(&dir.join(format!("{i}{suffix}.png"))).unwrap();
                 assert_eq!((image.width, image.height), (128, 128));
             }
         }
-        let frame = read(&dir.join("0.png")).unwrap();
-        let interior = read(&dir.join("1.png")).unwrap();
         if name == "glass" {
+            let frame = read(&dir.join("0.png")).unwrap();
+            let interior = read(&dir.join("1.png")).unwrap();
             assert_eq!(alpha(&frame, 0, 64), 255);
             assert_eq!(alpha(&frame, 64, 64), 0);
             assert_eq!(alpha(&interior, 0, 64), 0);
-        } else {
+        }
+        if name == "blue_stained_glass" {
+            let frame = read(&dir.join("0.png")).unwrap();
+            let interior = read(&dir.join("1.png")).unwrap();
             assert_eq!(alpha(&frame, 0, 64), 153);
             assert_eq!(alpha(&interior, 64, 64), 102);
         }
@@ -1255,6 +1305,7 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
         "oak_door_bottom",
         "oak_trapdoor",
         "copper_door_top",
+        "lever",
         "ladder",
         "iron_bars",
     ];
@@ -1315,6 +1366,17 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
     assert!(at("iron_bars", "", 40, 60)[3] < 5);
     assert!(at("iron_bars", "", 20, 60)[3] > 245);
     assert!(at("copper_door_top", "", 48, 32)[3] < 5);
+    // The vanilla lever model's 2x10 UV island remains transparent elsewhere;
+    // its wooden grip and iron collar receive aligned, distinct LabPBR values.
+    assert!(at("lever", "", 64, 60)[3] > 245);
+    assert!(at("lever", "", 40, 60)[3] < 5);
+    assert_eq!(at("lever", "_s", 64, 74)[1], 230);
+    assert_eq!(at("lever", "_s", 64, 100)[1], 10);
+    let lever_normal = read(&block.join("lever_n.png")).unwrap();
+    assert!(lever_normal
+        .pixels
+        .chunks_exact(4)
+        .any(|p| p[0] != 128 || p[1] != 128));
     // Wood keeps dielectric F0; the drawn latch becomes a discrete iron ID.
     assert_eq!(at("oak_door_bottom", "_s", 25, 82)[1], 230);
     assert_eq!(at("oak_door_bottom", "_s", 64, 64)[1], 10);

@@ -2,7 +2,7 @@
   "version": "26.3",
   "source": "https://github.com/InventivetalentDev/minecraft-assets",
   "source_commit": "6c088630459d8ca369ef0d6c07636d7d63a3b0f1",
-  "method": "Pinned vanilla blockstate variants and recursively inherited model texture variables resolved; only assets/minecraft/textures/block references included. This is reference metadata, not bundled Minecraft artwork.",
+  "method": "Pinned vanilla blockstate variants and recursively inherited model texture variables resolved; only assets/minecraft/textures/block references included. This is reference metadata, not bundled Minecraft artwork. Interactive blockstate summary records powered, hinge/open and top/bottom model families from the same pinned tree.",
   "blocks": {
     "cobblestone": [
       "cobblestone"
@@ -408,6 +408,69 @@
     ],
     "warped_trapdoor": [
       "warped_trapdoor"
+    ],
+    "lever": [
+      "cobblestone",
+      "lever"
     ]
+  },
+  "interactive_states": {
+    "lever": {
+      "properties": [
+        "face",
+        "facing",
+        "powered"
+      ],
+      "variant_count": 24,
+      "powered_false_models": [
+        "minecraft:block/lever_on"
+      ],
+      "powered_true_models": [
+        "minecraft:block/lever"
+      ],
+      "textures": [
+        "cobblestone",
+        "lever"
+      ]
+    },
+    "oak_door": {
+      "properties": [
+        "facing",
+        "half",
+        "hinge",
+        "open"
+      ],
+      "variant_count": 32,
+      "models": [
+        "minecraft:block/oak_door_bottom_left",
+        "minecraft:block/oak_door_bottom_left_open",
+        "minecraft:block/oak_door_bottom_right",
+        "minecraft:block/oak_door_bottom_right_open",
+        "minecraft:block/oak_door_top_left",
+        "minecraft:block/oak_door_top_left_open",
+        "minecraft:block/oak_door_top_right",
+        "minecraft:block/oak_door_top_right_open"
+      ],
+      "textures": [
+        "oak_door_bottom",
+        "oak_door_top"
+      ]
+    },
+    "oak_trapdoor": {
+      "properties": [
+        "facing",
+        "half",
+        "open"
+      ],
+      "variant_count": 16,
+      "models": [
+        "minecraft:block/oak_trapdoor_bottom",
+        "minecraft:block/oak_trapdoor_open",
+        "minecraft:block/oak_trapdoor_top"
+      ],
+      "textures": [
+        "oak_trapdoor"
+      ]
+    }
   }
 }

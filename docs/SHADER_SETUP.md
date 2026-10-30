@@ -44,9 +44,15 @@ Vanilla Minecraft without a compatible shader only displays the color maps.
 In Photon, the pack must be enabled **above** competing packs, with normal and
 specular mapping enabled and the texture format set to labPBR. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
-without it. Compare the same sunlit oak log or cobblestone with Normal Mapping
-on and off; rotate the view/light to check for changes in shading. For specular,
-compare a smooth metallic block in the manifest, with Specular Mapping on/off.
+without it. Preview 13 assigns a per-texture PBR strength override of `0.16`
+to the lever and 54 door/trapdoor paths, 40% of the previous global `0.4`
+baseline. In this generator, the override scales tangent-space normal
+slopes, height deviations around neutral, and smoothness; AO fades toward white.
+Albedo and discrete LabPBR metal/F0 IDs, porosity and emission are preserved.
+This is a defined output-channel scaling, not a measured 40% reduction in
+perceived visual intensity. Compare the same sunlit oak log or cobblestone with
+Normal Mapping on and off; rotate the view/light to check for changes in shading.
+For specular, compare a smooth metallic block in the manifest, with Specular Mapping on/off.
 If nothing changes, check Iris/Photon versions, pack order, and shader settings;
 reload resources with F3+T. Scan-driven height exists on the new bark and
 cobblestone; many older materials still use approximate height, so parallax
@@ -62,20 +68,24 @@ Compare in daylight and in darker light, with and without the resource pack,
 then with and without the shader. Try stone, cobblestone stairs/slabs/walls,
 oak and bamboo planks/fences, sand, netherrack and Nether gold ore. Ask which
 details are visible from a normal playing distance, whether seams repeat, and
-whether metals reflect plausibly. The 307 covered block texture paths do not
+whether metals reflect plausibly. The 308 covered block texture paths do not
 replace the entire game; animations, most blocks and entities are not supplied. The pack cannot guarantee visual
 quality merely because it contains 512×512 images and valid LabPBR channels.
 
 ## Connected glass
 
-The pack ships OptiFine-format compact CTM rules and LabPBR maps for clear,
-stained and tinted glass. Iris is a shader loader, not a CTM implementation.
-For Fabric 26.3 install [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
+The pack ships OptiFine-format compact CTM rules and LabPBR maps for all 18
+covered clear, stained and tinted glass sprites. Iris is a shader loader, not a
+CTM implementation. Continuity 3.0.1+26.3's exact 26.3/dev source loader contract
+was inspected and static tests validate its paths, compact method, minimum tile
+count and pane side rules; see [the compatibility audit](CONTINUITY_SUPPORT.md).
+Install [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
 and required Fabric API, restart, and place this pack above conflicting glass
 packs. Consider Continuity's glass pane culling fix if panes show seams. With no
 compatible CTM implementation the fallback has thin borders on every block.
-Actual CTM and shader rendering remain untested. A clear cutout's invisible
-interior may not reflect in shaders; tinted glass is translucent.
+Minecraft/Continuity world rendering and shader appearance remain untested. A
+clear cutout's invisible interior may not reflect in shaders; tinted glass is
+translucent.
 
 Stone already had LabPBR maps. Preview 10 increases the stone-only PBR strength
 from 0.4 to 0.65 while keeping its albedo unchanged. Normal Mapping must be on

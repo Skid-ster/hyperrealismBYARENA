@@ -23,12 +23,26 @@ class Layout:
   self.d.line([(round(x*S),round(y*S)) for x,y in coords],fill=(shade,relief,255 if metal else 0,alpha),width=round(width*S),joint='curve')
  def hole(self,box): self.rect(box,0,128,False,0)
  def panel(self,box,open=False):
-  x1,y1,x2,y2=box;self.rect(box,165,157);self.rect((x1+.3,y1+.3,x2-.3,y2-.3),248,117)
+  # Supersampled, multi-step relief redesign. The open-panel hole uses the
+  # original coordinates exactly, preserving vanilla cutout silhouettes.
+  x1,y1,x2,y2=box
+  self.rect(box,151,151)
+  self.rect((x1+.16,y1+.16,x2-.16,y2-.16),218,169)
+  self.rect((x1+.34,y1+.34,x2-.34,y2-.34),112,104)
+  self.rect((x1+.5,y1+.5,x2-.5,y2-.5),238,120)
   if open:self.hole((x1+.55,y1+.55,x2-.55,y2-.55))
  def handle(self):
-  self.rect((2.4,9.6,3.9,11.1),155,178,True);self.ellipse((2.7,9.8,3.6,10.7),245,190,True)
+  # Recessed escutcheon, raised knob and two small fasteners. All details
+  # stay within the existing opaque hardware area and remain a metal ID mask.
+  self.rect((2.4,9.6,3.9,11.1),122,144,True)
+  self.rect((2.55,9.74,3.75,10.96),196,162,True)
+  self.ellipse((2.7,9.8,3.6,10.7),242,181,True)
+  self.ellipse((2.86,9.96,3.44,10.54),151,137,True)
+  self.ellipse((2.58,9.7,2.82,9.94),222,170,True)
+  self.ellipse((3.48,10.76,3.72,11.0),222,170,True)
  def frame(self):
-  self.rect((0,0,1.4,16),195,158);self.rect((14.6,0,16,16),195,158)
+  self.rect((0,0,1.4,16),182,153);self.rect((14.6,0,16,16),182,153)
+  self.rect((1.2,0,1.4,16),219,161);self.rect((14.6,0,14.8,16),219,161)
  def save(self,name):self.im.save(OUT/(name+'.png'),optimize=True)
 
 def door(wood,part):
@@ -150,4 +164,17 @@ a=Layout(False)
 for x in (2,7.5,13):a.rect((x,0,x+1.1,16),220,153)
 for x1,y,x2 in [(2,3,8.6),(7.5,12,14.1),(0,7,3.1),(13,7,16)]:a.rect((x1,y,x2,y+1.1),208,151)
 a.save('bars')
+# Vanilla's lever texture has exactly this opaque 2x10 UV island; keep the
+# original cutout/UV footprint while adding aligned wood and iron PBR detail.
+a=Layout(False)
+a.rect((7,6,9,9),205,151)
+a.rect((7.2,6.2,8.8,8.8),232,164)
+a.line([(7.42,6.35),(7.42,8.65)],.1,172,142)
+a.line([(8.58,6.35),(8.58,8.65)],.1,172,142)
+a.rect((7,9,9,9.8),132,145,True)
+a.rect((7.2,9.15,8.8,9.65),210,164,True)
+a.rect((7,9.8,9,15.2),156,147)
+a.rect((7.25,10,8.75,15),205,155)
+a.rect((7,15.2,9,16),118,143,True)
+a.save('lever')
 print('wrote',len(list(OUT.glob('*.png'))),'construction masks')

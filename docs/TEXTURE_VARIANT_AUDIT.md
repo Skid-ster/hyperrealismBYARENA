@@ -36,6 +36,10 @@ The same model-reference check confirms these representative shared paths:
 - Deepslate and blackstone retain separate side and end-cap paths.
 - Oak door models use separate top/bottom textures; trapdoors use their own
   texture. These are not incorrectly redirected to oak planks.
+- The pinned interactive-state summary records 24 lever variants (both powered
+  models share `lever` plus the already-covered `cobblestone` base), 32 oak-door
+  variants (top/bottom, open/closed, left/right hinge) and 16 oak-trapdoor
+  variants (top/bottom/open). New PBR outputs reuse the vanilla texture paths.
 
 The audit exposed five paths missing from Preview 11: `bamboo_planks`,
 `bamboo_fence`, `bamboo_fence_particle`, `bamboo_fence_gate` and
@@ -48,14 +52,14 @@ shared procedural seed and produce byte-identical albedo and PBR maps rather
 than drifting apart.
 
 All block texture paths referenced in this sampled model audit are now present
-in the 307-entry manifest. Thus these audited families need no duplicate variant
+in the 308-entry manifest. Thus these audited families need no duplicate variant
 textures or model edits. The distinct texture paths intentionally remain
 separate where vanilla UVs distinguish faces, door halves or trapdoor geometry.
 
 ## Scope and reproducibility
 
 `catalog/vanilla_26.3_variant_texture_refs.json` stores the resolved **names**
-from 125 representative blockstates after following model parents and `#texture`
+from 126 representative blockstates after following model parents and `#texture`
 variables. It contains no Minecraft image pixels. The Rust integration test
 checks each reference against the manifest and asserts the key shared-path
 families above. The independent `vanilla_26.3_audit.json` records target sprite

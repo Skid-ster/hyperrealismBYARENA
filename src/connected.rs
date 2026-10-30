@@ -1,6 +1,8 @@
-//! OptiFine-format compact connected glass. Five tiles are sliced into
-//! quadrants by the CTM renderer. The pack still contains ordinary fallback
-//! textures for clients without a connected-texture implementation.
+//! Compact connected glass in the OptiFine-compatible `optifine/ctm` path.
+//! Continuity 3.0.1+26.3 source scans this path and registers `ctm_compact`
+//! with a five-tile minimum; see `docs/CONTINUITY_SUPPORT.md`. Five tiles are
+//! sliced into quadrants by the CTM renderer. Ordinary fallback textures remain
+//! available to clients without a connected-texture implementation.
 use crate::{manifest::Texture, png_io};
 use std::{fs, path::Path};
 

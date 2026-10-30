@@ -52,7 +52,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 302 texture names and approximate sRGB color targets were checked against
+The 308 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -183,3 +183,31 @@ LabPBR metal IDs, while heavily oxidized variants use dielectric IDs as an
 approximation. No photorealistic representation or game compatibility is
 guaranteed. This revision has not been visually tested in Minecraft. Water is
 unchanged.
+
+### Preview 13: interactive blocks and connected-texture audit
+
+Door and trapdoor masks were redrawn as original, supersampled multistep
+moldings, recessed/open panels, slats, and hardware. The 47 pre-existing door,
+trapdoor, ladder and bar opacity masks were compared pixel-for-pixel with the
+prior generated masks and are unchanged; shade, relief and hardware-channel
+drawings were revised without changing those silhouettes. The shapes and
+transparency are procedural; CC0 Poly Haven veneer and Metal Plate 02 scans
+provide matched
+albedo/normal/roughness inputs. Missing height is estimated and combined with
+procedural panel relief. Fifty-four door/trapdoor texture targets
+plus the new vanilla-path `lever` target use per-texture PBR strength `0.16`,
+40% of the previous global `0.4` baseline, independently of the global setting. The lever's
+wood-grip/iron-collar layout aligns with the vanilla 2×10 UV region; the base
+continues using the already-covered cobblestone target. The powered/unpowered
+lever, door hinge/open/half, and trapdoor open/top/bottom model-state families
+were audited from the pinned 26.3 asset tree. No Minecraft images or models are
+bundled or changed. PBR channels are structurally checked, but the revised art,
+shader response, CTM rendering, and in-game state appearance still need runtime
+validation.
+
+Continuity 3.0.1+26.3 compatibility was checked against the exact upstream
+`26.3/dev` source revision in `docs/CONTINUITY_SUPPORT.md`: the loader scans
+`optifine/ctm`, registers `ctm_compact` with a five-tile minimum, and resolves
+the generated match properties. Automated tests check all 18 covered glass
+sprites, their tile-map triples, and pane rules. This is a source-contract and
+structural verification, not a Minecraft/Continuity runtime render test.

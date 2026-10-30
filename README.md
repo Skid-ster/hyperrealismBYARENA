@@ -4,10 +4,10 @@ This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
 LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
-are approximated as described below. The current source catalog contains 307
+are approximated as described below. The current source catalog contains 308
 distinct block texture targets based on CC0 Poly Haven maps and original
-procedural work; five bamboo-family paths have been added since the published
-Preview 11 (302 targets). This is **not** the requested complete pack or a
+procedural work; Preview 13 adds the lever texture and PBR coverage for
+toggleable doors, trapdoors and levers. This is **not** the requested complete pack or a
 finished photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
@@ -17,7 +17,7 @@ implementation, not a port or a claim of matching its results.
 This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU.
 
-See [shader setup and testing](docs/SHADER_SETUP.md) and [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
+See [shader setup and testing](docs/SHADER_SETUP.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md).
 
 ## Download and install the experimental preview
 
@@ -52,18 +52,18 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 12 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 13 uses 512×512
 textures (despite the legacy filename), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.12/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.13/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
-307 distinct texture paths replace only a subset of the game; the rest remain
+308 distinct texture paths replace only a subset of the game; the rest remain
 vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
-this new revision has not yet been validated there. Grass sides now have a
+this revision has not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
 photographic foliage atlas with transparency and static mipmap metadata.
 Dirt, gravel, snow, mud, dirt paths and podzol use new scanned ground maps.
@@ -72,9 +72,13 @@ other building blocks and ten log ends with approximate procedural rings. Previe
 stripped wood, clear and stained glass/pane caps, and three leaf variants. Preview 10 adds tinted glass, connected-glass support and a modest stone PBR boost.
 Preview 11 adds doors and trapdoors, ladders and iron/copper bars with custom
 cutout layouts, photographic materials and PBR maps; their geometry remains
-Minecraft’s original block models. Preview 12 adds bamboo planks, fences and
-gates plus matching particle sprites, using an approximate procedural bamboo
-material over a CC0 veneer scan. Water is unchanged. It replaces only specified
+Minecraft’s original block models. Preview 12 added bamboo planks, fences and gates plus matching particle
+sprites. Preview 13 redraws the procedural door and trapdoor construction masks,
+adds a custom PBR lever texture while preserving Minecraft models and powered
+states, and sets a per-texture PBR strength of 0.16 (40% of the previous 0.4 baseline) on 55
+door, trapdoor and lever targets. All use aligned LabPBR maps; wood grain reuses
+CC0 Poly Haven veneer scans and metal details use the documented CC0 steel scan.
+Water is unchanged. It replaces only specified
 blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
 `stone_bricks`, `oak_planks`, `white_wool`, `gold_ore` and `diamond_ore` to
 compare. See the manifest for the full list. Other textures stay unchanged.
@@ -84,7 +88,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.12/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.13/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -101,15 +105,17 @@ folder. GitHub API rate limits can affect unauthenticated requests.
 
 ## Connected glass
 
-Preview 10 includes compact CTM data for clear, all 16 stained colors and tinted
-glass, including pane faces using those textures. Without CTM support the pack
-falls back to thin-bordered individual glass. **Iris alone does not supply CTM**.
-For Fabric 26.3, add [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
-and its required Fabric API to this instance, then restart; follow Continuity's
-setup guidance. Enable its glass-pane culling fix if pane seams remain, and put
-HyperRealism above competing glass packs. OptiFine with connected textures enabled
-is another possible route when available for the version. This pack's CTM and
-shader maps have not been visually tested in game. Clear glass uses a cutout
+Preview 13 includes compact CTM data for clear, all 16 stained colors and tinted
+glass, including pane sides. The files were checked against Continuity 3.0.1+26.3's
+source loader contract; the generated namespace, compact method, minimum tile
+count, pane-face rule and all tile maps are covered by automated structural tests.
+See [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md). Runtime loading
+and visual rendering still need a Minecraft 26.3 + Continuity installation. Without
+CTM support the pack falls back to thin-bordered individual glass. **Iris alone
+does not supply CTM**. For Fabric 26.3, add [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
+and its required Fabric API, then restart. Enable its glass-pane culling fix if pane
+seams remain, and put HyperRealism above competing glass packs. OptiFine with
+connected textures enabled is another possible route when available for the version. Clear glass uses a cutout
 layer: transparent interiors cannot be guaranteed to show reflections in every
 shader; stained glass is translucent. CTM tiles include flat normals and smooth
 LabPBR specular maps, but shader/mod support varies.
@@ -155,11 +161,13 @@ run uses CPU, and there is no GPU backend.
 
 ## PBR strength
 
-The bundled manifest sets `pbr_strength` to **0.4**, for roughly 2.5× less
-normal slope, height variation, AO contrast and perceptual smoothness than the
-previous preview. The base colors and discrete metal/SSS/emission fields are
-unchanged. Actual appearance and reflection brightness depend on the shader;
-this is not a guarantee of exactly 2.5× less reflected light. Source builders
+The bundled manifest's global `pbr_strength` remains **0.4**. Preview 13
+sets an explicit **0.16** override on 54 door/trapdoor targets and the lever—
+40% of that previous 0.4 baseline—while other textures retain the global
+setting. This scales normal slope, height deviation and smoothness, and fades
+AO toward white; base colors and discrete metal/SSS/emission fields are not
+scaled. Actual appearance and reflection brightness depend on the shader; this
+is not a guarantee of exactly 40% perceived intensity. Source builders
 can set `pbr_strength` between 0 and 1 in the manifest (omitting it defaults to
 1 for backwards compatibility). This does not change water.
 
@@ -286,8 +294,8 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand the 307-output starter to broader block coverage; acquire appropriate
-  materials for each family and review palette/geometry in game. This 307-output
+- Expand the 308-output starter to broader block coverage; acquire appropriate
+  materials for each family and review palette/geometry in game. This 308-output
   set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.
