@@ -1183,7 +1183,7 @@ fn malformed_construction_layout_is_rejected() {
     let temp = std::env::temp_dir().join(format!("bad-layout-{}-{unique}", std::process::id()));
     fs::create_dir_all(&temp).unwrap();
     fs::copy("test_assets/diffuse.png", temp.join("diffuse.png")).unwrap();
-    fs::copy("test_assets/diffuse.png", temp.join("bad-layout.png")).unwrap();
+    hyperrealism_core::png_io::write(&temp.join("bad-layout.png"), 2, 2, &[128; 16]).unwrap();
     fs::write(temp.join("material_manifest.json"), r#"{"version":1,"materials":[{"id":"base","albedo":"diffuse.png"}],"textures":[{"name":"door_top","material":"base","recipe":"material","tint":[255,255,255],"layout":"bad-layout.png","layout_metal_id":230}]}"#).unwrap();
     let result = run(&temp, &temp.join("output"), "2");
     assert!(!result.status.success());
