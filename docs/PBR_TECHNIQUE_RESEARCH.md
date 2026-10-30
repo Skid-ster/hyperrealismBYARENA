@@ -31,11 +31,13 @@ included in this project.
   make a flat door look inflated. The pack's global strength is 0.2, and the
   47 existing door/trapdoor/ladder/bar opacity masks remain unchanged from the
   previous preview.
-- **Glass benefits from restraint.** Preserve transparency and the clear inner
-  area, confine visible material response to a narrow rim, and keep pane-cap
-  shapes/model UVs stable. Connected-texture rules are a separate compatibility
-  layer; a resource pack cannot guarantee they load without Continuity. Shader
-  behavior and reflections still vary by implementation.
+- **Glass benefits from restraint.** Preserve transparency and the pane-cap
+  model/UV silhouettes, but avoid painted frame bands; keep the surface response
+  uniform and let shader reflections provide subtle highlights. Connected-texture
+  rules are a separate compatibility layer; a resource pack cannot guarantee
+  they load without Continuity. Shader behavior and reflections still vary by
+  implementation. Preview 16 applies this as borderless texture alpha across
+  the glass family.
 
 ## Snapshot of inspected public repositories
 

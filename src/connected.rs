@@ -6,19 +6,6 @@
 use crate::{manifest::Texture, png_io};
 use std::{fs, path::Path};
 
-fn edge(tile: usize, x: usize, y: usize, size: usize, width: usize) -> bool {
-    let horizontal = y < width || y >= size - width;
-    let vertical = x < width || x >= size - width;
-    match tile {
-        0 => horizontal || vertical, // unconnected
-        1 => false,                  // fully surrounded
-        2 => vertical,               // horizontal connections
-        3 => horizontal,             // vertical connections
-        4 => horizontal && vertical, // diagonal gap corners
-        _ => unreachable!(),
-    }
-}
-
 /// Write complete albedo/normal/specular triples next to the CTM properties.
 /// Tile colors come from the already-generated fallback, preserving its palette.
 pub fn write(
@@ -47,55 +34,26 @@ pub fn write(
         )
         .map_err(|e| e.to_string())?;
     }
-    let sample = ((size / 2) * size) * 4;
+    let sample = ((size / 2) * size + size / 2) * 4;
     let color = &albedo[sample..sample + 3];
-    let center = ((size / 2) * size + size / 2) * 4;
-    let n = &normal[center..center + 4];
-    let s = &spec[center..center + 4];
-    let clear = texture.recipe == "glass_clear";
-    // Use a one-pixel edge at 128px (four at 512px) to avoid over-wide,
-    // high-contrast outlines while preserving the compact-CTM connections.
-    let width = (size / 128).max(1);
+    let alpha = albedo[sample + 3];
+    let n = &normal[sample..sample + 4];
+    let s = &spec[sample..sample + 4];
+    // Keep the compact tile set for compatibility, but repeat one uniform
+    // color/alpha on every tile so neither block edges nor seams gain a border.
     for tile in 0..5 {
         let mut a = Vec::with_capacity(size * size * 4);
         let mut nm = Vec::with_capacity(size * size * 4);
         let mut sm = Vec::with_capacity(size * size * 4);
-        for y in 0..size {
-            for x in 0..size {
-                let frame = edge(tile, x, y, size, width);
-                a.extend_from_slice(color);
-                a.push(if clear {
-                    if frame {
-                        255
-                    } else {
-                        0
-                    }
-                } else if frame {
-                    153
-                } else {
-                    102
-                });
-                nm.extend_from_slice(n);
-                sm.extend_from_slice(s);
-            }
+        for _ in 0..size * size {
+            a.extend_from_slice(color);
+            a.push(alpha);
+            nm.extend_from_slice(n);
+            sm.extend_from_slice(s);
         }
         for (suffix, bytes) in [("", &a), ("_n", &nm), ("_s", &sm)] {
             png_io::write(&dir.join(format!("{tile}{suffix}.png")), size, size, bytes)?;
         }
     }
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::edge;
-    #[test]
-    fn compact_tiles_have_correct_edges() {
-        let p = |t, x, y| edge(t, x, y, 128, 2);
-        assert!(p(0, 0, 64) && p(0, 64, 0));
-        assert!(!p(1, 0, 0));
-        assert!(p(2, 0, 64) && !p(2, 64, 0));
-        assert!(p(3, 64, 0) && !p(3, 0, 64));
-        assert!(p(4, 0, 0) && !p(4, 0, 64));
-    }
 }

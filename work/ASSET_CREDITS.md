@@ -243,3 +243,16 @@ user's Minecraft 26.3/Fabric/Iris/Solas scene still needs live in-game review.
 Technique research and license notes are in
 [`docs/PBR_TECHNIQUE_RESEARCH.md`](../docs/PBR_TECHNIQUE_RESEARCH.md); no
 competitor assets were copied.
+
+### Preview 16: uniform, rim-free glass
+
+The generated clear, 16 stained, tinted, and 17 pane-cap textures use target
+colors reduced by 4% from the pinned Minecraft 26.3 audit. The change is applied
+through manifest target colors; the source material remains the original
+procedural neutral glass. Clear glass now has uniform 12% opacity, while stained
+and tinted glass retain uniform 40% opacity. All five compact CTM albedo tiles
+use the center color/alpha uniformly, so the previous edge frames are removed
+rather than only thinned. Pane-cap alpha silhouettes are kept as vanilla UV
+shape data; those are not decorative borders. Models, UVs, states, pane-cap silhouettes, door masks, glass PBR channels and
+water are otherwise unchanged. This revision has structural tests but has not
+been rendered in Minecraft.

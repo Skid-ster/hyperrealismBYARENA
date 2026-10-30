@@ -209,25 +209,11 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             let m = ((n - 0.32) * 1.8).clamp(0.0, 0.7);
             (1.0, m * 0.06, 1.0, m)
         }
-        "glass" => {
-            let edge = x % 128 < 5 || y % 128 < 5;
-            if edge {
-                (0.8, 0.03, 0.75, 0.0)
-            } else {
-                (1.0, 0.0, 0.25, 0.0)
-            }
-        }
-        // The clear block uses a cutout layer, not alpha blending.
-        // Four pixels at 512px keeps the cutout border fine rather than a
-        // broad, bright frame in-world.
-        "glass_clear" => {
-            let rim = x < 4 || y < 4 || x >= 508 || y >= 508;
-            (1.0, 0.0, if rim { 1.0 } else { 0.0 }, 0.0)
-        }
-        "glass_stained" => {
-            let rim = x < 4 || y < 4 || x >= 508 || y >= 508;
-            (1.0, 0.0, if rim { 0.60 } else { 0.40 }, 0.0)
-        }
+        // Use a uniform translucent surface: no bright edge band or frame.
+        // Clear glass stays faintly visible at 12% opacity; stained glass keeps
+        // its established 40% translucent body opacity without a darker rim.
+        "glass" | "glass_clear" => (1.0, 0.0, 0.12, 0.0),
+        "glass_stained" => (1.0, 0.0, 0.40, 0.0),
         // Pane top/bottom sprites are only two vanilla pixels wide.
         "glass_pane_cap" => {
             let strip = (224..288).contains(&x);
@@ -273,15 +259,15 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
 mod tests {
     use super::*;
     #[test]
-    fn glass_preserves_cutout_translucency_and_pane_shape() {
+    fn glass_has_uniform_translucency_without_rim_bands() {
         let sample = |r, x, y| evaluate(r, x, y, 1).opacity;
-        assert_eq!(sample("glass_clear", 0, 256), 1.0);
-        assert_eq!(sample("glass_clear", 3, 256), 1.0);
-        assert_eq!(sample("glass_clear", 4, 256), 0.0);
-        assert_eq!(sample("glass_clear", 256, 256), 0.0);
-        assert_eq!(sample("glass_stained", 3, 256), 0.6);
-        assert_eq!(sample("glass_stained", 4, 256), 0.4);
-        assert_eq!(sample("glass_stained", 256, 256), 0.4);
+        for &(x, y) in &[(0, 256), (3, 256), (4, 256), (256, 256), (511, 511)] {
+            assert_eq!(sample("glass", x, y), 0.12);
+            assert_eq!(sample("glass_clear", x, y), 0.12);
+            assert_eq!(sample("glass_stained", x, y), 0.40);
+        }
+        // Pane-cap transparency is a required vanilla UV silhouette, not a
+        // decorative rim, and remains unchanged.
         assert_eq!(sample("glass_pane_cap", 0, 256), 0.0);
         assert_eq!(sample("glass_pane_cap", 256, 256), 1.0);
     }

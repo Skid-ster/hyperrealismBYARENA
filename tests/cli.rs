@@ -389,6 +389,19 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
     assert_eq!(m.textures.len(), 308);
+    let glass: Vec<_> = m
+        .textures
+        .iter()
+        .filter(|texture| texture.name.contains("glass"))
+        .collect();
+    assert_eq!(glass.len(), 35); // clear, stained, tinted and pane-cap sprites
+    for texture in glass {
+        let source = entries[&texture.name]["target_rgb"].as_array().unwrap();
+        let slightly_darker: [u8; 3] = std::array::from_fn(|channel| {
+            (source[channel].as_u64().unwrap() as f32 * 0.96).round() as u8
+        });
+        assert_eq!(texture.target_color, Some(slightly_darker), "{}", texture.name);
+    }
     assert!((m.pbr_strength - 0.2).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| t.pbr_strength.is_none()));
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
@@ -1098,9 +1111,12 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
     let alpha = |image: &hyperrealism_core::png_io::Rgba, x: usize, y: usize| {
         image.pixels[(y * image.width + x) * 4 + 3]
     };
-    assert_eq!(alpha(&clear, 64, 64), 0);
-    assert!(alpha(&clear, 0, 64) > 200);
-    assert!((90..120).contains(&alpha(&stained, 64, 64)));
+    let clear_body = alpha(&clear, 64, 64);
+    assert!((20..50).contains(&clear_body));
+    assert_eq!(alpha(&clear, 0, 64), clear_body);
+    let stained_body = alpha(&stained, 64, 64);
+    assert!((90..120).contains(&stained_body));
+    assert_eq!(alpha(&stained, 0, 64), stained_body);
     assert_eq!(alpha(&pane, 5, 64), 0);
     assert!(alpha(&pane, 64, 64) > 200);
     let glass_meta: serde_json::Value =
@@ -1136,22 +1152,28 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
             for suffix in ["", "_n", "_s"] {
                 let image = read(&dir.join(format!("{i}{suffix}.png"))).unwrap();
                 assert_eq!((image.width, image.height), (128, 128));
+                if suffix.is_empty() {
+                    assert_eq!(
+                        alpha(&image, 0, 64),
+                        alpha(&image, 64, 64),
+                        "CTM rim unexpectedly varies for {name}, tile {i}"
+                    );
+                }
             }
         }
         if name == "glass" {
-            let frame = read(&dir.join("0.png")).unwrap();
-            let interior = read(&dir.join("1.png")).unwrap();
-            assert_eq!(alpha(&frame, 0, 64), 255);
-            assert_eq!(alpha(&frame, 1, 64), 0); // one-pixel compact rim
-            assert_eq!(alpha(&frame, 64, 64), 0);
-            assert_eq!(alpha(&interior, 0, 64), 0);
+            for i in 0..5 {
+                let tile = read(&dir.join(format!("{i}.png"))).unwrap();
+                let body = alpha(&tile, 64, 64);
+                assert!((20..50).contains(&body));
+                assert_eq!(alpha(&tile, 0, 64), body);
+            }
         }
         if name == "blue_stained_glass" {
-            let frame = read(&dir.join("0.png")).unwrap();
-            let interior = read(&dir.join("1.png")).unwrap();
-            assert_eq!(alpha(&frame, 0, 64), 153);
-            assert_eq!(alpha(&frame, 1, 64), 102);
-            assert_eq!(alpha(&interior, 64, 64), 102);
+            let tile = read(&dir.join("0.png")).unwrap();
+            let body = alpha(&tile, 64, 64);
+            assert!((90..120).contains(&body));
+            assert_eq!(alpha(&tile, 0, 64), body);
         }
         let gloss = read(&dir.join("1_s.png")).unwrap();
         assert!(gloss.pixels.chunks_exact(4).all(|p| p[0] > 0 && p[1] == 10));

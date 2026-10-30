@@ -7,9 +7,10 @@ Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
 are approximated as described below. The current source catalog contains 308
 distinct block texture targets based on CC0 Poly Haven maps and original
 procedural work; Preview 13 added the lever texture, Preview 14 unified PBR
-strength at 20% and softened door/glass treatments, and Preview 15 adds
-normal-derived height and subtle cavity AO to the shared foliage atlas. This is
-**not** the requested complete pack or a finished photorealistic catalog. A separate synthetic manifest contains eight
+strength at 20% and softened door/glass treatments, Preview 15 added
+normal-derived foliage height/AO, and Preview 16 removes decorative glass rims
+and slightly darkens every glass sprite. This is **not** the requested complete
+pack or a finished photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
 implementation, not a port or a claim of matching its results.
@@ -53,12 +54,12 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 15 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 16 uses 512×512
 textures (despite the legacy filename), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.15/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.16/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 308 distinct texture paths replace only a subset of the game; the rest remain
@@ -79,15 +80,17 @@ adds a custom PBR lever texture while preserving Minecraft models and powered
 states, and sets a per-texture PBR strength of 0.16 (40% of the previous 0.4 baseline) on 55
 door, trapdoor and lever targets. All use aligned LabPBR maps; wood grain reuses
 CC0 Poly Haven veneer scans and metal details use the documented CC0 steel scan.
-Preview 14 softens the procedural door-panel shade/relief contrast, reduces
-clear/stained glass rim thickness, and applies the global 0.2 PBR strength
-uniformly with no per-texture overrides. Preview 15 adds explicit height and
-subtle cavity AO maps to the shared CC0 broadleaf atlas; height is reconstructed
-from scanned normal slopes, not a captured displacement scan. The leaf alpha
-silhouettes are unchanged, and material maps still cannot add canopy geometry.
-Door/trapdoor cutout masks, models, UVs and block states remain unchanged;
-clear/stained glass rim alpha was intentionally narrowed. Water is unchanged.
-Foliage remains a single broadleaf source shared among species. Research notes:
+Preview 14 softens the procedural door-panel shade/relief contrast, narrows
+glass rims, and applies the global 0.2 PBR strength uniformly with no overrides.
+Preview 15 adds normal-derived height and subtle cavity AO to the shared CC0
+broadleaf atlas; it does not add canopy geometry. Preview 16 removes decorative
+edge bands from clear, stained, tinted and connected glass, and lowers the
+average target color by 4% for all 35 glass-block and pane-cap sprites. Clear
+glass has uniform 12% opacity; stained/tinted glass retains uniform 40% opacity.
+Pane-cap alpha silhouettes, models and UVs remain unchanged because they define
+the vanilla pane shape, not a decorative rim. Door/trapdoor cutout masks,
+models, UVs and states are unchanged. Water is unchanged. Foliage remains a
+single broadleaf source shared among species. Research notes:
 [competing PBR techniques and licensing](docs/PBR_TECHNIQUE_RESEARCH.md). It
 replaces only specified
 blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
@@ -99,7 +102,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.15/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.16/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -121,14 +124,13 @@ glass, including pane sides. The files were checked against Continuity 3.0.1+26.
 source loader contract; the generated namespace, compact method, minimum tile
 count, pane-face rule and all tile maps are covered by automated structural tests.
 See [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md). Runtime loading
-and visual rendering still need a Minecraft 26.3 + Continuity installation. Without
-CTM support the pack falls back to thin-bordered individual glass. **Iris alone
-does not supply CTM**. For Fabric 26.3, add [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
+and visual rendering still need a Minecraft 26.3 + Continuity installation. The
+fallback textures and CTM tiles now use uniform opacity without drawn edge rims;
+CTM still preserves compatibility, but has no visible frame differences. **Iris
+alone does not supply CTM**. For Fabric 26.3, add [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
 and its required Fabric API, then restart. Enable its glass-pane culling fix if pane
 seams remain, and put HyperRealism above competing glass packs. OptiFine with
-connected textures enabled is another possible route when available for the version. Clear glass uses a cutout
-layer: transparent interiors cannot be guaranteed to show reflections in every
-shader; stained glass is translucent. CTM tiles include flat normals and smooth
+connected textures enabled is another possible route when available for the version. Clear glass is uniformly low-opacity; reflections still vary by shader. Stained glass remains translucent. Pane-cap alpha keeps its vanilla narrow-strip silhouette. CTM tiles include flat normals and smooth
 LabPBR specular maps, but shader/mod support varies.
 
 ## Build from source on Windows 11
@@ -178,8 +180,9 @@ slope, height deviation and smoothness to 20% of their unit-strength values,
 and fades AO toward white. Base colors and discrete metal/SSS/emission fields
 are not scaled. Actual appearance and reflection brightness depend on the
 shader; 20% channel strength is not a guarantee of exactly 20% perceived
-intensity. The slimmer clear/stained-glass rims and softened door relief are
-separate albedo/layout changes to reduce harsh outlines and apparent depth. Source builders
+intensity. Preview 16 removes the drawn clear/stained-glass rim entirely and
+slightly darkens all glass swatches; softened door relief remains a separate
+layout change. Source builders
 can set `pbr_strength` between 0 and 1 in the manifest (omitting it defaults to
 1 for backwards compatibility). This does not change water.
 

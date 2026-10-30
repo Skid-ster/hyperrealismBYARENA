@@ -84,7 +84,7 @@ count and pane side rules; see [the compatibility audit](CONTINUITY_SUPPORT.md).
 Install [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
 and required Fabric API, restart, and place this pack above conflicting glass
 packs. Consider Continuity's glass pane culling fix if panes show seams. With no
-compatible CTM implementation the fallback has thin borders on every block.
+compatible CTM implementation the fallback glass remains borderless and uses the same uniform opacity.
 Minecraft/Continuity world rendering and shader appearance remain untested. A
 clear cutout's invisible interior may not reflect in shaders; tinted glass is
 translucent.

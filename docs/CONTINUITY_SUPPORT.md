@@ -20,7 +20,9 @@ The compatibility audit checked these behaviors in that exact source revision:
 
 For each of the 18 covered glass block sprites (clear, 16 stained colors, and
 tinted), the build writes a `ctm_compact` rule and five numbered PNG tile
-triples: albedo, LabPBR normal (`_n`) and specular (`_s`). Clear glass and all
+triples: albedo, LabPBR normal (`_n`) and specular (`_s`). All five CTM tiles
+use uniform albedo and alpha per block rather than edge-only frames, retaining
+the compatibility structure without drawing outlines. Clear glass and all
 stained colors also receive pane-side rules (`faces=sides`); pane caps remain
 separate vanilla-path replacement textures. Tinted glass has no vanilla pane
 block and therefore no pane rule. This deliberately uses the Minecraft
