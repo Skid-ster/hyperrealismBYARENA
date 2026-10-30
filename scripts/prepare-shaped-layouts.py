@@ -23,13 +23,13 @@ class Layout:
   self.d.line([(round(x*S),round(y*S)) for x,y in coords],fill=(shade,relief,255 if metal else 0,alpha),width=round(width*S),joint='curve')
  def hole(self,box): self.rect(box,0,128,False,0)
  def panel(self,box,open=False):
-  # Supersampled, multi-step relief redesign. The open-panel hole uses the
-  # original coordinates exactly, preserving vanilla cutout silhouettes.
+  # Soft, supersampled molding uses low shade/relief contrast to reduce harsh
+  # panel bands and POM-like depth. Open-panel holes retain exact coordinates.
   x1,y1,x2,y2=box
-  self.rect(box,151,151)
-  self.rect((x1+.16,y1+.16,x2-.16,y2-.16),218,169)
-  self.rect((x1+.34,y1+.34,x2-.34,y2-.34),112,104)
-  self.rect((x1+.5,y1+.5,x2-.5,y2-.5),238,120)
+  self.rect(box,211,137)
+  self.rect((x1+.16,y1+.16,x2-.16,y2-.16),239,143)
+  self.rect((x1+.34,y1+.34,x2-.34,y2-.34),220,119)
+  self.rect((x1+.5,y1+.5,x2-.5,y2-.5),248,124)
   if open:self.hole((x1+.55,y1+.55,x2-.55,y2-.55))
  def handle(self):
   # Recessed escutcheon, raised knob and two small fasteners. All details

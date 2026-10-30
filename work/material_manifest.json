@@ -325,8 +325,7 @@
         126
       ],
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.65
+      "porosity": 30
     },
     {
       "name": "andesite",
@@ -4507,8 +4506,7 @@
       "layout": "materials/shaped_layouts/acacia_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "acacia_door_bottom",
@@ -4527,8 +4525,7 @@
       "layout": "materials/shaped_layouts/acacia_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "acacia_trapdoor",
@@ -4547,8 +4544,7 @@
       "layout": "materials/shaped_layouts/acacia_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "bamboo_door_top",
@@ -4567,8 +4563,7 @@
       "layout": "materials/shaped_layouts/bamboo_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "bamboo_door_bottom",
@@ -4587,8 +4582,7 @@
       "layout": "materials/shaped_layouts/bamboo_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "bamboo_trapdoor",
@@ -4607,8 +4601,7 @@
       "layout": "materials/shaped_layouts/bamboo_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "birch_door_top",
@@ -4627,8 +4620,7 @@
       "layout": "materials/shaped_layouts/birch_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "birch_door_bottom",
@@ -4647,8 +4639,7 @@
       "layout": "materials/shaped_layouts/birch_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "birch_trapdoor",
@@ -4667,8 +4658,7 @@
       "layout": "materials/shaped_layouts/birch_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "cherry_door_top",
@@ -4687,8 +4677,7 @@
       "layout": "materials/shaped_layouts/cherry_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "cherry_door_bottom",
@@ -4707,8 +4696,7 @@
       "layout": "materials/shaped_layouts/cherry_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "cherry_trapdoor",
@@ -4727,8 +4715,7 @@
       "layout": "materials/shaped_layouts/cherry_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "crimson_door_top",
@@ -4747,8 +4734,7 @@
       "layout": "materials/shaped_layouts/crimson_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "crimson_door_bottom",
@@ -4767,8 +4753,7 @@
       "layout": "materials/shaped_layouts/crimson_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "crimson_trapdoor",
@@ -4787,8 +4772,7 @@
       "layout": "materials/shaped_layouts/crimson_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "dark_oak_door_top",
@@ -4807,8 +4791,7 @@
       "layout": "materials/shaped_layouts/dark_oak_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "dark_oak_door_bottom",
@@ -4827,8 +4810,7 @@
       "layout": "materials/shaped_layouts/dark_oak_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "dark_oak_trapdoor",
@@ -4847,8 +4829,7 @@
       "layout": "materials/shaped_layouts/dark_oak_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "jungle_door_top",
@@ -4867,8 +4848,7 @@
       "layout": "materials/shaped_layouts/jungle_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "jungle_door_bottom",
@@ -4887,8 +4867,7 @@
       "layout": "materials/shaped_layouts/jungle_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "jungle_trapdoor",
@@ -4907,8 +4886,7 @@
       "layout": "materials/shaped_layouts/jungle_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "mangrove_door_top",
@@ -4927,8 +4905,7 @@
       "layout": "materials/shaped_layouts/mangrove_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "mangrove_door_bottom",
@@ -4947,8 +4924,7 @@
       "layout": "materials/shaped_layouts/mangrove_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "mangrove_trapdoor",
@@ -4967,8 +4943,7 @@
       "layout": "materials/shaped_layouts/mangrove_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "oak_door_top",
@@ -4987,8 +4962,7 @@
       "layout": "materials/shaped_layouts/oak_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "oak_door_bottom",
@@ -5007,8 +4981,7 @@
       "layout": "materials/shaped_layouts/oak_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "oak_trapdoor",
@@ -5027,8 +5000,7 @@
       "layout": "materials/shaped_layouts/oak_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "pale_oak_door_top",
@@ -5047,8 +5019,7 @@
       "layout": "materials/shaped_layouts/pale_oak_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "pale_oak_door_bottom",
@@ -5067,8 +5038,7 @@
       "layout": "materials/shaped_layouts/pale_oak_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "pale_oak_trapdoor",
@@ -5087,8 +5057,7 @@
       "layout": "materials/shaped_layouts/pale_oak_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "poplar_door_top",
@@ -5107,8 +5076,7 @@
       "layout": "materials/shaped_layouts/poplar_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "poplar_door_bottom",
@@ -5127,8 +5095,7 @@
       "layout": "materials/shaped_layouts/poplar_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "poplar_trapdoor",
@@ -5147,8 +5114,7 @@
       "layout": "materials/shaped_layouts/poplar_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "spruce_door_top",
@@ -5167,8 +5133,7 @@
       "layout": "materials/shaped_layouts/spruce_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "spruce_door_bottom",
@@ -5187,8 +5152,7 @@
       "layout": "materials/shaped_layouts/spruce_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "spruce_trapdoor",
@@ -5207,8 +5171,7 @@
       "layout": "materials/shaped_layouts/spruce_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "warped_door_top",
@@ -5227,8 +5190,7 @@
       "layout": "materials/shaped_layouts/warped_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "warped_door_bottom",
@@ -5247,8 +5209,7 @@
       "layout": "materials/shaped_layouts/warped_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "warped_trapdoor",
@@ -5267,8 +5228,7 @@
       "layout": "materials/shaped_layouts/warped_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "iron_door_top",
@@ -5286,8 +5246,7 @@
       ],
       "layout": "materials/shaped_layouts/iron_door_top.png",
       "layout_metal_id": 230,
-      "f0": 230,
-      "pbr_strength": 0.16
+      "f0": 230
     },
     {
       "name": "iron_door_bottom",
@@ -5305,8 +5264,7 @@
       ],
       "layout": "materials/shaped_layouts/iron_door_bottom.png",
       "layout_metal_id": 230,
-      "f0": 230,
-      "pbr_strength": 0.16
+      "f0": 230
     },
     {
       "name": "iron_trapdoor",
@@ -5324,8 +5282,7 @@
       ],
       "layout": "materials/shaped_layouts/iron_trapdoor.png",
       "layout_metal_id": 230,
-      "f0": 230,
-      "pbr_strength": 0.16
+      "f0": 230
     },
     {
       "name": "copper_door_top",
@@ -5343,8 +5300,7 @@
       ],
       "layout": "materials/shaped_layouts/copper_door_top.png",
       "layout_metal_id": 230,
-      "f0": 234,
-      "pbr_strength": 0.16
+      "f0": 234
     },
     {
       "name": "copper_door_bottom",
@@ -5362,8 +5318,7 @@
       ],
       "layout": "materials/shaped_layouts/copper_door_bottom.png",
       "layout_metal_id": 230,
-      "f0": 234,
-      "pbr_strength": 0.16
+      "f0": 234
     },
     {
       "name": "copper_trapdoor",
@@ -5381,8 +5336,7 @@
       ],
       "layout": "materials/shaped_layouts/copper_trapdoor.png",
       "layout_metal_id": 230,
-      "f0": 234,
-      "pbr_strength": 0.16
+      "f0": 234
     },
     {
       "name": "exposed_copper_door_top",
@@ -5400,8 +5354,7 @@
       ],
       "layout": "materials/shaped_layouts/copper_door_top.png",
       "layout_metal_id": 230,
-      "f0": 234,
-      "pbr_strength": 0.16
+      "f0": 234
     },
     {
       "name": "exposed_copper_door_bottom",
@@ -5419,8 +5372,7 @@
       ],
       "layout": "materials/shaped_layouts/copper_door_bottom.png",
       "layout_metal_id": 230,
-      "f0": 234,
-      "pbr_strength": 0.16
+      "f0": 234
     },
     {
       "name": "exposed_copper_trapdoor",
@@ -5438,8 +5390,7 @@
       ],
       "layout": "materials/shaped_layouts/copper_trapdoor.png",
       "layout_metal_id": 230,
-      "f0": 234,
-      "pbr_strength": 0.16
+      "f0": 234
     },
     {
       "name": "weathered_copper_door_top",
@@ -5458,8 +5409,7 @@
       "layout": "materials/shaped_layouts/copper_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "weathered_copper_door_bottom",
@@ -5478,8 +5428,7 @@
       "layout": "materials/shaped_layouts/copper_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "weathered_copper_trapdoor",
@@ -5498,8 +5447,7 @@
       "layout": "materials/shaped_layouts/copper_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "oxidized_copper_door_top",
@@ -5518,8 +5466,7 @@
       "layout": "materials/shaped_layouts/copper_door_top.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "oxidized_copper_door_bottom",
@@ -5538,8 +5485,7 @@
       "layout": "materials/shaped_layouts/copper_door_bottom.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "oxidized_copper_trapdoor",
@@ -5558,8 +5504,7 @@
       "layout": "materials/shaped_layouts/copper_trapdoor.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     },
     {
       "name": "ladder",
@@ -5776,8 +5721,7 @@
       "layout": "materials/shaped_layouts/lever.png",
       "layout_metal_id": 230,
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.16
+      "porosity": 30
     }
   ],
   "checksums": {
@@ -5869,50 +5813,50 @@
     "materials/procedural_glass/color.png": "28d42333599aea5d3d7c1476f17a5ae50bcc0e8d3f1dd09f0d77359b667adcde",
     "materials/procedural_glass/roughness.png": "c80b03e59db65ff6c5e7bf07d3e6f91c5aa3425b1a746df4420c7919a4179623",
     "materials/shaped_layouts/acacia_door_top.png": "2afa5a9204813fca3a4df9f6357b397d4f2367bc144b9b4db291dc7d55b0f593",
-    "materials/shaped_layouts/acacia_trapdoor.png": "a76a7b90aad110e87b5121d267ae0c24845aa5b0c0bd8e661794e0940f69eaf1",
+    "materials/shaped_layouts/acacia_trapdoor.png": "ff532958d89d855ba0fd1f38c5402dacbc1b4e57b20b9fea60260236b9998612",
     "materials/shaped_layouts/acacia_door_bottom.png": "330b6ae1bf7964adf80c04c56aa076d35f6993f5f96875c3204835b18c1bd0ea",
-    "materials/shaped_layouts/bamboo_door_top.png": "f9b75b8f8345f08da125ff51ae6940cfe5997b7540c188fcd5801ab68ac56d09",
-    "materials/shaped_layouts/bamboo_door_bottom.png": "ce566807250f1b9206cb2b0e88ab2a6af4ce417b22d07353d93aa3806c8707c5",
-    "materials/shaped_layouts/bamboo_trapdoor.png": "7d3a60e4c39e45106c16e508ffebb37b62f795c34b37660bd30a716b4fc2eba0",
-    "materials/shaped_layouts/birch_door_top.png": "d8413100077f52b789f71ad0424ddfea62b2507dbb0e62750ea48c61dff1c427",
-    "materials/shaped_layouts/birch_door_bottom.png": "97d617b92f7b0901f3c903ed81fb5c0d677a8d40750058d7bfe89bde25538259",
-    "materials/shaped_layouts/birch_trapdoor.png": "9eb10984fc5f8eca82338acd07275909891368793e199251e4aaeabd6c817914",
-    "materials/shaped_layouts/cherry_door_top.png": "f3e8902057131039fae7dd1f91219ffdd5a79a2aca6881f42447fa4c47e945ac",
-    "materials/shaped_layouts/cherry_door_bottom.png": "04eeeccaf37dfefa43a5a10938b5753e544ec670ec6270b84647c51f1a37bf24",
-    "materials/shaped_layouts/cherry_trapdoor.png": "4ea51d195f64e4830b2789ca707d2a24af55aa5845ebf670d64ed37dac58eb33",
-    "materials/shaped_layouts/copper_door_top.png": "016489d7f513357d744ed19cfdec37effd0f51b88a0dd9bd409286e29c8f5100",
-    "materials/shaped_layouts/copper_door_bottom.png": "cd9ab8c2963241e4588bf3f3b84f53c22d93ea48c2480022773943a51e4e31b0",
-    "materials/shaped_layouts/copper_trapdoor.png": "d1cfd8c00d03d4a2668f92cf39f887606c5caedd26133a8fdd95ba6fc2d5f7d3",
-    "materials/shaped_layouts/crimson_door_top.png": "af20d2f3f2e3ed9858d5bf69156b83887516672f5574cc0fe9381863a9821560",
-    "materials/shaped_layouts/crimson_door_bottom.png": "f84e17d0b140a5456d5b2f5df70dfd43991eb51ff70e35762f76c46783bcede6",
-    "materials/shaped_layouts/crimson_trapdoor.png": "6d12b80f639d06fb87dd1598ebe23a874aeb6730efd0c1d00ea8b4e858ae5f18",
-    "materials/shaped_layouts/dark_oak_door_top.png": "1e58eebf1297741d3390189c11b4c673d30e6fac4627f31873e89359c5ec5bbc",
-    "materials/shaped_layouts/dark_oak_door_bottom.png": "bfae50c8f6b8ddda5d8e143d1fcdcc9c70fe3a69bb3afed36ee9a16179369359",
-    "materials/shaped_layouts/dark_oak_trapdoor.png": "1df5c4977e10d68772ca8a33eff82003766cd78ef623612709b41c48864b308f",
-    "materials/shaped_layouts/iron_door_top.png": "9a2edee73d043cb18ee3f9f80df191a84144b89dc528b803fb3a476db3ab8d78",
-    "materials/shaped_layouts/iron_door_bottom.png": "b8ca6c8a5bcf87279811919cda6c805f4383c9d63299efbfd0745d1042eb1ee8",
-    "materials/shaped_layouts/iron_trapdoor.png": "643972bb91afa7ac036379f2efff88f31352824eb5ac270fef6a7f32e159a2f9",
-    "materials/shaped_layouts/jungle_door_top.png": "6d324c5d68d263d5a777af5b13c394ab8a0fe2b6f44e93fd2b3ea3df91d2f227",
-    "materials/shaped_layouts/jungle_door_bottom.png": "3dc2bab86327cbf5f7d01c7130d8c021d4d74b5ae160de682aa0a0feacf7ef5e",
-    "materials/shaped_layouts/jungle_trapdoor.png": "7a5a5f6b029f883e1d9e806bdef07f9926738d58b268814f9d821cd5f74a642d",
-    "materials/shaped_layouts/mangrove_door_top.png": "b1908acfea13e88caf2ca94575438e7903e8d23157455eb00be5d437790de5a5",
-    "materials/shaped_layouts/mangrove_door_bottom.png": "0920f42d9cf0d989a21ada559b90847896b6e02d42b1e470c57bc25234af5fe7",
-    "materials/shaped_layouts/mangrove_trapdoor.png": "098ad072f44cea6f01b427196db8a84ee3b25b03ce1fb7d116eeb939db63556a",
-    "materials/shaped_layouts/oak_door_top.png": "9a2edee73d043cb18ee3f9f80df191a84144b89dc528b803fb3a476db3ab8d78",
-    "materials/shaped_layouts/oak_door_bottom.png": "b8ca6c8a5bcf87279811919cda6c805f4383c9d63299efbfd0745d1042eb1ee8",
-    "materials/shaped_layouts/oak_trapdoor.png": "643972bb91afa7ac036379f2efff88f31352824eb5ac270fef6a7f32e159a2f9",
-    "materials/shaped_layouts/pale_oak_door_top.png": "1b7d844844fc60509eee06e4a94f55579077b52823bde21180946ebe745c5dc6",
-    "materials/shaped_layouts/pale_oak_door_bottom.png": "b10938184a154a73c8ceb642adac63a54827c470257d995e49f459744d67e761",
-    "materials/shaped_layouts/pale_oak_trapdoor.png": "9eb10984fc5f8eca82338acd07275909891368793e199251e4aaeabd6c817914",
-    "materials/shaped_layouts/poplar_door_top.png": "d887718a325178ce32980df928d19f1986ee46e7c7d74c98f681f4e59795c0da",
-    "materials/shaped_layouts/poplar_door_bottom.png": "78fafeafef5571274d3ab2e1f83f1027346db2af0dc3b72a22f732f46f4d59cc",
-    "materials/shaped_layouts/poplar_trapdoor.png": "65b50b9a8e5c62ca4d9c6df4ff024d39b2a6752490506582492803257305fa51",
+    "materials/shaped_layouts/bamboo_door_top.png": "8c85e5be3b41898a8598014cbcc19dde0d2aa5280b15da782ff9d5c839d8f2de",
+    "materials/shaped_layouts/bamboo_door_bottom.png": "d199d514ebb5d6f575455abd46fb99c3fd71fed9eee4cb625f463ee9e0fb3b3a",
+    "materials/shaped_layouts/bamboo_trapdoor.png": "3df2d28df970c8e5f7b485bd2d5f35dd65ad0d926a7775884aa6118b006aa503",
+    "materials/shaped_layouts/birch_door_top.png": "1e03811db6d1b96d54fed1eb4ea6a88da796b93eb8d1ae2e301af692a157372c",
+    "materials/shaped_layouts/birch_door_bottom.png": "918f433788ad3eae4b6132c212801775becbfd2281a686fcdddacffc84d4a522",
+    "materials/shaped_layouts/birch_trapdoor.png": "b88fc9a77c5594c8eeb2931ca7092fb6f70236adb59a37b15a2d0bc8eac7e323",
+    "materials/shaped_layouts/cherry_door_top.png": "b247be274f709355beca41993c65497145dc670e06dd8567c50d097855a1bb47",
+    "materials/shaped_layouts/cherry_door_bottom.png": "0b79d579ba527fe5e4e753b2f9cc3a8403fc1f7f21182dee29071f0814489947",
+    "materials/shaped_layouts/cherry_trapdoor.png": "9d35884601af555c7269a754013a01b122de9de3c384da7e53dfee8fd8f4c074",
+    "materials/shaped_layouts/copper_door_top.png": "92d3a27f87d2e875879b6ba7421e099defbeac0e6b40468c2ec8b244ba3b41a0",
+    "materials/shaped_layouts/copper_door_bottom.png": "a1c4467f6d0d9f649059155622944318bf7398b74eef2f036029a15da25ea631",
+    "materials/shaped_layouts/copper_trapdoor.png": "d7b1b27613b8557519601d9a3d07d5dfa38efea86910e380ef154bd8aff8b36c",
+    "materials/shaped_layouts/crimson_door_top.png": "6029620744b4db989d11766683c496a92c2a02615599aa57de5b7d6e59bc2b7d",
+    "materials/shaped_layouts/crimson_door_bottom.png": "fc132e1a12e5dae2068d246a40f6a6e7ccd41aea0a468b6a7f4ae03e6394884f",
+    "materials/shaped_layouts/crimson_trapdoor.png": "436139f57b25a3070ae8faaf76b81b3786227b4da6024037f4d77bb3b3fb56d2",
+    "materials/shaped_layouts/dark_oak_door_top.png": "9b62f8f586ab26b717551e132745c8e2b685011046246cf7fcd1cfc7f7cc165d",
+    "materials/shaped_layouts/dark_oak_door_bottom.png": "30678629709bf63323436bb96bed55ea9b9176299a22e93b04ba0671b3e8f9f8",
+    "materials/shaped_layouts/dark_oak_trapdoor.png": "752fde0f75fc5b92ff7097079c1151621942776841540338bf31fc501c03eaea",
+    "materials/shaped_layouts/iron_door_top.png": "04d96501621d4d7b22a15bec631e5d522d2e89271ce1e44ce08bf34e9fbab12b",
+    "materials/shaped_layouts/iron_door_bottom.png": "4935be7fe6ee1bf43fe5b8e61f700afec4c7e99e71cbfa6a453398801c3243c5",
+    "materials/shaped_layouts/iron_trapdoor.png": "20d8769b542b798f3300cb117f4bf51969d9d5eb5190711300fa2a0aa8ae4f76",
+    "materials/shaped_layouts/jungle_door_top.png": "9296c961206baa8e7d55be6302cde7cbecb4cde66259eae4c23f9d1f18f77a1b",
+    "materials/shaped_layouts/jungle_door_bottom.png": "2ecc11fe0358e04919e66318baf9975b8c6cafcdf49a48bafd337356a8e3053a",
+    "materials/shaped_layouts/jungle_trapdoor.png": "c1bd2bea3d6ab51e306908e197434d969662af3c2ca6a529f90b5fb7265a2120",
+    "materials/shaped_layouts/mangrove_door_top.png": "895583118afb77c22ede0b52c9bce865213be4302c77bc4513997095e9a8de8b",
+    "materials/shaped_layouts/mangrove_door_bottom.png": "57663bf67701c9b2a361674744444b1f668edd472413f9e24a3f684df332cbc3",
+    "materials/shaped_layouts/mangrove_trapdoor.png": "6842d19c8482865fdf3d0f6e961a1a43e3ae46a44f9f9bf008f3b2d7f06ed6b6",
+    "materials/shaped_layouts/oak_door_top.png": "04d96501621d4d7b22a15bec631e5d522d2e89271ce1e44ce08bf34e9fbab12b",
+    "materials/shaped_layouts/oak_door_bottom.png": "4935be7fe6ee1bf43fe5b8e61f700afec4c7e99e71cbfa6a453398801c3243c5",
+    "materials/shaped_layouts/oak_trapdoor.png": "20d8769b542b798f3300cb117f4bf51969d9d5eb5190711300fa2a0aa8ae4f76",
+    "materials/shaped_layouts/pale_oak_door_top.png": "764fbdbb78b12ab9bb5ac2607b47f19338dbc727b27efae15cd1301b697fdfc4",
+    "materials/shaped_layouts/pale_oak_door_bottom.png": "39af1a31010f7a375d2ca9db4c84e42a9db71249e5ca3803525f89f4fd5f5403",
+    "materials/shaped_layouts/pale_oak_trapdoor.png": "b88fc9a77c5594c8eeb2931ca7092fb6f70236adb59a37b15a2d0bc8eac7e323",
+    "materials/shaped_layouts/poplar_door_top.png": "1157da1678b385359302bc731c6fbaefddef13304bb26ff891f83bfcd03bc9c7",
+    "materials/shaped_layouts/poplar_door_bottom.png": "0e5d73a43a30ee6de7298f77f4c307581f746f88e40f6c582e540c70c854da4f",
+    "materials/shaped_layouts/poplar_trapdoor.png": "4feb21cdefd92d3aa4f65252abf54122584b4fc56cc255b9090d5f55c92c4610",
     "materials/shaped_layouts/spruce_door_top.png": "c65ea37024bf17a93c86a2eb9ffabd3c37f7a997fafdc6be4f8ad4164e1a4792",
     "materials/shaped_layouts/spruce_door_bottom.png": "9db7f6a4ae1b5f71499ba88a87cb0e4a375c16a38763e879080c12ff0e9b4f9d",
     "materials/shaped_layouts/spruce_trapdoor.png": "82d701abf3820271348ee0abc810ee04042afe10b7fbac14f46afa7a869030c2",
-    "materials/shaped_layouts/warped_door_top.png": "af20d2f3f2e3ed9858d5bf69156b83887516672f5574cc0fe9381863a9821560",
-    "materials/shaped_layouts/warped_door_bottom.png": "f84e17d0b140a5456d5b2f5df70dfd43991eb51ff70e35762f76c46783bcede6",
-    "materials/shaped_layouts/warped_trapdoor.png": "6d12b80f639d06fb87dd1598ebe23a874aeb6730efd0c1d00ea8b4e858ae5f18",
+    "materials/shaped_layouts/warped_door_top.png": "6029620744b4db989d11766683c496a92c2a02615599aa57de5b7d6e59bc2b7d",
+    "materials/shaped_layouts/warped_door_bottom.png": "fc132e1a12e5dae2068d246a40f6a6e7ccd41aea0a468b6a7f4ae03e6394884f",
+    "materials/shaped_layouts/warped_trapdoor.png": "436139f57b25a3070ae8faaf76b81b3786227b4da6024037f4d77bb3b3fb56d2",
     "materials/shaped_layouts/ladder.png": "251f6b8b86a5308073608ae6e1297735049607d3a03cf46ed7d480edb3dcd739",
     "materials/shaped_layouts/bars.png": "45684048efa64577d10a25380e24eabf8bf6b6ace210d549e5afa2436a43d400",
     "materials/metal_plate_02/diff.jpg": "5ae0cf878a8ad486e59c982efcb39c13bfd0752a9906b8195fbaecaf428fc001",
@@ -5920,5 +5864,5 @@
     "materials/metal_plate_02/rough.jpg": "15c10e985bf4317393571fd7ec1b19de57177b7d88f2e4a5493ec9c290bac47b",
     "materials/shaped_layouts/lever.png": "47e0081ecab32b13d18a4cb2abf5200bcf932d0d8a5cb28e8798ef2f087d07a5"
   },
-  "pbr_strength": 0.4
+  "pbr_strength": 0.2
 }

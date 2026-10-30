@@ -218,12 +218,14 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             }
         }
         // The clear block uses a cutout layer, not alpha blending.
+        // Four pixels at 512px keeps the cutout border fine rather than a
+        // broad, bright frame in-world.
         "glass_clear" => {
-            let rim = x < 8 || y < 8 || x >= 504 || y >= 504;
+            let rim = x < 4 || y < 4 || x >= 508 || y >= 508;
             (1.0, 0.0, if rim { 1.0 } else { 0.0 }, 0.0)
         }
         "glass_stained" => {
-            let rim = x < 8 || y < 8 || x >= 504 || y >= 504;
+            let rim = x < 4 || y < 4 || x >= 508 || y >= 508;
             (1.0, 0.0, if rim { 0.60 } else { 0.40 }, 0.0)
         }
         // Pane top/bottom sprites are only two vanilla pixels wide.
@@ -274,7 +276,11 @@ mod tests {
     fn glass_preserves_cutout_translucency_and_pane_shape() {
         let sample = |r, x, y| evaluate(r, x, y, 1).opacity;
         assert_eq!(sample("glass_clear", 0, 256), 1.0);
+        assert_eq!(sample("glass_clear", 3, 256), 1.0);
+        assert_eq!(sample("glass_clear", 4, 256), 0.0);
         assert_eq!(sample("glass_clear", 256, 256), 0.0);
+        assert_eq!(sample("glass_stained", 3, 256), 0.6);
+        assert_eq!(sample("glass_stained", 4, 256), 0.4);
         assert_eq!(sample("glass_stained", 256, 256), 0.4);
         assert_eq!(sample("glass_pane_cap", 0, 256), 0.0);
         assert_eq!(sample("glass_pane_cap", 256, 256), 1.0);

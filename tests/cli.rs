@@ -367,7 +367,8 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
     assert_eq!(m.textures.len(), 308);
-    assert!((m.pbr_strength - 0.4).abs() < 1e-6);
+    assert!((m.pbr_strength - 0.2).abs() < 1e-6);
+    assert!(m.textures.iter().all(|t| t.pbr_strength.is_none()));
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     for wood in [
         "acacia",
@@ -413,11 +414,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         })
         .collect();
     assert_eq!(toggled.len(), 55);
-    assert!(toggled.iter().all(|t| {
-        t.pbr_strength
-            .map(|v| (v - 0.16).abs() < 1e-6)
-            .unwrap_or(false)
-    }));
+    assert!(toggled.iter().all(|t| t.pbr_strength.is_none()));
     let lever = toggled.iter().find(|t| t.name == "lever").unwrap();
     assert_eq!(lever.material, "oak_veneer_02_vertical");
     assert_eq!(lever.target_color, Some([111, 93, 67]));
@@ -1123,6 +1120,7 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
             let frame = read(&dir.join("0.png")).unwrap();
             let interior = read(&dir.join("1.png")).unwrap();
             assert_eq!(alpha(&frame, 0, 64), 255);
+            assert_eq!(alpha(&frame, 1, 64), 0); // one-pixel compact rim
             assert_eq!(alpha(&frame, 64, 64), 0);
             assert_eq!(alpha(&interior, 0, 64), 0);
         }
@@ -1130,6 +1128,7 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
             let frame = read(&dir.join("0.png")).unwrap();
             let interior = read(&dir.join("1.png")).unwrap();
             assert_eq!(alpha(&frame, 0, 64), 153);
+            assert_eq!(alpha(&frame, 1, 64), 102);
             assert_eq!(alpha(&interior, 64, 64), 102);
         }
         let gloss = read(&dir.join("1_s.png")).unwrap();

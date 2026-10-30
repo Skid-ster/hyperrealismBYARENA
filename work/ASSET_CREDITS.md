@@ -211,3 +211,18 @@ Continuity 3.0.1+26.3 compatibility was checked against the exact upstream
 the generated match properties. Automated tests check all 18 covered glass
 sprites, their tile-map triples, and pane rules. This is a source-contract and
 structural verification, not a Minecraft/Continuity runtime render test.
+
+### Preview 14: reduced PBR and softer door/glass edges
+
+The global PBR strength is now `0.2` for all 308 generated texture targets, with
+all per-texture overrides removed. This scales normal slope, height deviation
+and smoothness to 20% of their unit-strength values and fades AO toward white;
+albedo and discrete material-ID, porosity and emission channels remain intact.
+The door/trapdoor layout shade and relief steps were softened. Their opacity
+masks remain byte-for-byte unchanged from the prior revision, so original
+window/cutout silhouettes are preserved. Clear/stained glass rims were narrowed
+from 8px to 4px in the 512px recipe and CTM outputs (2px to 1px at 128px). The
+source palette and glass/pane model UVs are unchanged. These are intended to
+reduce harsh bevels, bright outlines and shader-parallax bulging; visual quality
+still needs an in-game check with the user's shader and settings. Reducing POM
+depth/samples in the shader can further reduce apparent block displacement.

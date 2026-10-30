@@ -53,7 +53,9 @@ pub fn write(
     let n = &normal[center..center + 4];
     let s = &spec[center..center + 4];
     let clear = texture.recipe == "glass_clear";
-    let width = (size / 64).max(1);
+    // Use a one-pixel edge at 128px (four at 512px) to avoid over-wide,
+    // high-contrast outlines while preserving the compact-CTM connections.
+    let width = (size / 128).max(1);
     for tile in 0..5 {
         let mut a = Vec::with_capacity(size * size * 4);
         let mut nm = Vec::with_capacity(size * size * 4);

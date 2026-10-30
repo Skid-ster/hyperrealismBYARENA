@@ -44,13 +44,12 @@ Vanilla Minecraft without a compatible shader only displays the color maps.
 In Photon, the pack must be enabled **above** competing packs, with normal and
 specular mapping enabled and the texture format set to labPBR. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
-without it. Preview 13 assigns a per-texture PBR strength override of `0.16`
-to the lever and 54 door/trapdoor paths, 40% of the previous global `0.4`
-baseline. In this generator, the override scales tangent-space normal
-slopes, height deviations around neutral, and smoothness; AO fades toward white.
-Albedo and discrete LabPBR metal/F0 IDs, porosity and emission are preserved.
-This is a defined output-channel scaling, not a measured 40% reduction in
-perceived visual intensity. Compare the same sunlit oak log or cobblestone with
+without it. Preview 14 sets one global PBR strength of `0.2` for all 308
+texture targets, with no per-texture overrides. In this generator that scales
+tangent-space normal slopes, height deviations around neutral, and smoothness
+to 20% of unit-strength, while AO fades toward white. Albedo and discrete
+LabPBR metal/F0 IDs, porosity and emission are preserved. This is defined
+channel scaling, not a guarantee of 20% perceived brightness or relief. Compare the same sunlit oak log or cobblestone with
 Normal Mapping on and off; rotate the view/light to check for changes in shading.
 For specular, compare a smooth metallic block in the manifest, with Specular Mapping on/off.
 If nothing changes, check Iris/Photon versions, pack order, and shader settings;
@@ -87,8 +86,9 @@ Minecraft/Continuity world rendering and shader appearance remain untested. A
 clear cutout's invisible interior may not reflect in shaders; tinted glass is
 translucent.
 
-Stone already had LabPBR maps. Preview 10 increases the stone-only PBR strength
-from 0.4 to 0.65 while keeping its albedo unchanged. Normal Mapping must be on
-to see normal detail; POM is optional and may make the estimated height look
-unnatural. Test toggling normal mapping on the same lit stone face, and ensure
-no other resource pack overrides it.
+Stone had a temporary higher strength in earlier previews, but Preview 14
+removes all per-texture overrides: stone and every other covered block now use
+the same global 0.2 strength. Normal Mapping must be on to see normal detail;
+POM is optional and may still make estimated height look unnatural. If blocks
+appear to bulge, disable POM or reduce its depth/samples in the shader settings;
+test the same lit face and ensure no other pack overrides it.

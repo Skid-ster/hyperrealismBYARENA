@@ -6,8 +6,8 @@ LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
 are approximated as described below. The current source catalog contains 308
 distinct block texture targets based on CC0 Poly Haven maps and original
-procedural work; Preview 13 adds the lever texture and PBR coverage for
-toggleable doors, trapdoors and levers. This is **not** the requested complete pack or a
+procedural work; Preview 13 added the lever texture and Preview 14 lowers all
+PBR strength to a uniform 20% while softening door/glass treatments. This is **not** the requested complete pack or a
 finished photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
@@ -52,12 +52,12 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 13 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 14 uses 512×512
 textures (despite the legacy filename), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.13/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.14/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 308 distinct texture paths replace only a subset of the game; the rest remain
@@ -69,7 +69,7 @@ photographic foliage atlas with transparency and static mipmap metadata.
 Dirt, gravel, snow, mud, dirt paths and podzol use new scanned ground maps.
 Preview 8 also adds stone and deepslate families, terracotta, clay,
 other building blocks and ten log ends with approximate procedural rings. Preview 9 adds
-stripped wood, clear and stained glass/pane caps, and three leaf variants. Preview 10 adds tinted glass, connected-glass support and a modest stone PBR boost.
+stripped wood, clear and stained glass/pane caps, and three leaf variants. Preview 10 adds tinted glass, connected-glass support and a modest stone PBR boost (later unified to 0.2 for all targets in Preview 14).
 Preview 11 adds doors and trapdoors, ladders and iron/copper bars with custom
 cutout layouts, photographic materials and PBR maps; their geometry remains
 Minecraft’s original block models. Preview 12 added bamboo planks, fences and gates plus matching particle
@@ -78,7 +78,11 @@ adds a custom PBR lever texture while preserving Minecraft models and powered
 states, and sets a per-texture PBR strength of 0.16 (40% of the previous 0.4 baseline) on 55
 door, trapdoor and lever targets. All use aligned LabPBR maps; wood grain reuses
 CC0 Poly Haven veneer scans and metal details use the documented CC0 steel scan.
-Water is unchanged. It replaces only specified
+Preview 14 also softens the procedural door-panel shade/relief contrast,
+reduces clear/stained glass rim thickness, and applies the global 0.2 PBR
+strength uniformly with no per-texture overrides. Door/trapdoor cutout masks,
+models, UVs and block states remain unchanged; clear/stained glass rim alpha
+was intentionally narrowed. Water is unchanged. It replaces only specified
 blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
 `stone_bricks`, `oak_planks`, `white_wool`, `gold_ore` and `diamond_ore` to
 compare. See the manifest for the full list. Other textures stay unchanged.
@@ -88,7 +92,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.13/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.14/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -105,7 +109,7 @@ folder. GitHub API rate limits can affect unauthenticated requests.
 
 ## Connected glass
 
-Preview 13 includes compact CTM data for clear, all 16 stained colors and tinted
+Preview 14 includes compact CTM data for clear, all 16 stained colors and tinted
 glass, including pane sides. The files were checked against Continuity 3.0.1+26.3's
 source loader contract; the generated namespace, compact method, minimum tile
 count, pane-face rule and all tile maps are covered by automated structural tests.
@@ -161,13 +165,14 @@ run uses CPU, and there is no GPU backend.
 
 ## PBR strength
 
-The bundled manifest's global `pbr_strength` remains **0.4**. Preview 13
-sets an explicit **0.16** override on 54 door/trapdoor targets and the lever—
-40% of that previous 0.4 baseline—while other textures retain the global
-setting. This scales normal slope, height deviation and smoothness, and fades
-AO toward white; base colors and discrete metal/SSS/emission fields are not
-scaled. Actual appearance and reflection brightness depend on the shader; this
-is not a guarantee of exactly 40% perceived intensity. Source builders
+The bundled manifest uses a single global `pbr_strength` of **0.2** for all 308
+texture targets; per-texture overrides have been removed. This scales normal
+slope, height deviation and smoothness to 20% of their unit-strength values,
+and fades AO toward white. Base colors and discrete metal/SSS/emission fields
+are not scaled. Actual appearance and reflection brightness depend on the
+shader; 20% channel strength is not a guarantee of exactly 20% perceived
+intensity. The slimmer clear/stained-glass rims and softened door relief are
+separate albedo/layout changes to reduce harsh outlines and apparent depth. Source builders
 can set `pbr_strength` between 0 and 1 in the manifest (omitting it defaults to
 1 for backwards compatibility). This does not change water.
 
