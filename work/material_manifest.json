@@ -298,6 +298,15 @@
       "license": "CC0-1.0",
       "albedo": "materials/procedural_glass/color.png",
       "roughness": "materials/procedural_glass/roughness.png"
+    },
+    {
+      "id": "metal_plate_02",
+      "source": "Poly Haven Metal Plate 02 by Rob Tuytel; 1K reencoded and desaturated mirror: https://github.com/89502147777r-wq/Daggie/pull/5",
+      "license": "CC0-1.0",
+      "albedo": "materials/metal_plate_02/diff.jpg",
+      "normal": "materials/metal_plate_02/nor.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/metal_plate_02/rough.jpg"
     }
   ],
   "textures": [
@@ -4480,6 +4489,1134 @@
       ],
       "f0": 10,
       "connected_glass": true
+    },
+    {
+      "name": "acacia_door_top",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        168,
+        95,
+        61
+      ],
+      "layout": "materials/shaped_layouts/acacia_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "acacia_door_bottom",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        163,
+        92,
+        57
+      ],
+      "layout": "materials/shaped_layouts/acacia_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "acacia_trapdoor",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        157,
+        87,
+        51
+      ],
+      "layout": "materials/shaped_layouts/acacia_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "bamboo_door_top",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        191,
+        171,
+        81
+      ],
+      "layout": "materials/shaped_layouts/bamboo_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "bamboo_door_bottom",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        199,
+        178,
+        85
+      ],
+      "layout": "materials/shaped_layouts/bamboo_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "bamboo_trapdoor",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        199,
+        179,
+        85
+      ],
+      "layout": "materials/shaped_layouts/bamboo_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "birch_door_top",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        220,
+        210,
+        176
+      ],
+      "layout": "materials/shaped_layouts/birch_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "birch_door_bottom",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        208,
+        194,
+        144
+      ],
+      "layout": "materials/shaped_layouts/birch_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "birch_trapdoor",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        194,
+        157
+      ],
+      "layout": "materials/shaped_layouts/birch_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cherry_door_top",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        223,
+        171,
+        165
+      ],
+      "layout": "materials/shaped_layouts/cherry_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cherry_door_bottom",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        226,
+        176,
+        170
+      ],
+      "layout": "materials/shaped_layouts/cherry_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cherry_trapdoor",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        226,
+        179,
+        172
+      ],
+      "layout": "materials/shaped_layouts/cherry_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "crimson_door_top",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        114,
+        55,
+        79
+      ],
+      "layout": "materials/shaped_layouts/crimson_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "crimson_door_bottom",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        115,
+        55,
+        79
+      ],
+      "layout": "materials/shaped_layouts/crimson_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "crimson_trapdoor",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        104,
+        51,
+        72
+      ],
+      "layout": "materials/shaped_layouts/crimson_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dark_oak_door_top",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        77,
+        52,
+        25
+      ],
+      "layout": "materials/shaped_layouts/dark_oak_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dark_oak_door_bottom",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        49,
+        24
+      ],
+      "layout": "materials/shaped_layouts/dark_oak_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "dark_oak_trapdoor",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        75,
+        50,
+        23
+      ],
+      "layout": "materials/shaped_layouts/dark_oak_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "jungle_door_top",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        164,
+        120,
+        85
+      ],
+      "layout": "materials/shaped_layouts/jungle_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "jungle_door_bottom",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        158,
+        114,
+        79
+      ],
+      "layout": "materials/shaped_layouts/jungle_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "jungle_trapdoor",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        153,
+        110,
+        77
+      ],
+      "layout": "materials/shaped_layouts/jungle_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "mangrove_door_top",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        113,
+        49,
+        47
+      ],
+      "layout": "materials/shaped_layouts/mangrove_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "mangrove_door_bottom",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        112,
+        48,
+        46
+      ],
+      "layout": "materials/shaped_layouts/mangrove_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "mangrove_trapdoor",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        111,
+        47,
+        42
+      ],
+      "layout": "materials/shaped_layouts/mangrove_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oak_door_top",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        141,
+        111,
+        66
+      ],
+      "layout": "materials/shaped_layouts/oak_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oak_door_bottom",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        139,
+        108,
+        62
+      ],
+      "layout": "materials/shaped_layouts/oak_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oak_trapdoor",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        125,
+        99,
+        57
+      ],
+      "layout": "materials/shaped_layouts/oak_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "pale_oak_door_top",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        216,
+        208,
+        207
+      ],
+      "layout": "materials/shaped_layouts/pale_oak_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "pale_oak_door_bottom",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        199,
+        190,
+        189
+      ],
+      "layout": "materials/shaped_layouts/pale_oak_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "pale_oak_trapdoor",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        230,
+        220,
+        219
+      ],
+      "layout": "materials/shaped_layouts/pale_oak_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "poplar_door_top",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        152,
+        140,
+        129
+      ],
+      "layout": "materials/shaped_layouts/poplar_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "poplar_door_bottom",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        148,
+        135,
+        125
+      ],
+      "layout": "materials/shaped_layouts/poplar_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "poplar_trapdoor",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        149,
+        136,
+        126
+      ],
+      "layout": "materials/shaped_layouts/poplar_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "spruce_door_top",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        106,
+        80,
+        49
+      ],
+      "layout": "materials/shaped_layouts/spruce_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "spruce_door_bottom",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        106,
+        80,
+        49
+      ],
+      "layout": "materials/shaped_layouts/spruce_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "spruce_trapdoor",
+      "material": "natural_walnut_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        104,
+        79,
+        48
+      ],
+      "layout": "materials/shaped_layouts/spruce_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "warped_door_top",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        45,
+        127,
+        121
+      ],
+      "layout": "materials/shaped_layouts/warped_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "warped_door_bottom",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        43,
+        119,
+        112
+      ],
+      "layout": "materials/shaped_layouts/warped_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "warped_trapdoor",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        47,
+        120,
+        112
+      ],
+      "layout": "materials/shaped_layouts/warped_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "iron_door_top",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        194,
+        193,
+        193
+      ],
+      "layout": "materials/shaped_layouts/iron_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 230
+    },
+    {
+      "name": "iron_door_bottom",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        196,
+        195,
+        195
+      ],
+      "layout": "materials/shaped_layouts/iron_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 230
+    },
+    {
+      "name": "iron_trapdoor",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        203,
+        202,
+        202
+      ],
+      "layout": "materials/shaped_layouts/iron_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 230
+    },
+    {
+      "name": "copper_door_top",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        193,
+        109,
+        83
+      ],
+      "layout": "materials/shaped_layouts/copper_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "copper_door_bottom",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        181,
+        103,
+        77
+      ],
+      "layout": "materials/shaped_layouts/copper_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "copper_trapdoor",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        191,
+        106,
+        80
+      ],
+      "layout": "materials/shaped_layouts/copper_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "exposed_copper_door_top",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        164,
+        123,
+        106
+      ],
+      "layout": "materials/shaped_layouts/copper_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "exposed_copper_door_bottom",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        153,
+        118,
+        100
+      ],
+      "layout": "materials/shaped_layouts/copper_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "exposed_copper_trapdoor",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        161,
+        125,
+        105
+      ],
+      "layout": "materials/shaped_layouts/copper_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "weathered_copper_door_top",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        110,
+        151,
+        110
+      ],
+      "layout": "materials/shaped_layouts/copper_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "weathered_copper_door_bottom",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        107,
+        143,
+        102
+      ],
+      "layout": "materials/shaped_layouts/copper_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "weathered_copper_trapdoor",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        109,
+        153,
+        110
+      ],
+      "layout": "materials/shaped_layouts/copper_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oxidized_copper_door_top",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        82,
+        160,
+        133
+      ],
+      "layout": "materials/shaped_layouts/copper_door_top.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oxidized_copper_door_bottom",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        80,
+        153,
+        127
+      ],
+      "layout": "materials/shaped_layouts/copper_door_bottom.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oxidized_copper_trapdoor",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        84,
+        161,
+        132
+      ],
+      "layout": "materials/shaped_layouts/copper_trapdoor.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "ladder",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        125,
+        97,
+        55
+      ],
+      "layout": "materials/shaped_layouts/ladder.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "iron_bars",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        137,
+        139,
+        136
+      ],
+      "layout": "materials/shaped_layouts/bars.png",
+      "layout_metal_id": 230,
+      "f0": 230
+    },
+    {
+      "name": "copper_bars",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        156,
+        81,
+        55
+      ],
+      "layout": "materials/shaped_layouts/bars.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "exposed_copper_bars",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        134,
+        108,
+        89
+      ],
+      "layout": "materials/shaped_layouts/bars.png",
+      "layout_metal_id": 230,
+      "f0": 234
+    },
+    {
+      "name": "weathered_copper_bars",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        85,
+        123,
+        94
+      ],
+      "layout": "materials/shaped_layouts/bars.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "oxidized_copper_bars",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        64,
+        123,
+        101
+      ],
+      "layout": "materials/shaped_layouts/bars.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
     }
   ],
   "checksums": {
@@ -4569,7 +5706,57 @@
     "materials/clay_floor/normal.png": "4ea09cf431d66e61e4a2090e2af66e2ad564a63484add01cd3e74100fdeb9b2c",
     "materials/clay_floor/arm.png": "7d1023800e6f29e694f76cd996116df083fb5be9d85a115fa39c03781eba629f",
     "materials/procedural_glass/color.png": "28d42333599aea5d3d7c1476f17a5ae50bcc0e8d3f1dd09f0d77359b667adcde",
-    "materials/procedural_glass/roughness.png": "c80b03e59db65ff6c5e7bf07d3e6f91c5aa3425b1a746df4420c7919a4179623"
+    "materials/procedural_glass/roughness.png": "c80b03e59db65ff6c5e7bf07d3e6f91c5aa3425b1a746df4420c7919a4179623",
+    "materials/shaped_layouts/acacia_door_top.png": "411867f5e257ce906ede45a757ad4be05022806f2b4c21c08c9fcbf9d2555dff",
+    "materials/shaped_layouts/acacia_trapdoor.png": "1247819f47b335f618cfcfb2f39b0fb388484634512787202d79e85c8399cb90",
+    "materials/shaped_layouts/acacia_door_bottom.png": "3d84365077d8161b85c38ccace7bd47a5eb7d489f57d698adbb821916b0513c3",
+    "materials/shaped_layouts/bamboo_door_top.png": "a78fc723b71925113eb86aef5d78afa99b9c233f366d7a2b30084d39a5d46b54",
+    "materials/shaped_layouts/bamboo_door_bottom.png": "9b4fb79094b7f9e410a6153fe2c6ad96e9cec9e304762922964a99e4b403e997",
+    "materials/shaped_layouts/bamboo_trapdoor.png": "611748c3529c011dac8220902e29644a4d756f3e5cf0d4e5cb23885536617212",
+    "materials/shaped_layouts/birch_door_top.png": "9eb4f2b4e444782b33f6a8df261fcac2cf838dac9820a6cfd816e2c3ef7bc189",
+    "materials/shaped_layouts/birch_door_bottom.png": "69414f4589d87688943234016f908b19fbd4ffce4fc00bd205faaf03a9383a79",
+    "materials/shaped_layouts/birch_trapdoor.png": "79d0b39461242ed63f8a37b079d5bfdbf20ae18c8560706484b1c756b43776ef",
+    "materials/shaped_layouts/cherry_door_top.png": "ea35b04e0673c3c9e39058c6eb9af286f4586eb9d35584ff5c44c7f3f94e1ded",
+    "materials/shaped_layouts/cherry_door_bottom.png": "f1945cf96e75de1243d207a41d831c329e0ce793ea65b4007f62706fe1e277e8",
+    "materials/shaped_layouts/cherry_trapdoor.png": "a00fd478436b16a44fa21e3e40fc846f5b67a255262f1e61d8c3b65821a9f20e",
+    "materials/shaped_layouts/copper_door_top.png": "a97735403c8d1aa9d52a8330d2b11403ab1eddcb1a0b94770d03907fa43bf363",
+    "materials/shaped_layouts/copper_door_bottom.png": "8d6d25ca5be4542d42c8d3d27e77c8bd4bb57f0f2ea61614e082432e0812604d",
+    "materials/shaped_layouts/copper_trapdoor.png": "fe23a5d49ec505015294eb4ead93d7a4bc09c0cad910a13ba5f21ca9af342be4",
+    "materials/shaped_layouts/crimson_door_top.png": "590356882d7ffe1e033e098519d92541b4e6b912084fe36cf3f4eb2ddb475b91",
+    "materials/shaped_layouts/crimson_door_bottom.png": "3d3c0742ec75a2de37e18ce4f12f68b57eb46bfe119cda1c2448303e4ca65735",
+    "materials/shaped_layouts/crimson_trapdoor.png": "fc16b97c178ea19c0cf03ebb6f760b688c70e462e417dfd020225bcc8387b9e3",
+    "materials/shaped_layouts/dark_oak_door_top.png": "0f6dc9bbd30659032a2670c9e086dce00481e27ebfc70787f3ec6167b093efdc",
+    "materials/shaped_layouts/dark_oak_door_bottom.png": "df13465e2d97d3068bdc6e012d1a03af32a7a6a1ca0622fc7fe1311ab250ed73",
+    "materials/shaped_layouts/dark_oak_trapdoor.png": "643098e16d0e05b92cf3fcd8c97ed8675ab7d8bc4d18f0c0a48152f2abfaa4ba",
+    "materials/shaped_layouts/iron_door_top.png": "59a69adb986aadbb6bd0125607b722662f9ec82c060fa28b02f5f1470a040a4d",
+    "materials/shaped_layouts/iron_door_bottom.png": "c484f31acd983eb05030cee4d5726eeefc95fad402e080146e6919d8a1f8c22b",
+    "materials/shaped_layouts/iron_trapdoor.png": "0badaa57e57cf9b4432ed601cfaae012183ec65ee55ce2085ff1edf59787a01a",
+    "materials/shaped_layouts/jungle_door_top.png": "4da83e4cd15a57f64d60558ba5fda75d931536fe9c374ca995dcea46c531a788",
+    "materials/shaped_layouts/jungle_door_bottom.png": "850e6414bcb789a7b468d756d8b9992a2383430bcf246a7e0b0b24f1567feecb",
+    "materials/shaped_layouts/jungle_trapdoor.png": "ef9c9fc7895fadeafba3bba6881e38ff846195f9b0389a57af379217d892e39d",
+    "materials/shaped_layouts/mangrove_door_top.png": "2aabee190e318ac5cfb491ac3112d718041203824df0487ab14b2a13657d7fcb",
+    "materials/shaped_layouts/mangrove_door_bottom.png": "ff2cba13d169ef88539325b7244edf2131465fd3f3981997ea9227d7cf9b60fe",
+    "materials/shaped_layouts/mangrove_trapdoor.png": "4cb05e8d1d3f4a32533e56f0e6ba2fc9f7e7717d01eafb65374fa5eeb9a549cb",
+    "materials/shaped_layouts/oak_door_top.png": "59a69adb986aadbb6bd0125607b722662f9ec82c060fa28b02f5f1470a040a4d",
+    "materials/shaped_layouts/oak_door_bottom.png": "c484f31acd983eb05030cee4d5726eeefc95fad402e080146e6919d8a1f8c22b",
+    "materials/shaped_layouts/oak_trapdoor.png": "0badaa57e57cf9b4432ed601cfaae012183ec65ee55ce2085ff1edf59787a01a",
+    "materials/shaped_layouts/pale_oak_door_top.png": "13dc2b09fc12565b2a4b2c1a5321121146114fc63b2fcd4829da8e42371bd408",
+    "materials/shaped_layouts/pale_oak_door_bottom.png": "b9c8e1f4040bb70acc62052bf71415723434b46c5581a9477f9d0481066f427e",
+    "materials/shaped_layouts/pale_oak_trapdoor.png": "79d0b39461242ed63f8a37b079d5bfdbf20ae18c8560706484b1c756b43776ef",
+    "materials/shaped_layouts/poplar_door_top.png": "085c7bd2ee34a00b3b199b41e947221a0a33d211ad2820874cfb4bac0d41fbc0",
+    "materials/shaped_layouts/poplar_door_bottom.png": "46353e2d114cf21b1187921ed120e54bf6342999b94dffca9eff9dd99b261b22",
+    "materials/shaped_layouts/poplar_trapdoor.png": "fba6426f05c8d42461e7b994fb6d59dd839a66f7b782e5635effcf426e59707e",
+    "materials/shaped_layouts/spruce_door_top.png": "9e638e64600be9514e0cbd4dfed5bb285184519b6939eb47562b69f7f23d0ee6",
+    "materials/shaped_layouts/spruce_door_bottom.png": "7ced15697287c2615da519bbbf019002b90119906553b23438d9481cbec28c28",
+    "materials/shaped_layouts/spruce_trapdoor.png": "82d701abf3820271348ee0abc810ee04042afe10b7fbac14f46afa7a869030c2",
+    "materials/shaped_layouts/warped_door_top.png": "590356882d7ffe1e033e098519d92541b4e6b912084fe36cf3f4eb2ddb475b91",
+    "materials/shaped_layouts/warped_door_bottom.png": "3d3c0742ec75a2de37e18ce4f12f68b57eb46bfe119cda1c2448303e4ca65735",
+    "materials/shaped_layouts/warped_trapdoor.png": "fc16b97c178ea19c0cf03ebb6f760b688c70e462e417dfd020225bcc8387b9e3",
+    "materials/shaped_layouts/ladder.png": "251f6b8b86a5308073608ae6e1297735049607d3a03cf46ed7d480edb3dcd739",
+    "materials/shaped_layouts/bars.png": "45684048efa64577d10a25380e24eabf8bf6b6ace210d549e5afa2436a43d400",
+    "materials/metal_plate_02/diff.jpg": "5ae0cf878a8ad486e59c982efcb39c13bfd0752a9906b8195fbaecaf428fc001",
+    "materials/metal_plate_02/nor.jpg": "5bb27bb9ade25464648fcb99ca049db6edef823e281ddf60482d90080361e27c",
+    "materials/metal_plate_02/rough.jpg": "15c10e985bf4317393571fd7ec1b19de57177b7d88f2e4a5493ec9c290bac47b"
   },
   "pbr_strength": 0.4
 }

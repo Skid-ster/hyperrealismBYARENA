@@ -3,6 +3,32 @@
   "source": "https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block",
   "source_commit": "6c088630459d8ca369ef0d6c07636d7d63a3b0f1",
   "textures": {
+    "acacia_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c67620f59428bc0fab73b24a76c64489b2113853",
+      "has_mcmeta": false,
+      "target_rgb": [
+        163,
+        92,
+        57
+      ]
+    },
+    "acacia_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c1739b2669f40737e47a3cb82b23f916e96d809c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        168,
+        95,
+        61
+      ]
+    },
     "acacia_leaves": {
       "dimensions": [
         16,
@@ -56,6 +82,19 @@
         50
       ]
     },
+    "acacia_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e8eeb9c145e60a5c1bd947d920a7274df328ba40",
+      "has_mcmeta": false,
+      "target_rgb": [
+        157,
+        87,
+        51
+      ]
+    },
     "andesite": {
       "dimensions": [
         16,
@@ -69,6 +108,45 @@
         137
       ]
     },
+    "bamboo_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b27f96f638b8fae58482e8977cdb5a8a8f11bcf9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        199,
+        178,
+        85
+      ]
+    },
+    "bamboo_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f40573c6e658a1a196bd7b6e7d865315ad34b728",
+      "has_mcmeta": false,
+      "target_rgb": [
+        191,
+        171,
+        81
+      ]
+    },
+    "bamboo_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6375b72a907457fcfe93b5f8ffacb576471a1d04",
+      "has_mcmeta": false,
+      "target_rgb": [
+        199,
+        179,
+        85
+      ]
+    },
     "bedrock": {
       "dimensions": [
         16,
@@ -80,6 +158,32 @@
         85,
         85,
         85
+      ]
+    },
+    "birch_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2754d81979330b435f09a5134a1626b40276e063",
+      "has_mcmeta": false,
+      "target_rgb": [
+        208,
+        194,
+        144
+      ]
+    },
+    "birch_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9c4be25fd79e4ca863ff144f0d2a6cad33549ee3",
+      "has_mcmeta": false,
+      "target_rgb": [
+        220,
+        210,
+        176
       ]
     },
     "birch_leaves": {
@@ -120,6 +224,19 @@
         192,
         175,
         121
+      ]
+    },
+    "birch_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ba88b057ca37cca21034db4ad95d23058d50e29b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        207,
+        194,
+        157
       ]
     },
     "black_concrete": {
@@ -408,6 +525,32 @@
         221
       ]
     },
+    "cherry_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e5823ffe0838fe3136dc0ede851b380b78ad9c23",
+      "has_mcmeta": false,
+      "target_rgb": [
+        226,
+        176,
+        170
+      ]
+    },
+    "cherry_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "83d29a850cc3a720359bb8d916ecac2cd6819e1d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        223,
+        171,
+        165
+      ]
+    },
     "cherry_leaves": {
       "dimensions": [
         16,
@@ -446,6 +589,19 @@
         227,
         179,
         173
+      ]
+    },
+    "cherry_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "79d775fa23d0f97c0ed21f638cbd0064088499a8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        226,
+        179,
+        172
       ]
     },
     "clay": {
@@ -513,6 +669,45 @@
         128
       ]
     },
+    "copper_bars": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "55b2f070ebbace5cb4c33243a265610c4be60583",
+      "has_mcmeta": false,
+      "target_rgb": [
+        156,
+        81,
+        55
+      ]
+    },
+    "copper_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "163591ab5d741918ed366f8e73ee59abc3babfcd",
+      "has_mcmeta": false,
+      "target_rgb": [
+        181,
+        103,
+        77
+      ]
+    },
+    "copper_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1211d891e84b5fda739d10a9fd4a67cc054e3504",
+      "has_mcmeta": false,
+      "target_rgb": [
+        193,
+        109,
+        83
+      ]
+    },
     "copper_ore": {
       "dimensions": [
         16,
@@ -524,6 +719,19 @@
         125,
         126,
         120
+      ]
+    },
+    "copper_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "841a56ec9141d67aa50b5f76277a574bfbf3e460",
+      "has_mcmeta": false,
+      "target_rgb": [
+        191,
+        106,
+        80
       ]
     },
     "cracked_deepslate_bricks": {
@@ -591,6 +799,32 @@
         118
       ]
     },
+    "crimson_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "dd4569ee1b59d1e68b2e3136fc1f74609f5c3209",
+      "has_mcmeta": false,
+      "target_rgb": [
+        115,
+        55,
+        79
+      ]
+    },
+    "crimson_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6172fc3445ebfa505997569e3f82a1a5afdd2032",
+      "has_mcmeta": false,
+      "target_rgb": [
+        114,
+        55,
+        79
+      ]
+    },
     "crimson_planks": {
       "dimensions": [
         16,
@@ -602,6 +836,19 @@
         101,
         49,
         71
+      ]
+    },
+    "crimson_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "68c18ec652c9a3c8ad23ddf46013084bb5c6547f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        104,
+        51,
+        72
       ]
     },
     "cut_red_sandstone": {
@@ -708,6 +955,32 @@
         145
       ]
     },
+    "dark_oak_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ed126557c428ff1f08a2aac640537f7fb94ddaf4",
+      "has_mcmeta": false,
+      "target_rgb": [
+        73,
+        49,
+        24
+      ]
+    },
+    "dark_oak_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6e0d80769c769138a2def9a83327c33c14c8bf8f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        77,
+        52,
+        25
+      ]
+    },
     "dark_oak_leaves": {
       "dimensions": [
         16,
@@ -759,6 +1032,19 @@
         67,
         43,
         20
+      ]
+    },
+    "dark_oak_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c4cc9450d06fe149cf076a47492cac57251917c0",
+      "has_mcmeta": false,
+      "target_rgb": [
+        75,
+        50,
+        23
       ]
     },
     "deepslate": {
@@ -1034,6 +1320,58 @@
         104
       ]
     },
+    "exposed_copper_bars": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ed5d4f3c29d63eb03542bd6dbeaadd36e1123902",
+      "has_mcmeta": false,
+      "target_rgb": [
+        134,
+        108,
+        89
+      ]
+    },
+    "exposed_copper_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1a05aa08f0ec78633b9ef7a71ffc37758d9c71a4",
+      "has_mcmeta": false,
+      "target_rgb": [
+        153,
+        118,
+        100
+      ]
+    },
+    "exposed_copper_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "52d68779b709ee9890db6ae91b453b47c766bfc9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        164,
+        123,
+        106
+      ]
+    },
+    "exposed_copper_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4562a51d000a0efd2cdd5d3daf95b9723c6a80c4",
+      "has_mcmeta": false,
+      "target_rgb": [
+        161,
+        125,
+        105
+      ]
+    },
     "glass": {
       "dimensions": [
         16,
@@ -1295,6 +1633,45 @@
         28
       ]
     },
+    "iron_bars": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0d778e1993b01e18cc05658f5314ff67867933c9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        137,
+        139,
+        136
+      ]
+    },
+    "iron_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9c163edcefffd9481c27e99a728140124eb63094",
+      "has_mcmeta": false,
+      "target_rgb": [
+        196,
+        195,
+        195
+      ]
+    },
+    "iron_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "62b9a1d7ba6a08f9e1da08e605e0f6e4bb6fb311",
+      "has_mcmeta": false,
+      "target_rgb": [
+        194,
+        193,
+        193
+      ]
+    },
     "iron_ore": {
       "dimensions": [
         16,
@@ -1306,6 +1683,45 @@
         136,
         129,
         123
+      ]
+    },
+    "iron_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2eaab820b34da1fc5dd293d0fc9c29edaac0121b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        203,
+        202,
+        202
+      ]
+    },
+    "jungle_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "80990922998bbe9e4eff4fa9dc35903f04409e49",
+      "has_mcmeta": false,
+      "target_rgb": [
+        158,
+        114,
+        79
+      ]
+    },
+    "jungle_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a75f0454625f1ea7316ab095997462ffdcaa972f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        164,
+        120,
+        85
       ]
     },
     "jungle_leaves": {
@@ -1359,6 +1775,32 @@
         160,
         115,
         81
+      ]
+    },
+    "jungle_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6e4598b178134b545eeadd561c49ebca81627a91",
+      "has_mcmeta": false,
+      "target_rgb": [
+        153,
+        110,
+        77
+      ]
+    },
+    "ladder": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3500180a90c64a47342f5a37a9e892c03051de8c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        125,
+        97,
+        55
       ]
     },
     "lapis_ore": {
@@ -1686,6 +2128,32 @@
         180
       ]
     },
+    "mangrove_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "623119188bd87a30b3c5fdd272cec63f01a9b5f9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        112,
+        48,
+        46
+      ]
+    },
+    "mangrove_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0771807dd7bc069113911e0d11ff15caf2fd2569",
+      "has_mcmeta": false,
+      "target_rgb": [
+        113,
+        49,
+        47
+      ]
+    },
     "mangrove_leaves": {
       "dimensions": [
         16,
@@ -1724,6 +2192,19 @@
         118,
         54,
         49
+      ]
+    },
+    "mangrove_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9c42a205499faab20f3209aad89fdaeea8d929b2",
+      "has_mcmeta": false,
+      "target_rgb": [
+        111,
+        47,
+        42
       ]
     },
     "mossy_cobblestone": {
@@ -1830,6 +2311,32 @@
         38
       ]
     },
+    "oak_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "28b06b373ebf96742af4d3f668a4da327bf1aa10",
+      "has_mcmeta": false,
+      "target_rgb": [
+        139,
+        108,
+        62
+      ]
+    },
+    "oak_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "916409dbb7fe2ff9c6ea9dbb7d05b482eb5cf888",
+      "has_mcmeta": false,
+      "target_rgb": [
+        141,
+        111,
+        66
+      ]
+    },
     "oak_leaves": {
       "dimensions": [
         16,
@@ -1881,6 +2388,19 @@
         162,
         131,
         79
+      ]
+    },
+    "oak_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "464967848faa92d929c3577bab5c85cf5bf1516f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        125,
+        99,
+        57
       ]
     },
     "orange_concrete": {
@@ -1974,6 +2494,58 @@
         133
       ]
     },
+    "oxidized_copper_bars": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "407d35c3ad23dbfe881a14a09378ff719098204f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        64,
+        123,
+        101
+      ]
+    },
+    "oxidized_copper_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "0edae608977bf6dc16c21250cd7cbf3721a1ea0c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        80,
+        153,
+        127
+      ]
+    },
+    "oxidized_copper_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "ba9b0ce2ab7a562eb80e0b6de8eaf5a31cfbc85b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        82,
+        160,
+        133
+      ]
+    },
+    "oxidized_copper_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "97d1891d798816ee588308c1dcbb42d83f817208",
+      "has_mcmeta": false,
+      "target_rgb": [
+        84,
+        161,
+        132
+      ]
+    },
     "packed_mud": {
       "dimensions": [
         16,
@@ -1985,6 +2557,32 @@
         142,
         107,
         80
+      ]
+    },
+    "pale_oak_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "deb8f41e83defbb6688919a30c789aa8f07a8118",
+      "has_mcmeta": false,
+      "target_rgb": [
+        199,
+        190,
+        189
+      ]
+    },
+    "pale_oak_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "6300fb056e4844b9962867dbd3eec2682ceea329",
+      "has_mcmeta": false,
+      "target_rgb": [
+        216,
+        208,
+        207
       ]
     },
     "pale_oak_leaves": {
@@ -2025,6 +2623,19 @@
         228,
         218,
         216
+      ]
+    },
+    "pale_oak_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3fa540ab3d42ae5a137c6ad9eac749b946573bab",
+      "has_mcmeta": false,
+      "target_rgb": [
+        230,
+        220,
+        219
       ]
     },
     "pink_concrete": {
@@ -2209,6 +2820,32 @@
         100
       ]
     },
+    "poplar_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "d9dcfb77b120114e4f4f168a21fbccf133712a1c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        148,
+        135,
+        125
+      ]
+    },
+    "poplar_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3da10eb16a06aa723a92d17be926c63365ade2d6",
+      "has_mcmeta": false,
+      "target_rgb": [
+        152,
+        140,
+        129
+      ]
+    },
     "poplar_log_top": {
       "dimensions": [
         16,
@@ -2233,6 +2870,19 @@
         150,
         137,
         127
+      ]
+    },
+    "poplar_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1bb7f73ecfd8fefd08906fca9be94e8676cca388",
+      "has_mcmeta": false,
+      "target_rgb": [
+        149,
+        136,
+        126
       ]
     },
     "purple_concrete": {
@@ -2586,6 +3236,32 @@
         254
       ]
     },
+    "spruce_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8ca25c6375023912724244d1766cd0459735491e",
+      "has_mcmeta": false,
+      "target_rgb": [
+        106,
+        80,
+        49
+      ]
+    },
+    "spruce_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "9304fad89583c57c2edec2b439c438dca1a2d07e",
+      "has_mcmeta": false,
+      "target_rgb": [
+        106,
+        80,
+        49
+      ]
+    },
     "spruce_leaves": {
       "dimensions": [
         16,
@@ -2637,6 +3313,19 @@
         115,
         85,
         49
+      ]
+    },
+    "spruce_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1fe7d00dccb724a7765a856c86b6cc233b8921ad",
+      "has_mcmeta": false,
+      "target_rgb": [
+        104,
+        79,
+        48
       ]
     },
     "stone": {
@@ -2977,6 +3666,32 @@
         95
       ]
     },
+    "warped_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "95e9f502d96e36f8af5221dc7b8ab97663fc419b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        43,
+        119,
+        112
+      ]
+    },
+    "warped_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "2014b037f4dfe92b52fdc8eb0a532a1ca2e665d3",
+      "has_mcmeta": false,
+      "target_rgb": [
+        45,
+        127,
+        121
+      ]
+    },
     "warped_planks": {
       "dimensions": [
         16,
@@ -2990,6 +3705,19 @@
         99
       ]
     },
+    "warped_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5d2c11751886f08a97e1077c12adf235bba55abb",
+      "has_mcmeta": false,
+      "target_rgb": [
+        47,
+        120,
+        112
+      ]
+    },
     "weathered_copper": {
       "dimensions": [
         16,
@@ -2999,6 +3727,58 @@
       "has_mcmeta": false,
       "target_rgb": [
         108,
+        153,
+        110
+      ]
+    },
+    "weathered_copper_bars": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b5a1152b5fdc731f14234ddf5efeb92fb904ba2f",
+      "has_mcmeta": false,
+      "target_rgb": [
+        85,
+        123,
+        94
+      ]
+    },
+    "weathered_copper_door_bottom": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "99ac4951898af7dca982fe97d22e591d8a891adc",
+      "has_mcmeta": false,
+      "target_rgb": [
+        107,
+        143,
+        102
+      ]
+    },
+    "weathered_copper_door_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f5110bf5d6c1f8006b1321c3c11b8ac500187a41",
+      "has_mcmeta": false,
+      "target_rgb": [
+        110,
+        151,
+        110
+      ]
+    },
+    "weathered_copper_trapdoor": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "989a495951dfb640fde92b24d2cd1087d7f1a669",
+      "has_mcmeta": false,
+      "target_rgb": [
+        109,
         153,
         110
       ]

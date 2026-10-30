@@ -361,14 +361,48 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 87);
+    assert_eq!(hashes.len(), 137);
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 242);
+    assert_eq!(m.textures.len(), 302);
     assert!((m.pbr_strength - 0.4).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
+    for wood in [
+        "acacia",
+        "bamboo",
+        "birch",
+        "cherry",
+        "copper",
+        "crimson",
+        "dark_oak",
+        "exposed_copper",
+        "iron",
+        "jungle",
+        "mangrove",
+        "oak",
+        "oxidized_copper",
+        "pale_oak",
+        "poplar",
+        "spruce",
+        "warped",
+        "weathered_copper",
+    ] {
+        for suffix in ["door_top", "door_bottom", "trapdoor"] {
+            let name = format!("{wood}_{suffix}");
+            let entry = m
+                .textures
+                .iter()
+                .find(|t| t.name == name)
+                .expect("door coverage");
+            assert!(
+                entry.layout.is_some(),
+                "missing construction layout: {name}"
+            );
+        }
+    }
+
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
     for (name, expected) in [
@@ -1047,4 +1081,112 @@ fn rotated_wood_keeps_all_maps_and_normal_vectors_aligned() {
         assert!((b[1][dst] - a[0][src]).abs() < 1e-6);
         assert!((b[2][dst] - a[2][src]).abs() < 1e-6);
     }
+}
+
+#[test]
+fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
+    use hyperrealism_core::png_io::read;
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!("shaped-{}-{unique}", std::process::id()));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    let all: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let names = [
+        "oak_door_top",
+        "oak_door_bottom",
+        "oak_trapdoor",
+        "copper_door_top",
+        "ladder",
+        "iron_bars",
+    ];
+    let textures: Vec<_> = all["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|t| names.iter().any(|n| t["name"] == *n))
+        .cloned()
+        .collect();
+    let materials: Vec<_> = all["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|m| textures.iter().any(|t| t["material"] == m["id"]))
+        .cloned()
+        .collect();
+    for m in &materials {
+        for key in ["albedo", "normal", "roughness", "arm", "height", "ao"] {
+            if let Some(path) = m[key].as_str() {
+                let dest = input.join(path);
+                fs::create_dir_all(dest.parent().unwrap()).unwrap();
+                fs::copy(Path::new("work").join(path), dest).unwrap();
+            }
+        }
+    }
+    for t in &textures {
+        let path = t["layout"].as_str().unwrap();
+        let dest = input.join(path);
+        fs::create_dir_all(dest.parent().unwrap()).unwrap();
+        fs::copy(Path::new("work").join(path), dest).unwrap();
+    }
+    let manifest = serde_json::json!({"version":1,"pbr_strength":0.4,"materials":materials,"textures":textures});
+    fs::write(
+        input.join("material_manifest.json"),
+        serde_json::to_vec(&manifest).unwrap(),
+    )
+    .unwrap();
+    let output = temp.join("output");
+    let result = run(&input, &output, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let block = output.join("pack/assets/minecraft/textures/block");
+    let at = |name: &str, suffix: &str, x: usize, y: usize| -> Vec<u8> {
+        let im = read(&block.join(format!("{name}{suffix}.png"))).unwrap();
+        im.pixels[(y * im.width + x) * 4..(y * im.width + x) * 4 + 4].to_vec()
+    };
+    // Holes are really transparent; rails/panels remain opaque, not black glass.
+    assert!(at("oak_door_top", "", 32, 32)[3] < 5);
+    assert!(at("oak_door_top", "", 64, 32)[3] > 245);
+    assert!(at("oak_door_bottom", "", 32, 32)[3] > 245);
+    assert!(at("oak_trapdoor", "", 32, 32)[3] < 5);
+    assert!(at("ladder", "", 64, 64)[3] < 5);
+    assert!(at("ladder", "", 20, 64)[3] > 245);
+    assert!(at("iron_bars", "", 40, 60)[3] < 5);
+    assert!(at("iron_bars", "", 20, 60)[3] > 245);
+    assert!(at("copper_door_top", "", 48, 32)[3] < 5);
+    // Wood keeps dielectric F0; the drawn latch becomes a discrete iron ID.
+    assert_eq!(at("oak_door_bottom", "_s", 25, 82)[1], 230);
+    assert_eq!(at("oak_door_bottom", "_s", 64, 64)[1], 10);
+    assert_eq!(at("iron_bars", "_s", 20, 60)[1], 230);
+    assert_eq!(at("copper_door_top", "_s", 16, 40)[1], 234);
+    let normal = read(&block.join("oak_door_bottom_n.png")).unwrap();
+    assert!(
+        normal.pixels.chunks_exact(4).map(|p| p[3]).min()
+            != normal.pixels.chunks_exact(4).map(|p| p[3]).max()
+    );
+    assert!(hyperrealism_core::verify::pack(&output.join("pack")).is_ok());
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn malformed_construction_layout_is_rejected() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!("bad-layout-{}-{unique}", std::process::id()));
+    fs::create_dir_all(&temp).unwrap();
+    fs::copy("test_assets/diffuse.png", temp.join("diffuse.png")).unwrap();
+    fs::copy("test_assets/diffuse.png", temp.join("bad-layout.png")).unwrap();
+    fs::write(temp.join("material_manifest.json"), r#"{"version":1,"materials":[{"id":"base","albedo":"diffuse.png"}],"textures":[{"name":"door_top","material":"base","recipe":"material","tint":[255,255,255],"layout":"bad-layout.png","layout_metal_id":230}]}"#).unwrap();
+    let result = run(&temp, &temp.join("output"), "2");
+    assert!(!result.status.success());
+    assert!(String::from_utf8_lossy(&result.stderr).contains("construction layout"));
+    fs::remove_dir_all(temp).unwrap();
 }

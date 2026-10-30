@@ -46,6 +46,21 @@ fn build(
     let n = WORK * WORK;
     let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
     let mut relief_map = vec![0.0; n];
+    let layout = t
+        .layout
+        .as_ref()
+        .map(|path| {
+            let image = png_io::read(&manifest::safe_file(root, path)?)?;
+            if image.width != WORK || image.height != WORK {
+                return Err(format!(
+                    "{}: construction layout must be {}x{}",
+                    t.name, WORK, WORK
+                ));
+            }
+            Ok(image)
+        })
+        .transpose()?;
+    let mut hardware_map = layout.as_ref().map(|_| vec![0.0; n]);
     let mut ore_map = if t.recipe == "ore" {
         Some(vec![0.0; n])
     } else {
@@ -76,7 +91,20 @@ fn build(
         for x in 0..WORK {
             let i = y * WORK + x;
             let pattern = recipes::evaluate(&t.recipe, x, y, seed);
-            let (shade, relief, opacity) = (pattern.shade, pattern.relief, pattern.opacity);
+            let mut shade = pattern.shade;
+            let mut relief = pattern.relief;
+            let mut opacity = pattern.opacity;
+            let mut hardware = 0.0;
+            if let Some(layout) = &layout {
+                let p = &layout.pixels[i * 4..i * 4 + 4];
+                shade *= f32::from(p[0]) / 255.0;
+                relief += (f32::from(p[1]) - 128.0) / 255.0 * 0.24;
+                hardware = f32::from(p[2]) / 255.0;
+                opacity *= f32::from(p[3]) / 255.0;
+            }
+            if let Some(mask) = &mut hardware_map {
+                mask[i] = hardware * opacity;
+            }
             let source_alpha = img.albedo[3][i];
             let alpha = source_alpha * opacity;
             channels[3][i] = alpha;
@@ -102,12 +130,16 @@ fn build(
                 // solid green tint over the entire material.
                 let moss = [0.045, 0.12, 0.025][c] * alpha;
                 let surface = base * (1.0 - pattern.moss) + moss * pattern.moss;
-                channels[c][i] = if let Some(color) = ore_color {
+                let mixed = if let Some(color) = ore_color {
                     let grain = pattern.shade * mineral_detail * color[c] * alpha;
                     surface * (1.0 - pattern.ore) + grain * pattern.ore
                 } else {
                     surface
                 };
+                // Independently drawn latches/bars use neutral iron color and
+                // a separate discrete metal ID, instead of recoloring the wood.
+                let iron = [0.20, 0.21, 0.22][c] * shade * alpha;
+                channels[c][i] = mixed * (1.0 - hardware) + iron * hardware;
             }
             // With no height map, a mild luminance heuristic preserves the old
             // prototype's behavior. A normal map already supplies fine detail,
@@ -118,7 +150,8 @@ fn build(
                 .map(|v| v[i])
                 .unwrap_or(0.5 + 0.22 * (luminance - 0.5));
             channels[4][i] = (base_height + relief).clamp(0.0, 1.0);
-            channels[5][i] = img.roughness.as_ref().map(|v| v[i]).unwrap_or(0.8);
+            let source_roughness = img.roughness.as_ref().map(|v| v[i]).unwrap_or(0.8);
+            channels[5][i] = source_roughness * (1.0 - hardware) + 0.32 * hardware;
             channels[6][i] = (1.0 - relief.abs() * 1.2).clamp(0.0, 1.0)
                 * img.ao.as_ref().map(|v| v[i]).unwrap_or(1.0);
             relief_map[i] = relief;
@@ -163,6 +196,7 @@ fn build(
         .map(|p| material::scalar(root, p).and_then(|v| resize(&v, size)))
         .transpose()?;
     let ore_mask = ore_map.as_ref().map(|v| resize(v, size)).transpose()?;
+    let hardware_mask = hardware_map.as_ref().map(|v| resize(v, size)).transpose()?;
     let emission = t
         .emissive_map
         .as_deref()
@@ -189,7 +223,9 @@ fn build(
             1.0 - (1.0 - channels[6][i].clamp(0.0, 1.0)) * pbr_strength,
             (0.5 + (channels[4][i] - 0.5) * pbr_strength).max(1.0 / 255.0),
         ));
-        let id = if ore_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+        let id = if hardware_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+            t.layout_metal_id.expect("validated layout metal ID")
+        } else if ore_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
             t.ore_f0.expect("validated ore F0")
         } else if id_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
             t.masked_f0.expect("validated masked F0")
@@ -433,7 +469,7 @@ fn build_stage(
         "pbr_strength": data.pbr_strength,
         "resolution": size,
         "working_resolution": WORK,
-        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "pbr_strength": t.pbr_strength, "connected_glass": t.connected_glass, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "pbr_strength": t.pbr_strength, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
         "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "arm": m.arm, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,

@@ -58,6 +58,10 @@ pub struct Texture {
     /// Emit OptiFine-format compact connected glass tiles and their PBR maps.
     #[serde(default)]
     pub connected_glass: bool,
+    /// Optional 512px RGBA construction layout: shade, relief, hardware, opacity.
+    pub layout: Option<String>,
+    /// LabPBR metal ID for the layout's hardware mask.
+    pub layout_metal_id: Option<u8>,
     /// Ore recipe's inclusion color and LabPBR F0/metal ID.
     pub ore_color: Option<[u8; 3]>,
     pub ore_f0: Option<u8>,
@@ -175,6 +179,24 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
                 "{}: connected_glass requires a glass face recipe",
                 t.name
             ));
+        }
+        match (&t.layout, t.layout_metal_id) {
+            (Some(path), Some(id)) if (230..=237).contains(&id) => {
+                safe_file(root, path)?;
+                if t.f0_mask.is_some() || t.ore_f0.is_some() {
+                    return Err(format!(
+                        "{}: layout cannot be combined with other material masks",
+                        t.name
+                    ));
+                }
+            }
+            (None, None) => (),
+            _ => {
+                return Err(format!(
+                    "{}: layout requires a valid 230..=237 layout_metal_id",
+                    t.name
+                ))
+            }
         }
         if !ids.contains(&t.material) {
             return Err(format!("{}: unknown material {}", t.name, t.material));
@@ -324,7 +346,12 @@ pub fn input_hashes(m: &Manifest, root: &Path) -> Result<BTreeMap<String, String
         }
     }
     for texture in &m.textures {
-        for path in texture.f0_mask.iter().chain(texture.emissive_map.iter()) {
+        for path in texture
+            .f0_mask
+            .iter()
+            .chain(texture.emissive_map.iter())
+            .chain(texture.layout.iter())
+        {
             if hashes.contains_key(path) {
                 continue;
             }
