@@ -9,28 +9,36 @@ Haven API. Hashes for every bundled image are pinned in
 
 | Material ID | Poly Haven source | Source author(s) | Included maps |
 | --- | --- | --- | --- |
-| `bark_willow_02` | [Bark Willow 02](https://polyhaven.com/a/bark_willow_02) | Charlotte Baglioni | 1K albedo, DirectX normal, roughness, displacement; approximate bark for five log sides |
+| `bark_willow_02` | [Bark Willow 02](https://polyhaven.com/a/bark_willow_02) | Charlotte Baglioni | 1K albedo, DirectX normal, roughness, displacement; used on spruce and acacia log sides |
+| `bark_brown_01` | [Bark Brown 01](https://polyhaven.com/a/bark_brown_01) | Rob Tuytel | 1K albedo, OpenGL normal and roughness; oak log bark |
+| `bark_platanus` | [Bark Platanus](https://polyhaven.com/a/bark_platanus) | Dimitrios Savva | 1K albedo, OpenGL normal and roughness; dark-oak and jungle log bark |
 | `brick_red` | [Brick Wall 02](https://polyhaven.com/a/brick_wall_02) | Dimitrios Savva | albedo, OpenGL normal, roughness |
 | `concrete_wall` | [Concrete Wall 007](https://polyhaven.com/a/concrete_wall_007) | Charlotte Baglioni, Dario Barresi, Rico Cilliers | albedo, OpenGL normal, roughness |
 | `gravel_concrete` | [Gravel Concrete 04](https://polyhaven.com/a/gravel_concrete_04) | Dimitrios Savva | albedo, OpenGL normal, roughness |
-| `black_painted_planks` | [Black Painted Planks](https://polyhaven.com/a/black_painted_planks) | Dimitrios Savva | albedo, OpenGL normal, roughness |
 | `rusted_shutter` | [Rusted Shutter](https://polyhaven.com/a/rusted_shutter) | Dimitrios Savva | albedo, OpenGL normal, roughness |
-| `cotton_jersey` | [Cotton Jersey](https://polyhaven.com/a/cotton_jersey) | Rico Cilliers, colormass | albedo, OpenGL normal, roughness; used as a wool stand-in |
-| `walnut` | [Walnut Veneer](https://polyhaven.com/a/walnut_veneer) | Poly Haven | albedo, roughness; no normal map |
+| `poly_wool_herringbone` | [Poly Wool Herringbone](https://polyhaven.com/a/poly_wool_herringbone) | colormass, Rico Cilliers | 1K albedo, OpenGL normal and roughness; shared neutral woven-wool source for recolored wool targets |
+| `walnut`, `walnut_horizontal` | [Walnut Veneer](https://polyhaven.com/a/walnut_veneer) | Jenelle van Heerden | 1K albedo, OpenGL normal, roughness and AO; horizontal alias rotates all aligned maps and normal vectors |
 | `rock_face` | [Rock Face 03](https://polyhaven.com/a/rock_face_03) | Dario Barresi, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic; shared rocky host surface for stone, andesite, tuff and ore variants, plus a netherrack stand-in |
 | `forest_ground` | [Forest Ground 04](https://polyhaven.com/a/forest_ground_04) | Rob Tuytel, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `sandstone_cracks` | [Sandstone Cracks](https://polyhaven.com/a/sandstone_cracks) | Rob Tuytel | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `cobble_photo`, `mossy_cobble_photo` | [Cobblestone Floor 04](https://polyhaven.com/a/cobblestone_floor_04) | Rob Tuytel | modified albedo, displacement; plain version desaturated |
 | `aerial_sand` | [Aerial Beach 01](https://polyhaven.com/a/aerial_beach_01) | Rob Tuytel | albedo, OpenGL normal, roughness |
 
-The six materials from `brick_red` through `cotton_jersey` were sourced from a [documented CC0 redistribution](https://github.com/1493-ZA/Lil-Jeff-Simulator/blob/0e2989916fe5da64015e27b67abbe4464e94abf6/public/models/CREDITS.md)
-at commit `0e2989916fe5da64015e27b67abbe4464e94abf6`. The building and street maps are 1024px JPEGs; the cotton jersey maps are
-512px JPEGs. `walnut` came from the [documented
-CC0 redistribution](https://github.com/jasmine314-dev/dm-portal-assets/tree/2cee5cfb6cd7f3e73cfb47259f0106f5fcece65b)
-at commit `2cee5cfb6cd7f3e73cfb47259f0106f5fcece65b`, where the diffuse is
-1024px JPEG and roughness is a 512px JPEG. Files here are unmodified copies of
-those redistributed versions; the generator resizes and transforms them at
-build time. They are not the original full-resolution Poly Haven files.
+The active `brick_red` and `rusted_shutter` sources were sourced from a [documented CC0 redistribution](https://github.com/1493-ZA/Lil-Jeff-Simulator/blob/0e2989916fe5da64015e27b67abbe4464e94abf6/public/models/CREDITS.md)
+at commit `0e2989916fe5da64015e27b67abbe4464e94abf6`; their 1K maps are
+redistributed as JPEGs. The former Cotton Jersey wool stand-in and unused
+Black Painted Planks maps were removed from the active source set. `walnut`
+uses matched, unmodified provider 1K JPEG maps from the pinned [H2 material
+mirror](https://github.com/noahpeters/H2/tree/768413f5e3bf1f9572208566aab138c957374bc6/public/studio/materials).
+Its provenance identifies Poly Haven, the CC0 license, creator, map URLs,
+dimensions and original SHA-256 values; the bundled copies are verified
+against those hashes in `work/material_manifest.json`. Walnut now includes
+aligned OpenGL normals, roughness and AO rather than the former partial
+albedo/roughness-only copy. The `bark_brown_01` and `bark_platanus` 1K maps
+are similarly documented Poly Haven CC0 redistributions in the pinned
+[Abbott-game harvest](https://github.com/wmehobbs/Abbott-game/tree/0796b0a859aded9629cd802a0c132993b0c6e091/tools/content_factory/raw_harvest);
+their source manifests record the provider URLs, authors and licenses. Input
+hashes are pinned in the manifest.
 
 `forest_ground`, `sandstone_cracks` and `rock_face` were sourced from a [documented
 CC0 redistribution](https://github.com/gotzawal/morglay/blob/b462748f1e2c2cf2288de615089c79d69ce47b08/editor/library/LICENSES.md)
@@ -64,26 +72,41 @@ appearance remains experimental.
 [texture-explorer](https://github.com/pablo-figueroa-uniandes/texture-explorer/blob/8efed6702632a18f284dcaba5b64cb4b02304fe5/tools/fetch_textures.ps1)
 at commit `8efed6702632a18f284dcaba5b64cb4b02304fe5`. The mirror script
 retrieves Poly Haven's 1K diffuse, DirectX normal, roughness and displacement
-maps. The same willow scan is adapted to oak, spruce, dark oak, acacia and
-jungle logs; it is not a species-specific scan. Log ends were vanilla at preview 5.
+maps. It remains an approximate shared source for spruce and acacia only;
+oak now uses Bark Brown 01, while dark oak and jungle use Bark Platanus. These
+are species-informed source choices rather than scans proven to match the
+exact Minecraft species. Log ends remain separate from bark-side scans.
 
 ### Preview 6 wood and grass
 
-`oak_veneer_02`, `natural_walnut_veneer`, `white_maple_veneer`, and
-`cherry_veneer` are 1K CC0 Poly Haven veneer scans by **Jenelle van Heerden**:
-[Oak Veneer 02](https://polyhaven.com/a/oak_veneer_02),
+`oak_veneer_02`, `natural_walnut_veneer`, `white_maple_veneer`,
+`cherry_veneer`, and `walnut` are 1K CC0 Poly Haven veneer scans by **Jenelle
+van Heerden**: [Oak Veneer 02](https://polyhaven.com/a/oak_veneer_02),
 [Natural Walnut Veneer](https://polyhaven.com/a/natural_walnut_veneer),
-[White Maple Veneer](https://polyhaven.com/a/white_maple_veneer), and
-[Cherry Veneer](https://polyhaven.com/a/cherry_veneer). Each includes matched
-albedo, OpenGL normals, roughness and ambient occlusion; no displacement was
-available in this mirror. They came from the unmodified provider 1K JPEGs in
-[H2](https://github.com/noahpeters/H2/tree/768413f5e3bf1f9572208566aab138c957374bc6/public/studio/materials),
-whose provenance files include upstream URLs and original checksums. Veneers
-are approximations for solid planks, with procedural board joints and recoloring;
-not all wood species match the original scans. Bamboo textures reuse White
-Maple Veneer with an original periodic bamboo-board/node recipe; they are not
-sourced bamboo photographs. Generated height combines board
+[White Maple Veneer](https://polyhaven.com/a/white_maple_veneer),
+[Cherry Veneer](https://polyhaven.com/a/cherry_veneer), and
+[Walnut Veneer](https://polyhaven.com/a/walnut_veneer). All provide aligned
+albedo, OpenGL normals, roughness and ambient occlusion from the pinned
+[H2 material mirror](https://github.com/noahpeters/H2/tree/768413f5e3bf1f9572208566aab138c957374bc6/public/studio/materials),
+with provider URLs and original checksums. The Walnut Veneer source now
+provides a distinctly dark-oak grain, while pale oak deliberately retains
+White Maple Veneer because the white-oak scan's dark albedo would require
+extreme color gain against Minecraft's very pale palette. Veneers remain
+approximations for solid lumber, but species families now separate dark oak,
+oak, maple/birch, cherry and walnut more deliberately. Rotated aliases
+transform all continuous maps and normal vectors together. Bamboo still uses
+White Maple Veneer with an original periodic bamboo-board/node recipe; it is
+not a sourced bamboo photograph. Generated height combines procedural board
 relief with a luminance estimate, not measured displacement.
+
+The 16 recolored wool blocks now use [Poly Wool Herringbone](https://polyhaven.com/a/poly_wool_herringbone)
+by colormass (photography) and Rico Cilliers (processing), CC0. The aligned
+1K albedo, OpenGL normal and roughness maps were sourced from the documented
+[Abbott-game harvest](https://github.com/wmehobbs/Abbott-game/tree/0796b0a859aded9629cd802a0c132993b0c6e091/tools/content_factory/raw_harvest/poly_wool_herringbone),
+whose source manifest identifies the exact Poly Haven asset and CC0 license.
+The maps are slightly rectangular (1024×1045) and are periodically resampled
+by the generator to the square working tile; this small aspect correction
+still needs shader/game review. This replaces a flat Cotton Jersey stand-in.
 
 `leafy_grass` uses [Leafy Grass](https://polyhaven.com/a/leafy_grass) by
 Charlotte Baglioni, CC0. The 1K color, matched OpenGL normal and roughness came

@@ -556,6 +556,71 @@ fn geological_surfaces_and_ore_host_rock_use_rock_face_material() {
 }
 
 #[test]
+fn wood_and_wool_materials_match_species_and_grain_orientation() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    assert_eq!(manifest["pbr_strength"], 0.2);
+    let textures: std::collections::HashMap<&str, &str> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| (
+            t["name"].as_str().unwrap(),
+            t["material"].as_str().unwrap(),
+        ))
+        .collect();
+    for (name, material) in [
+        ("oak_log", "bark_brown_01"),
+        ("spruce_log", "bark_willow_02"),
+        ("dark_oak_log", "bark_platanus"),
+        ("acacia_log", "bark_willow_02"),
+        ("jungle_log", "bark_platanus"),
+        ("dark_oak_planks", "walnut_horizontal"),
+        ("stripped_dark_oak_log", "walnut"),
+        ("dark_oak_door_top", "walnut"),
+        ("dark_oak_door_bottom", "walnut"),
+        ("dark_oak_trapdoor", "walnut"),
+        ("pale_oak_planks", "white_maple_veneer"),
+        ("pale_oak_log_top", "white_maple_veneer"),
+        ("stripped_pale_oak_log", "white_maple_veneer_vertical"),
+        ("stripped_pale_oak_log_top", "white_maple_veneer"),
+        ("pale_oak_door_top", "white_maple_veneer_vertical"),
+        ("pale_oak_door_bottom", "white_maple_veneer_vertical"),
+        ("pale_oak_trapdoor", "white_maple_veneer_vertical"),
+    ] {
+        assert_eq!(textures[name], material, "{name}");
+    }
+    for color in [
+        "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+        "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+    ] {
+        let name = format!("{color}_wool");
+        assert_eq!(textures[name.as_str()], "poly_wool_herringbone", "{name}");
+    }
+    let materials: std::collections::HashMap<&str, &serde_json::Value> = manifest["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|m| (m["id"].as_str().unwrap(), m))
+        .collect();
+    let walnut_horizontal = "walnut_horizontal";
+    assert_eq!(materials[walnut_horizontal]["rotate_cw"], true);
+    assert_eq!(materials[walnut_horizontal]["normal_y"], "opengl");
+    for map in ["albedo", "normal", "roughness", "ao"] {
+        assert!(materials[walnut_horizontal][map].is_string(), "walnut: {map}");
+    }
+    for source in ["bark_brown_01", "bark_platanus"] {
+        assert_eq!(materials[source]["normal_y"], "opengl", "{source}");
+        for map in ["albedo", "normal", "roughness"] {
+            assert!(materials[source][map].is_string(), "{source}: {map}");
+        }
+    }
+    for texture in manifest["textures"].as_array().unwrap() {
+        assert!(texture.get("pbr_strength").is_none() || texture["pbr_strength"].is_null());
+    }
+}
+
+#[test]
 fn representative_26_3_models_share_the_covered_texture_paths() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
@@ -969,7 +1034,7 @@ fn pack_verifier_detects_broken_or_invalid_pbr_maps() {
 }
 
 #[test]
-fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
+fn grass_wood_and_wool_maps_keep_real_detail_and_biome_tint() {
     use hyperrealism_core::png_io::read;
     let unique = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -987,14 +1052,22 @@ fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|m| m["id"] == "leafy_grass" || m["id"] == "oak_veneer_02")
+        .filter(|m| {
+            m["id"] == "leafy_grass"
+                || m["id"] == "oak_veneer_02"
+                || m["id"] == "poly_wool_herringbone"
+        })
         .cloned()
         .collect();
     let textures: Vec<_> = all["textures"]
         .as_array()
         .unwrap()
         .iter()
-        .filter(|t| t["name"] == "grass_block_top" || t["name"] == "oak_planks")
+        .filter(|t| {
+            t["name"] == "grass_block_top"
+                || t["name"] == "oak_planks"
+                || t["name"] == "white_wool"
+        })
         .cloned()
         .collect();
     for material in &materials {
@@ -1029,7 +1102,7 @@ fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
         .all(|p| p[0] == p[1] && p[1] == p[2] && p[3] == 255));
     // Do not replace the separate biome-tinted cutout with an opaque texture.
     assert!(!block.join("grass_block_side_overlay.png").exists());
-    for name in ["grass_block_top", "oak_planks"] {
+    for name in ["grass_block_top", "oak_planks", "white_wool"] {
         let n = read(&block.join(format!("{name}_n.png"))).unwrap();
         let s = read(&block.join(format!("{name}_s.png"))).unwrap();
         let varied = |pixels: &[u8], channel| {

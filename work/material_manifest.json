@@ -30,19 +30,13 @@
     },
     {
       "id": "walnut",
-      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator(s): Poly Haven",
+      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator: Jenelle van Heerden; verified CC0 source maps from H2 at 768413f5e3bf1f9572208566aab138c957374bc6",
       "license": "CC0-1.0",
       "albedo": "materials/walnut/color.jpg",
-      "roughness": "materials/walnut/roughness.jpg"
-    },
-    {
-      "id": "black_painted_planks",
-      "source": "Black Painted Planks: https://polyhaven.com/a/black_painted_planks; creator(s): Dimitrios Savva",
-      "license": "CC0-1.0",
-      "albedo": "materials/black_painted_planks/color.jpg",
-      "roughness": "materials/black_painted_planks/roughness.jpg",
-      "normal": "materials/black_painted_planks/normal.jpg",
-      "normal_y": "opengl"
+      "roughness": "materials/walnut/roughness.jpg",
+      "normal": "materials/walnut/normal.jpg",
+      "normal_y": "opengl",
+      "ao": "materials/walnut/ao.jpg"
     },
     {
       "id": "rusted_shutter",
@@ -52,15 +46,6 @@
       "roughness": "materials/rusted_shutter/roughness.jpg",
       "normal": "materials/rusted_shutter/normal.jpg",
       "normal_y": "opengl"
-    },
-    {
-      "id": "cotton_jersey",
-      "source": "Cotton Jersey: https://polyhaven.com/a/cotton_jersey (wool stand-in); creator(s): Rico Cilliers, colormass",
-      "license": "CC0-1.0",
-      "albedo": "materials/cotton_jersey/color.jpg",
-      "normal": "materials/cotton_jersey/normal.jpg",
-      "normal_y": "opengl",
-      "roughness": "materials/cotton_jersey/roughness.jpg"
     },
     {
       "id": "forest_ground",
@@ -309,6 +294,44 @@
       "normal": "materials/metal_plate_02/nor.jpg",
       "normal_y": "opengl",
       "roughness": "materials/metal_plate_02/rough.jpg"
+    },
+    {
+      "id": "walnut_horizontal",
+      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator: Jenelle van Heerden; verified CC0 source maps from H2 at 768413f5e3bf1f9572208566aab138c957374bc6; aligned maps rotated clockwise to horizontal grain",
+      "license": "CC0-1.0",
+      "albedo": "materials/walnut/color.jpg",
+      "normal": "materials/walnut/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/walnut/roughness.jpg",
+      "ao": "materials/walnut/ao.jpg",
+      "rotate_cw": true
+    },
+    {
+      "id": "poly_wool_herringbone",
+      "source": "Poly Wool Herringbone: https://polyhaven.com/a/poly_wool_herringbone; creators: colormass (photography), Rico Cilliers (processing); CC0 source manifest mirrored at Abbott-game commit 0796b0a859aded9629cd802a0c132993b0c6e091",
+      "license": "CC0-1.0",
+      "albedo": "materials/poly_wool_herringbone/color.jpg",
+      "normal": "materials/poly_wool_herringbone/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/poly_wool_herringbone/roughness.jpg"
+    },
+    {
+      "id": "bark_brown_01",
+      "source": "Bark Brown 01: https://polyhaven.com/a/bark_brown_01; creator: Rob Tuytel; CC0 maps mirrored with source manifest at Abbott-game commit 0796b0a859aded9629cd802a0c132993b0c6e091",
+      "license": "CC0-1.0",
+      "albedo": "materials/bark_brown_01/color.jpg",
+      "normal": "materials/bark_brown_01/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/bark_brown_01/roughness.jpg"
+    },
+    {
+      "id": "bark_platanus",
+      "source": "Bark Platanus: https://polyhaven.com/a/bark_platanus; creator: Dimitrios Savva; CC0 maps mirrored with source manifest at Abbott-game commit 0796b0a859aded9629cd802a0c132993b0c6e091",
+      "license": "CC0-1.0",
+      "albedo": "materials/bark_platanus/color.jpg",
+      "normal": "materials/bark_platanus/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/bark_platanus/roughness.jpg"
     }
   ],
   "textures": [
@@ -1334,7 +1357,7 @@
     },
     {
       "name": "dark_oak_planks",
-      "material": "natural_walnut_veneer",
+      "material": "walnut_horizontal",
       "recipe": "plank",
       "tint": [
         255,
@@ -1402,7 +1425,7 @@
     },
     {
       "name": "white_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1419,7 +1442,7 @@
     },
     {
       "name": "orange_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1436,7 +1459,7 @@
     },
     {
       "name": "magenta_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1453,7 +1476,7 @@
     },
     {
       "name": "light_blue_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1470,7 +1493,7 @@
     },
     {
       "name": "yellow_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1487,7 +1510,7 @@
     },
     {
       "name": "lime_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1504,7 +1527,7 @@
     },
     {
       "name": "pink_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1521,7 +1544,7 @@
     },
     {
       "name": "gray_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1538,7 +1561,7 @@
     },
     {
       "name": "light_gray_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1555,7 +1578,7 @@
     },
     {
       "name": "cyan_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1572,7 +1595,7 @@
     },
     {
       "name": "purple_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1589,7 +1612,7 @@
     },
     {
       "name": "blue_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1606,7 +1629,7 @@
     },
     {
       "name": "brown_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1623,7 +1646,7 @@
     },
     {
       "name": "green_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1640,7 +1663,7 @@
     },
     {
       "name": "red_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1657,7 +1680,7 @@
     },
     {
       "name": "black_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -2188,7 +2211,7 @@
     },
     {
       "name": "oak_log",
-      "material": "bark_willow_02",
+      "material": "bark_brown_01",
       "recipe": "material",
       "tint": [
         255,
@@ -2222,7 +2245,7 @@
     },
     {
       "name": "dark_oak_log",
-      "material": "bark_willow_02",
+      "material": "bark_platanus",
       "recipe": "material",
       "tint": [
         255,
@@ -2256,7 +2279,7 @@
     },
     {
       "name": "jungle_log",
-      "material": "bark_willow_02",
+      "material": "bark_platanus",
       "recipe": "material",
       "tint": [
         255,
@@ -3622,7 +3645,7 @@
     },
     {
       "name": "stripped_dark_oak_log",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -4778,7 +4801,7 @@
     },
     {
       "name": "dark_oak_door_top",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -4797,7 +4820,7 @@
     },
     {
       "name": "dark_oak_door_bottom",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -4816,7 +4839,7 @@
     },
     {
       "name": "dark_oak_trapdoor",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -5736,17 +5759,11 @@
     "materials/brick_red/color.jpg": "09eae3f78d665a4308b3bb7e5f2c0a7e70ea52c6679f223b91230d762d586f01",
     "materials/brick_red/roughness.jpg": "702c1b3b1859ed7b1ba307eddb91499439f00b5ed6da1eeb15a2ee5d79d953db",
     "materials/brick_red/normal.jpg": "486bb646d2a07fdad5fb3e86a914389d660168992654e28eb0e1204e4468b455",
-    "materials/walnut/color.jpg": "86e77aef79e47642f261b5bc95b5569715da3350417f7b44830cc8f131876bd9",
-    "materials/walnut/roughness.jpg": "b37910b68632abd3df30a7cd343961267cba44b3519e1d3354dd450d8a907882",
-    "materials/black_painted_planks/color.jpg": "dcb953fb3f0a3d1d9ed4fb3bdd46012e839df53d0e7799b5cd6cedb7721418f7",
-    "materials/black_painted_planks/roughness.jpg": "aa05db7dd53149ca645e7d8984e2238382f5293d3dfeff09cc2d7246aa9d852e",
-    "materials/black_painted_planks/normal.jpg": "dbb9568078bed3275dd69eade2a3d102ac324c4f4239061e1142e8075098e021",
+    "materials/walnut/color.jpg": "d8c971e403b185b5c350d1e6fa75c3e7fcc36130781c7686263f6bcd23ac4db1",
+    "materials/walnut/roughness.jpg": "5cb9d78ec685155d2b66a1db01abc61049d00953d783d0c78d829512de9ab0b4",
     "materials/rusted_shutter/color.jpg": "7fdd58c32a2d4b0595441391e05ec15a228fab595d4b8eae1c57fdfbc700b9f9",
     "materials/rusted_shutter/roughness.jpg": "4f271d12346b2c73d57d858481bf9b6a9628f0031ffa50a07195df874c35d671",
     "materials/rusted_shutter/normal.jpg": "c140aafd2fb4f691aecca720c88bd1131f4bb03555efbaf3936997f2f52088a7",
-    "materials/cotton_jersey/color.jpg": "ac428ff21d00d3d92f780113c69978de6e8126a6d3b75e5bfba10404b97d981d",
-    "materials/cotton_jersey/normal.jpg": "c886ddf51c805aa1a16352fa2e2738944ed6aee79f17a9f1519548caddfa52f3",
-    "materials/cotton_jersey/roughness.jpg": "db14af3239b6f8cde9ab16c01c940eb66615dd7b635086e138494db871a3eb64",
     "materials/forest_ground/color.jpg": "892c12442d35cdd01a3b5af56447fa7ed0221157255a040c1442b60b8410cb40",
     "materials/forest_ground/normal.jpg": "cf4c1793a7cdb81e4fdff220222d42f549c0d2bde680f0f2ee2beccae324b82a",
     "materials/forest_ground/arm.jpg": "e2f4fe1721748dabe24e7649ce0d870c5c31163e56eea67f1ece4b685b16ed90",
@@ -5866,7 +5883,18 @@
     "materials/metal_plate_02/rough.jpg": "15c10e985bf4317393571fd7ec1b19de57177b7d88f2e4a5493ec9c290bac47b",
     "materials/shaped_layouts/lever.png": "47e0081ecab32b13d18a4cb2abf5200bcf932d0d8a5cb28e8798ef2f087d07a5",
     "materials/tree_leaves/height.png": "84fea151ce66f223046fa9f1698a2e7696512eebdbbf441fde9e0ec8cd3f2a27",
-    "materials/tree_leaves/ao.png": "694b2fa001e61839d13c85138ea44026ba3909957281144ca87b79502cb4e949"
+    "materials/tree_leaves/ao.png": "694b2fa001e61839d13c85138ea44026ba3909957281144ca87b79502cb4e949",
+    "materials/walnut/normal.jpg": "de823c2e9942ea77caeddab08add49688a9792b79aac496640fecaee9fbcb5c4",
+    "materials/walnut/ao.jpg": "355d1028bd45868906563b1b446acbc0216b78e24ecca6256808e67f64237a94",
+    "materials/poly_wool_herringbone/color.jpg": "fd889a46f617efd331e522e36b8ad2548e16e1cb018c001872f17537d7666af5",
+    "materials/poly_wool_herringbone/normal.jpg": "314ac7c1b7c101a48106e05199bfdb24e33671e58a6ccb334249b441d8e8ac98",
+    "materials/poly_wool_herringbone/roughness.jpg": "028b4fb92c322a31b5374171f62f43af2cfd6a012748be175fd44dbf1109903c",
+    "materials/bark_brown_01/color.jpg": "4213441aebcb72b9911f5a860e9ce74a61a8f6ce3b9c23d1f204173e7e7f6066",
+    "materials/bark_brown_01/normal.jpg": "9d1537b3429579436a62890bb7c5050a0172a15ce768787eacde81c5ccefc9cc",
+    "materials/bark_brown_01/roughness.jpg": "4e7f62508cf77faebfeee15ffb571ff02c45c18d5174aa19fcb8b98506359c5c",
+    "materials/bark_platanus/color.jpg": "4e302eeb6a66d50880484a08bd2c6e43974eb1636397d94d9c8bc54d508c2c1b",
+    "materials/bark_platanus/normal.jpg": "af36a887dc9cac3ea70902bc6e26b1d3f2608f39f96880f6e7766d93fefe43f5",
+    "materials/bark_platanus/roughness.jpg": "778135a767d90cdcdc486d4351956652c41645b8fd205ee86d73bfd7134bd1de"
   },
   "pbr_strength": 0.2
 }
