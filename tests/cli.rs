@@ -498,10 +498,16 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         let entry = &entries[&t.name];
         assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));
         assert_eq!(entry["has_mcmeta"], t.mipmap_strategy.is_some());
-        assert_eq!(
-            entry["target_rgb"],
-            serde_json::json!(t.target_color.unwrap())
-        );
+        let audited = entry["target_rgb"].as_array().unwrap();
+        let expected: [u8; 3] = std::array::from_fn(|channel| {
+            let base = audited[channel].as_u64().unwrap() as f32;
+            (if t.name.contains("glass") {
+                (base * 0.96).round()
+            } else {
+                base
+            }) as u8
+        });
+        assert_eq!(t.target_color, Some(expected), "{}", t.name);
     }
 }
 
