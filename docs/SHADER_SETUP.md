@@ -49,7 +49,10 @@ texture targets, with no per-texture overrides. In this generator that scales
 tangent-space normal slopes, height deviations around neutral, and smoothness
 to 20% of unit-strength, while AO fades toward white. Albedo and discrete
 LabPBR metal/F0 IDs, porosity and emission are preserved. This is defined
-channel scaling, not a guarantee of 20% perceived brightness or relief. Compare the same sunlit oak log or cobblestone with
+channel scaling, not a guarantee of 20% perceived brightness or relief. Preview
+15 supplies explicit, normal-derived height and conservative cavity AO for the
+shared leaf atlas; use POM if you want to inspect the shallow surface relief.
+This does not change leaf block geometry or create a fuller canopy. Compare the same sunlit oak log or cobblestone with
 Normal Mapping on and off; rotate the view/light to check for changes in shading.
 For specular, compare a smooth metallic block in the manifest, with Specular Mapping on/off.
 If nothing changes, check Iris/Photon versions, pack order, and shader settings;

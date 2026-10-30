@@ -119,8 +119,11 @@ at commit `ede3b8850b307f5ba95eacd587a0663446212f61`, SHA-256
 The fragments and their OpenGL normals/roughness are rotated and layered with
 periodic wrapping; their albedo is neutralized for biome tint. This is one
 shared broadleaf scan, not species-accurate oak, birch, jungle, acacia, mangrove
-or dark-oak foliage. Normals and roughness are aligned; height is estimated,
-AO is flat and subsurface is a chosen constant. The audit's static
+or dark-oak foliage. `scripts/prepare-leaf-depth.py` derives a continuous height
+map by periodic Poisson integration of the aligned scanned normal slopes, then
+creates a conservative cavity-AO estimate from that height. These are derived
+maps, not captured displacement or ray-traced AO; the normal, roughness, height
+and AO are aligned. Subsurface remains a chosen constant. The audit's static
 `dark_cutout` mip strategy is included. The grass side now has a soil base and
 a separately generated, transparent, biome-tinted fringe from Leafy Grass;
 the fringe shape is procedural. `scripts/prepare-overworld-materials.py`
@@ -226,3 +229,17 @@ source palette and glass/pane model UVs are unchanged. These are intended to
 reduce harsh bevels, bright outlines and shader-parallax bulging; visual quality
 still needs an in-game check with the user's shader and settings. Reducing POM
 depth/samples in the shader can further reduce apparent block displacement.
+
+### Preview 15: reconstructed foliage height and cavity AO
+
+The shared CC0 broadleaf atlas now supplies explicit LabPBR height and AO
+inputs for its nine leaf block variants, instead of relying on luminance-based
+height and flat AO. Height is reconstructed periodically from the scanned
+OpenGL normal slopes; AO is a restrained local cavity estimate. This adds
+shallow leaf-surface relief only. It does not add canopy geometry, and the one
+broadleaf source is still shared across species. The tree-leaf alpha cutouts are
+unchanged. Map structure and checksums are validated in the generated pack; the
+user's Minecraft 26.3/Fabric/Iris/Solas scene still needs live in-game review.
+Technique research and license notes are in
+[`docs/PBR_TECHNIQUE_RESEARCH.md`](../docs/PBR_TECHNIQUE_RESEARCH.md); no
+competitor assets were copied.

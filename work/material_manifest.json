@@ -237,7 +237,9 @@
       "albedo": "materials/tree_leaves/neutral_color.png",
       "normal": "materials/tree_leaves/normal.png",
       "normal_y": "opengl",
-      "roughness": "materials/tree_leaves/roughness.png"
+      "roughness": "materials/tree_leaves/roughness.png",
+      "height": "materials/tree_leaves/height.png",
+      "ao": "materials/tree_leaves/ao.png"
     },
     {
       "id": "clay_floor",
@@ -5862,7 +5864,9 @@
     "materials/metal_plate_02/diff.jpg": "5ae0cf878a8ad486e59c982efcb39c13bfd0752a9906b8195fbaecaf428fc001",
     "materials/metal_plate_02/nor.jpg": "5bb27bb9ade25464648fcb99ca049db6edef823e281ddf60482d90080361e27c",
     "materials/metal_plate_02/rough.jpg": "15c10e985bf4317393571fd7ec1b19de57177b7d88f2e4a5493ec9c290bac47b",
-    "materials/shaped_layouts/lever.png": "47e0081ecab32b13d18a4cb2abf5200bcf932d0d8a5cb28e8798ef2f087d07a5"
+    "materials/shaped_layouts/lever.png": "47e0081ecab32b13d18a4cb2abf5200bcf932d0d8a5cb28e8798ef2f087d07a5",
+    "materials/tree_leaves/height.png": "84fea151ce66f223046fa9f1698a2e7696512eebdbbf441fde9e0ec8cd3f2a27",
+    "materials/tree_leaves/ao.png": "694b2fa001e61839d13c85138ea44026ba3909957281144ca87b79502cb4e949"
   },
   "pbr_strength": 0.2
 }

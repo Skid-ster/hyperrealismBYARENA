@@ -6,9 +6,10 @@ LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
 are approximated as described below. The current source catalog contains 308
 distinct block texture targets based on CC0 Poly Haven maps and original
-procedural work; Preview 13 added the lever texture and Preview 14 lowers all
-PBR strength to a uniform 20% while softening door/glass treatments. This is **not** the requested complete pack or a
-finished photorealistic catalog. A separate synthetic manifest contains eight
+procedural work; Preview 13 added the lever texture, Preview 14 unified PBR
+strength at 20% and softened door/glass treatments, and Preview 15 adds
+normal-derived height and subtle cavity AO to the shared foliage atlas. This is
+**not** the requested complete pack or a finished photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
 not contain the earlier Python code or manifest, so this is a new schema and
 implementation, not a port or a claim of matching its results.
@@ -52,12 +53,12 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 14 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 15 uses 512×512
 textures (despite the legacy filename), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.14/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.15/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 308 distinct texture paths replace only a subset of the game; the rest remain
@@ -78,11 +79,17 @@ adds a custom PBR lever texture while preserving Minecraft models and powered
 states, and sets a per-texture PBR strength of 0.16 (40% of the previous 0.4 baseline) on 55
 door, trapdoor and lever targets. All use aligned LabPBR maps; wood grain reuses
 CC0 Poly Haven veneer scans and metal details use the documented CC0 steel scan.
-Preview 14 also softens the procedural door-panel shade/relief contrast,
-reduces clear/stained glass rim thickness, and applies the global 0.2 PBR
-strength uniformly with no per-texture overrides. Door/trapdoor cutout masks,
-models, UVs and block states remain unchanged; clear/stained glass rim alpha
-was intentionally narrowed. Water is unchanged. It replaces only specified
+Preview 14 softens the procedural door-panel shade/relief contrast, reduces
+clear/stained glass rim thickness, and applies the global 0.2 PBR strength
+uniformly with no per-texture overrides. Preview 15 adds explicit height and
+subtle cavity AO maps to the shared CC0 broadleaf atlas; height is reconstructed
+from scanned normal slopes, not a captured displacement scan. The leaf alpha
+silhouettes are unchanged, and material maps still cannot add canopy geometry.
+Door/trapdoor cutout masks, models, UVs and block states remain unchanged;
+clear/stained glass rim alpha was intentionally narrowed. Water is unchanged.
+Foliage remains a single broadleaf source shared among species. Research notes:
+[competing PBR techniques and licensing](docs/PBR_TECHNIQUE_RESEARCH.md). It
+replaces only specified
 blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
 `stone_bricks`, `oak_planks`, `white_wool`, `gold_ore` and `diamond_ore` to
 compare. See the manifest for the full list. Other textures stay unchanged.
@@ -92,7 +99,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.14/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.15/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
