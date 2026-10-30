@@ -1,13 +1,14 @@
 # Bundled material sources
 
-Most maps are **CC0-1.0** assets derived from Poly Haven. Their files are
-provided solely as a compact, reproducible starter set for the in-progress
+Most maps are **CC0-1.0** scans from Poly Haven, ambientCG, TextureCan and
+other cited providers. Their files are provided solely as a compact,
+reproducible starter set for the in-progress
 resource-pack generator. Poly Haven's asset license permits redistribution:
 <https://polyhaven.com/license>. This repository does not use the live Poly
 Haven API. Hashes for every bundled image are pinned in
 `work/material_manifest.json`.
 
-| Material ID | Poly Haven source | Source author(s) | Included maps |
+| Material ID | Source asset | Source author(s) | Included maps |
 | --- | --- | --- | --- |
 | `bark_willow_02` | [Bark Willow 02](https://polyhaven.com/a/bark_willow_02) | Charlotte Baglioni | 1K albedo, DirectX normal, roughness, displacement; used on spruce and acacia log sides |
 | `bark_brown_01` | [Bark Brown 01](https://polyhaven.com/a/bark_brown_01) | Rob Tuytel | 1K albedo, OpenGL normal and roughness; oak log bark |
@@ -18,7 +19,10 @@ Haven API. Hashes for every bundled image are pinned in
 | `rusted_shutter` | [Rusted Shutter](https://polyhaven.com/a/rusted_shutter) | Dimitrios Savva | albedo, OpenGL normal, roughness |
 | `poly_wool_herringbone` | [Poly Wool Herringbone](https://polyhaven.com/a/poly_wool_herringbone) | colormass, Rico Cilliers | 1K albedo, OpenGL normal and roughness; shared neutral woven-wool source for recolored wool targets |
 | `walnut`, `walnut_horizontal` | [Walnut Veneer](https://polyhaven.com/a/walnut_veneer) | Jenelle van Heerden | 1K albedo, OpenGL normal, roughness and AO; horizontal alias rotates all aligned maps and normal vectors |
-| `rock_face` | [Rock Face 03](https://polyhaven.com/a/rock_face_03) | Dario Barresi, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic; shared rocky host surface for stone, andesite, tuff and ore variants, plus a netherrack stand-in |
+| `rock_face` | [Rock Face 03](https://polyhaven.com/a/rock_face_03) | Dario Barresi, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic; shared rocky host surface for overworld stone, andesite, tuff and ore variants |
+| `nether_lava_003` | [Lava 003](https://ambientcg.com/view?id=Lava003) | ambientCG, Lennart Demes | 1K albedo, OpenGL normal and packed AO/roughness/metallic; CC0 volcanic crust for netherrack and ore hosts |
+| `nether_dark_rock` | [Rock 058](https://ambientcg.com/view?id=Rock058) | ambientCG, Lennart Demes | 1K albedo, OpenGL normal and packed AO/roughness/metallic; CC0 dark rock for basalt, blackstone and obsidian families |
+| `nether_lava_flow` | [Volcanic Lava Flow, ground_0027](https://www.texturecan.com/terms/) | TextureCan | 1K albedo, OpenGL normal, packed AO/roughness/metallic and aligned emission mask; CC0 source for crying-obsidian fissures |
 | `forest_ground` | [Forest Ground 04](https://polyhaven.com/a/forest_ground_04) | Rob Tuytel, Rico Cilliers | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `sandstone_cracks` | [Sandstone Cracks](https://polyhaven.com/a/sandstone_cracks) | Rob Tuytel | albedo, OpenGL normal, packed AO/roughness/metallic |
 | `cobble_photo`, `mossy_cobble_photo` | [Cobblestone Floor 04](https://polyhaven.com/a/cobblestone_floor_04) | Rob Tuytel | modified albedo, displacement; plain version desaturated |
@@ -40,6 +44,16 @@ are similarly documented Poly Haven CC0 redistributions in the pinned
 their source manifests record the provider URLs, authors and licenses. Input
 hashes are pinned in the manifest.
 
+Preview 21's `nether_lava_003` and `nether_dark_rock` are original CC0 ambientCG
+Lava003 and Rock058 scans (Lennart Demes), with aligned OpenGL normals and
+packed AO/roughness/metal channels. `nether_lava_flow` is TextureCan's CC0
+Volcanic Lava Flow (ground_0027); its aligned emission mask drives the glowing
+fissures on crying obsidian. Exact redistributed source bytes and source
+provenance are pinned to the documented [ReneHack CC0 art mirror](https://github.com/g0ddest/renethack/tree/7cba95ae442dc4ccb174c965c3de91e0b2093bcd/client/godot/art/cc0),
+commit `7cba95ae442dc4ccb174c965c3de91e0b2093bcd`. Only the upstream CC0 scan
+maps are reused; no original game, competitor or proprietary texture pixels are
+bundled. Source SHA-256 values are recorded in the manifest.
+
 `forest_ground`, `sandstone_cracks` and `rock_face` were sourced from a [documented
 CC0 redistribution](https://github.com/gotzawal/morglay/blob/b462748f1e2c2cf2288de615089c79d69ce47b08/editor/library/LICENSES.md)
 at commit `b462748f1e2c2cf2288de615089c79d69ce47b08`. The mirror resized and
@@ -60,7 +74,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 308 texture names and approximate sRGB color targets were checked against
+The 344 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -240,7 +254,7 @@ structural verification, not a Minecraft/Continuity runtime render test.
 
 ### Preview 14: reduced PBR and softer door/glass edges
 
-The global PBR strength is now `0.2` for all 308 generated texture targets, with
+The global PBR strength is now `0.2` for all 344 generated texture targets, with
 all per-texture overrides removed. This scales normal slope, height deviation
 and smoothness to 20% of their unit-strength values and fades AO toward white;
 albedo and discrete material-ID, porosity and emission channels remain intact.
@@ -279,3 +293,22 @@ rather than only thinned. Pane-cap alpha silhouettes are kept as vanilla UV
 shape data; those are not decorative borders. Models, UVs, states, pane-cap silhouettes, door masks, glass PBR channels and
 water are otherwise unchanged. This revision has structural tests but has not
 been rendered in Minecraft.
+
+### Preview 21: Nether solid-surface materials
+
+The 36 new static Nether targets use source-informed CC0 scans for volcanic
+crust, dark rock, lava fissures, red brick, pale quartz-like stone, soul soils,
+nylium and fungal blocks. Existing door/plank assignments now keep crimson
+wood on the cherry palette and warped wood on the pale-maple palette. Crying
+obsidian uses the aligned TextureCan lava-fissure emission mask; glowstone and
+shroomlight have constant emissive strengths. Gilded blackstone uses the
+existing deterministic ore inclusion recipe with the gold LabPBR ID.
+
+Minecraft `magma`, Nether portal, animated stems, roots/vines, fungus and other
+cutout/animated sprites were not regenerated because the current pipeline does
+not preserve their exact original animation frames and alpha silhouettes.
+They remain vanilla. All targeted block models, UVs and block states remain
+unchanged. The 344 target paths are validated against the pinned 26.3 metadata;
+source licensing, sizes, hashes and channel structure are documented here and
+in the manifest. This is not visual shader/game validation, and species/material
+fit still needs in-game review.

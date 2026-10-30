@@ -52,14 +52,14 @@ shared procedural seed and produce byte-identical albedo and PBR maps rather
 than drifting apart.
 
 All block texture paths referenced in this sampled model audit are now present
-in the 308-entry manifest. Thus these audited families need no duplicate variant
+in the 344-entry manifest. Thus these audited families need no duplicate variant
 textures or model edits. The distinct texture paths intentionally remain
 separate where vanilla UVs distinguish faces, door halves or trapdoor geometry.
 
 ## Scope and reproducibility
 
 `catalog/vanilla_26.3_variant_texture_refs.json` stores the resolved **names**
-from 126 representative blockstates after following model parents and `#texture`
+from 160 representative blockstates after following model parents and `#texture`
 variables. It contains no Minecraft image pixels. The Rust integration test
 checks each reference against the manifest and asserts the key shared-path
 families above. The independent `vanilla_26.3_audit.json` records target sprite

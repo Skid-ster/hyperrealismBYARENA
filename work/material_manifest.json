@@ -332,6 +332,33 @@
       "normal": "materials/bark_platanus/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/bark_platanus/roughness.jpg"
+    },
+    {
+      "id": "nether_lava_003",
+      "source": "Lava 003: https://ambientcg.com/view?id=Lava003; ambientCG CC0-1.0, creator Lennart Demes; aligned 1K albedo, OpenGL normal and packed AO/roughness/metal maps from the documented mirror at g0ddest/renethack commit 7cba95ae442dc4ccb174c965c3de91e0b2093bcd",
+      "license": "CC0-1.0",
+      "albedo": "materials/nether_lava_003/color.jpg",
+      "normal": "materials/nether_lava_003/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/nether_lava_003/arm.jpg"
+    },
+    {
+      "id": "nether_dark_rock",
+      "source": "Rock 058: https://ambientcg.com/view?id=Rock058; ambientCG CC0-1.0, creator Lennart Demes; aligned 1K albedo, OpenGL normal and packed AO/roughness/metal maps from the documented mirror at g0ddest/renethack commit 7cba95ae442dc4ccb174c965c3de91e0b2093bcd",
+      "license": "CC0-1.0",
+      "albedo": "materials/nether_dark_rock/color.jpg",
+      "normal": "materials/nether_dark_rock/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/nether_dark_rock/arm.jpg"
+    },
+    {
+      "id": "nether_lava_flow",
+      "source": "Volcanic Lava Flow ground_0027: https://www.texturecan.com (CC0-1.0; https://www.texturecan.com/terms/); 1K color, OpenGL normal, packed AO/roughness/metal and aligned emission map from the documented mirror at g0ddest/renethack commit 7cba95ae442dc4ccb174c965c3de91e0b2093bcd",
+      "license": "CC0-1.0",
+      "albedo": "materials/nether_lava_flow/color.jpg",
+      "normal": "materials/nether_lava_flow/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/nether_lava_flow/arm.jpg"
     }
   ],
   "textures": [
@@ -1323,7 +1350,7 @@
     },
     {
       "name": "crimson_planks",
-      "material": "natural_walnut_veneer",
+      "material": "cherry_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -2154,7 +2181,7 @@
     },
     {
       "name": "netherrack",
-      "material": "rock_face",
+      "material": "nether_lava_003",
       "recipe": "material",
       "tint": [
         255,
@@ -2169,7 +2196,7 @@
     },
     {
       "name": "nether_gold_ore",
-      "material": "rock_face",
+      "material": "nether_lava_003",
       "recipe": "ore",
       "tint": [
         255,
@@ -2190,7 +2217,7 @@
     },
     {
       "name": "nether_quartz_ore",
-      "material": "rock_face",
+      "material": "nether_lava_003",
       "recipe": "ore",
       "tint": [
         255,
@@ -2880,7 +2907,7 @@
     },
     {
       "name": "blackstone",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2897,7 +2924,7 @@
     },
     {
       "name": "blackstone_top",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2914,7 +2941,7 @@
     },
     {
       "name": "polished_blackstone",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2931,7 +2958,7 @@
     },
     {
       "name": "smooth_basalt",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -3016,7 +3043,7 @@
     },
     {
       "name": "polished_blackstone_bricks",
-      "material": "concrete_wall",
+      "material": "nether_dark_rock",
       "recipe": "brick",
       "tint": [
         255,
@@ -3050,7 +3077,7 @@
     },
     {
       "name": "nether_bricks",
-      "material": "concrete_wall",
+      "material": "brick_red",
       "recipe": "brick",
       "tint": [
         255,
@@ -3067,7 +3094,7 @@
     },
     {
       "name": "red_nether_bricks",
-      "material": "concrete_wall",
+      "material": "brick_red",
       "recipe": "brick",
       "tint": [
         255,
@@ -3135,7 +3162,7 @@
     },
     {
       "name": "cracked_polished_blackstone_bricks",
-      "material": "concrete_wall",
+      "material": "nether_dark_rock",
       "recipe": "cracked_brick",
       "tint": [
         255,
@@ -3152,7 +3179,7 @@
     },
     {
       "name": "cracked_nether_bricks",
-      "material": "concrete_wall",
+      "material": "brick_red",
       "recipe": "cracked_brick",
       "tint": [
         255,
@@ -5200,7 +5227,7 @@
     },
     {
       "name": "warped_door_top",
-      "material": "oak_veneer_02_vertical",
+      "material": "white_maple_veneer_vertical",
       "recipe": "material",
       "tint": [
         255,
@@ -5219,7 +5246,7 @@
     },
     {
       "name": "warped_door_bottom",
-      "material": "oak_veneer_02_vertical",
+      "material": "white_maple_veneer_vertical",
       "recipe": "material",
       "tint": [
         255,
@@ -5238,7 +5265,7 @@
     },
     {
       "name": "warped_trapdoor",
-      "material": "oak_veneer_02_vertical",
+      "material": "white_maple_veneer_vertical",
       "recipe": "material",
       "tint": [
         255,
@@ -5747,6 +5774,556 @@
       "layout_metal_id": 230,
       "f0": 10,
       "porosity": 30
+    },
+    {
+      "name": "ancient_debris_side",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        96,
+        64,
+        56
+      ]
+    },
+    {
+      "name": "ancient_debris_top",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        95,
+        66,
+        58
+      ]
+    },
+    {
+      "name": "basalt_side",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        73,
+        78
+      ]
+    },
+    {
+      "name": "basalt_top",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        81,
+        81,
+        86
+      ]
+    },
+    {
+      "name": "chiseled_nether_bricks",
+      "material": "brick_red",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        46,
+        23,
+        27
+      ]
+    },
+    {
+      "name": "chiseled_polished_blackstone",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        54,
+        49,
+        57
+      ]
+    },
+    {
+      "name": "chiseled_quartz_block",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        232,
+        227,
+        218
+      ]
+    },
+    {
+      "name": "chiseled_quartz_block_top",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        232,
+        227,
+        217
+      ]
+    },
+    {
+      "name": "crying_obsidian",
+      "material": "nether_lava_flow",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        33,
+        10,
+        60
+      ],
+      "emissive_map": "materials/nether_lava_flow/emission.jpg"
+    },
+    {
+      "name": "gilded_blackstone",
+      "material": "nether_dark_rock",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        56,
+        43,
+        38
+      ],
+      "ore_color": [
+        204,
+        161,
+        63
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "glowstone",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        172,
+        131,
+        84
+      ],
+      "emissive": 112
+    },
+    {
+      "name": "netherite_block",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        67,
+        61,
+        64
+      ],
+      "f0": 230
+    },
+    {
+      "name": "obsidian",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        15,
+        11,
+        25
+      ]
+    },
+    {
+      "name": "polished_basalt_side",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        89,
+        88,
+        92
+      ]
+    },
+    {
+      "name": "polished_basalt_top",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        99,
+        99,
+        101
+      ]
+    },
+    {
+      "name": "quartz_block_bottom",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        237,
+        230,
+        224
+      ]
+    },
+    {
+      "name": "quartz_block_side",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        236,
+        230,
+        223
+      ]
+    },
+    {
+      "name": "quartz_block_top",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        236,
+        230,
+        223
+      ]
+    },
+    {
+      "name": "quartz_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        235,
+        229,
+        222
+      ]
+    },
+    {
+      "name": "quartz_pillar_side",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        236,
+        231,
+        224
+      ]
+    },
+    {
+      "name": "quartz_pillar_top",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        235,
+        230,
+        223
+      ]
+    },
+    {
+      "name": "soul_sand",
+      "material": "brown_mud_dry",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        81,
+        62,
+        51
+      ]
+    },
+    {
+      "name": "soul_soil",
+      "material": "brown_mud_03",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        76,
+        58,
+        47
+      ]
+    },
+    {
+      "name": "shroomlight",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        241,
+        147,
+        71
+      ],
+      "emissive": 72
+    },
+    {
+      "name": "nether_wart_block",
+      "material": "brown_mud_03",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        115,
+        3,
+        2
+      ]
+    },
+    {
+      "name": "warped_wart_block",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        23,
+        120,
+        121
+      ]
+    },
+    {
+      "name": "crimson_nylium",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        131,
+        31,
+        31
+      ]
+    },
+    {
+      "name": "crimson_nylium_side",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        107,
+        27,
+        27
+      ]
+    },
+    {
+      "name": "warped_nylium",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        43,
+        114,
+        101
+      ]
+    },
+    {
+      "name": "warped_nylium_side",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        62,
+        60
+      ]
+    },
+    {
+      "name": "crimson_stem_top",
+      "material": "cherry_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        113,
+        50,
+        70
+      ]
+    },
+    {
+      "name": "stripped_crimson_stem",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        137,
+        57,
+        90
+      ]
+    },
+    {
+      "name": "stripped_crimson_stem_top",
+      "material": "cherry_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        122,
+        56,
+        83
+      ]
+    },
+    {
+      "name": "warped_stem_top",
+      "material": "white_maple_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        53,
+        110,
+        110
+      ]
+    },
+    {
+      "name": "stripped_warped_stem",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        58,
+        151,
+        148
+      ]
+    },
+    {
+      "name": "stripped_warped_stem_top",
+      "material": "white_maple_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        52,
+        129,
+        124
+      ]
     }
   ],
   "checksums": {
@@ -5894,7 +6471,17 @@
     "materials/bark_brown_01/roughness.jpg": "4e7f62508cf77faebfeee15ffb571ff02c45c18d5174aa19fcb8b98506359c5c",
     "materials/bark_platanus/color.jpg": "4e302eeb6a66d50880484a08bd2c6e43974eb1636397d94d9c8bc54d508c2c1b",
     "materials/bark_platanus/normal.jpg": "af36a887dc9cac3ea70902bc6e26b1d3f2608f39f96880f6e7766d93fefe43f5",
-    "materials/bark_platanus/roughness.jpg": "778135a767d90cdcdc486d4351956652c41645b8fd205ee86d73bfd7134bd1de"
+    "materials/bark_platanus/roughness.jpg": "778135a767d90cdcdc486d4351956652c41645b8fd205ee86d73bfd7134bd1de",
+    "materials/nether_lava_003/arm.jpg": "f520d5529d7a39aba340b3af25b868ce0ef195afdc6d9b18b6e328fac3c76b90",
+    "materials/nether_lava_003/color.jpg": "1437772f086ce99e2f7cb1f9a1de722440061948c769ae373a51d99db83eae61",
+    "materials/nether_lava_003/normal.jpg": "de340c971937614c9b5df21aef25d8e953c2317b2958f0297c09f0803ff44929",
+    "materials/nether_dark_rock/arm.jpg": "d9675beb1a392569c842b2a06b6052a4c6f6af0e032a94528a1bdd3493e279dd",
+    "materials/nether_dark_rock/color.jpg": "4eac4ee0a7689eb68e7d4cc9f7263bbfffcc4a74ff472aba9a638337317476fb",
+    "materials/nether_dark_rock/normal.jpg": "870e3dd01ae943fc6c38ffb5bb0c3e8f38f86ab0f3e6c5107427a6a31157ae69",
+    "materials/nether_lava_flow/arm.jpg": "6de2b5c47eddb729819a41603fe03ee2c4c111f861bba560e7cb95b8a5735d65",
+    "materials/nether_lava_flow/color.jpg": "40ba401c328cbaff8b0f81e6dfe069a954a2fad23f43302e75eb8fac4a6d8d71",
+    "materials/nether_lava_flow/emission.jpg": "b0f3f798557984137fb677202fbc162613bc22a3b2f51b55732e0b67940738af",
+    "materials/nether_lava_flow/normal.jpg": "221ce607269b33fc6d30a6a141768eb3eb48bc946233bfa7e8207ee82efe6fa6"
   },
   "pbr_strength": 0.2
 }

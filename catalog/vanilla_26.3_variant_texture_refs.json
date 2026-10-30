@@ -412,6 +412,122 @@
     "lever": [
       "cobblestone",
       "lever"
+    ],
+    "ancient_debris": [
+      "ancient_debris_side",
+      "ancient_debris_top"
+    ],
+    "basalt": [
+      "basalt_side",
+      "basalt_top"
+    ],
+    "chiseled_nether_bricks": [
+      "chiseled_nether_bricks"
+    ],
+    "chiseled_polished_blackstone": [
+      "chiseled_polished_blackstone"
+    ],
+    "chiseled_quartz_block": [
+      "chiseled_quartz_block",
+      "chiseled_quartz_block_top"
+    ],
+    "cracked_nether_bricks": [
+      "cracked_nether_bricks"
+    ],
+    "cracked_polished_blackstone_bricks": [
+      "cracked_polished_blackstone_bricks"
+    ],
+    "crying_obsidian": [
+      "crying_obsidian"
+    ],
+    "gilded_blackstone": [
+      "gilded_blackstone"
+    ],
+    "glowstone": [
+      "glowstone"
+    ],
+    "netherite_block": [
+      "netherite_block"
+    ],
+    "nether_gold_ore": [
+      "nether_gold_ore"
+    ],
+    "nether_quartz_ore": [
+      "nether_quartz_ore"
+    ],
+    "netherrack": [
+      "netherrack"
+    ],
+    "obsidian": [
+      "obsidian"
+    ],
+    "polished_basalt": [
+      "polished_basalt_side",
+      "polished_basalt_top"
+    ],
+    "quartz_block": [
+      "quartz_block_side",
+      "quartz_block_top"
+    ],
+    "quartz_bricks": [
+      "quartz_bricks"
+    ],
+    "quartz_pillar": [
+      "quartz_pillar_side",
+      "quartz_pillar_top"
+    ],
+    "soul_sand": [
+      "soul_sand"
+    ],
+    "soul_soil": [
+      "soul_soil"
+    ],
+    "shroomlight": [
+      "shroomlight"
+    ],
+    "nether_wart_block": [
+      "nether_wart_block"
+    ],
+    "warped_wart_block": [
+      "warped_wart_block"
+    ],
+    "crimson_nylium": [
+      "crimson_nylium",
+      "crimson_nylium_side",
+      "netherrack"
+    ],
+    "warped_nylium": [
+      "netherrack",
+      "warped_nylium",
+      "warped_nylium_side"
+    ],
+    "stripped_crimson_stem": [
+      "stripped_crimson_stem",
+      "stripped_crimson_stem_top"
+    ],
+    "stripped_warped_stem": [
+      "stripped_warped_stem",
+      "stripped_warped_stem_top"
+    ],
+    "nether_bricks": [
+      "nether_bricks"
+    ],
+    "nether_brick_stairs": [
+      "nether_bricks"
+    ],
+    "nether_brick_slab": [
+      "nether_bricks"
+    ],
+    "red_nether_bricks": [
+      "red_nether_bricks"
+    ],
+    "quartz_stairs": [
+      "quartz_block_side",
+      "quartz_block_top"
+    ],
+    "quartz_slab": [
+      "quartz_block_side",
+      "quartz_block_top"
     ]
   },
   "interactive_states": {

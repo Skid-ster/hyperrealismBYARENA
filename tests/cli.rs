@@ -365,7 +365,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 145);
+    assert_eq!(hashes.len(), 155);
     let leaf_material = m
         .materials
         .iter()
@@ -392,7 +392,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 308);
+    assert_eq!(m.textures.len(), 344);
     let glass: Vec<_> = m
         .textures
         .iter()
@@ -621,6 +621,79 @@ fn wood_and_wool_materials_match_species_and_grain_orientation() {
 }
 
 #[test]
+fn nether_surface_coverage_uses_matching_cc0_materials_and_keeps_animations() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let textures: std::collections::HashMap<&str, &serde_json::Value> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| (t["name"].as_str().unwrap(), t))
+        .collect();
+    for (name, material) in [
+        ("netherrack", "nether_lava_003"),
+        ("nether_gold_ore", "nether_lava_003"),
+        ("nether_quartz_ore", "nether_lava_003"),
+        ("blackstone", "nether_dark_rock"),
+        ("blackstone_top", "nether_dark_rock"),
+        ("polished_blackstone", "nether_dark_rock"),
+        ("basalt_side", "nether_dark_rock"),
+        ("polished_basalt_top", "nether_dark_rock"),
+        ("obsidian", "nether_dark_rock"),
+        ("nether_bricks", "brick_red"),
+        ("red_nether_bricks", "brick_red"),
+        ("quartz_block_side", "concrete_wall"),
+        ("soul_sand", "brown_mud_dry"),
+        ("soul_soil", "brown_mud_03"),
+        ("crimson_planks", "cherry_veneer"),
+        ("warped_planks", "white_maple_veneer"),
+        ("crimson_nylium", "forest_ground"),
+        ("warped_nylium", "forest_ground"),
+        ("crying_obsidian", "nether_lava_flow"),
+    ] {
+        assert_eq!(textures[name]["material"], material, "{name}");
+    }
+    assert_eq!(
+        textures["crying_obsidian"]["emissive_map"],
+        "materials/nether_lava_flow/emission.jpg"
+    );
+    assert_eq!(textures["glowstone"]["emissive"], 112);
+    assert_eq!(textures["shroomlight"]["emissive"], 72);
+    let materials: std::collections::HashMap<&str, &serde_json::Value> = manifest["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|m| (m["id"].as_str().unwrap(), m))
+        .collect();
+    for id in ["nether_lava_003", "nether_dark_rock", "nether_lava_flow"] {
+        assert_eq!(materials[id]["license"], "CC0-1.0", "{id}");
+        assert_eq!(materials[id]["normal_y"], "opengl", "{id}");
+        for map in ["albedo", "normal", "arm"] {
+            assert!(materials[id][map].is_string(), "{id}: {map}");
+        }
+    }
+    for name in [
+        "magma",
+        "nether_portal",
+        "crimson_stem",
+        "warped_stem",
+        "crimson_fungus",
+        "warped_fungus",
+    ] {
+        assert!(
+            !textures.contains_key(name),
+            "animated/cutout texture was modified: {name}"
+        );
+    }
+    assert_eq!(manifest["pbr_strength"], 0.2);
+    assert!(manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|t| t.get("pbr_strength").is_none() || t["pbr_strength"].is_null()));
+}
+
+#[test]
 fn representative_26_3_models_share_the_covered_texture_paths() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
@@ -640,7 +713,7 @@ fn representative_26_3_models_share_the_covered_texture_paths() {
         "6c088630459d8ca369ef0d6c07636d7d63a3b0f1"
     );
     let blocks = audit["blocks"].as_object().unwrap();
-    assert_eq!(blocks.len(), 126);
+    assert_eq!(blocks.len(), 160);
     for (block, textures) in blocks {
         let textures = textures.as_array().unwrap();
         assert!(
@@ -700,6 +773,34 @@ fn representative_26_3_models_share_the_covered_texture_paths() {
         blocks["blackstone_stairs"],
         serde_json::json!(["blackstone", "blackstone_top"])
     );
+    for (block, expected) in [
+        (
+            "ancient_debris",
+            serde_json::json!(["ancient_debris_side", "ancient_debris_top"]),
+        ),
+        (
+            "basalt",
+            serde_json::json!(["basalt_side", "basalt_top"]),
+        ),
+        (
+            "polished_basalt",
+            serde_json::json!(["polished_basalt_side", "polished_basalt_top"]),
+        ),
+        (
+            "quartz_block",
+            serde_json::json!(["quartz_block_side", "quartz_block_top"]),
+        ),
+        (
+            "crimson_nylium",
+            serde_json::json!(["crimson_nylium", "crimson_nylium_side", "netherrack"]),
+        ),
+        (
+            "warped_nylium",
+            serde_json::json!(["netherrack", "warped_nylium", "warped_nylium_side"]),
+        ),
+    ] {
+        assert_eq!(blocks[block], expected, "{block}");
+    }
     assert_eq!(
         blocks["oak_door"],
         serde_json::json!(["oak_door_bottom", "oak_door_top"])
