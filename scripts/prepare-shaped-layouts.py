@@ -6,6 +6,7 @@ Coordinates are independently drawn vector shapes in a 16-unit square. Real
 photographic material grain comes from the separate licensed material scans.
 Requires Pillow. Run from the repository root.
 """
+import hashlib, json
 from pathlib import Path
 from PIL import Image, ImageDraw
 S=32
@@ -180,4 +181,12 @@ a.rect((7,9.8,9,15.2),156,147)
 a.rect((7.25,10,8.75,15),205,155)
 a.rect((7,15.2,9,16),118,143,True)
 a.save('lever')
-print('wrote',len(list(OUT.glob('*.png'))),'construction masks')
+# Construction masks are hashed inputs; keep the manifest in sync so the
+# generator's provenance/integrity validation accepts newly drawn layouts.
+manifest_path=Path('work/material_manifest.json')
+manifest=json.loads(manifest_path.read_text())
+for path in OUT.glob('*.png'):
+ rel=path.relative_to(Path('work')).as_posix()
+ manifest['checksums'][rel]=hashlib.sha256(path.read_bytes()).hexdigest()
+manifest_path.write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n')
+print('wrote',len(list(OUT.glob('*.png'))),'construction masks and refreshed their manifest checksums')
