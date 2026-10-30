@@ -1,7 +1,7 @@
 ## Experimental 512×512 LabPBR preview — not a complete pack
 
 This is a **512×512** test pack for Minecraft Java 26.3. Its legacy filename is
-retained so the existing installer can update it. It replaces **241 block
+retained so the existing installer can update it. It replaces **242 block
 textures**, not the whole game; all other blocks and entities remain vanilla or
 come from other packs. Higher resolution uses substantially more GPU memory and
 may affect loading and frame rate. It has not been tested on the RTX 5060 Ti.
@@ -11,12 +11,19 @@ AO contrast and perceptual smoothness are scaled down. Color and discrete
 material/emission IDs are unchanged; shader settings affect the perceived result.
 Water is not changed.
 
-Preview 9 adds **57 texture files**: ten stripped log sides and ends, clear
-and sixteen stained glass blocks and their pane caps, plus spruce, pale oak and
-cherry leaves. Glass is procedural, with a cutout rim on clear glass, transparent
-stained glass and narrow pane caps. Stripped logs use rotated veneer scans and
-approximate procedural rings. The three leaves reuse a broadleaf atlas, not
-species-specific scans. These are approximations and need in-game visual testing.
+Preview 10 adds **tinted glass**, thin fallback borders and OptiFine-format
+compact connected glass tiles for clear, all 16 stained colors, and tinted
+glass, including pane faces. Each tile has matching smooth LabPBR maps. This
+requires a compatible CTM implementation: Iris alone is not enough. For a
+Fabric 26.3 instance, install [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
+and its required Fabric API, restart, and enable this pack. Consider Continuity's
+pane culling fix for pane seams. Glass CTM, transparency and shader behavior
+are **not yet visually verified in game**. Clear glass uses cutout rendering;
+its invisible interior may not reflect, depending on the shader.
+
+Stone already had PBR maps; its per-texture strength is now **0.65×**, up from
+0.4×, for slightly stronger depth and shine. The stone color and other blocks'
+global PBR strength remain unchanged. Water remains untouched.
 
 This is still **not a complete all-block pack**. Doors, plants, animated
 textures and many others remain vanilla, as does water. The 512px textures use

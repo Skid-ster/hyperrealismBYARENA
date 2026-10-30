@@ -366,7 +366,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 241);
+    assert_eq!(m.textures.len(), 242);
     assert!((m.pbr_strength - 0.4).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     // The tested preview uses a real cobble scan and its aligned height map,
@@ -859,13 +859,50 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
         image.pixels[(y * image.width + x) * 4 + 3]
     };
     assert_eq!(alpha(&clear, 64, 64), 0);
-    assert!(alpha(&clear, 1, 64) > 200);
+    assert!(alpha(&clear, 0, 64) > 200);
     assert!((90..120).contains(&alpha(&stained, 64, 64)));
     assert_eq!(alpha(&pane, 5, 64), 0);
     assert!(alpha(&pane, 64, 64) > 200);
     let glass_meta: serde_json::Value =
         serde_json::from_slice(&fs::read(block.join("glass.png.mcmeta")).unwrap()).unwrap();
     assert_eq!(glass_meta["texture"]["mipmap_strategy"], "mean");
+    // CTM tiles and maps must be packaged, not just listed in properties.
+    let ctm = output.join("pack/assets/minecraft/optifine/ctm");
+    for name in ["glass", "blue_stained_glass"] {
+        let dir = ctm.join(name);
+        let properties = fs::read_to_string(dir.join("glass.properties")).unwrap();
+        assert!(properties.contains("method=ctm_compact"));
+        assert!(properties.contains(&format!("matchTiles={name}")));
+        assert!(properties.contains(&format!("matchBlocks={name}")));
+        let pane_rule = fs::read_to_string(dir.join("pane.properties")).unwrap();
+        assert!(pane_rule.contains(&format!("matchBlocks={name}_pane")));
+        assert!(pane_rule.contains("faces=sides"));
+        for i in 0..5 {
+            for suffix in ["", "_n", "_s"] {
+                let image = read(&dir.join(format!("{i}{suffix}.png"))).unwrap();
+                assert_eq!((image.width, image.height), (128, 128));
+            }
+        }
+        let frame = read(&dir.join("0.png")).unwrap();
+        let interior = read(&dir.join("1.png")).unwrap();
+        if name == "glass" {
+            assert_eq!(alpha(&frame, 0, 64), 255);
+            assert_eq!(alpha(&frame, 64, 64), 0);
+            assert_eq!(alpha(&interior, 0, 64), 0);
+        } else {
+            assert_eq!(alpha(&frame, 0, 64), 153);
+            assert_eq!(alpha(&interior, 64, 64), 102);
+        }
+        let gloss = read(&dir.join("1_s.png")).unwrap();
+        assert!(gloss.pixels.chunks_exact(4).all(|p| p[0] > 0 && p[1] == 10));
+    }
+    assert!(!ctm.join("blue_stained_glass_pane_top").exists());
+    let zip = fs::File::open(output.join("dist/HyperRealism128-v1.0-MC26.3.zip")).unwrap();
+    let mut zip = zip::ZipArchive::new(zip).unwrap();
+    assert!(zip
+        .by_name("assets/minecraft/optifine/ctm/glass/1_s.png")
+        .is_ok());
+    drop(zip);
     let snow_normal = read(&block.join("snow_n.png")).unwrap();
     assert!(
         snow_normal.pixels.chunks_exact(4).map(|p| p[3]).min()
@@ -934,6 +971,27 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
     let (full_s, soft_s) = (pixel("full", "_s"), pixel("soft", "_s"));
     assert!((i32::from(soft_s[0]) - (f32::from(full_s[0]) * 0.4).round() as i32).abs() <= 1);
     assert_eq!(&full_s[1..], &soft_s[1..]);
+    // A texture-level override must affect only its PBR channels.
+    m["pbr_strength"] = 0.4.into();
+    m["textures"][0]["pbr_strength"] = 0.65.into();
+    fs::write(
+        temp.join("material_manifest.json"),
+        serde_json::to_vec(&m).unwrap(),
+    )
+    .unwrap();
+    let result = run(&temp, &temp.join("override"), "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(pixel("override", ""), pixel("soft", ""));
+    let over = pixel("override", "_n");
+    assert!(slope(&over) > slope(&soft) && slope(&over) < slope(&full));
+    let over_s = pixel("override", "_s");
+    assert!(over_s[0] > soft_s[0] && over_s[0] < full_s[0]);
+    assert_eq!(&over_s[1..], &soft_s[1..]);
+    m["textures"][0]["pbr_strength"] = serde_json::Value::Null;
     for invalid in [-0.1, 1.1] {
         m["pbr_strength"] = invalid.into();
         fs::write(
@@ -943,6 +1001,16 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
         .unwrap();
         assert!(!run(&temp, &temp.join("invalid"), "2").status.success());
     }
+    m["pbr_strength"] = 0.4.into();
+    m["textures"][0]["pbr_strength"] = 1.1.into();
+    fs::write(
+        temp.join("material_manifest.json"),
+        serde_json::to_vec(&m).unwrap(),
+    )
+    .unwrap();
+    assert!(!run(&temp, &temp.join("invalid_override"), "2")
+        .status
+        .success());
     fs::remove_dir_all(temp).unwrap();
 }
 

@@ -62,6 +62,23 @@ Compare in daylight and in darker light, with and without the resource pack,
 then with and without the shader. Try stone, cobblestone, oak planks, sand,
 netherrack and Nether gold ore. Ask which details are visible from a normal
 playing distance, whether seams repeat, and whether metals reflect plausibly.
-The 111 covered block textures do not replace the entire game; animations,
+The 242 covered block texture files do not replace the entire game; animations,
 most blocks and entities are not supplied. The pack cannot guarantee visual
 quality merely because it contains 512×512 images and valid LabPBR channels.
+
+## Connected glass
+
+The pack ships OptiFine-format compact CTM rules and LabPBR maps for clear,
+stained and tinted glass. Iris is a shader loader, not a CTM implementation.
+For Fabric 26.3 install [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
+and required Fabric API, restart, and place this pack above conflicting glass
+packs. Consider Continuity's glass pane culling fix if panes show seams. With no
+compatible CTM implementation the fallback has thin borders on every block.
+Actual CTM and shader rendering remain untested. A clear cutout's invisible
+interior may not reflect in shaders; tinted glass is translucent.
+
+Stone already had LabPBR maps. Preview 10 increases the stone-only PBR strength
+from 0.4 to 0.65 while keeping its albedo unchanged. Normal Mapping must be on
+to see normal detail; POM is optional and may make the estimated height look
+unnatural. Test toggling normal mapping on the same lit stone face, and ensure
+no other resource pack overrides it.

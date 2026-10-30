@@ -196,24 +196,12 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
         }
         // The clear block uses a cutout layer, not alpha blending.
         "glass_clear" => {
-            let rim = x < 24 || y < 24 || x >= 488 || y >= 488;
-            let glint = (x > 70 && x < 105 && y > 70 && y < 105)
-                || (x > 400 && x < 430 && y > 400 && y < 430);
-            (
-                1.0,
-                if rim { 0.02 } else { 0.0 },
-                if rim || glint { 1.0 } else { 0.0 },
-                0.0,
-            )
+            let rim = x < 8 || y < 8 || x >= 504 || y >= 504;
+            (1.0, 0.0, if rim { 1.0 } else { 0.0 }, 0.0)
         }
         "glass_stained" => {
-            let rim = x < 20 || y < 20 || x >= 492 || y >= 492;
-            (
-                1.0,
-                if rim { 0.02 } else { 0.0 },
-                if rim { 0.60 } else { 0.40 },
-                0.0,
-            )
+            let rim = x < 8 || y < 8 || x >= 504 || y >= 504;
+            (1.0, 0.0, if rim { 0.60 } else { 0.40 }, 0.0)
         }
         // Pane top/bottom sprites are only two vanilla pixels wide.
         "glass_pane_cap" => {

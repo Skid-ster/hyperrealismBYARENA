@@ -52,7 +52,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 241 texture names and approximate sRGB color targets were checked against
+The 242 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -152,3 +152,13 @@ vectors. Their ends use approximate procedural rings without a bark rim. Three
 new leaf variants reuse the neutral broadleaf atlas and may not resemble their
 real species; cherry is tinted pink rather than biome-neutral. None is a
 species-specific scan. Water is unchanged.
+
+### Preview 10 connected glass
+
+Compact CTM glass is generated procedurally using the OptiFine documented
+five-tile layout, and adds no external image assets. Plain glass uses a thin
+cutout rim; stained and tinted glass use translucent flat color. Each CTM tile
+has a flat normal and smooth specular map. Actual connected-texture rendering,
+pane culling and shader behavior have not yet been tested in Minecraft. Stone's
+existing concrete scan has a moderately stronger 0.65 PBR strength; its albedo
+is unchanged. Water is not replaced.

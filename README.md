@@ -4,7 +4,7 @@ This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
 LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
-are approximated as described below. The starter catalog contains 241
+are approximated as described below. The starter catalog contains 242
 experimental outputs based on twenty-five CC0 Poly Haven material sources; it is **not** the
 requested 280-texture catalog or a finished photorealistic pack. A separate
 synthetic manifest contains eight test examples. The repository did
@@ -50,15 +50,15 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 9 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 10 uses 512×512
 textures (despite the legacy filename), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.9/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism128-MC26.3-EXPERIMENTAL.zip](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.10/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
-241 textures replace only a subset of the game; the rest remain vanilla or come
+242 textures replace only a subset of the game; the rest remain vanilla or come
 from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
 this new revision has not yet been validated there. Grass sides now have a
@@ -67,8 +67,8 @@ photographic foliage atlas with transparency and static mipmap metadata.
 Dirt, gravel, snow, mud, dirt paths and podzol use new scanned ground maps.
 Preview 8 also adds stone and deepslate families, terracotta, clay,
 other building blocks and ten log ends with approximate procedural rings. Preview 9 adds
-stripped wood, clear and stained glass/pane caps, and three leaf variants. Glass
-is procedural and leaves share an approximate broadleaf source. Water is unchanged. It replaces only
+stripped wood, clear and stained glass/pane caps, and three leaf variants. Preview 10 adds tinted glass, connected-glass support and a modest stone PBR boost.
+Glass is procedural and leaves share an approximate broadleaf source. Water is unchanged. It replaces only
 specified blocks: try `cobblestone`, `mossy_cobblestone`, `dirt`, `sand`,
 `stone_bricks`, `oak_planks`, `white_wool`, `gold_ore` and `diamond_ore` to
 compare. See the manifest for the full list. Other textures stay unchanged.
@@ -78,7 +78,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.9/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.10/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -92,6 +92,21 @@ its SHA-256 file, verifies the download before replacing the existing preview,
 and does not run the downloaded ZIP. The checksum detects corruption; it is not
 an independent signature. `-Destination` chooses a different resourcepacks
 folder. GitHub API rate limits can affect unauthenticated requests.
+
+## Connected glass
+
+Preview 10 includes compact CTM data for clear, all 16 stained colors and tinted
+glass, including pane faces using those textures. Without CTM support the pack
+falls back to thin-bordered individual glass. **Iris alone does not supply CTM**.
+For Fabric 26.3, add [Continuity 3.0.1+26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3)
+and its required Fabric API to this instance, then restart; follow Continuity's
+setup guidance. Enable its glass-pane culling fix if pane seams remain, and put
+HyperRealism above competing glass packs. OptiFine with connected textures enabled
+is another possible route when available for the version. This pack's CTM and
+shader maps have not been visually tested in game. Clear glass uses a cutout
+layer: transparent interiors cannot be guaranteed to show reflections in every
+shader; stained glass is translucent. CTM tiles include flat normals and smooth
+LabPBR specular maps, but shader/mod support varies.
 
 ## Build from source on Windows 11
 
@@ -259,8 +274,8 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand the 241-output starter to the requested catalog; acquire appropriate
-  materials for each family and review palette/geometry in game. This 241-output
+- Expand the 242-output starter to the requested catalog; acquire appropriate
+  materials for each family and review palette/geometry in game. This 242-output
   set is not guaranteed to overlap the missing Python implementation.
 - wgpu/Vulkan, GPU FFT, Voronoi, VRAM budgeting/batching, benchmarking and
   CPU/GPU parity testing on the RTX 5060 Ti.

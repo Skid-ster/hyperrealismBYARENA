@@ -3,6 +3,7 @@
 //! This is deliberately not a replacement for the missing Python pipeline.
 //! The inputs below are linear scalar data, not gamma-encoded image samples.
 
+pub mod connected;
 pub mod labpbr;
 pub mod manifest;
 pub mod material;

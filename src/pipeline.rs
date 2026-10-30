@@ -354,7 +354,7 @@ fn build_stage(
         ));
     }
     fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
-    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}x{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}x{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
     // Keep review thumbnails small even for the 512px pack.
@@ -369,8 +369,17 @@ fn build_stage(
             cached = Some((m.id.as_str(), material::load(root, m)?));
         }
         let images = &cached.as_ref().expect("material just loaded").1;
-        let (a, n, s) = build(t, images, root, size, data.pbr_strength)
-            .map_err(|e| format!("{}: {e}", t.name))?;
+        let (a, n, s) = build(
+            t,
+            images,
+            root,
+            size,
+            t.pbr_strength.unwrap_or(data.pbr_strength),
+        )
+        .map_err(|e| format!("{}: {e}", t.name))?;
+        if t.connected_glass {
+            crate::connected::write(&pack, t, size, &a, &n, &s)?;
+        }
         for (suffix, bytes) in [("", &a), ("_n", &n), ("_s", &s)] {
             png_io::write(
                 &block.join(format!("{}{suffix}.png", t.name)),
@@ -424,7 +433,7 @@ fn build_stage(
         "pbr_strength": data.pbr_strength,
         "resolution": size,
         "working_resolution": WORK,
-        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "pbr_strength": t.pbr_strength, "connected_glass": t.connected_glass, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
         "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "arm": m.arm, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,
