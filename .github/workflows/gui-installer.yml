@@ -16,18 +16,24 @@ jobs:
             Write-Output "::error::$($_.Exception.Message)"
             "## Installer build diagnostics`n" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
             Get-Content "$env:RUNNER_TEMP\installer-build.log" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-            $logText = if (Test-Path -LiteralPath "$env:RUNNER_TEMP\installer-build.log") { Get-Content -LiteralPath "$env:RUNNER_TEMP\installer-build.log" -Raw } else { $_.Exception.Message }
-            $diagnostic = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($logText)).Replace('+', '-').Replace('/', '_').TrimEnd('=')
-            if ($diagnostic.Length -gt 220) { $diagnostic = $diagnostic.Substring(0, 220) }
-            $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-            [IO.File]::AppendAllText($env:GITHUB_ENV, "BUILD_DIAGNOSTIC=$diagnostic`n", $utf8NoBom)
             exit 1
           }
+      - name: Encode installer build log for diagnosis
+        id: encode-build-log
+        if: failure()
+        shell: powershell
+        run: |
+          $logPath = Join-Path $env:RUNNER_TEMP 'installer-build.log'
+          $logText = if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath -Raw } else { 'Build log was not produced.' }
+          $diagnostic = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($logText)).Replace('+', '-').Replace('/', '_').TrimEnd('=')
+          if ($diagnostic.Length -gt 220) { $diagnostic = $diagnostic.Substring(0, 220) }
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          [IO.File]::AppendAllText($env:GITHUB_OUTPUT, "encoded=$diagnostic`n", $utf8NoBom)
       - name: Upload installer build log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: installer-build-log-${{ env.BUILD_DIAGNOSTIC }}
+          name: installer-build-log-${{ steps.encode-build-log.outputs.encoded }}
           path: ${{ runner.temp }}/installer-build.log
           if-no-files-found: warn
           retention-days: 7
