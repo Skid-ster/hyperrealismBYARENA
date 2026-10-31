@@ -4,7 +4,7 @@ This is an **early prototype**, not the requested complete production pack.
 It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
 LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
-are approximated as described below. The current source catalog contains 344
+are approximated as described below. The current source catalog contains 349
 distinct block texture targets based on CC0 scans from Poly Haven, ambientCG,
 TextureCan and other credited providers, plus original procedural work; Preview 13 added the lever texture, Preview 14 unified PBR
 strength at 20% and softened door/glass treatments, Preview 15 added
@@ -31,7 +31,7 @@ implementation, not a port or a claim of matching its results.
 This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU.
 
-See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 344, leaving 928 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
+See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 349, leaving 923 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 
 ## Download and install the experimental preview
 
@@ -84,9 +84,10 @@ not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
 [HyperRealism 512×512 Preview 23 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.23/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
-and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
-344 distinct texture paths replace only a subset of the game; the rest remain
-vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
+and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Preview 23
+contains 344 distinct block texture paths; the current development branch adds
+five copper paths but has not yet been published. Both remain subsets of the
+game; all other textures stay vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
 the new roughness calibration and normal-derived height estimates have not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
@@ -205,7 +206,7 @@ run uses CPU, and there is no GPU backend.
 
 ## PBR strength
 
-The bundled manifest uses a single global `pbr_strength` of **0.2** for all 344
+The bundled manifest uses a single global `pbr_strength` of **0.2** for all 349
 texture targets; per-texture overrides have been removed. This scales normal
 slope, height deviation and smoothness to 20% of their unit-strength values,
 and fades AO toward white. Base colors and discrete metal/SSS/emission fields
@@ -365,7 +366,7 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand beyond the current 344-output subset, especially animated/cutout
+- Expand beyond the current 349-output subset, especially animated/cutout
   Nether vegetation; acquire suitable materials for each family and review
   palettes/geometry in game. It is not guaranteed to overlap the missing Python
   implementation.

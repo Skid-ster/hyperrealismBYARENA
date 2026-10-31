@@ -483,7 +483,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 344);
+    assert_eq!(m.textures.len(), 349);
     let mut entity_paths: Vec<_> = m.entity_textures.iter().map(|entity| entity.path.as_str()).collect();
     entity_paths.sort_unstable();
     assert_eq!(
@@ -815,9 +815,9 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
     assert_eq!(summary["blockstates"], 1290);
     assert_eq!(summary["block_model_files"], 2885);
     assert_eq!(summary["unique_block_texture_references"], 1272);
-    assert_eq!(summary["currently_covered_block_texture_references"], 344);
-    assert_eq!(summary["uncovered_block_texture_references"], 928);
-    assert_eq!(summary["states_with_uncovered_textures"], 644);
+    assert_eq!(summary["currently_covered_block_texture_references"], 349);
+    assert_eq!(summary["uncovered_block_texture_references"], 923);
+    assert_eq!(summary["states_with_uncovered_textures"], 614);
     assert!(summary["metadata_resolution_problems"]
         .as_array()
         .unwrap()
@@ -837,7 +837,7 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
             "{block}: uncovered list must be a subset of the block texture references"
         );
     }
-    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 928);
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 923);
     let covered: std::collections::HashSet<&str> = catalog["covered_block_textures"]
         .as_array()
         .unwrap()

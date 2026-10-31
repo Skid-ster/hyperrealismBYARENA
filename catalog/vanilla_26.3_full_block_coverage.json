@@ -3363,9 +3363,7 @@
         "minecraft:block/copper_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "copper_bulb": {
       "block_textures": [
@@ -3408,9 +3406,7 @@
         "minecraft:block/copper_chest"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "copper_door": {
       "block_textures": [
@@ -3438,9 +3434,7 @@
         "minecraft:block/copper_golem_statue"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "copper_grate": {
       "block_textures": [
@@ -3949,9 +3943,7 @@
         "minecraft:block/cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "cut_copper_slab": {
       "block_textures": [
@@ -3963,9 +3955,7 @@
         "minecraft:block/cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "cut_copper_stairs": {
       "block_textures": [
@@ -3977,9 +3967,7 @@
         "minecraft:block/cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "cut_red_sandstone": {
       "block_textures": [
@@ -5614,9 +5602,7 @@
         "minecraft:block/exposed_cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "exposed_cut_copper_slab": {
       "block_textures": [
@@ -5628,9 +5614,7 @@
         "minecraft:block/exposed_cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "exposed_cut_copper_stairs": {
       "block_textures": [
@@ -5642,9 +5626,7 @@
         "minecraft:block/exposed_cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "exposed_lightning_rod": {
       "block_textures": [
@@ -9865,9 +9847,7 @@
         "minecraft:block/oxidized_cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "oxidized_cut_copper_slab": {
       "block_textures": [
@@ -9879,9 +9859,7 @@
         "minecraft:block/oxidized_cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "oxidized_cut_copper_stairs": {
       "block_textures": [
@@ -9893,9 +9871,7 @@
         "minecraft:block/oxidized_cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "oxidized_lightning_rod": {
       "block_textures": [
@@ -15828,9 +15804,7 @@
         "minecraft:block/copper_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_copper_bulb": {
       "block_textures": [
@@ -15873,9 +15847,7 @@
         "minecraft:block/copper_chest"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_copper_door": {
       "block_textures": [
@@ -15903,9 +15875,7 @@
         "minecraft:block/copper_golem_statue"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_copper_grate": {
       "block_textures": [
@@ -15952,9 +15922,7 @@
         "minecraft:block/cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_cut_copper_slab": {
       "block_textures": [
@@ -15966,9 +15934,7 @@
         "minecraft:block/cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_cut_copper_stairs": {
       "block_textures": [
@@ -15980,9 +15946,7 @@
         "minecraft:block/cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_exposed_chiseled_copper": {
       "block_textures": [
@@ -16137,9 +16101,7 @@
         "minecraft:block/exposed_cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_exposed_cut_copper_slab": {
       "block_textures": [
@@ -16151,9 +16113,7 @@
         "minecraft:block/exposed_cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_exposed_cut_copper_stairs": {
       "block_textures": [
@@ -16165,9 +16125,7 @@
         "minecraft:block/exposed_cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_exposed_lightning_rod": {
       "block_textures": [
@@ -16352,9 +16310,7 @@
         "minecraft:block/oxidized_cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_oxidized_cut_copper_slab": {
       "block_textures": [
@@ -16366,9 +16322,7 @@
         "minecraft:block/oxidized_cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_oxidized_cut_copper_stairs": {
       "block_textures": [
@@ -16380,9 +16334,7 @@
         "minecraft:block/oxidized_cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_oxidized_lightning_rod": {
       "block_textures": [
@@ -16552,9 +16504,7 @@
         "minecraft:block/weathered_cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_weathered_cut_copper_slab": {
       "block_textures": [
@@ -16566,9 +16516,7 @@
         "minecraft:block/weathered_cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_weathered_cut_copper_stairs": {
       "block_textures": [
@@ -16580,9 +16528,7 @@
         "minecraft:block/weathered_cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_weathered_lightning_rod": {
       "block_textures": [
@@ -16752,9 +16698,7 @@
         "minecraft:block/weathered_cut_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "weathered_cut_copper_slab": {
       "block_textures": [
@@ -16766,9 +16710,7 @@
         "minecraft:block/weathered_cut_copper_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "weathered_cut_copper_stairs": {
       "block_textures": [
@@ -16780,9 +16722,7 @@
         "minecraft:block/weathered_cut_copper_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_cut_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "weathered_lightning_rod": {
       "block_textures": [
@@ -17506,6 +17446,7 @@
     "cobbled_deepslate",
     "cobblestone",
     "copper_bars",
+    "copper_block",
     "copper_door_bottom",
     "copper_door_top",
     "copper_ore",
@@ -17523,6 +17464,7 @@
     "crimson_stem_top",
     "crimson_trapdoor",
     "crying_obsidian",
+    "cut_copper",
     "cut_red_sandstone",
     "cut_sandstone",
     "cyan_concrete",
@@ -17563,6 +17505,7 @@
     "exposed_copper_door_bottom",
     "exposed_copper_door_top",
     "exposed_copper_trapdoor",
+    "exposed_cut_copper",
     "gilded_blackstone",
     "glass",
     "glass_pane_top",
@@ -17659,6 +17602,7 @@
     "oxidized_copper_door_bottom",
     "oxidized_copper_door_top",
     "oxidized_copper_trapdoor",
+    "oxidized_cut_copper",
     "packed_mud",
     "pale_oak_door_bottom",
     "pale_oak_door_top",
@@ -17773,6 +17717,7 @@
     "weathered_copper_door_bottom",
     "weathered_copper_door_top",
     "weathered_copper_trapdoor",
+    "weathered_cut_copper",
     "white_concrete",
     "white_concrete_powder",
     "white_stained_glass",
@@ -17793,10 +17738,10 @@
     "block_model_files": 2885,
     "block_texture_references_not_referenced_by_any_blockstate": [],
     "blockstates": 1290,
-    "currently_covered_block_texture_references": 344,
+    "currently_covered_block_texture_references": 349,
     "metadata_resolution_problems": [],
-    "states_with_uncovered_textures": 644,
-    "uncovered_block_texture_references": 928,
+    "states_with_uncovered_textures": 614,
+    "uncovered_block_texture_references": 923,
     "unique_block_texture_references": 1272
   },
   "uncovered_block_textures": [
@@ -17995,7 +17940,6 @@
     "composter_side",
     "composter_top",
     "conduit",
-    "copper_block",
     "copper_bulb",
     "copper_bulb_lit",
     "copper_bulb_lit_powered",
@@ -18035,7 +17979,6 @@
     "crimson_shelf",
     "crimson_sign",
     "crimson_stem",
-    "cut_copper",
     "cyan_bed_foot_east",
     "cyan_bed_foot_south",
     "cyan_bed_foot_up",
@@ -18129,7 +18072,6 @@
     "exposed_copper_chain",
     "exposed_copper_grate",
     "exposed_copper_lantern",
-    "exposed_cut_copper",
     "exposed_lightning_rod",
     "farmland",
     "farmland_moist",
@@ -18346,7 +18288,6 @@
     "oxidized_copper_chain",
     "oxidized_copper_grate",
     "oxidized_copper_lantern",
-    "oxidized_cut_copper",
     "oxidized_lightning_rod",
     "packed_ice",
     "pale_hanging_moss",
@@ -18688,7 +18629,6 @@
     "weathered_copper_chain",
     "weathered_copper_grate",
     "weathered_copper_lantern",
-    "weathered_cut_copper",
     "weathered_lightning_rod",
     "weeping_vines",
     "weeping_vines_plant",

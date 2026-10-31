@@ -1450,6 +1450,89 @@
       "porosity": 40
     },
     {
+      "name": "copper_block",
+      "material": "metal_plate_02",
+      "recipe": "metal",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        192,
+        108,
+        80
+      ],
+      "f0": 234
+    },
+    {
+      "name": "cut_copper",
+      "material": "metal_plate_02",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        191,
+        107,
+        81
+      ],
+      "f0": 234
+    },
+    {
+      "name": "exposed_cut_copper",
+      "material": "rusted_shutter",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        155,
+        122,
+        101
+      ],
+      "f0": 10,
+      "porosity": 0
+    },
+    {
+      "name": "weathered_cut_copper",
+      "material": "rusted_shutter",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        109,
+        145,
+        107
+      ],
+      "f0": 10,
+      "porosity": 0
+    },
+    {
+      "name": "oxidized_cut_copper",
+      "material": "rusted_shutter",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        80,
+        154,
+        127
+      ],
+      "f0": 10,
+      "porosity": 0
+    },
+    {
       "name": "exposed_copper",
       "material": "rusted_shutter",
       "recipe": "metal",

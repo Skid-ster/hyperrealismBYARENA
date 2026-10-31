@@ -256,6 +256,7 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             "glass_stained",
             "glass_pane_cap",
             "metal",
+            "metal_cut",
             "gem",
             "leaves",
             "material",

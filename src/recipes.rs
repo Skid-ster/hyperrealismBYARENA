@@ -228,6 +228,27 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             0.0,
         ),
         "metal" => (0.97 + 0.04 * n, 0.003 * (fine - 0.5), 1.0, 0.0),
+        "metal_cut" => {
+            // Four-by-four copper sheet panels with narrow recessed joints.
+            // The 128px repeat maps to four Minecraft texels per panel at
+            // 512px resolution; a 7px joint is deliberately finer than a full
+            // source texel so the scan remains the dominant surface detail.
+            let local_x = x % 128;
+            let local_y = y % 128;
+            let seam = local_x < 7 || local_y < 7;
+            let bevel = !seam && (local_x < 12 || local_y < 12);
+            if seam {
+                (0.68, -0.055, 1.0, 0.0)
+            } else if bevel {
+                (0.91, -0.018, 1.0, 0.0)
+            } else {
+                let variation = point(x / 128, y / 128, 4, seed);
+                let panel_noise = noise(x, y, 64, seed ^ 0xa417);
+                let shade = 0.98 + 0.035 * variation + 0.012 * (panel_noise - 0.5);
+                let relief = 0.004 * (fine - 0.5) + 0.0015 * (n - 0.5);
+                (shade, relief, 1.0, 0.0)
+            }
+        }
         "gem" => (0.90 + 0.16 * n, 0.03 * n, 1.0, 0.0),
         "leaves" => {
             let a = if (x / 16 + y / 16) % 7 == 0 && n < 0.6 {
@@ -291,6 +312,7 @@ mod tests {
             "glass_stained",
             "glass_pane_cap",
             "metal",
+            "metal_cut",
             "gem",
             "leaves",
             "material",
@@ -343,6 +365,21 @@ mod tests {
         }
         assert!(maximum_shade - minimum_shade > 0.1);
         assert!(recessed > 0 && raised > 0);
+    }
+
+    #[test]
+    fn cut_copper_has_recessed_joints_and_periodic_panels() {
+        let seed = seed("cut_copper");
+        let joint = evaluate("metal_cut", 2, 64, seed);
+        let bevel = evaluate("metal_cut", 9, 64, seed);
+        let face = evaluate("metal_cut", 64, 64, seed);
+        assert!(joint.shade < bevel.shade && bevel.shade < face.shade);
+        assert!(joint.relief < bevel.relief);
+        for &(x, y) in &[(2, 64), (9, 64), (64, 64), (127, 127)] {
+            let p = evaluate("metal_cut", x, y, seed);
+            let q = evaluate("metal_cut", x + PERIOD, y + PERIOD, seed);
+            assert_eq!((p.shade, p.relief), (q.shade, q.relief));
+        }
     }
 
     #[test]

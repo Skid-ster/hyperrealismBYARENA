@@ -29,11 +29,21 @@ The current audit reports:
 
 - 1,290 blockstate JSON files and 2,885 block-model JSON files.
 - 1,272 distinct `minecraft:block/*` texture references.
-- 344 referenced paths are covered by the material manifest; 928 remain
+- 349 referenced paths are covered by the material manifest; 923 remain
   uncovered.
-- 644 blockstates currently have at least one uncovered referenced texture.
+- 614 blockstates currently have at least one uncovered referenced texture.
 - The pinned-metadata resolver reports zero unresolved texture variables and
   zero block texture paths unrelated to any blockstate.
+
+The latest incremental family is five copper block textures: copper block,
+cut copper, and exposed/weathered/oxidized cut copper. It reuses the existing
+verified CC0 metal scans, adds a deterministic 4×4 panel-and-recess recipe for
+cut copper, and keeps per-stage target colors and LabPBR material IDs in the
+manifest. Target colors are alpha-weighted averages computed locally from the
+pinned reference textures; no Minecraft image pixels are included in the pack
+or repository. The new recipe is unit-tested for recessed joints and periodic
+tile boundaries. This is structural coverage progress, not in-game visual
+validation.
 
 This establishes that the current source catalog is still a subset, not full
 block coverage. These counts describe the pinned asset mirror's metadata, not a
@@ -60,7 +70,7 @@ photographic material.
    missing, unsupported and intentionally vanilla-fallback paths separate
    machine-readable statuses. Add reproducible coverage checks for every
    blockstate, not a hand-selected sample.
-2. **Build material families, not 928 unrelated recipes.** Group semantically
+2. **Build material families, not 923 unrelated recipes.** Group semantically
    related block paths into defensible families (stone/ore, soil/sand, wood/bark,
    masonry, metal, glass, foliage/crops, Nether/End, liquids and utility blocks).
    Preserve distinct target colors, alpha, face masks, rotations, state/model

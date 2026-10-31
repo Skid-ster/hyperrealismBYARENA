@@ -4484,6 +4484,71 @@
         129,
         124
       ]
+    },
+    "copper_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c994d8abb7eaea0315bda72715e3d76880721ae8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        192,
+        108,
+        80
+      ]
+    },
+    "cut_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "38decb0d9e47a41a3191c9cfebab598084313a09",
+      "has_mcmeta": false,
+      "target_rgb": [
+        191,
+        107,
+        81
+      ]
+    },
+    "exposed_cut_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a8a085bd1f47ef44616e949da1d249c88fba7622",
+      "has_mcmeta": false,
+      "target_rgb": [
+        155,
+        122,
+        101
+      ]
+    },
+    "weathered_cut_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "acc71a20631b1a5c55c425154834fd74e765675c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        109,
+        145,
+        107
+      ]
+    },
+    "oxidized_cut_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "19ce7cc1fc699924e16d4e5767afb199e9597b21",
+      "has_mcmeta": false,
+      "target_rgb": [
+        80,
+        154,
+        127
+      ]
     }
   },
   "version": "26.3"
