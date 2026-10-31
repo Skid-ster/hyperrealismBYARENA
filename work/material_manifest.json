@@ -1516,6 +1516,204 @@
       "ore_f0": 10
     },
     {
+      "name": "chiseled_deepslate",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        54,
+        54,
+        55
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_red_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        183,
+        97,
+        28
+      ],
+      "f0": 10
+    },
+    {
+      "name": "chiseled_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        216,
+        203,
+        155
+      ],
+      "f0": 10
+    },
+    {
+      "name": "chiseled_stone_bricks",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        120,
+        119,
+        120
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        89,
+        94,
+        87
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff_bricks",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        99,
+        103,
+        96
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff_bricks_top",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        111,
+        114,
+        107
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff_top",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        94,
+        99,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_copper",
+      "material": "metal_plate_02",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        184,
+        101,
+        74
+      ],
+      "f0": 234
+    },
+    {
+      "name": "exposed_chiseled_copper",
+      "material": "rusted_shutter",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        155,
+        119,
+        101
+      ],
+      "f0": 10
+    },
+    {
+      "name": "weathered_chiseled_copper",
+      "material": "rusted_shutter",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        105,
+        151,
+        111
+      ],
+      "f0": 10
+    },
+    {
+      "name": "oxidized_chiseled_copper",
+      "material": "rusted_shutter",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        84,
+        162,
+        132
+      ],
+      "f0": 10
+    },
+    {
       "name": "copper_block",
       "material": "metal_plate_02",
       "recipe": "metal",

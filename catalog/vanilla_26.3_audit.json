@@ -4588,6 +4588,162 @@
         136,
         107
       ]
+    },
+    "chiseled_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8a5f0446a6af851291adeea3ea107ffe25f0add8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        184,
+        101,
+        74
+      ]
+    },
+    "chiseled_deepslate": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4cfe3ace35208e580dd9d529fdacc16a85d14594",
+      "has_mcmeta": false,
+      "target_rgb": [
+        54,
+        54,
+        55
+      ]
+    },
+    "chiseled_red_sandstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "39231255eb7ce8b3aaefc75093dba42dde436c90",
+      "has_mcmeta": false,
+      "target_rgb": [
+        183,
+        97,
+        28
+      ]
+    },
+    "chiseled_sandstone": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "fad2a554bf43d958e1788853d35a61e7411233c9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        216,
+        203,
+        155
+      ]
+    },
+    "chiseled_stone_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5dec3c0f313431c5352327a95311048bc7571352",
+      "has_mcmeta": false,
+      "target_rgb": [
+        120,
+        119,
+        120
+      ]
+    },
+    "chiseled_tuff": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "818d5bf46f44ac023d9c63aff6b1662ab6b7d65d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        89,
+        94,
+        87
+      ]
+    },
+    "chiseled_tuff_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "86f12ff00452458e96687465d08539e994bcdb97",
+      "has_mcmeta": false,
+      "target_rgb": [
+        99,
+        103,
+        96
+      ]
+    },
+    "chiseled_tuff_bricks_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "3c5941c26d98124b10c6e69f497599fde6331c1b",
+      "has_mcmeta": false,
+      "target_rgb": [
+        111,
+        114,
+        107
+      ]
+    },
+    "chiseled_tuff_top": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1e7d174e6116fadb14ba8da3b5d384bfe4cb3f2a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        94,
+        99,
+        91
+      ]
+    },
+    "exposed_chiseled_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "a32dd731a48222c68145c856dd615f68ffb657e7",
+      "has_mcmeta": false,
+      "target_rgb": [
+        155,
+        119,
+        101
+      ]
+    },
+    "oxidized_chiseled_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "015cc8f7353e8ba5695050c82defd0fe2a3193af",
+      "has_mcmeta": false,
+      "target_rgb": [
+        84,
+        162,
+        132
+      ]
+    },
+    "weathered_chiseled_copper": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c2a6f08fab46f48832cd5b77bc6696015debbdf4",
+      "has_mcmeta": false,
+      "target_rgb": [
+        105,
+        151,
+        111
+      ]
     }
   },
   "version": "26.3"

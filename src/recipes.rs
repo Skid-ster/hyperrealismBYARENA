@@ -249,6 +249,26 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
                 (shade, relief, 1.0, 0.0)
             }
         }
+        "carved" => {
+            // Shallow hand-carved diamond bands add repeatable embossed
+            // identity without copying the low-resolution vanilla glyph.
+            let dx = (x as f32 + 0.5 - 256.0).abs();
+            let dy = (y as f32 + 0.5 - 256.0).abs();
+            let distance = dx + dy;
+            let nearest = [42.0, 86.0, 130.0, 174.0, 218.0]
+                .iter()
+                .map(|radius| (distance - radius).abs())
+                .fold(f32::MAX, f32::min);
+            if nearest < 2.5 {
+                (0.74, -0.045, 1.0, 0.0)
+            } else if nearest < 6.5 {
+                (0.90, -0.018, 1.0, 0.0)
+            } else if nearest < 9.5 {
+                (0.98, 0.006, 1.0, 0.0)
+            } else {
+                (0.99 + 0.018 * (fine - 0.5), 0.002 * (n - 0.5), 1.0, 0.0)
+            }
+        }
         "gem" => (0.90 + 0.16 * n, 0.03 * n, 1.0, 0.0),
         "leaves" => {
             let a = if (x / 16 + y / 16) % 7 == 0 && n < 0.6 {
@@ -313,6 +333,7 @@ mod tests {
             "glass_pane_cap",
             "metal",
             "metal_cut",
+            "carved",
             "gem",
             "leaves",
             "material",
@@ -378,6 +399,21 @@ mod tests {
         for &(x, y) in &[(2, 64), (9, 64), (64, 64), (127, 127)] {
             let p = evaluate("metal_cut", x, y, seed);
             let q = evaluate("metal_cut", x + PERIOD, y + PERIOD, seed);
+            assert_eq!((p.shade, p.relief), (q.shade, q.relief));
+        }
+    }
+
+    #[test]
+    fn carved_recipe_adds_shallow_embossed_bands_and_repeats() {
+        let seed = seed("chiseled_sandstone");
+        let groove = evaluate("carved", 298, 256, seed);
+        let bevel = evaluate("carved", 303, 256, seed);
+        let face = evaluate("carved", 310, 256, seed);
+        assert!(groove.shade < bevel.shade && bevel.shade < face.shade);
+        assert!(groove.relief < bevel.relief && bevel.relief < face.relief);
+        for &(x, y) in &[(0, 0), (298, 256), (303, 256), (511, 511)] {
+            let p = evaluate("carved", x, y, seed);
+            let q = evaluate("carved", x + PERIOD, y + PERIOD, seed);
             assert_eq!((p.shade, p.relief), (q.shade, q.relief));
         }
     }

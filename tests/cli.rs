@@ -599,7 +599,26 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 352);
+    assert_eq!(m.textures.len(), 364);
+    for (name, rounded_target) in [
+        ("chiseled_deepslate", [54, 54, 55]),
+        ("chiseled_red_sandstone", [183, 97, 28]),
+        ("chiseled_sandstone", [216, 203, 155]),
+        ("chiseled_stone_bricks", [120, 119, 120]),
+        ("chiseled_tuff", [89, 94, 87]),
+        ("chiseled_tuff_bricks", [99, 103, 96]),
+        ("chiseled_tuff_bricks_top", [111, 114, 107]),
+        ("chiseled_tuff_top", [94, 99, 91]),
+        ("chiseled_copper", [184, 101, 74]),
+        ("exposed_chiseled_copper", [155, 119, 101]),
+        ("weathered_chiseled_copper", [105, 151, 111]),
+        ("oxidized_chiseled_copper", [84, 162, 132]),
+    ] {
+        let texture = m.textures.iter().find(|texture| texture.name == name).unwrap();
+        assert_eq!(texture.recipe, "carved");
+        assert_eq!(texture.target_color, Some(rounded_target));
+        assert_eq!(entries[name]["target_rgb"], serde_json::json!(rounded_target));
+    }
     for (name, ore_id) in [
         ("raw_copper_block", 10),
         ("raw_gold_block", 231),
@@ -941,9 +960,9 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
     assert_eq!(summary["blockstates"], 1290);
     assert_eq!(summary["block_model_files"], 2885);
     assert_eq!(summary["unique_block_texture_references"], 1272);
-    assert_eq!(summary["currently_covered_block_texture_references"], 352);
-    assert_eq!(summary["uncovered_block_texture_references"], 920);
-    assert_eq!(summary["states_with_uncovered_textures"], 611);
+    assert_eq!(summary["currently_covered_block_texture_references"], 364);
+    assert_eq!(summary["uncovered_block_texture_references"], 908);
+    assert_eq!(summary["states_with_uncovered_textures"], 596);
     assert!(summary["metadata_resolution_problems"]
         .as_array()
         .unwrap()
@@ -963,7 +982,7 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
             "{block}: uncovered list must be a subset of the block texture references"
         );
     }
-    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 920);
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 908);
     let covered: std::collections::HashSet<&str> = catalog["covered_block_textures"]
         .as_array()
         .unwrap()

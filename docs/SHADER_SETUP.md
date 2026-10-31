@@ -86,7 +86,7 @@ format to labPBR and enable normal/specular mapping. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
 without it. Preview 14 introduced a global PBR strength of `0.2`, with no
 per-texture overrides; the current development manifest applies that same global
-setting across all 352 texture targets. In this generator that scales
+setting across all 364 texture targets. In this generator that scales
 tangent-space normal slopes, height deviations around neutral, and smoothness
 to 20% of unit-strength, while AO fades toward white. Albedo and discrete
 LabPBR metal/F0 IDs, porosity and emission are preserved. This is defined
@@ -118,7 +118,7 @@ Compare in daylight and in darker light, with and without the resource pack,
 then with and without the shader. Try stone, cobblestone stairs/slabs/walls,
 oak and bamboo planks/fences, sand, netherrack and Nether gold ore. Ask which
 details are visible from a normal playing distance, whether seams repeat, and
-whether metals reflect plausibly. The 352 covered block texture paths do not
+whether metals reflect plausibly. The 364 covered block texture paths do not
 replace the entire game; animations, most blocks and entities are not supplied. The pack cannot guarantee visual
 quality merely because it contains high-resolution images and valid LabPBR channels.
 

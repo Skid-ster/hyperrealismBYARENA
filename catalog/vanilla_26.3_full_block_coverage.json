@@ -2805,9 +2805,7 @@
         "minecraft:block/chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_deepslate": {
       "block_textures": [
@@ -2817,9 +2815,7 @@
         "minecraft:block/chiseled_deepslate"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_deepslate"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_nether_bricks": {
       "block_textures": [
@@ -2861,9 +2857,7 @@
         "minecraft:block/chiseled_red_sandstone"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_red_sandstone"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_resin_bricks": {
       "block_textures": [
@@ -2886,9 +2880,7 @@
         "minecraft:block/chiseled_sandstone"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_sandstone"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_stone_bricks": {
       "block_textures": [
@@ -2898,9 +2890,7 @@
         "minecraft:block/chiseled_stone_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_stone_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_sulfur": {
       "block_textures": [
@@ -2923,10 +2913,7 @@
         "minecraft:block/chiseled_tuff"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_tuff",
-        "chiseled_tuff_top"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_tuff_bricks": {
       "block_textures": [
@@ -2937,10 +2924,7 @@
         "minecraft:block/chiseled_tuff_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_tuff_bricks",
-        "chiseled_tuff_bricks_top"
-      ]
+      "uncovered_block_textures": []
     },
     "chorus_flower": {
       "block_textures": [
@@ -5457,9 +5441,7 @@
         "minecraft:block/exposed_chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "exposed_copper": {
       "block_textures": [
@@ -6704,9 +6686,7 @@
         "minecraft:block/chiseled_stone_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_stone_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "infested_cobblestone": {
       "block_textures": [
@@ -9702,9 +9682,7 @@
         "minecraft:block/oxidized_chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "oxidized_copper": {
       "block_textures": [
@@ -15771,9 +15749,7 @@
         "minecraft:block/chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_copper_bars": {
       "block_textures": [
@@ -15950,9 +15926,7 @@
         "minecraft:block/exposed_chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "exposed_chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_exposed_copper": {
       "block_textures": [
@@ -16159,9 +16133,7 @@
         "minecraft:block/oxidized_chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "oxidized_chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_oxidized_copper": {
       "block_textures": [
@@ -16353,9 +16325,7 @@
         "minecraft:block/weathered_chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "waxed_weathered_copper": {
       "block_textures": [
@@ -16547,9 +16517,7 @@
         "minecraft:block/weathered_chiseled_copper"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "weathered_chiseled_copper"
-      ]
+      "uncovered_block_textures": []
     },
     "weathered_copper": {
       "block_textures": [
@@ -17430,10 +17398,19 @@
     "cherry_log_top",
     "cherry_planks",
     "cherry_trapdoor",
+    "chiseled_copper",
+    "chiseled_deepslate",
     "chiseled_nether_bricks",
     "chiseled_polished_blackstone",
     "chiseled_quartz_block",
     "chiseled_quartz_block_top",
+    "chiseled_red_sandstone",
+    "chiseled_sandstone",
+    "chiseled_stone_bricks",
+    "chiseled_tuff",
+    "chiseled_tuff_bricks",
+    "chiseled_tuff_bricks_top",
+    "chiseled_tuff_top",
     "clay",
     "coal_ore",
     "coarse_dirt",
@@ -17494,6 +17471,7 @@
     "emerald_ore",
     "end_stone",
     "end_stone_bricks",
+    "exposed_chiseled_copper",
     "exposed_copper",
     "exposed_copper_bars",
     "exposed_copper_door_bottom",
@@ -17591,6 +17569,7 @@
     "orange_stained_glass_pane_top",
     "orange_terracotta",
     "orange_wool",
+    "oxidized_chiseled_copper",
     "oxidized_copper",
     "oxidized_copper_bars",
     "oxidized_copper_door_bottom",
@@ -17709,6 +17688,7 @@
     "warped_stem_top",
     "warped_trapdoor",
     "warped_wart_block",
+    "weathered_chiseled_copper",
     "weathered_copper",
     "weathered_copper_bars",
     "weathered_copper_door_bottom",
@@ -17735,10 +17715,10 @@
     "block_model_files": 2885,
     "block_texture_references_not_referenced_by_any_blockstate": [],
     "blockstates": 1290,
-    "currently_covered_block_texture_references": 352,
+    "currently_covered_block_texture_references": 364,
     "metadata_resolution_problems": [],
-    "states_with_uncovered_textures": 611,
-    "uncovered_block_texture_references": 920,
+    "states_with_uncovered_textures": 596,
+    "uncovered_block_texture_references": 908,
     "unique_block_texture_references": 1272
   },
   "uncovered_block_textures": [
@@ -17903,17 +17883,8 @@
     "chiseled_bookshelf_side",
     "chiseled_bookshelf_top",
     "chiseled_cinnabar",
-    "chiseled_copper",
-    "chiseled_deepslate",
-    "chiseled_red_sandstone",
     "chiseled_resin_bricks",
-    "chiseled_sandstone",
-    "chiseled_stone_bricks",
     "chiseled_sulfur",
-    "chiseled_tuff",
-    "chiseled_tuff_bricks",
-    "chiseled_tuff_bricks_top",
-    "chiseled_tuff_top",
     "chorus_flower",
     "chorus_flower_dead",
     "chorus_plant",
@@ -18061,7 +18032,6 @@
     "end_portal_frame_side",
     "end_portal_frame_top",
     "end_rod",
-    "exposed_chiseled_copper",
     "exposed_copper_bulb",
     "exposed_copper_bulb_lit",
     "exposed_copper_bulb_lit_powered",
@@ -18277,7 +18247,6 @@
     "orange_shulker_box",
     "orange_tulip",
     "oxeye_daisy",
-    "oxidized_chiseled_copper",
     "oxidized_copper_bulb",
     "oxidized_copper_bulb_lit",
     "oxidized_copper_bulb_lit_powered",
@@ -18615,7 +18584,6 @@
     "warped_sign",
     "warped_stem",
     "water_still",
-    "weathered_chiseled_copper",
     "weathered_copper_bulb",
     "weathered_copper_bulb_lit",
     "weathered_copper_bulb_lit_powered",
