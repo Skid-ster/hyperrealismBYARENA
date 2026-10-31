@@ -331,9 +331,10 @@ resampled using Lanczos-3 before recipe processing; albedo filtering uses
 premultiplied alpha and linear light. Block maps default to 256×256 and can be
 set to 128×128 or 512×512 with `--resolution`; continuous channels use a
 periodic Lanczos-3 filter and normals are filtered as vectors then renormalized.
-Entity maps default to 256×128, preserving their vanilla 2:1 UV atlas ratio;
-their non-tiling edges are clamped, albedo is filtered in linear premultiplied
-space, and LabPBR ID/sentinel channels are kept discrete. Animated sources remain
+Entity maps default to 256px wide while preserving each vanilla atlas ratio
+(chicken/sheep 256×128; cow/pig 256×256). Their non-tiling edges are clamped,
+albedo is filtered in linear premultiplied space, and LabPBR ID/sentinel
+channels are kept discrete. Animated sources remain
 unsupported. Inputs up to 8192×8192 are
 supported, but large inputs may use substantial RAM. Only the most recently
 used prepared material is cached. Albedo and normal PNGs currently use 8-bit
@@ -342,7 +343,7 @@ uses the standard uncompressed/store method, not deflate.
 
 Each generated pack is checked before packaging for consistently sized
 128×128, 256×256 or 512×512 block-map triples and aligned 8-bit RGBA entity atlas
-triples (128×64, 256×128 or 512×256), preserving vanilla aspect ratios, version metadata, plausible
+triples at 128, 256 or 512px wide, preserving vanilla entity aspect ratios, version metadata, plausible
 normal XY, nonzero POM height, reserved material IDs, and metal blue-channel
 rules. The standalone `--verify-pack` check also scans nested entity paths and
 rejects missing or mismatched sidecars. You can rerun these structural checks

@@ -342,7 +342,9 @@ RGB averages and Git blob IDs are recorded in the pinned 26.3 audit catalog.
 The `metal_cut` recipe adds periodic 4×4 panel seams and restrained recessed
 relief without changing models, UVs or states. Vanilla pixels were used only
 locally to calculate average-color hints; no game art is packed or committed.
-The current development build defaults to 256×256 block maps and 256×128 entity
-atlases. Automated tests verify the mapping, source licensing, seam periodicity,
-UV aspect ratios and coverage counts. Coverage is 352 of 1,272 paths (920 remain);
-Minecraft/shader appearance has not been visually validated.
+The current development build defaults to 256×256 block maps and 256px-wide
+entity atlases with each mob's original UV aspect ratio preserved (for example,
+256×128 chicken and 256×256 cow maps). Automated tests verify the mapping,
+source licensing, seam periodicity, atlas aspect ratios and coverage counts.
+Coverage is 352 of 1,272 paths (920 remain); Minecraft/shader appearance has not
+been visually validated.

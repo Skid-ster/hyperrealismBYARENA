@@ -43,22 +43,16 @@ enum EntityMap {
 }
 
 /// Downsample an entity atlas without wrapping its UV edges or changing its
-/// vanilla 2:1 width-to-height aspect ratio. Continuous channels use clamped
+/// vanilla width-to-height aspect ratio. Continuous channels use clamped
 /// Lanczos; LabPBR IDs and the no-emission sentinel use nearest-neighbor.
 fn resize_entity_map(
     source: &Path,
     destination: &Path,
     size: usize,
+    out_height: usize,
     kind: EntityMap,
 ) -> Result<(), String> {
     let image = png_io::read(source)?;
-    if image.width != image.height.saturating_mul(2) {
-        return Err(format!(
-            "{}: entity atlas must preserve the vanilla 2:1 UV aspect ratio, got {}x{}",
-            source.display(), image.width, image.height
-        ));
-    }
-    let out_height = size / 2;
     if image.width == size && image.height == out_height {
         fs::copy(source, destination).map_err(|e| format!("{}: {e}", destination.display()))?;
         return Ok(());
@@ -512,6 +506,33 @@ fn build_stage(
             .rsplit('/')
             .next()
             .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        let albedo_source = manifest::safe_file(root, &entity.albedo)?;
+        let albedo_image = png_io::read(&albedo_source)?;
+        let (source_width, source_height) = (albedo_image.width, albedo_image.height);
+        let recognized_aspect = source_width == source_height
+            || source_width == source_height.saturating_mul(2)
+            || source_height == source_width.saturating_mul(2);
+        if !recognized_aspect {
+            return Err(format!(
+                "{}: unsupported entity atlas aspect ratio {}x{}",
+                entity.path, source_width, source_height
+            ));
+        }
+        for source in [&entity.normal, &entity.specular] {
+            let image = png_io::read(&manifest::safe_file(root, source)?)?;
+            if (image.width, image.height) != (source_width, source_height) {
+                return Err(format!(
+                    "{}: entity albedo, normal and specular maps must have matching dimensions",
+                    entity.path
+                ));
+            }
+        }
+        let scaled_height = size
+            .checked_mul(source_height)
+            .and_then(|v| v.checked_add(source_width / 2))
+            .ok_or_else(|| format!("{}: entity dimensions overflow", entity.path))?
+            / source_width;
+        let output_height = scaled_height.max(1);
         for (source, dest, kind) in [
             (&entity.albedo, destination.clone(), EntityMap::Albedo),
             (
@@ -525,7 +546,13 @@ fn build_stage(
                 EntityMap::Specular,
             ),
         ] {
-            resize_entity_map(&manifest::safe_file(root, source)?, &dest, size, kind)
+            resize_entity_map(
+                &manifest::safe_file(root, source)?,
+                &dest,
+                size,
+                output_height,
+                kind,
+            )
                 .map_err(|e| format!("{}: {e}", entity.path))?;
         }
     }

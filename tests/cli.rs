@@ -202,9 +202,23 @@ fn default_256_resolution_downsamples_entity_uvs_and_preserves_labpbr_ids() {
     ] {
         hyperrealism_core::png_io::write(&input.join(name), width, height, &pixels).unwrap();
     }
+    let square_size = 512;
+    for (name, pixel) in [
+        ("square.png", [210, 160, 120, 255]),
+        ("square_normal.png", [128, 128, 255, 128]),
+        ("square_specular.png", [128, 10, 0, 255]),
+    ] {
+        hyperrealism_core::png_io::write(
+            &input.join(name),
+            square_size,
+            square_size,
+            &pixel.repeat(square_size * square_size),
+        )
+        .unwrap();
+    }
     fs::write(
         input.join("material_manifest.json"),
-        r#"{"version":1,"materials":[{"id":"test","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],"textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}],"entity_textures":[{"path":"entity/test/test","albedo":"entity.png","normal":"entity_normal.png","specular":"entity_specular.png","source":"test source","license":"test license"}]}"#,
+        r#"{"version":1,"materials":[{"id":"test","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],"textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}],"entity_textures":[{"path":"entity/test/test","albedo":"entity.png","normal":"entity_normal.png","specular":"entity_specular.png","source":"test source","license":"test license"},{"path":"entity/test/square","albedo":"square.png","normal":"square_normal.png","specular":"square_specular.png","source":"test source","license":"test license"}]}"#,
     )
     .unwrap();
 
@@ -225,7 +239,7 @@ fn default_256_resolution_downsamples_entity_uvs_and_preserves_labpbr_ids() {
         String::from_utf8_lossy(&result.stderr)
     );
     let pack = output.join("pack");
-    assert_eq!(hyperrealism_core::verify::full_pack(&pack).unwrap(), (1, 1));
+    assert_eq!(hyperrealism_core::verify::full_pack(&pack).unwrap(), (1, 2));
     let block = hyperrealism_core::png_io::read(
         &pack.join("assets/minecraft/textures/block/iron_block.png"),
     )
@@ -236,6 +250,9 @@ fn default_256_resolution_downsamples_entity_uvs_and_preserves_labpbr_ids() {
         let image = hyperrealism_core::png_io::read(&entity.with_file_name(name)).unwrap();
         assert_eq!((image.width, image.height), (256, 128));
     }
+    let square = pack.join("assets/minecraft/textures/entity/test/square.png");
+    let square_image = hyperrealism_core::png_io::read(&square).unwrap();
+    assert_eq!((square_image.width, square_image.height), (256, 256));
     let spec = hyperrealism_core::png_io::read(&entity.with_file_name("test_s.png")).unwrap();
     let ids: std::collections::HashSet<u8> =
         spec.pixels.chunks_exact(4).map(|p| p[1]).collect();

@@ -132,9 +132,13 @@ fn verify_entity_triple(texture_root: &Path, stem: &str) -> Result<(), String> {
     let color = png_io::read(&color_path)?;
     let width = color.width;
     let height = color.height;
-    if ![128, 256, 512].contains(&width) || height * 2 != width {
+    let supported_size = [128, 256, 512].contains(&width);
+    let supported_aspect = height == width
+        || height.saturating_mul(2) == width
+        || width.saturating_mul(2) == height;
+    if !supported_size || !supported_aspect {
         return Err(format!(
-            "{}: entity atlas must be 128x64, 256x128, or 512x256 to preserve vanilla UVs",
+            "{}: entity atlas dimensions do not preserve a supported vanilla UV aspect ratio",
             color_path.display()
         ));
     }
