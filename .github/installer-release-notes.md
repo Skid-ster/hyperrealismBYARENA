@@ -1,39 +1,37 @@
-## Windows GUI installer 9 — experimental pack
+## Windows GUI installer 12 — HyperRealism 512×512
 
-This update refines the sidebar's action groups and tooltips and redraws the
-Close icon with a green cross on a white inset, matching the supplied close-up.
-The sidebar uses the original Prism Launcher grass-block instance artwork,
-credited under CC BY-SA 4.0. Other glyphs remain independently drawn. The new
-**Launch** button asks an installed PineconeMC to launch the instance matching
-the selected standard resourcepacks folder. If the launcher isn't found, browse
-to `elyprismlauncher.exe`; the path is remembered and can be changed in Settings. PineconeMC handles accounts,
-Minecraft startup and errors. A launcher configuration must exist in the data
-folder; custom instance folder layouts should be launched from PineconeMC itself. This is a separate application, not PineconeMC. Download **HyperRealism128-Installer.exe** and double-click it on Windows 11.
-The app pre-fills the ElyPrism `26.3(1)` instance path under the current user's
-AppData, and lets you browse to a different existing `resourcepacks` folder.
-A green message means the folder exists and its name matches; it does **not**
-prove Minecraft is using that instance. Use **Check updates** or
-**Install / Update** in the right-hand actions, then enable the pack in Minecraft. The
-chosen existing folder is remembered across launches.
+Installer 12 improves update-transfer usability and resilience:
 
-By default, at startup and hourly while open, the app checks for newer installer versions
-and for a different latest pack when the selected folder already has the pack.
-If one is found, it asks before updating. For an installer update, it downloads
-and verifies the new EXE, uses a temporary CMD/helper process to replace the
-old EXE, then reopens it. Use **Update** in the toolbar to check both or **Installer update** in the right-hand actions. No service or scheduled task is installed, and notifications do not
-appear while the app is closed. **Version 1 cannot self-update**; download this
-version 2 or later manually once. If the EXE is in a protected folder, move it to a
-writable folder before updating.
+- Pack and installer downloads display byte-level progress and can be cancelled.
+  Cancellation removes temporary downloads and leaves the currently installed
+  file untouched.
+- Automatic prompts for a declined or cancelled version are deferred until the
+  next installer launch; manual update checks remain available.
+- Pack downloads are capped at 1 GiB and installer downloads at 100 MiB. Network
+  requests and reads use 30-second timeouts, and progress callbacks are
+  throttled to keep the interface responsive.
+- Update files remain SHA-256 checked and are staged before replacement.
 
-The app downloads the newest published preview ZIP and its SHA-256 checksum
-from this project's GitHub releases. It verifies the ZIP before replacing the
-same-named installed preview. A checksum from the same release is not an
-independent signature. The installer executable is unsigned, so Windows may
-show a SmartScreen warning; inspect the source and checksum if desired.
+The executable filename, settings directory, and legacy preview ZIP asset name
+remain `HyperRealism128` for updater compatibility. The Minecraft resource pack
+itself is named **HyperRealism 512×512**.
 
-The resource pack remains an experimental 111-texture preview, not the complete
-pack. LabPBR effects require a compatible shader; the maps and visual results
-have not been validated on the target PC or in-game. The GUI is tested with
-mock downloads, a Windows construction smoke test, a live pack download, and
-an isolated self-replacement/restart test, and a simulated launcher process test. It has not been tested through a full
-interactive session on the user's machine.
+The installer is a separate app, not PineconeMC. On Windows 11, download
+**HyperRealism128-Installer.exe** and double-click it. The GUI defaults to the
+ElyPrism `26.3(1)` instance's resourcepacks folder and allows browsing to a
+different existing `resourcepacks` directory. A valid folder name does not
+prove Minecraft is using that instance; enable the pack in Minecraft after
+installing it.
+
+The app checks for newer installer versions at startup and hourly while open,
+and can check for a different latest preview when one is installed. It asks
+before replacing either file. There is no service, scheduled task, or updater
+while the app is closed. Installer version 1 cannot self-update; later versions
+can replace themselves using a temporary helper. If the executable is in a
+protected folder, move it to a writable folder before updating.
+
+The preview remains experimental and partial. LabPBR effects need a compatible
+shader and correct shader/resource-pack settings; no in-game appearance or
+target-hardware performance is guaranteed. The installer executable is
+unsigned, so Windows may show a SmartScreen warning. Its checksum is published
+in the same release and is not an independent signature.

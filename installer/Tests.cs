@@ -11,8 +11,17 @@ internal sealed class FakeTransfer : ITransfer
     public string Checksum;
     public byte[] Payload;
     public bool Corrupt;
+    public bool Cancel;
+    public long LastMaxBytes;
+    public bool IsCancellationRequested { get { return Cancel; } }
     public string GetText(string url) { return url == PackInstaller.Api ? Json : Checksum; }
-    public void Download(string url, string destination) { File.WriteAllBytes(destination, Corrupt ? Encoding.UTF8.GetBytes("corrupt") : Payload); }
+    public void Download(string url, string destination, long maxBytes)
+    {
+        LastMaxBytes = maxBytes;
+        byte[] bytes = Corrupt ? Encoding.UTF8.GetBytes("corrupt") : Payload;
+        if (bytes.LongLength > maxBytes) throw new InvalidDataException("Test download exceeds its size limit.");
+        File.WriteAllBytes(destination, bytes);
+    }
 }
 
 internal static class InstallerTests
@@ -48,7 +57,7 @@ internal static class InstallerTests
             var sumMatch = System.Text.RegularExpressions.Regex.Match(sumText, @"\A([0-9a-fA-F]{64})\s+\*?HyperRealism128-Installer\.exe\z");
             Assert(sumMatch.Success, "Live installer checksum format was invalid.");
             string downloadedApp = Path.Combine(root, "downloaded-installer.exe");
-            web.Download(app.ExeUrl, downloadedApp);
+            web.Download(app.ExeUrl, downloadedApp, SelfUpdater.MaxInstallerBytes);
             Assert(String.Equals(PackInstaller.HashFile(downloadedApp), sumMatch.Groups[1].Value, StringComparison.OrdinalIgnoreCase), "Live installer asset hash mismatch.");
             string result = PackInstaller.Install(web, folder);
             Assert(result.Contains("Installed"), "Live install did not complete.");
@@ -95,12 +104,20 @@ internal static class InstallerTests
         fake.Json = json.Serialize(new object[] {
             AppRelease("v0.1.0-installer.3", false, "https://github.com"),
             AppRelease("v0.1.0-installer.10", false, "https://github.com"),
-            AppRelease("v0.1.0-installer.11", true, "https://github.com"),
+            AppRelease("v0.1.0-installer.11", false, "https://github.com"),
+            AppRelease("v0.1.0-installer.12", false, "https://github.com"),
+            AppRelease("v0.1.0-installer.13", true, "https://github.com"),
             Release("v9.0.0-preview.1", "2028-01-01T00:00:00Z", false, "https://github.com")
         });
         InstallerRelease update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
-        Assert(update != null && update.Tag == "v0.1.0-installer.10", "Installer version ordering or draft filtering failed.");
-        Assert(SelfUpdater.FindUpdate(fake, "v0.1.0-installer.10") == null, "Current installer falsely reported outdated.");
+        Assert(update == null, "Current installer falsely reported outdated.");
+        update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.9");
+        Assert(update != null && update.Tag == "v0.1.0-installer.12", "Installer version ordering or draft filtering failed.");
+        update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.10");
+        Assert(update != null && update.Tag == "v0.1.0-installer.12", "Installer 10 should update directly to installer 12.");
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.13", false, "https://github.com") });
+        update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
+        Assert(update != null && update.Tag == "v0.1.0-installer.13", "Newer update fixture not found.");
         string dir = Path.Combine(root, "self update & 50%! test"); Directory.CreateDirectory(dir);
         string target = Path.Combine(dir, "The Installer.exe"); File.WriteAllText(target, "old executable");
         string payload = Path.Combine(root, "app-payload"); File.WriteAllBytes(payload, fake.Payload);
@@ -113,8 +130,9 @@ internal static class InstallerTests
         fake.Corrupt = false;
         string staged = SelfUpdater.DownloadUpdate(fake, update, target, out sum);
         Assert(PackInstaller.HashFile(staged) == sum, "App update not staged correctly.");
+        Assert(fake.LastMaxBytes == SelfUpdater.MaxInstallerBytes, "Installer download size cap was not applied.");
         File.Delete(staged);
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.10", false, "https://evil.example") });
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.13", false, "https://evil.example") });
         Throws(() => SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag), "Untrusted app release host accepted.");
 
         // End-to-end test of the real cmd -> copied GUI helper -> replace ->
@@ -217,6 +235,11 @@ internal static class InstallerTests
             Throws(() => PackInstaller.ValidateFolder(Path.Combine(root, "missing", "resourcepacks")), "Missing folder accepted.");
             Throws(() => PackInstaller.ValidateFolder("resourcepacks"), "Relative path accepted.");
             var fake = new FakeTransfer();
+            fake.Cancel = true;
+            Throws(() => PackInstaller.Check(fake, folder), "Cancelled update check continued processing.");
+            fake.Cancel = false;
+            var cancelledWeb = new WebTransfer(null, () => true);
+            Throws(() => cancelledWeb.Download("https://github.com/", Path.Combine(root, "cancelled-download"), 1024), "Cancelled transfer started a network download.");
             fake.Payload = Encoding.UTF8.GetBytes("verified pack bytes");
             string source = Path.Combine(root, "fixture"); File.WriteAllBytes(source, fake.Payload);
             fake.Checksum = PackInstaller.HashFile(source) + "  " + PackInstaller.PackName;
@@ -229,6 +252,7 @@ internal static class InstallerTests
             });
             Assert(PackInstaller.Check(fake, folder).Contains("new") && PackInstaller.Check(fake, folder).Contains("Not installed"), "Latest release not selected.");
             Assert(PackInstaller.Install(fake, folder).Contains("new"), "Install did not report version.");
+            Assert(fake.LastMaxBytes == PackInstaller.MaxPackBytes, "Pack download size cap was not applied.");
             string target = Path.Combine(folder, PackInstaller.PackName);
             Assert(PackInstaller.Check(fake, folder).Contains("Installed file matches"), "Installed hash not recognized.");
             File.WriteAllText(target, "old pack");

@@ -6,6 +6,7 @@ Coordinates are independently drawn vector shapes in a 16-unit square. Real
 photographic material grain comes from the separate licensed material scans.
 Requires Pillow. Run from the repository root.
 """
+import hashlib, json
 from pathlib import Path
 from PIL import Image, ImageDraw
 S=32
@@ -23,12 +24,30 @@ class Layout:
   self.d.line([(round(x*S),round(y*S)) for x,y in coords],fill=(shade,relief,255 if metal else 0,alpha),width=round(width*S),joint='curve')
  def hole(self,box): self.rect(box,0,128,False,0)
  def panel(self,box,open=False):
-  x1,y1,x2,y2=box;self.rect(box,165,157);self.rect((x1+.3,y1+.3,x2-.3,y2-.3),248,117)
+  # Soft, supersampled molding uses low shade/relief contrast to reduce harsh
+  # panel bands and POM-like depth. Open-panel holes retain exact coordinates.
+  x1,y1,x2,y2=box
+  self.rect(box,211,137)
+  self.rect((x1+.16,y1+.16,x2-.16,y2-.16),239,143)
+  self.rect((x1+.34,y1+.34,x2-.34,y2-.34),220,119)
+  self.rect((x1+.5,y1+.5,x2-.5,y2-.5),248,124)
   if open:self.hole((x1+.55,y1+.55,x2-.55,y2-.55))
  def handle(self):
-  self.rect((2.4,9.6,3.9,11.1),155,178,True);self.ellipse((2.7,9.8,3.6,10.7),245,190,True)
+  # Put the knob against the latch-side edge, matching the vanilla door UV
+  # island. Door hinge models mirror this UV for the opposite hinge/face, so a
+  # single edge-anchored handle lands on the correct side in every state.
+  # All details stay in the opaque edge stile and carry the metal-ID mask.
+  dx=-2.4
+  dy=-6.8  # the bottom sprite is one block high; y≈3.5 sits near full-door mid-height
+  self.rect((2.4+dx,9.6+dy,3.9+dx,11.1+dy),122,144,True)
+  self.rect((2.55+dx,9.74+dy,3.75+dx,10.96+dy),196,162,True)
+  self.ellipse((2.7+dx,9.8+dy,3.6+dx,10.7+dy),242,181,True)
+  self.ellipse((2.86+dx,9.96+dy,3.44+dx,10.54+dy),151,137,True)
+  self.ellipse((2.58+dx,9.7+dy,2.82+dx,9.94+dy),222,170,True)
+  self.ellipse((3.48+dx,10.76+dy,3.72+dx,11.0+dy),222,170,True)
  def frame(self):
-  self.rect((0,0,1.4,16),195,158);self.rect((14.6,0,16,16),195,158)
+  self.rect((0,0,1.4,16),182,153);self.rect((14.6,0,16,16),182,153)
+  self.rect((1.2,0,1.4,16),219,161);self.rect((14.6,0,14.8,16),219,161)
  def save(self,name):self.im.save(OUT/(name+'.png'),optimize=True)
 
 def door(wood,part):
@@ -47,7 +66,7 @@ def door(wood,part):
    a.line([(3.0,3),(13,13)],1.2,205,169)
    a.line([(13,3),(3,13)],1.2,205,169)
   else:
-   a.panel((1.8,1.5,14.2,14.7));a.rect((10.5,1.8,13,4.5),165,169,True);a.rect((11.2,2.1,12.4,3.7),235,180,True)
+   a.panel((1.8,1.5,14.2,14.7));a.handle()
  elif wood=='acacia':
   a.rect((1.3,2,14.7,12.5),175,148)
   for x in (3,6.5,10): a.hole((x,2.6,x+2.1,11.7))
@@ -95,7 +114,6 @@ def door(wood,part):
    a.panel((2,1.3,14,14.8));a.ellipse((4,3.5,12,12.5),185,117);a.ellipse((4.5,4,11.5,12),232,130)
   else:a.panel((2,1.4,14,14.6))
   if not top:a.handle()
-  if wood=='pale_oak':a.rect((0,2.3,11.5,3.4),165,164,True)
  else:raise ValueError(wood)
  return a
 
@@ -150,4 +168,25 @@ a=Layout(False)
 for x in (2,7.5,13):a.rect((x,0,x+1.1,16),220,153)
 for x1,y,x2 in [(2,3,8.6),(7.5,12,14.1),(0,7,3.1),(13,7,16)]:a.rect((x1,y,x2,y+1.1),208,151)
 a.save('bars')
-print('wrote',len(list(OUT.glob('*.png'))),'construction masks')
+# Vanilla's lever texture has exactly this opaque 2x10 UV island; keep the
+# original cutout/UV footprint while adding aligned wood and iron PBR detail.
+a=Layout(False)
+a.rect((7,6,9,9),205,151)
+a.rect((7.2,6.2,8.8,8.8),232,164)
+a.line([(7.42,6.35),(7.42,8.65)],.1,172,142)
+a.line([(8.58,6.35),(8.58,8.65)],.1,172,142)
+a.rect((7,9,9,9.8),132,145,True)
+a.rect((7.2,9.15,8.8,9.65),210,164,True)
+a.rect((7,9.8,9,15.2),156,147)
+a.rect((7.25,10,8.75,15),205,155)
+a.rect((7,15.2,9,16),118,143,True)
+a.save('lever')
+# Construction masks are hashed inputs; keep the manifest in sync so the
+# generator's provenance/integrity validation accepts newly drawn layouts.
+manifest_path=Path('work/material_manifest.json')
+manifest=json.loads(manifest_path.read_text())
+for path in OUT.glob('*.png'):
+ rel=path.relative_to(Path('work')).as_posix()
+ manifest['checksums'][rel]=hashlib.sha256(path.read_bytes()).hexdigest()
+manifest_path.write_text(json.dumps(manifest,indent=2,ensure_ascii=False)+'\n')
+print('wrote',len(list(OUT.glob('*.png'))),'construction masks and refreshed their manifest checksums')

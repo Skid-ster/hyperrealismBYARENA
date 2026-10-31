@@ -1,49 +1,33 @@
-## Experimental 512×512 LabPBR preview — not a complete pack
+# HyperRealism 512×512 — Minecraft Java 26.3 experimental Preview 23
 
-This is a **512×512** test pack for Minecraft Java 26.3. Its legacy filename is
-retained so the existing installer can update it. It replaces **302 block
-textures**, not the whole game; all other blocks and entities remain vanilla or
-come from other packs. Higher resolution uses substantially more GPU memory and
-may affect loading and frame rate. It has not been tested on the RTX 5060 Ti.
+This 512×512 experimental resource pack now generates **344 block texture paths**. It remains a partial pack, not a replacement for every vanilla texture; animated and cutout Nether sprites that cannot yet be safely regenerated with their exact frame/alpha data remain vanilla. The archive retains its legacy `HyperRealism128` filename for updater compatibility. Minecraft displays **HyperRealism 512×512**.
 
-Preview 8 reduces PBR intensity to **0.4×**: normal slopes, height variation,
-AO contrast and perceptual smoothness are scaled down. Color and discrete
-material/emission IDs are unchanged; shader settings affect the perceived result.
-Water is not changed.
+## Nether material pass
 
-Preview 11 adds **60 texture files**: the top and bottom of every 26.3 door,
-all 18 trapdoors, ladders, iron bars and all four copper-bar oxidation stages.
-The independently drawn layouts retain transparent openings and recognizable
-panels, with separate PBR maps and metallic hardware, over approximate wood and
-metal scans. Existing block models still handle opening/closing and geometry;
-this pack does not change their behaviour. The scan is shared between multiple
-species and copper is an approximation. These textures need in-game review.
+- Adds 36 static Nether texture paths: netherrack/ore hosts, basalt and polished basalt faces, blackstone/obsidian/ancient debris families, Nether and polished-blackstone masonry variants, quartz faces, soul sand/soil, crimson/warped nylium and wart blocks, stripped stems, glowstone and shroomlight.
+- Replaces the generic stone stand-in on netherrack and its ore hosts with ambientCG's CC0 **Lava 003** scan; the Nether ore recipes keep their distinct gold/quartz inclusions.
+- Uses ambientCG's CC0 **Rock 058** maps for dark basalt, blackstone, obsidian and related Nether stone, with its aligned OpenGL normal and packed AO/roughness/metal channels.
+- Uses the existing scanned red-brick source for Nether masonry, keeps bright quartz surfaces on a neutral light-stone scan, and separates soul sand/soil and nylium palettes using their existing ground scans.
+- Gives crying obsidian an aligned CC0 Volcanic Lava Flow fissure/emission mask; glowstone and shroomlight receive restrained LabPBR emission. Gilded blackstone uses sparse procedural metallic inclusions.
+- Recolors crimson and warped wood with wood sources selected for the respective palettes. The crimson and warped stem-side animations, magma animation, Nether portal, roots, vines, fungus sprites and other cutouts remain untouched so their original frames, alpha shapes and block behavior are preserved.
 
-Connected glass still needs a compatible CTM mod such as [Continuity for
-Fabric 26.3](https://modrinth.com/mod/continuity/version/3.0.1+26.3) plus its
-required Fabric API; Iris alone does not provide CTM. Stone keeps its moderate
-0.65× PBR adjustment. Water is untouched.
+All three new scans are CC0 and their creators, provenance and SHA-256 hashes are recorded in `work/ASSET_CREDITS.md` and `work/material_manifest.json`. The current catalog covers 344 targets, not the entire 26.3 block-texture inventory. Source choices are material-informed approximations rather than exact scans of Minecraft's fictional blocks.
 
-This is still **not a complete all-block pack**. Doors, plants, animated
-textures and many others remain vanilla, as does water. The 512px textures use
-more GPU memory and target-hardware performance has not been measured. Coverage
-and input hashes are in `build_report.json`; credits are in the ZIP. This
-revision has **not yet been visually validated in game**.
+The global PBR strength remains `0.2`; every generated target uses the same strength. Models, UVs, cutout silhouettes, block states and existing animations are unchanged. No Minecraft reference image pixels are redistributed.
 
-### Install and check PBR
 
-Use **Install / Update** in the GUI, or put the downloaded ZIP (do not extract)
-in the active instance's `minecraft/resourcepacks` folder, and enable it above
-competing packs under **Options → Resource Packs**. Use Iris and a compatible
-LabPBR shader such as Photon. In Photon enable Normal Mapping and Specular
-Mapping, choose labPBR in Resource Pack Settings, and optionally enable
-Parallax Occlusion Mapping. Compare the same grass side, oak leaves or snow with normal
-mapping on/off in direct light; rotate the view and reload resources with F3+T.
-Shader menus and optional channel support vary. Structural channel tests alone
-do not prove the shader is rendering the maps.
+## Farm-mob texture pilot
 
-The downloadable PowerShell updater and GUI verify the ZIP's SHA-256 before
-replacing the previous preview. The checksum is not an independent signature;
-the installer is unsigned. GPU acceleration, missing textures, animations,
-target-hardware performance measurements and in-game visual validation remain
-unfinished. A smaller 128px build is available from source via `--resolution 128`.
+Preview 22 added five original, experimental adult temperate entity texture targets: chicken, cow, pig, sheep skin, and the tintable sheep wool layer. The chicken receives a soft feather/down surface; the cow and pig receive distinct hide/skin treatments; sheep keeps its wool tint behavior. Their vanilla UV layouts, models, animations, and behavior are unchanged.
+
+This is a limited pilot, not full mob coverage: babies, other biome variants, equipment, collars, and hostile mobs remain vanilla. These maps have structural and atlas checks, but have **not** been validated in-game with a shader or benchmarked for performance. Entity LabPBR support varies by shader.
+
+## Material-channel refinement
+
+The material catalog now applies modest, material-specific roughness calibration while retaining one global block PBR strength of 0.2. Finished glass, metal and wood receive smoother calibrated source roughness; sand, mud, bark, rust and oxidized materials retain rougher response. Cobblestone and mossy cobblestone now vary roughness between stone faces and joints using their height field. For 26 textured materials without a dedicated displacement scan, a conservative periodic height estimate is reconstructed from the aligned normal map. These estimates preserve original source maps and remain approximations, not measured geometry.
+
+## Automated checks and limitations
+
+Linux and Windows CI generate the 512px pack, run tests, verify LabPBR structure, check the target count and validate the archive. Static source-image hashes and target-to-material assignments are checked. These are automated and structural checks—not an in-game Complementary Reimagined render, CTM runtime test, or performance benchmark on the target RTX 5060 Ti. The new maps still need in-game review for scale, repetition, color and visual fit.
+
+For Complementary, choose **RP Support → labPBR (RP Required)** and keep **Block Reflection Quality** above OFF; POM is optional. See the [shader guide](https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/docs/SHADER_SETUP.md), [Continuity compatibility notes](https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/docs/CONTINUITY_SUPPORT.md), and [asset credits](https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/work/ASSET_CREDITS.md).

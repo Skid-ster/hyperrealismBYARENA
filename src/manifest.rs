@@ -14,6 +14,9 @@ pub struct Manifest {
     pub pbr_strength: f32,
     pub materials: Vec<Material>,
     pub textures: Vec<Texture>,
+    /// Entity albedo/normal/specular triples copied unchanged into the pack.
+    #[serde(default)]
+    pub entity_textures: Vec<EntityTexture>,
     #[serde(default)]
     pub checksums: BTreeMap<String, String>,
 }
@@ -30,6 +33,15 @@ pub struct Material {
     pub normal: Option<String>,
     pub height: Option<String>,
     pub ao: Option<String>,
+    /// Derive a conservative periodic height field by integrating the normal map.
+    #[serde(default)]
+    pub height_from_normal: bool,
+    /// Derive surface roughness from an authored height map (stone faces vs joints).
+    #[serde(default)]
+    pub roughness_from_height: bool,
+    /// Additive, material-wide roughness calibration; does not change global PBR strength.
+    #[serde(default)]
+    pub roughness_bias: f32,
     /// Rotate aligned maps clockwise by 90 degrees after preparation.
     #[serde(default)]
     pub rotate_cw: bool,
@@ -48,13 +60,13 @@ pub struct Texture {
     pub name: String,
     pub material: String,
     pub recipe: String,
+    /// Optional stable seed key for exact procedural sharing across aliases.
+    pub pattern_seed: Option<String>,
     pub tint: [u8; 3],
     /// Optional approximate sRGB target for the average source color.
     pub target_color: Option<[u8; 3]>,
     /// Static texture mipmap strategy for cutouts when no client JAR is supplied.
     pub mipmap_strategy: Option<String>,
-    /// Optional per-texture override of the global PBR strength, 0..=1.
-    pub pbr_strength: Option<f32>,
     /// Emit OptiFine-format compact connected glass tiles and their PBR maps.
     #[serde(default)]
     pub connected_glass: bool,
@@ -78,6 +90,19 @@ pub struct Texture {
     pub emissive_map: Option<String>,
     #[serde(default = "default_emissive")]
     pub emissive: u8,
+}
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EntityTexture {
+    /// Texture resource path below assets/minecraft/textures (without .png).
+    pub path: String,
+    pub albedo: String,
+    pub normal: String,
+    pub specular: String,
+    #[serde(default)]
+    pub source: Option<String>,
+    #[serde(default)]
+    pub license: Option<String>,
 }
 fn default_f0() -> u8 {
     10
@@ -156,6 +181,26 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
                 material.id
             ));
         }
+        if !material.roughness_bias.is_finite() || !(-0.5..=0.5).contains(&material.roughness_bias) {
+            return Err(format!(
+                "{}: roughness_bias must be finite and in -0.5..=0.5",
+                material.id
+            ));
+        }
+        if material.height_from_normal && (material.normal.is_none() || material.height.is_some()) {
+            return Err(format!(
+                "{}: height_from_normal requires a normal map and no explicit height map",
+                material.id
+            ));
+        }
+        if material.roughness_from_height
+            && (material.height.is_none() || material.roughness.is_some() || material.arm.is_some())
+        {
+            return Err(format!(
+                "{}: roughness_from_height requires height and no separate roughness/arm map",
+                material.id
+            ));
+        }
     }
     let mut names = HashSet::new();
     for t in &m.textures {
@@ -165,14 +210,6 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             || !names.insert(&t.name)
         {
             return Err(format!("invalid or duplicate texture name: {}", t.name));
-        }
-        if t.pbr_strength
-            .is_some_and(|s| !s.is_finite() || !(0.0..=1.0).contains(&s))
-        {
-            return Err(format!(
-                "{}: pbr_strength must be finite and in 0..=1",
-                t.name
-            ));
         }
         if t.connected_glass && !["glass_clear", "glass_stained"].contains(&t.recipe.as_str()) {
             return Err(format!(
@@ -209,6 +246,7 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             "cobble",
             "moss_cobble",
             "plank",
+            "bamboo",
             "log_end",
             "stripped_log_end",
             "moss",
@@ -218,6 +256,8 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             "glass_stained",
             "glass_pane_cap",
             "metal",
+            "metal_cut",
+            "carved",
             "gem",
             "leaves",
             "material",
@@ -225,6 +265,13 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         .contains(&t.recipe.as_str())
         {
             return Err(format!("{}: unknown recipe {}", t.name, t.recipe));
+        }
+        if t
+            .pattern_seed
+            .as_deref()
+            .is_some_and(|seed| !valid_name(seed))
+        {
+            return Err(format!("{}: pattern_seed must be a lowercase identifier", t.name));
         }
         if t.mipmap_strategy
             .as_deref()
@@ -296,6 +343,31 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
             safe_file(root, path)?;
         }
     }
+    if m.entity_textures.len() > 1024 {
+        return Err("at most 1024 entity texture triples are supported".into());
+    }
+    let mut entity_paths = HashSet::new();
+    let mut entity_outputs = HashSet::new();
+    for entity in &m.entity_textures {
+        if !entity.path.starts_with("entity/")
+            || !entity.path.split('/').all(valid_name)
+            || !entity_paths.insert(&entity.path)
+        {
+            return Err(format!(
+                "invalid or duplicate entity texture path: {}",
+                entity.path
+            ));
+        }
+        for suffix in ["", "_n", "_s"] {
+            let output = format!("{}{suffix}.png", entity.path);
+            if !entity_outputs.insert(output.clone()) {
+                return Err(format!("entity texture output path collision: {output}"));
+            }
+        }
+        for path in [&entity.albedo, &entity.normal, &entity.specular] {
+            safe_file(root, path)?;
+        }
+    }
     Ok(())
 }
 /// Stream file content through SHA-256 without loading it all into memory.
@@ -352,6 +424,25 @@ pub fn input_hashes(m: &Manifest, root: &Path) -> Result<BTreeMap<String, String
             .chain(texture.emissive_map.iter())
             .chain(texture.layout.iter())
         {
+            if hashes.contains_key(path) {
+                continue;
+            }
+            let hash = sha256_file(&safe_file(root, path)?)?;
+            if let Some(expected) = m.checksums.get(path) {
+                if expected.len() != 64 || !expected.bytes().all(|b| b.is_ascii_hexdigit()) {
+                    return Err(format!(
+                        "{path}: expected SHA-256 must contain 64 hexadecimal characters"
+                    ));
+                }
+                if !hash.eq_ignore_ascii_case(expected) {
+                    return Err(format!("{path}: SHA-256 mismatch (actual {hash})"));
+                }
+            }
+            hashes.insert(path.clone(), hash);
+        }
+    }
+    for entity in &m.entity_textures {
+        for path in [&entity.albedo, &entity.normal, &entity.specular] {
             if hashes.contains_key(path) {
                 continue;
             }

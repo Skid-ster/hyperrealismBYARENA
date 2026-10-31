@@ -40,6 +40,74 @@ pub fn scalar(root: &Path, name: &str) -> Result<Vec<f32>, String> {
     scalar_channel(root, name, 0)
 }
 
+/// Reconstruct a conservative periodic height approximation from a tangent-space
+/// normal map. Independent row/column path integrations are averaged, detrended,
+/// then robustly normalized; global PBR strength still controls final amplitude.
+fn height_from_normal(normal: &[Vec<f32>; 3]) -> Result<Vec<f32>, String> {
+    let n = WORK * WORK;
+    if normal.iter().any(|channel| channel.len() != n) {
+        return Err("normal dimensions do not match height reconstruction".into());
+    }
+    let mut horizontal = vec![0.0f32; n];
+    let mut vertical = vec![0.0f32; n];
+    let slope = |component: f32, z: f32| (-component / z.max(0.2)).clamp(-4.0, 4.0);
+    for y in 0..WORK {
+        let start = y * WORK;
+        let mut mean = 0.0f64;
+        for x in 0..WORK {
+            let i = start + x;
+            mean += slope(normal[0][i], normal[2][i]) as f64;
+        }
+        let mean = (mean / WORK as f64) as f32;
+        let mut height = 0.0f32;
+        for x in 0..WORK {
+            let i = start + x;
+            height += slope(normal[0][i], normal[2][i]) - mean;
+            horizontal[i] = height;
+        }
+    }
+    for x in 0..WORK {
+        let mut mean = 0.0f64;
+        for y in 0..WORK {
+            let i = y * WORK + x;
+            mean += slope(normal[1][i], normal[2][i]) as f64;
+        }
+        let mean = (mean / WORK as f64) as f32;
+        let mut height = 0.0f32;
+        for y in 0..WORK {
+            let i = y * WORK + x;
+            height += slope(normal[1][i], normal[2][i]) - mean;
+            vertical[i] = height;
+        }
+    }
+    let mut combined = Vec::with_capacity(n);
+    for i in 0..n {
+        combined.push((horizontal[i] + vertical[i]) * 0.5);
+    }
+    let mut ordered = combined.clone();
+    ordered.sort_unstable_by(f32::total_cmp);
+    let low = ordered[n / 100];
+    let high = ordered[n * 99 / 100];
+    if !low.is_finite() || !high.is_finite() || high - low < 1e-6 {
+        return Ok(vec![0.5; n]);
+    }
+    let scale = 1.0 / (high - low);
+    for value in &mut combined {
+        *value = ((*value - low) * scale).clamp(0.0, 1.0);
+    }
+    Ok(combined)
+}
+
+fn roughness_from_height(height: &[f32]) -> Vec<f32> {
+    height.iter().map(|h| 0.86 + (1.0 - h) * 0.14).collect()
+}
+
+fn apply_roughness_bias(values: &mut [f32], bias: f32) {
+    for value in values {
+        *value = (*value + bias).clamp(0.0, 1.0);
+    }
+}
+
 fn scalar_channel(root: &Path, name: &str, channel: usize) -> Result<Vec<f32>, String> {
     let path = manifest::safe_file(root, name)?;
     let (width, height, source) = png_io::read_linear_channel(&path, channel)?;
@@ -102,7 +170,22 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
     } else {
         None
     };
-    let roughness = if let Some(arm) = &material.arm {
+    let mut height = material
+        .height
+        .as_deref()
+        .map(|p| scalar(root, p))
+        .transpose()?;
+    if material.height_from_normal {
+        height = Some(height_from_normal(
+            normal.as_ref().expect("manifest validation requires a normal map"),
+        )?);
+    }
+    let mut roughness = if material.roughness_from_height {
+        let height = height
+            .as_ref()
+            .expect("manifest validation requires a height map for roughness derivation");
+        Some(roughness_from_height(height))
+    } else if let Some(arm) = &material.arm {
         Some(scalar_channel(root, arm, 1)?)
     } else {
         material
@@ -111,11 +194,9 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
             .map(|p| scalar(root, p))
             .transpose()?
     };
-    let height = material
-        .height
-        .as_deref()
-        .map(|p| scalar(root, p))
-        .transpose()?;
+    if let Some(values) = &mut roughness {
+        apply_roughness_bias(values, material.roughness_bias);
+    }
     let ao = if let Some(arm) = &material.arm {
         Some(scalar_channel(root, arm, 0)?)
     } else {
@@ -170,4 +251,45 @@ pub fn load(root: &Path, material: &Material) -> Result<Prepared, String> {
         }
     }
     Ok(prepared)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normal_integration_produces_bounded_nonflat_periodic_height() {
+        let n = WORK * WORK;
+        let mut normal = [vec![0.0; n], vec![0.0; n], vec![1.0; n]];
+        for y in 0..WORK {
+            for x in 0..WORK {
+                let i = y * WORK + x;
+                let angle = std::f32::consts::TAU * x as f32 / WORK as f32;
+                normal[0][i] = 0.35 * angle.cos();
+                normal[2][i] = (1.0 - normal[0][i] * normal[0][i]).sqrt();
+            }
+        }
+        let height = height_from_normal(&normal).unwrap();
+        assert_eq!(height.len(), n);
+        let low = height.iter().copied().fold(f32::INFINITY, f32::min);
+        let high = height.iter().copied().fold(f32::NEG_INFINITY, f32::max);
+        assert_eq!(low, 0.0);
+        assert_eq!(high, 1.0);
+        assert!(height[WORK * 3 / 4] > height[0] + 0.25);
+        let seam_left = height[WORK * (WORK - 1)];
+        let seam_right = height[WORK * WORK - 1];
+        assert!((seam_left - seam_right).abs() < 0.05);
+    }
+
+    #[test]
+    fn stone_height_adds_joint_roughness_and_bias_is_clamped() {
+        let roughness = roughness_from_height(&[0.0, 0.5, 1.0]);
+        assert!((roughness[0] - 1.0).abs() < 1e-6);
+        assert!((roughness[2] - 0.86).abs() < 1e-6);
+        let mut calibrated = roughness;
+        apply_roughness_bias(&mut calibrated, -0.2);
+        assert!((calibrated[0] - 0.8).abs() < 1e-6);
+        apply_roughness_bias(&mut calibrated, -1.0);
+        assert!(calibrated.iter().all(|&v| v == 0.0));
+    }
 }

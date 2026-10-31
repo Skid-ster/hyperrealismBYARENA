@@ -28,8 +28,8 @@ jobs:
           path: installer-output/HyperRealism128-Installer.exe
           if-no-files-found: error
           retention-days: 30
-  publish-installer:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/e000bf82-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish GUI installer 9')
+  publish-installer-12:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 12')
     needs: build-test
     runs-on: ubuntu-latest
     permissions:
@@ -47,11 +47,11 @@ jobs:
           cd installer-assets
           sha256sum HyperRealism128-Installer.exe > HyperRealism128-Installer.exe.sha256
           sha256sum -c HyperRealism128-Installer.exe.sha256
-          gh release create v0.1.0-installer.9 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism128 — Windows GUI installer 9' --notes-file ../.github/installer-release-notes.md --prerelease
-      - name: Attach installer to existing preview releases
+          gh release create v0.1.0-installer.12 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 — Windows installer 12' --notes-file ../.github/installer-release-notes.md --prerelease
+      - name: Attach current installer to all published preview releases
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for tag in v0.1.0-preview.1 v0.1.0-preview.2 v0.1.0-preview.3 v0.1.0-preview.4 v0.1.0-preview.5; do
+          for tag in $(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --jq '.[] | select(.draft == false and (.tag_name | startswith("v0.1.0-preview."))) | .tag_name'); do
             gh release upload "$tag" installer-assets/HyperRealism128-Installer.exe installer-assets/HyperRealism128-Installer.exe.sha256 --clobber
           done

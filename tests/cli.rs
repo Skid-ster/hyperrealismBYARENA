@@ -32,9 +32,34 @@ fn cpu_end_to_end_and_reproducibility() {
     for name in ["diffuse.png", "normal.png", "roughness.png"] {
         fs::copy(Path::new("test_assets").join(name), input.join(name)).unwrap();
     }
+    let entity_width = 128;
+    let entity_height = 64;
+    let entity_pixels = entity_width * entity_height;
+    hyperrealism_core::png_io::write(
+        &input.join("entity.png"),
+        entity_width,
+        entity_height,
+        &[180, 110, 75, 255].repeat(entity_pixels),
+    )
+    .unwrap();
+    hyperrealism_core::png_io::write(
+        &input.join("entity_normal.png"),
+        entity_width,
+        entity_height,
+        &[128, 128, 0, 255].repeat(entity_pixels),
+    )
+    .unwrap();
+    hyperrealism_core::png_io::write(
+        &input.join("entity_specular.png"),
+        entity_width,
+        entity_height,
+        &[128, 40, 0, 255].repeat(entity_pixels),
+    )
+    .unwrap();
     fs::write(input.join("material_manifest.json"),r#"{
       "version":1,"materials":[{"id":"test","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],
-      "textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}]
+      "textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}],
+      "entity_textures":[{"path":"entity/test/test","albedo":"entity.png","normal":"entity_normal.png","specular":"entity_specular.png","source":"test source","license":"test license"}]
     }"#).unwrap();
     let out1 = temp.join("first");
     let out2 = temp.join("second");
@@ -64,11 +89,58 @@ fn cpu_end_to_end_and_reproducibility() {
     assert_eq!(meta["pack"]["min_format"], serde_json::json!([97, 1]));
     assert_eq!(meta["pack"]["max_format"], 97);
     assert_eq!(
+        meta["pack"]["description"],
+        "HyperRealism 128×128 — LabPBR 1.3 (experimental)"
+    );
+    assert_eq!(
         fs::read_to_string(out1.join("pack/assets/minecraft/optifine/texture.properties")).unwrap(),
         "format=lab-pbr/1.3\n"
     );
     let pack_readme = fs::read_to_string(out1.join("pack/README.txt")).unwrap();
     assert!(pack_readme.contains("replaces 1 block textures"));
+    assert!(pack_readme.contains("replaces 1 entity texture paths"));
+    let entity_root = out1.join("pack/assets/minecraft/textures/entity/test");
+    assert_eq!(
+        fs::read(entity_root.join("test.png")).unwrap(),
+        fs::read(input.join("entity.png")).unwrap()
+    );
+    assert_eq!(
+        fs::read(entity_root.join("test_n.png")).unwrap(),
+        fs::read(input.join("entity_normal.png")).unwrap()
+    );
+    assert_eq!(
+        fs::read(entity_root.join("test_s.png")).unwrap(),
+        fs::read(input.join("entity_specular.png")).unwrap()
+    );
+    let entity_image = hyperrealism_core::png_io::read(&entity_root.join("test.png")).unwrap();
+    assert_eq!(
+        (entity_image.width, entity_image.height),
+        (entity_width, entity_height)
+    );
+    let verify = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--verify-pack")
+        .arg(out1.join("pack"))
+        .output()
+        .unwrap();
+    assert!(
+        verify.status.success(),
+        "{}",
+        String::from_utf8_lossy(&verify.stderr)
+    );
+    assert!(String::from_utf8_lossy(&verify.stdout).contains("1 entity LabPBR"));
+    let incomplete = temp.join("incomplete-entity-pack");
+    let incomplete_root = incomplete.join("assets/minecraft/textures/entity/test");
+    fs::create_dir_all(&incomplete_root).unwrap();
+    fs::copy(entity_root.join("test.png"), incomplete_root.join("test.png")).unwrap();
+    fs::copy(
+        entity_root.join("test_n.png"),
+        incomplete_root.join("test_n.png"),
+    )
+    .unwrap();
+    assert!(hyperrealism_core::verify::entity_pack(&incomplete).is_err());
+    let entity_credits = fs::read_to_string(out1.join("pack/ENTITY_TEXTURES.txt")).unwrap();
+    assert!(entity_credits.contains("Path: entity/test/test"));
+    assert!(entity_credits.contains("License: test license"));
     let credits = fs::read_to_string(out1.join("pack/MATERIAL_CREDITS.txt")).unwrap();
     assert!(credits.contains("Material: test"));
     assert!(credits.contains("not specified"));
@@ -84,6 +156,120 @@ fn cpu_end_to_end_and_reproducibility() {
     let failed = temp.join("failed");
     assert!(!run(&input, &failed, "2").status.success());
     assert!(!failed.join("pack").exists());
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn default_256_resolution_downsamples_entity_uvs_and_preserves_labpbr_ids() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-256-{}-{unique}",
+        std::process::id()
+    ));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    for name in ["diffuse.png", "normal.png", "roughness.png"] {
+        fs::copy(Path::new("test_assets").join(name), input.join(name)).unwrap();
+    }
+
+    let (width, height) = (512, 256);
+    let mut albedo = Vec::with_capacity(width * height * 4);
+    let mut normal = Vec::with_capacity(width * height * 4);
+    let mut specular = Vec::with_capacity(width * height * 4);
+    for _y in 0..height {
+        for x in 0..width {
+            let color = if x < width / 2 {
+                [175, 105, 70, 255]
+            } else {
+                [210, 160, 120, 255]
+            };
+            albedo.extend_from_slice(&color);
+            normal.extend_from_slice(&[128, 128, 255, 128]);
+            specular.extend_from_slice(if x < width / 2 {
+                &[128, 10, 0, 255]
+            } else {
+                &[128, 231, 0, 0]
+            });
+        }
+    }
+    for (name, pixels) in [
+        ("entity.png", albedo),
+        ("entity_normal.png", normal),
+        ("entity_specular.png", specular),
+    ] {
+        hyperrealism_core::png_io::write(&input.join(name), width, height, &pixels).unwrap();
+    }
+    fs::write(
+        input.join("material_manifest.json"),
+        r#"{"version":1,"materials":[{"id":"test","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],"textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}],"entity_textures":[{"path":"entity/test/test","albedo":"entity.png","normal":"entity_normal.png","specular":"entity_specular.png","source":"test source","license":"test license"}]}"#,
+    )
+    .unwrap();
+
+    let output = temp.join("output");
+    let result = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--input")
+        .arg(&input)
+        .arg("--output")
+        .arg(&output)
+        .arg("--cpu-only")
+        .arg("--threads")
+        .arg("2")
+        .output()
+        .unwrap();
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let pack = output.join("pack");
+    assert_eq!(hyperrealism_core::verify::full_pack(&pack).unwrap(), (1, 1));
+    let block = hyperrealism_core::png_io::read(
+        &pack.join("assets/minecraft/textures/block/iron_block.png"),
+    )
+    .unwrap();
+    assert_eq!((block.width, block.height), (256, 256));
+    let entity = pack.join("assets/minecraft/textures/entity/test/test");
+    for name in ["test.png", "test_n.png", "test_s.png"] {
+        let image = hyperrealism_core::png_io::read(&entity.with_file_name(name)).unwrap();
+        assert_eq!((image.width, image.height), (256, 128));
+    }
+    let spec = hyperrealism_core::png_io::read(&entity.with_file_name("test_s.png")).unwrap();
+    let ids: std::collections::HashSet<u8> =
+        spec.pixels.chunks_exact(4).map(|p| p[1]).collect();
+    let emissions: std::collections::HashSet<u8> =
+        spec.pixels.chunks_exact(4).map(|p| p[3]).collect();
+    assert_eq!(ids, [10, 231].into_iter().collect());
+    assert_eq!(emissions, [0, 255].into_iter().collect());
+    let meta: serde_json::Value =
+        serde_json::from_slice(&fs::read(pack.join("pack.mcmeta")).unwrap()).unwrap();
+    assert_eq!(
+        meta["pack"]["description"],
+        "HyperRealism 256×256 — LabPBR 1.3 (experimental)"
+    );
+
+    let explicit_output = temp.join("explicit-256");
+    let explicit = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--input")
+        .arg(&input)
+        .arg("--output")
+        .arg(&explicit_output)
+        .arg("--cpu-only")
+        .arg("--resolution")
+        .arg("256")
+        .output()
+        .unwrap();
+    assert!(
+        explicit.status.success(),
+        "{}",
+        String::from_utf8_lossy(&explicit.stderr)
+    );
+    assert_eq!(
+        hyperrealism_core::verify::full_pack(&explicit_output.join("pack")).unwrap(),
+        (1, 1)
+    );
     fs::remove_dir_all(temp).unwrap();
 }
 
@@ -159,8 +345,8 @@ fn real_material_channels_and_input_downsampling() {
         .pixels
         .chunks_exact(4)
         .all(|p| (126..=128).contains(&p[0]) && p[1] == 230 && p[3] == 255));
-    // The new default is 512px; inspect its actual LabPBR values after a 1K
-    // source is downsampled. Test DX and GL normals, AO, height and smoothness.
+    // Exercise the optional 512px output and inspect its LabPBR values after a
+    // 1K source is downsampled; test DX/GL normals, AO, height and smoothness.
     let output512 = temp.join("output512");
     let result512 = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
         .arg("--input")
@@ -168,6 +354,8 @@ fn real_material_channels_and_input_downsampling() {
         .arg("--output")
         .arg(&output512)
         .arg("--cpu-only")
+        .arg("--resolution")
+        .arg("512")
         .arg("--threads")
         .arg("2")
         .output()
@@ -361,13 +549,132 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 137);
+    assert_eq!(hashes.len(), 170);
+    let leaf_material = m
+        .materials
+        .iter()
+        .find(|material| material.id == "tree_leaves")
+        .expect("shared foliage material");
+    assert_eq!(
+        leaf_material.height.as_deref(),
+        Some("materials/tree_leaves/height.png")
+    );
+    let derived_height_count = m
+        .materials
+        .iter()
+        .filter(|material| material.height_from_normal)
+        .count();
+    assert_eq!(derived_height_count, 26);
+    assert!(m.materials.iter().all(|material| {
+        material.roughness_bias.is_finite() && (-0.5..=0.5).contains(&material.roughness_bias)
+    }));
+    let material = |id: &str| {
+        m.materials
+            .iter()
+            .find(|material| material.id == id)
+            .unwrap_or_else(|| panic!("missing material profile: {id}"))
+    };
+    assert!(material("procedural_glass").roughness_bias < 0.0);
+    assert!(material("metal_plate_02").roughness_bias < 0.0);
+    assert!(material("brown_mud_dry").roughness_bias > 0.0);
+    assert!(material("aerial_sand").roughness_bias > 0.0);
+    for stone in ["cobble_photo", "mossy_cobble_photo"] {
+        assert!(material(stone).roughness_from_height);
+        assert!(material(stone).height.is_some());
+    }
+    assert_eq!(
+        leaf_material.ao.as_deref(),
+        Some("materials/tree_leaves/ao.png")
+    );
+    assert!(hashes.contains_key("materials/tree_leaves/height.png"));
+    assert!(hashes.contains_key("materials/tree_leaves/ao.png"));
+    assert_eq!(
+        m.textures
+            .iter()
+            .filter(|texture| texture.material == "tree_leaves")
+            .count(),
+        9
+    );
     let audit: serde_json::Value =
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 302);
-    assert!((m.pbr_strength - 0.4).abs() < 1e-6);
+    assert_eq!(m.textures.len(), 371);
+    for (name, rounded_target) in [
+        ("chiseled_deepslate", [54, 54, 55]),
+        ("chiseled_red_sandstone", [183, 97, 28]),
+        ("chiseled_sandstone", [216, 203, 155]),
+        ("chiseled_stone_bricks", [120, 119, 120]),
+        ("chiseled_tuff", [89, 94, 87]),
+        ("chiseled_tuff_bricks", [99, 103, 96]),
+        ("chiseled_tuff_bricks_top", [111, 114, 107]),
+        ("chiseled_tuff_top", [94, 99, 91]),
+        ("chiseled_copper", [184, 101, 74]),
+        ("exposed_chiseled_copper", [155, 119, 101]),
+        ("weathered_chiseled_copper", [105, 151, 111]),
+        ("oxidized_chiseled_copper", [84, 162, 132]),
+    ] {
+        let texture = m.textures.iter().find(|texture| texture.name == name).unwrap();
+        assert_eq!(texture.recipe, "carved");
+        assert_eq!(texture.target_color, Some(rounded_target));
+        assert_eq!(entries[name]["target_rgb"], serde_json::json!(rounded_target));
+    }
+    for (name, recipe, rounded_target) in [
+        ("amethyst_block", "gem", [134, 98, 191]),
+        ("cinnabar", "gem", [152, 83, 78]),
+        ("cinnabar_bricks", "brick", [148, 56, 54]),
+        ("chiseled_cinnabar", "carved", [147, 55, 55]),
+        ("sulfur", "gem", [190, 175, 102]),
+        ("sulfur_bricks", "brick", [187, 168, 91]),
+        ("chiseled_sulfur", "carved", [187, 170, 91]),
+    ] {
+        let texture = m.textures.iter().find(|texture| texture.name == name).unwrap();
+        assert_eq!(texture.recipe, recipe);
+        assert_eq!(texture.target_color, Some(rounded_target));
+        assert_eq!(entries[name]["target_rgb"], serde_json::json!(rounded_target));
+    }
+    for (name, ore_id) in [
+        ("raw_copper_block", 10),
+        ("raw_gold_block", 231),
+        ("raw_iron_block", 10),
+    ] {
+        let texture = m.textures.iter().find(|texture| texture.name == name).unwrap();
+        assert_eq!(texture.material, "rock_face");
+        assert_eq!(texture.recipe, "ore");
+        assert_eq!(texture.ore_f0, Some(ore_id));
+    }
+    let mut entity_paths: Vec<_> = m.entity_textures.iter().map(|entity| entity.path.as_str()).collect();
+    entity_paths.sort_unstable();
+    assert_eq!(
+        entity_paths,
+        vec![
+            "entity/chicken/chicken_temperate",
+            "entity/cow/cow_temperate",
+            "entity/pig/pig_temperate",
+            "entity/sheep/sheep",
+            "entity/sheep/sheep_wool",
+        ]
+    );
+    assert!(m.entity_textures.iter().all(|entity| {
+        entity.source.as_deref().unwrap_or_default().contains("Original procedural")
+            && [entity.albedo.as_str(), entity.normal.as_str(), entity.specular.as_str()]
+                .iter()
+                .all(|path| hashes.contains_key(*path))
+    }));
+    let glass: Vec<_> = m
+        .textures
+        .iter()
+        .filter(|texture| texture.name.contains("glass"))
+        .collect();
+    assert_eq!(glass.len(), 35); // clear, stained, tinted and pane-cap sprites
+    for texture in glass {
+        let source = entries[&texture.name]["target_rgb"].as_array().unwrap();
+        let slightly_darker: [u8; 3] = std::array::from_fn(|channel| {
+            (source[channel].as_u64().unwrap() as f32 * 0.96).round() as u8
+        });
+        assert_eq!(texture.target_color, Some(slightly_darker), "{}", texture.name);
+    }
+    assert!((m.pbr_strength - 0.2).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     for wood in [
         "acacia",
@@ -402,6 +709,45 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
             );
         }
     }
+    let toggled: Vec<_> = m
+        .textures
+        .iter()
+        .filter(|t| {
+            t.name == "lever"
+                || t.name.ends_with("_door_top")
+                || t.name.ends_with("_door_bottom")
+                || t.name.ends_with("_trapdoor")
+        })
+        .collect();
+    assert_eq!(toggled.len(), 55);
+    let lever = toggled.iter().find(|t| t.name == "lever").unwrap();
+    assert_eq!(lever.material, "oak_veneer_02_vertical");
+    assert_eq!(lever.target_color, Some([111, 93, 67]));
+    assert_eq!(entries["lever"]["git_blob_sha1"], "47121f2ecc25270b3b90f2bcbb2aaf6460a5c9ab");
+
+    // Five bamboo texture paths were missing from Preview 11. They now use
+    // the same CC0 maple-veneer inputs with a dedicated, periodic bamboo-board
+    // recipe and version-pinned vanilla average-color targets.
+    for (name, expected_color) in [
+        ("bamboo_planks", [193, 173, 80]),
+        ("bamboo_fence", [207, 186, 89]),
+        ("bamboo_fence_particle", [207, 186, 85]),
+        ("bamboo_fence_gate", [206, 186, 87]),
+        ("bamboo_fence_gate_particle", [207, 186, 85]),
+    ] {
+        let texture = m.textures.iter().find(|t| t.name == name).unwrap();
+        assert_eq!(texture.material, "white_maple_veneer");
+        assert_eq!(texture.recipe, "bamboo");
+        assert_eq!(texture.target_color, Some(expected_color));
+    }
+    for name in ["bamboo_fence_particle", "bamboo_fence_gate_particle"] {
+        let texture = m.textures.iter().find(|t| t.name == name).unwrap();
+        assert_eq!(texture.pattern_seed.as_deref(), Some("bamboo_particle"));
+    }
+    assert_eq!(
+        entries["bamboo_fence_particle"]["git_blob_sha1"],
+        entries["bamboo_fence_gate_particle"]["git_blob_sha1"]
+    );
 
     // The tested preview uses a real cobble scan and its aligned height map,
     // not the previous thin Voronoi wireframe overlay.
@@ -422,11 +768,421 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         let entry = &entries[&t.name];
         assert_eq!(entry["dimensions"], serde_json::json!([16, 16]));
         assert_eq!(entry["has_mcmeta"], t.mipmap_strategy.is_some());
-        assert_eq!(
-            entry["target_rgb"],
-            serde_json::json!(t.target_color.unwrap())
+        let audited = entry["target_rgb"].as_array().unwrap();
+        let expected: [u8; 3] = std::array::from_fn(|channel| {
+            let base = audited[channel].as_u64().unwrap() as f32;
+            (if t.name.contains("glass") {
+                (base * 0.96).round()
+            } else {
+                base
+            }) as u8
+        });
+        assert_eq!(t.target_color, Some(expected), "{}", t.name);
+    }
+}
+
+#[test]
+fn geological_surfaces_and_ore_host_rock_use_rock_face_material() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let textures: std::collections::HashMap<&str, &str> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| {
+            (
+                t["name"].as_str().unwrap(),
+                t["material"].as_str().unwrap(),
+            )
+        })
+        .collect();
+    for name in [
+        "stone",
+        "andesite",
+        "tuff",
+        "coal_ore",
+        "copper_ore",
+        "diamond_ore",
+        "emerald_ore",
+        "gold_ore",
+        "iron_ore",
+        "lapis_ore",
+        "redstone_ore",
+        "deepslate_coal_ore",
+        "deepslate_copper_ore",
+        "deepslate_diamond_ore",
+        "deepslate_emerald_ore",
+        "deepslate_gold_ore",
+        "deepslate_iron_ore",
+        "deepslate_lapis_ore",
+        "deepslate_redstone_ore",
+    ] {
+        assert_eq!(textures[name], "rock_face", "{name}");
+    }
+}
+
+#[test]
+fn wood_and_wool_materials_match_species_and_grain_orientation() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    assert_eq!(manifest["pbr_strength"], 0.2);
+    let textures: std::collections::HashMap<&str, &str> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| (
+            t["name"].as_str().unwrap(),
+            t["material"].as_str().unwrap(),
+        ))
+        .collect();
+    for (name, material) in [
+        ("oak_log", "bark_brown_01"),
+        ("spruce_log", "bark_willow_02"),
+        ("dark_oak_log", "bark_platanus"),
+        ("acacia_log", "bark_willow_02"),
+        ("jungle_log", "bark_platanus"),
+        ("dark_oak_planks", "walnut_horizontal"),
+        ("stripped_dark_oak_log", "walnut"),
+        ("dark_oak_door_top", "walnut"),
+        ("dark_oak_door_bottom", "walnut"),
+        ("dark_oak_trapdoor", "walnut"),
+        ("pale_oak_planks", "white_maple_veneer"),
+        ("pale_oak_log_top", "white_maple_veneer"),
+        ("stripped_pale_oak_log", "white_maple_veneer_vertical"),
+        ("stripped_pale_oak_log_top", "white_maple_veneer"),
+        ("pale_oak_door_top", "white_maple_veneer_vertical"),
+        ("pale_oak_door_bottom", "white_maple_veneer_vertical"),
+        ("pale_oak_trapdoor", "white_maple_veneer_vertical"),
+    ] {
+        assert_eq!(textures[name], material, "{name}");
+    }
+    for color in [
+        "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray",
+        "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black",
+    ] {
+        let name = format!("{color}_wool");
+        assert_eq!(textures[name.as_str()], "poly_wool_herringbone", "{name}");
+    }
+    let materials: std::collections::HashMap<&str, &serde_json::Value> = manifest["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|m| (m["id"].as_str().unwrap(), m))
+        .collect();
+    let walnut_horizontal = "walnut_horizontal";
+    assert_eq!(materials[walnut_horizontal]["rotate_cw"], true);
+    assert_eq!(materials[walnut_horizontal]["normal_y"], "opengl");
+    for map in ["albedo", "normal", "roughness", "ao"] {
+        assert!(materials[walnut_horizontal][map].is_string(), "walnut: {map}");
+    }
+    for source in ["bark_brown_01", "bark_platanus"] {
+        assert_eq!(materials[source]["normal_y"], "opengl", "{source}");
+        for map in ["albedo", "normal", "roughness"] {
+            assert!(materials[source][map].is_string(), "{source}: {map}");
+        }
+    }
+    for texture in manifest["textures"].as_array().unwrap() {
+        assert!(texture.get("pbr_strength").is_none() || texture["pbr_strength"].is_null());
+    }
+}
+
+#[test]
+fn nether_surface_coverage_uses_matching_cc0_materials_and_keeps_animations() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let textures: std::collections::HashMap<&str, &serde_json::Value> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| (t["name"].as_str().unwrap(), t))
+        .collect();
+    for (name, material) in [
+        ("netherrack", "nether_lava_003"),
+        ("nether_gold_ore", "nether_lava_003"),
+        ("nether_quartz_ore", "nether_lava_003"),
+        ("blackstone", "nether_dark_rock"),
+        ("blackstone_top", "nether_dark_rock"),
+        ("polished_blackstone", "nether_dark_rock"),
+        ("basalt_side", "nether_dark_rock"),
+        ("polished_basalt_top", "nether_dark_rock"),
+        ("obsidian", "nether_dark_rock"),
+        ("nether_bricks", "brick_red"),
+        ("red_nether_bricks", "brick_red"),
+        ("quartz_block_side", "concrete_wall"),
+        ("soul_sand", "brown_mud_dry"),
+        ("soul_soil", "brown_mud_03"),
+        ("crimson_planks", "cherry_veneer"),
+        ("warped_planks", "white_maple_veneer"),
+        ("crimson_nylium", "forest_ground"),
+        ("warped_nylium", "forest_ground"),
+        ("crying_obsidian", "nether_lava_flow"),
+    ] {
+        assert_eq!(textures[name]["material"], material, "{name}");
+    }
+    assert_eq!(
+        textures["crying_obsidian"]["emissive_map"],
+        "materials/nether_lava_flow/emission.jpg"
+    );
+    assert_eq!(textures["glowstone"]["emissive"], 112);
+    assert_eq!(textures["shroomlight"]["emissive"], 72);
+    let materials: std::collections::HashMap<&str, &serde_json::Value> = manifest["materials"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|m| (m["id"].as_str().unwrap(), m))
+        .collect();
+    for id in ["nether_lava_003", "nether_dark_rock", "nether_lava_flow"] {
+        assert_eq!(materials[id]["license"], "CC0-1.0", "{id}");
+        assert_eq!(materials[id]["normal_y"], "opengl", "{id}");
+        for map in ["albedo", "normal", "arm"] {
+            assert!(materials[id][map].is_string(), "{id}: {map}");
+        }
+    }
+    for name in [
+        "magma",
+        "nether_portal",
+        "crimson_stem",
+        "warped_stem",
+        "crimson_fungus",
+        "warped_fungus",
+    ] {
+        assert!(
+            !textures.contains_key(name),
+            "animated/cutout texture was modified: {name}"
         );
     }
+    assert_eq!(manifest["pbr_strength"], 0.2);
+    assert!(manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .all(|t| t.get("pbr_strength").is_none() || t["pbr_strength"].is_null()));
+}
+
+#[test]
+fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
+    let catalog: serde_json::Value = serde_json::from_slice(
+        &fs::read("catalog/vanilla_26.3_full_block_coverage.json").unwrap(),
+    )
+    .unwrap();
+    assert_eq!(catalog["version"], 1);
+    assert_eq!(
+        catalog["source_commit"],
+        "6c088630459d8ca369ef0d6c07636d7d63a3b0f1"
+    );
+    let summary = &catalog["summary"];
+    assert_eq!(summary["blockstates"], 1290);
+    assert_eq!(summary["block_model_files"], 2885);
+    assert_eq!(summary["unique_block_texture_references"], 1272);
+    assert_eq!(summary["currently_covered_block_texture_references"], 371);
+    assert_eq!(summary["uncovered_block_texture_references"], 901);
+    assert_eq!(summary["states_with_uncovered_textures"], 577);
+    assert!(summary["metadata_resolution_problems"]
+        .as_array()
+        .unwrap()
+        .is_empty());
+    assert!(summary["block_texture_references_not_referenced_by_any_blockstate"]
+        .as_array()
+        .unwrap()
+        .is_empty());
+
+    let states = catalog["blockstates"].as_object().unwrap();
+    assert_eq!(states.len(), 1290);
+    for (block, state) in states {
+        let referenced = state["block_textures"].as_array().unwrap();
+        let missing = state["uncovered_block_textures"].as_array().unwrap();
+        assert!(
+            missing.iter().all(|name| referenced.contains(name)),
+            "{block}: uncovered list must be a subset of the block texture references"
+        );
+    }
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 901);
+    let covered: std::collections::HashSet<&str> = catalog["covered_block_textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|name| name.as_str().unwrap())
+        .collect();
+    for sprite in [
+        "glass",
+        "glass_pane_top",
+        "black_stained_glass",
+        "black_stained_glass_pane_top",
+    ] {
+        assert!(covered.contains(sprite), "26.3 sprite metadata missed {sprite}");
+    }
+}
+
+#[test]
+fn representative_26_3_models_share_the_covered_texture_paths() {
+    let manifest: serde_json::Value =
+        serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
+    let names: std::collections::HashSet<&str> = manifest["textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|t| t["name"].as_str().unwrap())
+        .collect();
+    let audit: serde_json::Value = serde_json::from_slice(
+        &fs::read("catalog/vanilla_26.3_variant_texture_refs.json").unwrap(),
+    )
+    .unwrap();
+    assert_eq!(audit["version"], "26.3");
+    assert_eq!(
+        audit["source_commit"],
+        "6c088630459d8ca369ef0d6c07636d7d63a3b0f1"
+    );
+    let blocks = audit["blocks"].as_object().unwrap();
+    assert_eq!(blocks.len(), 160);
+    for (block, textures) in blocks {
+        let textures = textures.as_array().unwrap();
+        assert!(
+            !textures.is_empty(),
+            "{block}: model audit has no block textures"
+        );
+        for texture in textures {
+            let texture = texture.as_str().unwrap();
+            assert!(
+                names.contains(texture),
+                "{block} references uncovered {texture}"
+            );
+        }
+    }
+
+    // In 26.3, every state/model variant of cobblestone stairs, slabs and
+    // walls resolves to the same cobblestone sprite. PBR sidecars are emitted
+    // once for that path, so the geometry shares the exact same material.
+    for block in [
+        "cobblestone",
+        "cobblestone_stairs",
+        "cobblestone_slab",
+        "cobblestone_wall",
+    ] {
+        assert_eq!(blocks[block], serde_json::json!(["cobblestone"]));
+    }
+    for (block, expected) in [
+        ("stone_stairs", "stone"),
+        ("stone_slab", "stone"),
+        ("stone_brick_stairs", "stone_bricks"),
+        ("stone_brick_slab", "stone_bricks"),
+        ("stone_brick_wall", "stone_bricks"),
+        ("brick_stairs", "bricks"),
+        ("brick_slab", "bricks"),
+        ("brick_wall", "bricks"),
+        ("oak_stairs", "oak_planks"),
+        ("oak_slab", "oak_planks"),
+        ("oak_fence", "oak_planks"),
+        ("oak_fence_gate", "oak_planks"),
+        ("cobbled_deepslate_stairs", "cobbled_deepslate"),
+        ("cobbled_deepslate_slab", "cobbled_deepslate"),
+        ("cobbled_deepslate_wall", "cobbled_deepslate"),
+    ] {
+        assert_eq!(blocks[block], serde_json::json!([expected]), "{block}");
+    }
+    // Models with distinct faces intentionally keep their separate vanilla
+    // texture paths (sandstone top/bottom and deepslate/blackstone end caps).
+    assert_eq!(
+        blocks["sandstone_stairs"],
+        serde_json::json!(["sandstone", "sandstone_bottom", "sandstone_top"])
+    );
+    assert_eq!(
+        blocks["deepslate"],
+        serde_json::json!(["deepslate", "deepslate_top"])
+    );
+    assert_eq!(
+        blocks["blackstone_stairs"],
+        serde_json::json!(["blackstone", "blackstone_top"])
+    );
+    for (block, expected) in [
+        (
+            "ancient_debris",
+            serde_json::json!(["ancient_debris_side", "ancient_debris_top"]),
+        ),
+        (
+            "basalt",
+            serde_json::json!(["basalt_side", "basalt_top"]),
+        ),
+        (
+            "polished_basalt",
+            serde_json::json!(["polished_basalt_side", "polished_basalt_top"]),
+        ),
+        (
+            "quartz_block",
+            serde_json::json!(["quartz_block_side", "quartz_block_top"]),
+        ),
+        (
+            "crimson_nylium",
+            serde_json::json!(["crimson_nylium", "crimson_nylium_side", "netherrack"]),
+        ),
+        (
+            "warped_nylium",
+            serde_json::json!(["netherrack", "warped_nylium", "warped_nylium_side"]),
+        ),
+    ] {
+        assert_eq!(blocks[block], expected, "{block}");
+    }
+    assert_eq!(
+        blocks["oak_door"],
+        serde_json::json!(["oak_door_bottom", "oak_door_top"])
+    );
+    assert_eq!(blocks["oak_trapdoor"], serde_json::json!(["oak_trapdoor"]));
+    assert_eq!(blocks["lever"], serde_json::json!(["cobblestone", "lever"]));
+    let states = audit["interactive_states"].as_object().unwrap();
+    assert_eq!(states["lever"]["variant_count"], 24);
+    assert_eq!(
+        states["lever"]["powered_false_models"],
+        serde_json::json!(["minecraft:block/lever_on"])
+    );
+    assert_eq!(
+        states["lever"]["powered_true_models"],
+        serde_json::json!(["minecraft:block/lever"])
+    );
+    assert_eq!(states["oak_door"]["variant_count"], 32);
+    assert_eq!(states["oak_trapdoor"]["variant_count"], 16);
+}
+
+#[test]
+fn shared_pattern_seed_generates_identical_material_aliases() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-shared-pattern-{}-{unique}",
+        std::process::id()
+    ));
+    fs::create_dir_all(&temp).unwrap();
+    for name in ["diffuse.png", "normal.png", "roughness.png"] {
+        fs::copy(Path::new("test_assets").join(name), temp.join(name)).unwrap();
+    }
+    fs::write(
+        temp.join("material_manifest.json"),
+        r#"{
+          "version":1,
+          "materials":[{"id":"base","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],
+          "textures":[
+            {"name":"bamboo_fence_particle","material":"base","recipe":"bamboo","pattern_seed":"bamboo_particle","tint":[255,255,255],"target_color":[207,186,85]},
+            {"name":"bamboo_fence_gate_particle","material":"base","recipe":"bamboo","pattern_seed":"bamboo_particle","tint":[255,255,255],"target_color":[207,186,85]}
+          ]
+        }"#,
+    )
+    .unwrap();
+    let output = temp.join("output");
+    let result = run(&temp, &output, "2");
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let block = output.join("pack/assets/minecraft/textures/block");
+    for suffix in ["", "_n", "_s"] {
+        assert_eq!(
+            fs::read(block.join(format!("bamboo_fence_particle{suffix}.png"))).unwrap(),
+            fs::read(block.join(format!("bamboo_fence_gate_particle{suffix}.png"))).unwrap(),
+            "shared vanilla sprite must have identical generated {suffix} maps"
+        );
+    }
+    fs::remove_dir_all(temp).unwrap();
 }
 
 #[test]
@@ -609,7 +1365,7 @@ fn packed_arm_uses_occlusion_and_roughness_not_metallic() {
     let report: serde_json::Value =
         serde_json::from_slice(&fs::read(output.join("build_report.json")).unwrap()).unwrap();
     assert!(report["input_sha256"]["arm.png"].is_string());
-    let mut invalid = base;
+    let mut invalid = base.clone();
     invalid["materials"][0]["roughness"] = "arm.png".into();
     fs::write(
         temp.join("material_manifest.json"),
@@ -619,6 +1375,21 @@ fn packed_arm_uses_occlusion_and_roughness_not_metallic() {
     let failed = temp.join("invalid");
     assert!(!run(&temp, &failed, "2").status.success());
     assert!(!failed.exists());
+    for (field, value) in [
+        ("roughness_bias", serde_json::json!(0.75)),
+        ("height_from_normal", serde_json::json!(true)),
+        ("roughness_from_height", serde_json::json!(true)),
+    ] {
+        let mut invalid = base.clone();
+        invalid["materials"][0][field] = value;
+        fs::write(
+            temp.join("material_manifest.json"),
+            serde_json::to_vec(&invalid).unwrap(),
+        )
+        .unwrap();
+        assert!(!run(&temp, &failed, "2").status.success(), "accepted {field}");
+        assert!(!failed.exists());
+    }
     let input16 = temp.join("arm16.png");
     {
         let file = fs::File::create(&input16).unwrap();
@@ -699,7 +1470,7 @@ fn pack_verifier_detects_broken_or_invalid_pbr_maps() {
 }
 
 #[test]
-fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
+fn grass_wood_and_wool_maps_keep_real_detail_and_biome_tint() {
     use hyperrealism_core::png_io::read;
     let unique = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -717,14 +1488,22 @@ fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
         .as_array()
         .unwrap()
         .iter()
-        .filter(|m| m["id"] == "leafy_grass" || m["id"] == "oak_veneer_02")
+        .filter(|m| {
+            m["id"] == "leafy_grass"
+                || m["id"] == "oak_veneer_02"
+                || m["id"] == "poly_wool_herringbone"
+        })
         .cloned()
         .collect();
     let textures: Vec<_> = all["textures"]
         .as_array()
         .unwrap()
         .iter()
-        .filter(|t| t["name"] == "grass_block_top" || t["name"] == "oak_planks")
+        .filter(|t| {
+            t["name"] == "grass_block_top"
+                || t["name"] == "oak_planks"
+                || t["name"] == "white_wool"
+        })
         .cloned()
         .collect();
     for material in &materials {
@@ -759,7 +1538,7 @@ fn grass_and_wood_preview_maps_keep_real_detail_and_biome_tint() {
         .all(|p| p[0] == p[1] && p[1] == p[2] && p[3] == 255));
     // Do not replace the separate biome-tinted cutout with an opaque texture.
     assert!(!block.join("grass_block_side_overlay.png").exists());
-    for name in ["grass_block_top", "oak_planks"] {
+    for name in ["grass_block_top", "oak_planks", "white_wool"] {
         let n = read(&block.join(format!("{name}_n.png"))).unwrap();
         let s = read(&block.join(format!("{name}_s.png"))).unwrap();
         let varied = |pixels: &[u8], channel| {
@@ -816,17 +1595,16 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
         .unwrap()
         .iter()
         .filter(|t| {
-            [
-                "oak_leaves",
-                "grass_block_side",
-                "grass_block_side_overlay",
-                "snow",
-                "glass",
-                "blue_stained_glass",
-                "blue_stained_glass_pane_top",
-            ]
-            .iter()
-            .any(|name| t["name"] == *name)
+            t["connected_glass"] == true
+                || [
+                    "oak_leaves",
+                    "grass_block_side",
+                    "grass_block_side_overlay",
+                    "snow",
+                    "blue_stained_glass_pane_top",
+                ]
+                .iter()
+                .any(|name| t["name"] == *name)
         })
         .cloned()
         .collect();
@@ -892,40 +1670,69 @@ fn overworld_cutouts_and_scanned_terrain_are_generated() {
     let alpha = |image: &hyperrealism_core::png_io::Rgba, x: usize, y: usize| {
         image.pixels[(y * image.width + x) * 4 + 3]
     };
-    assert_eq!(alpha(&clear, 64, 64), 0);
-    assert!(alpha(&clear, 0, 64) > 200);
-    assert!((90..120).contains(&alpha(&stained, 64, 64)));
+    let clear_body = alpha(&clear, 64, 64);
+    assert!((20..50).contains(&clear_body));
+    assert_eq!(alpha(&clear, 0, 64), clear_body);
+    let stained_body = alpha(&stained, 64, 64);
+    assert!((90..120).contains(&stained_body));
+    assert_eq!(alpha(&stained, 0, 64), stained_body);
     assert_eq!(alpha(&pane, 5, 64), 0);
     assert!(alpha(&pane, 64, 64) > 200);
     let glass_meta: serde_json::Value =
         serde_json::from_slice(&fs::read(block.join("glass.png.mcmeta")).unwrap()).unwrap();
     assert_eq!(glass_meta["texture"]["mipmap_strategy"], "mean");
-    // CTM tiles and maps must be packaged, not just listed in properties.
+    // Continuity's OptiFine-compatible compact loader consumes properties in
+    // assets/minecraft/optifine/ctm. Verify every covered clear/stained/tinted
+    // glass sprite has all five aligned LabPBR tiles, plus pane side rules.
     let ctm = output.join("pack/assets/minecraft/optifine/ctm");
-    for name in ["glass", "blue_stained_glass"] {
+    let connected: Vec<_> = textures
+        .iter()
+        .filter(|t| t["connected_glass"] == true)
+        .map(|t| t["name"].as_str().unwrap())
+        .collect();
+    assert_eq!(connected.len(), 18);
+    for name in connected {
         let dir = ctm.join(name);
         let properties = fs::read_to_string(dir.join("glass.properties")).unwrap();
         assert!(properties.contains("method=ctm_compact"));
+        assert!(properties.contains("tiles=0-4"));
+        assert!(properties.contains("connect=block"));
         assert!(properties.contains(&format!("matchTiles={name}")));
         assert!(properties.contains(&format!("matchBlocks={name}")));
-        let pane_rule = fs::read_to_string(dir.join("pane.properties")).unwrap();
-        assert!(pane_rule.contains(&format!("matchBlocks={name}_pane")));
-        assert!(pane_rule.contains("faces=sides"));
+        if name != "tinted_glass" {
+            let pane_rule = fs::read_to_string(dir.join("pane.properties")).unwrap();
+            assert!(pane_rule.contains(&format!("matchBlocks={name}_pane")));
+            assert!(pane_rule.contains(&format!("matchTiles={name}")));
+            assert!(pane_rule.contains("faces=sides"));
+        } else {
+            assert!(!dir.join("pane.properties").exists());
+        }
         for i in 0..5 {
             for suffix in ["", "_n", "_s"] {
                 let image = read(&dir.join(format!("{i}{suffix}.png"))).unwrap();
                 assert_eq!((image.width, image.height), (128, 128));
+                if suffix.is_empty() {
+                    assert_eq!(
+                        alpha(&image, 0, 64),
+                        alpha(&image, 64, 64),
+                        "CTM rim unexpectedly varies for {name}, tile {i}"
+                    );
+                }
             }
         }
-        let frame = read(&dir.join("0.png")).unwrap();
-        let interior = read(&dir.join("1.png")).unwrap();
         if name == "glass" {
-            assert_eq!(alpha(&frame, 0, 64), 255);
-            assert_eq!(alpha(&frame, 64, 64), 0);
-            assert_eq!(alpha(&interior, 0, 64), 0);
-        } else {
-            assert_eq!(alpha(&frame, 0, 64), 153);
-            assert_eq!(alpha(&interior, 64, 64), 102);
+            for i in 0..5 {
+                let tile = read(&dir.join(format!("{i}.png"))).unwrap();
+                let body = alpha(&tile, 64, 64);
+                assert!((20..50).contains(&body));
+                assert_eq!(alpha(&tile, 0, 64), body);
+            }
+        }
+        if name == "blue_stained_glass" {
+            let tile = read(&dir.join("0.png")).unwrap();
+            let body = alpha(&tile, 64, 64);
+            assert!((90..120).contains(&body));
+            assert_eq!(alpha(&tile, 0, 64), body);
         }
         let gloss = read(&dir.join("1_s.png")).unwrap();
         assert!(gloss.pixels.chunks_exact(4).all(|p| p[0] > 0 && p[1] == 10));
@@ -1005,7 +1812,8 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
     let (full_s, soft_s) = (pixel("full", "_s"), pixel("soft", "_s"));
     assert!((i32::from(soft_s[0]) - (f32::from(full_s[0]) * 0.4).round() as i32).abs() <= 1);
     assert_eq!(&full_s[1..], &soft_s[1..]);
-    // A texture-level override must affect only its PBR channels.
+    // Per-texture overrides are forbidden: every block must use the same
+    // manifest-wide strength, so adding this unknown field must be rejected.
     m["pbr_strength"] = 0.4.into();
     m["textures"][0]["pbr_strength"] = 0.65.into();
     fs::write(
@@ -1013,19 +1821,11 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
         serde_json::to_vec(&m).unwrap(),
     )
     .unwrap();
-    let result = run(&temp, &temp.join("override"), "2");
-    assert!(
-        result.status.success(),
-        "{}",
-        String::from_utf8_lossy(&result.stderr)
-    );
-    assert_eq!(pixel("override", ""), pixel("soft", ""));
-    let over = pixel("override", "_n");
-    assert!(slope(&over) > slope(&soft) && slope(&over) < slope(&full));
-    let over_s = pixel("override", "_s");
-    assert!(over_s[0] > soft_s[0] && over_s[0] < full_s[0]);
-    assert_eq!(&over_s[1..], &soft_s[1..]);
-    m["textures"][0]["pbr_strength"] = serde_json::Value::Null;
+    assert!(!run(&temp, &temp.join("override"), "2").status.success());
+    m["textures"][0]
+        .as_object_mut()
+        .unwrap()
+        .remove("pbr_strength");
     for invalid in [-0.1, 1.1] {
         m["pbr_strength"] = invalid.into();
         fs::write(
@@ -1035,16 +1835,6 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
         .unwrap();
         assert!(!run(&temp, &temp.join("invalid"), "2").status.success());
     }
-    m["pbr_strength"] = 0.4.into();
-    m["textures"][0]["pbr_strength"] = 1.1.into();
-    fs::write(
-        temp.join("material_manifest.json"),
-        serde_json::to_vec(&m).unwrap(),
-    )
-    .unwrap();
-    assert!(!run(&temp, &temp.join("invalid_override"), "2")
-        .status
-        .success());
     fs::remove_dir_all(temp).unwrap();
 }
 
@@ -1098,8 +1888,11 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
     let names = [
         "oak_door_top",
         "oak_door_bottom",
+        "pale_oak_door_bottom",
         "oak_trapdoor",
         "copper_door_top",
+        "copper_door_bottom",
+        "lever",
         "ladder",
         "iron_bars",
     ];
@@ -1160,8 +1953,25 @@ fn shaped_block_layouts_preserve_cutouts_hardware_and_pbr() {
     assert!(at("iron_bars", "", 40, 60)[3] < 5);
     assert!(at("iron_bars", "", 20, 60)[3] > 245);
     assert!(at("copper_door_top", "", 48, 32)[3] < 5);
-    // Wood keeps dielectric F0; the drawn latch becomes a discrete iron ID.
-    assert_eq!(at("oak_door_bottom", "_s", 25, 82)[1], 230);
+    // The vanilla lever model's 2x10 UV island remains transparent elsewhere;
+    // its wooden grip and iron collar receive aligned, distinct LabPBR values.
+    assert!(at("lever", "", 64, 60)[3] > 245);
+    assert!(at("lever", "", 40, 60)[3] < 5);
+    assert_eq!(at("lever", "_s", 64, 74)[1], 230);
+    assert_eq!(at("lever", "_s", 64, 100)[1], 10);
+    let lever_normal = read(&block.join("lever_n.png")).unwrap();
+    assert!(lever_normal
+        .pixels
+        .chunks_exact(4)
+        .any(|p| p[0] != 128 || p[1] != 128));
+    // Wood keeps dielectric F0; the edge-aligned knob becomes a discrete iron
+    // ID. Its old, three-pixel-inboard location is intentionally plain wood.
+    assert_eq!(at("oak_door_bottom", "_s", 5, 28)[1], 230);
+    assert_eq!(at("oak_door_bottom", "_s", 25, 28)[1], 10);
+    assert_eq!(at("oak_door_bottom", "_s", 5, 82)[1], 10);
+    assert_eq!(at("pale_oak_door_bottom", "_s", 5, 28)[1], 230);
+    assert_eq!(at("pale_oak_door_bottom", "_s", 25, 28)[1], 10);
+    assert_eq!(at("copper_door_bottom", "_s", 5, 28)[1], 230);
     assert_eq!(at("oak_door_bottom", "_s", 64, 64)[1], 10);
     assert_eq!(at("iron_bars", "_s", 20, 60)[1], 230);
     assert_eq!(at("copper_door_top", "_s", 16, 40)[1], 234);

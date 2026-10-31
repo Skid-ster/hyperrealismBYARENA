@@ -3,7 +3,7 @@ use crate::{
     manifest::{self, Texture},
     material::{self, Prepared},
     png_io, recipes,
-    resample::resize_wrap,
+    resample::{resize_clamp, resize_wrap},
     zip,
 };
 use rayon::prelude::*;
@@ -34,6 +34,124 @@ fn resize(values: &[f32], size: usize) -> Result<Vec<f32>, String> {
     }
     resize_wrap(values, WORK, WORK, size, size).map_err(str::to_string)
 }
+
+#[derive(Clone, Copy)]
+enum EntityMap {
+    Albedo,
+    Normal,
+    Specular,
+}
+
+/// Downsample an entity atlas without wrapping its UV edges or changing its
+/// vanilla width-to-height aspect ratio. Continuous channels use clamped
+/// Lanczos; LabPBR IDs and the no-emission sentinel use nearest-neighbor.
+fn resize_entity_map(
+    source: &Path,
+    destination: &Path,
+    size: usize,
+    out_height: usize,
+    kind: EntityMap,
+) -> Result<(), String> {
+    let image = png_io::read(source)?;
+    if image.width == size && image.height == out_height {
+        fs::copy(source, destination).map_err(|e| format!("{}: {e}", destination.display()))?;
+        return Ok(());
+    }
+
+    let count = image.width * image.height;
+    let mut channels: Vec<Vec<f32>> = (0..4).map(|_| vec![0.0; count]).collect();
+    for i in 0..count {
+        let pixel = &image.pixels[i * 4..i * 4 + 4];
+        for c in 0..4 {
+            channels[c][i] = f32::from(pixel[c]) / 255.0;
+        }
+    }
+    let mut output = vec![0u8; size * out_height * 4];
+    match kind {
+        EntityMap::Albedo => {
+            let alpha = resize_clamp(&channels[3], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            let mut rgb = Vec::with_capacity(3);
+            for c in 0..3 {
+                let premultiplied: Vec<f32> = channels[c]
+                    .iter()
+                    .zip(&channels[3])
+                    .map(|(&v, &a)| material::srgb_to_linear(v) * a)
+                    .collect();
+                rgb.push(
+                    resize_clamp(&premultiplied, image.width, image.height, size, out_height)
+                        .map_err(str::to_string)?,
+                );
+            }
+            for i in 0..size * out_height {
+                let a = alpha[i].clamp(0.0, 1.0);
+                for c in 0..3 {
+                    output[i * 4 + c] = if a > 1e-6 {
+                        linear_to_srgb((rgb[c][i] / a).clamp(0.0, 1.0))
+                    } else {
+                        0
+                    };
+                }
+                output[i * 4 + 3] = unit(a);
+            }
+        }
+        EntityMap::Normal => {
+            let mut xy = Vec::with_capacity(2);
+            for c in 0..2 {
+                let decoded: Vec<f32> = channels[c].iter().map(|v| v * 2.0 - 1.0).collect();
+                xy.push(
+                    resize_clamp(&decoded, image.width, image.height, size, out_height)
+                        .map_err(str::to_string)?,
+                );
+            }
+            let ao = resize_clamp(&channels[2], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            let height = resize_clamp(&channels[3], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            for i in 0..size * out_height {
+                let mut x = xy[0][i];
+                let mut y = xy[1][i];
+                let length = (x * x + y * y).sqrt();
+                if length > 0.999 {
+                    x *= 0.999 / length;
+                    y *= 0.999 / length;
+                }
+                output[i * 4] = unit(0.5 + x * 0.5);
+                output[i * 4 + 1] = unit(0.5 + y * 0.5);
+                output[i * 4 + 2] = unit(ao[i]);
+                output[i * 4 + 3] = unit(height[i]).max(1);
+            }
+        }
+        EntityMap::Specular => {
+            for c in [0, 2] {
+                let resized = resize_clamp(&channels[c], image.width, image.height, size, out_height)
+                    .map_err(str::to_string)?;
+                for (i, value) in resized.into_iter().enumerate() {
+                    output[i * 4 + c] = unit(value);
+                }
+            }
+            // Green is the discrete LabPBR F0/metal ID; alpha may carry the
+            // 255 no-emission sentinel. Never interpolate either categorical
+            // channel across UV/material boundaries.
+            for y in 0..out_height {
+                for x in 0..size {
+                    let sx = (((x as f64 + 0.5) * image.width as f64 / size as f64).floor()
+                        as usize)
+                        .min(image.width - 1);
+                    let sy = (((y as f64 + 0.5) * image.height as f64 / out_height as f64).floor()
+                        as usize)
+                        .min(image.height - 1);
+                    let src = (sy * image.width + sx) * 4;
+                    let dst = (y * size + x) * 4;
+                    output[dst + 1] = image.pixels[src + 1];
+                    output[dst + 3] = image.pixels[src + 3];
+                }
+            }
+        }
+    }
+    png_io::write(destination, size, out_height, &output)
+}
+
 type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
 
 fn build(
@@ -86,7 +204,7 @@ fn build(
             .unwrap_or(1.0);
         tint[c] * target_gain
     });
-    let seed = recipes::seed(&t.name);
+    let seed = recipes::seed(t.pattern_seed.as_deref().unwrap_or(&t.name));
     for y in 0..WORK {
         for x in 0..WORK {
             let i = y * WORK + x;
@@ -281,8 +399,8 @@ pub fn generate(
     minecraft_jar: Option<&Path>,
     size: usize,
 ) -> Result<(), String> {
-    if size != 128 && size != 512 {
-        return Err("resolution must be 128 or 512".into());
+    if size != 128 && size != 256 && size != 512 {
+        return Err("resolution must be 128, 256, or 512".into());
     }
     let path = if input.is_dir() {
         input.join("material_manifest.json")
@@ -370,16 +488,81 @@ fn build_stage(
     let optifine = pack.join("assets/minecraft/optifine");
     fs::create_dir_all(&block).map_err(|e| e.to_string())?;
     fs::create_dir_all(&optifine).map_err(|e| e.to_string())?;
-    fs::write(pack.join("pack.mcmeta"),"{\n  \"pack\": {\n    \"description\": \"HyperRealism LabPBR CPU preview\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }\n}\n").map_err(|e|e.to_string())?;
+    let metadata_json = format!(
+        "{{\n  \"pack\": {{\n    \"description\": \"HyperRealism {size}×{size} — LabPBR 1.3 (experimental)\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }}\n}}\n"
+    );
+    fs::write(pack.join("pack.mcmeta"), metadata_json).map_err(|e| e.to_string())?;
     fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n")
         .map_err(|e| e.to_string())?;
+    let texture_root = pack.join("assets/minecraft/textures");
+    for entity in &data.entity_textures {
+        let destination = texture_root.join(format!("{}.png", entity.path));
+        let parent = destination
+            .parent()
+            .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        fs::create_dir_all(parent).map_err(|e| format!("{}: {e}", parent.display()))?;
+        let stem = entity
+            .path
+            .rsplit('/')
+            .next()
+            .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        let albedo_source = manifest::safe_file(root, &entity.albedo)?;
+        let albedo_image = png_io::read(&albedo_source)?;
+        let (source_width, source_height) = (albedo_image.width, albedo_image.height);
+        let recognized_aspect = source_width == source_height
+            || source_width == source_height.saturating_mul(2)
+            || source_height == source_width.saturating_mul(2);
+        if !recognized_aspect {
+            return Err(format!(
+                "{}: unsupported entity atlas aspect ratio {}x{}",
+                entity.path, source_width, source_height
+            ));
+        }
+        for source in [&entity.normal, &entity.specular] {
+            let image = png_io::read(&manifest::safe_file(root, source)?)?;
+            if (image.width, image.height) != (source_width, source_height) {
+                return Err(format!(
+                    "{}: entity albedo, normal and specular maps must have matching dimensions",
+                    entity.path
+                ));
+            }
+        }
+        let scaled_height = size
+            .checked_mul(source_height)
+            .and_then(|v| v.checked_add(source_width / 2))
+            .ok_or_else(|| format!("{}: entity dimensions overflow", entity.path))?
+            / source_width;
+        let output_height = scaled_height.max(1);
+        for (source, dest, kind) in [
+            (&entity.albedo, destination.clone(), EntityMap::Albedo),
+            (
+                &entity.normal,
+                destination.with_file_name(format!("{stem}_n.png")),
+                EntityMap::Normal,
+            ),
+            (
+                &entity.specular,
+                destination.with_file_name(format!("{stem}_s.png")),
+                EntityMap::Specular,
+            ),
+        ] {
+            resize_entity_map(
+                &manifest::safe_file(root, source)?,
+                &dest,
+                size,
+                output_height,
+                kind,
+            )
+                .map_err(|e| format!("{}: {e}", entity.path))?;
+        }
+    }
     let materials = manifest::by_id(data);
     // Carry attribution and honest coverage information into the distributable
     // ZIP. These fields are supplied by the manifest and are not independently
     // license-verified by the generator.
     let used: std::collections::BTreeSet<_> =
         data.textures.iter().map(|t| t.material.as_str()).collect();
-    let mut credits = String::from("HyperRealism128 material credits\n\nGenerated from the following manifest-supplied materials.\nSource and license information is supplied by the manifest, not independently verified.\n\n");
+    let mut credits = format!("HyperRealism {size}×{size} material credits\n\nGenerated from the following manifest-supplied materials.\nSource and license information is supplied by the manifest, not independently verified.\n\n");
     for id in used {
         let m = materials[id];
         credits.push_str(&format!(
@@ -390,10 +573,20 @@ fn build_stage(
         ));
     }
     fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
-    fs::write(pack.join("README.txt"), format!("HyperRealism128 experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}x{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible shader is needed for LabPBR maps; support for optional channels varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism {size}×{size} experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}×{}, not the full game. It also replaces {} entity texture paths; other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible LabPBR 1.3 shader setting is needed for normal/specular maps; support for optional channels and entity materials varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt and ENTITY_TEXTURES.txt for material provenance.\n", data.textures.len(), size, size, data.entity_textures.len())).map_err(|e| e.to_string())?;
+    let mut entity_credits = String::from("Entity texture targets and provenance\n\n");
+    for entity in &data.entity_textures {
+        entity_credits.push_str(&format!(
+            "Path: {}\nSource: {}\nLicense: {}\n\n",
+            entity.path,
+            entity.source.as_deref().unwrap_or("not specified"),
+            entity.license.as_deref().unwrap_or("not specified")
+        ));
+    }
+    fs::write(pack.join("ENTITY_TEXTURES.txt"), entity_credits).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
-    // Keep review thumbnails small even for the 512px pack.
+    // Keep review thumbnails small even for the highest-resolution output.
     let mut sheet = vec![0; cols * SHEET_TILE * rows * SHEET_TILE * 4];
     // Keep only the most recently used prepared material; this bounds memory.
     let mut cached: Option<(&str, Prepared)> = None;
@@ -410,7 +603,7 @@ fn build_stage(
             images,
             root,
             size,
-            t.pbr_strength.unwrap_or(data.pbr_strength),
+            data.pbr_strength,
         )
         .map_err(|e| format!("{}: {e}", t.name))?;
         if t.connected_glass {
@@ -456,7 +649,13 @@ fn build_stage(
             }
         }
     }
-    let verified = crate::verify::pack(&pack)?;
+    let (verified, entity_verified) = crate::verify::full_pack(&pack)?;
+    if entity_verified != data.entity_textures.len() {
+        return Err(format!(
+            "entity pack verification: expected {} texture triples, got {entity_verified}",
+            data.entity_textures.len()
+        ));
+    }
     if verified != data.textures.len() {
         return Err(format!(
             "pack verification: expected {} textures, got {verified}",
@@ -469,8 +668,9 @@ fn build_stage(
         "pbr_strength": data.pbr_strength,
         "resolution": size,
         "working_resolution": WORK,
-        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "pbr_strength": t.pbr_strength, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
-        "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "arm": m.arm, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "pattern_seed": t.pattern_seed, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
+        "entity_textures": data.entity_textures.iter().map(|e| serde_json::json!({"path": e.path, "albedo": e.albedo, "normal": e.normal, "specular": e.specular, "source": e.source, "license": e.license})).collect::<Vec<_>>(),
+        "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "roughness_bias": m.roughness_bias, "roughness_from_height": m.roughness_from_height, "arm": m.arm, "height": m.height, "height_from_normal": m.height_from_normal, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,
         "input_sha256": hashes,

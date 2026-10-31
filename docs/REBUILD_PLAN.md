@@ -77,8 +77,9 @@ quality requires contact sheets and in-game review, not a file-count check.
 ## Pipeline and architecture
 
 1. Validate the manifest, catalog and target paths before creating a temporary
-   output tree. Resolve recipe seed by hashing the global seed and target path;
-   avoid randomized hash-map iteration. Every stage reports errors with material
+output tree. Resolve recipe seed by hashing the global seed and target path,
+unless an explicit shared `pattern_seed` aliases related outputs; avoid
+randomized hash-map iteration. Every stage reports errors with material
    and target name. Finish by atomically replacing output on success only.
 2. Decode input maps to a consistent intermediate format; do not decode 280
    materials concurrently. Generate at 512×512 with reusable buffers. Implement
