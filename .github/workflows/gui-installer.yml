@@ -16,13 +16,17 @@ jobs:
             Write-Output "::error::$($_.Exception.Message)"
             "## Installer build diagnostics`n" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
             Get-Content "$env:RUNNER_TEMP\installer-build.log" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+            $logText = if (Test-Path -LiteralPath "$env:RUNNER_TEMP\installer-build.log") { Get-Content -LiteralPath "$env:RUNNER_TEMP\installer-build.log" -Raw } else { $_.Exception.Message }
+            $diagnostic = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($logText)).Replace('+', '-').Replace('/', '_').TrimEnd('=')
+            if ($diagnostic.Length -gt 220) { $diagnostic = $diagnostic.Substring(0, 220) }
+            "BUILD_DIAGNOSTIC=$diagnostic" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding ascii
             exit 1
           }
       - name: Upload installer build log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: installer-build-log
+          name: installer-build-log-${{ env.BUILD_DIAGNOSTIC }}
           path: ${{ runner.temp }}/installer-build.log
           if-no-files-found: warn
           retention-days: 7
