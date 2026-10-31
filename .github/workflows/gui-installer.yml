@@ -18,6 +18,14 @@ jobs:
             Get-Content "$env:RUNNER_TEMP\installer-build.log" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
             exit 1
           }
+      - name: Upload installer build log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-build-log
+          path: ${{ runner.temp }}/installer-build.log
+          if-no-files-found: warn
+          retention-days: 7
       - name: Test live download to temporary folder
         if: github.event_name == 'push'
         shell: powershell
