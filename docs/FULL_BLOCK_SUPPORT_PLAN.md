@@ -35,15 +35,16 @@ The current audit reports:
 - The pinned-metadata resolver reports zero unresolved texture variables and
   zero block texture paths unrelated to any blockstate.
 
-The latest incremental additions are five copper paths (copper block, cut
-copper and its three oxidation-stage variants) plus raw copper, gold and iron
-blocks. They use verified CC0 Poly Haven scans already in the project: Metal
-Plate 02/Rusted Shutter for the copper surfaces and Rock Face 03 for ore-host
-rock. Cut copper uses a deterministic 4×4 panel-and-recess recipe; raw blocks
-use the ore-inclusion recipe. Target colors are alpha-weighted averages computed
-locally from pinned reference textures; no Minecraft image pixels are included
-in the pack or repository. Recipe periodicity and coverage are tested. This is
-structural coverage progress, not in-game visual validation.
+Recent additions include raw copper, gold and iron blocks; five copper
+surfaces; twelve chiseled stone/copper targets; and seven amethyst, cinnabar and
+sulfur targets. They reuse documented CC0 Poly Haven scans already in the
+project (`Metal Plate 02`, `Rusted Shutter`, `Rock Face 03`, and `Sandstone
+Cracks`) with explicit panel, ore, diamond-carving, gem and brick recipes. Target
+colors are alpha-weighted means computed from the pinned local reference PNGs
+and rounded to the nearest integer. The vanilla images remain local audit
+references only: no Minecraft pixels are included in the pack or repository.
+CI validates generation, channel structure and coverage; it does not validate
+appearance in Minecraft or a shader.
 
 This establishes that the current source catalog is still a subset, not full
 block coverage. These counts describe the pinned asset mirror's metadata, not a
