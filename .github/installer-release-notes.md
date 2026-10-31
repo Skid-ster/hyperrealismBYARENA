@@ -1,17 +1,22 @@
-## Windows GUI installer 11 — HyperRealism 512×512
+## Windows GUI installer 12 — HyperRealism 512×512
 
-Installer 11 fixes a self-update version-reporting defect that could make an
-updated installer repeatedly offer the same update. It now identifies itself
-as `v0.1.0-installer.11` and can advance from installer 9 or 10 without
-repeating the prompt.
+Installer 12 improves update-transfer usability and resilience:
 
-The installer UI consistently names the pack **HyperRealism 512×512** and
-links to the current shader setup guide. The executable filename, installed
-settings directory, and legacy preview ZIP asset name remain `HyperRealism128`
-for compatibility with existing updater installations. The Minecraft resource
-pack itself displays the accurate 512×512 name.
+- Pack and installer downloads display byte-level progress and can be cancelled.
+  Cancellation removes temporary downloads and leaves the currently installed
+  file untouched.
+- Automatic prompts for a declined or cancelled version are deferred until the
+  next installer launch; manual update checks remain available.
+- Pack downloads are capped at 1 GiB and installer downloads at 100 MiB. Network
+  requests and reads use 30-second timeouts, and progress callbacks are
+  throttled to keep the interface responsive.
+- Update files remain SHA-256 checked and are staged before replacement.
 
-The app is a separate installer, not PineconeMC. On Windows 11, download
+The executable filename, settings directory, and legacy preview ZIP asset name
+remain `HyperRealism128` for updater compatibility. The Minecraft resource pack
+itself is named **HyperRealism 512×512**.
+
+The installer is a separate app, not PineconeMC. On Windows 11, download
 **HyperRealism128-Installer.exe** and double-click it. The GUI defaults to the
 ElyPrism `26.3(1)` instance's resourcepacks folder and allows browsing to a
 different existing `resourcepacks` directory. A valid folder name does not

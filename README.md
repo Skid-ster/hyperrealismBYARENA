@@ -37,7 +37,7 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and t
 The launcher's dark interface inspires this installer; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.11/HyperRealism128-Installer.exe) and double-click it. The app defaults to the current user's
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.12/HyperRealism128-Installer.exe) and double-click it. Installer 12 adds cancellable pack and installer downloads, byte-level progress, 30-second network timeouts, and 1 GiB / 100 MiB size caps. It defers declined or cancelled automatic update prompts until the next launch. The app defaults to the current user's
 `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
 browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually

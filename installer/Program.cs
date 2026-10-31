@@ -106,6 +106,7 @@ namespace HyperRealismInstaller
         private readonly Label folderStatus = new Label();
         private readonly Label result = new Label();
         private readonly ProgressBar progress = new ProgressBar();
+        private readonly LauncherButton cancelDownload = new LauncherButton();
         private readonly LauncherButton browse = new LauncherButton();
         private readonly LauncherButton openFolder = new LauncherButton();
         private readonly LauncherButton check = new LauncherButton();
@@ -128,7 +129,11 @@ namespace HyperRealismInstaller
         private readonly Timer updateTimer = new Timer();
         private bool busy;
         private bool checkingApp;
+        private volatile bool cancelTransfer;
+        private int transferGeneration;
         private bool automaticUpdates = true;
+        private string deferredInstallerTag;
+        private string deferredPackUpdate;
         private static readonly string AutoCheckPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "auto-update-checks.txt");
         private static readonly string LauncherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "pineconemc-path.txt");
         private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "resourcepacks-path.txt");
@@ -198,7 +203,7 @@ namespace HyperRealismInstaller
             left.RowStyles.Add(new RowStyle(SizeType.Absolute, 33));
             left.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
             left.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            left.RowStyles.Add(new RowStyle(SizeType.Absolute, 15));
+            left.RowStyles.Add(new RowStyle(SizeType.Absolute, 20));
             left.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             main.Controls.Add(left, 0, 0);
             var groupHeading = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Background };
@@ -219,7 +224,13 @@ namespace HyperRealismInstaller
             pathRow.Controls.Add(pathBox, 0, 0); pathRow.Controls.Add(browse, 1, 0); left.Controls.Add(pathRow, 0, 3);
             folderStatus.Dock = DockStyle.Fill; folderStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold); folderStatus.TextAlign = ContentAlignment.MiddleLeft; left.Controls.Add(folderStatus, 0, 4);
             result.Dock = DockStyle.Fill; result.Text = "Ready. Check for updates or install the latest preview."; result.ForeColor = Foreground; left.Controls.Add(result, 0, 5);
-            progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; left.Controls.Add(progress, 0, 6);
+            progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; progress.AccessibleName = "Download progress";
+            var progressRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
+            progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 78));
+            StyleButton(cancelDownload, "Cancel", "close", 76, 20, false); cancelDownload.Dock = DockStyle.Fill; cancelDownload.Visible = false;
+            cancelDownload.AccessibleName = "Cancel download";
+            cancelDownload.Click += delegate { if (busy && !cancelTransfer) { cancelTransfer = true; cancelDownload.Enabled = false; result.Text = "Cancelling download; the current install will be preserved."; } };
+            progressRow.Controls.Add(progress, 0, 0); progressRow.Controls.Add(cancelDownload, 1, 0); left.Controls.Add(progressRow, 0, 6);
             left.Controls.Add(new Label { Dock = DockStyle.Bottom, AutoSize = true, Text = "Folder name is a helpful check, not proof this is the active instance.\r\nChecksums detect corruption but are not an independent signature.", ForeColor = Color.FromArgb(155, 155, 155) }, 0, 7);
 
             var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 12, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
@@ -600,11 +611,17 @@ namespace HyperRealismInstaller
             {
                 var choice = MessageBox.Show(this, "Installer " + summary.Installer.Tag + " is available. Download it and restart now?", "Installer update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (choice == DialogResult.Yes) { await ApplyInstallerUpdate(summary.Installer); return; }
+                deferredInstallerTag = summary.Installer.Tag;
             }
             if (summary.Pack.Contains("Installed file differs"))
             {
                 var choice = MessageBox.Show(this, summary.Pack + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (choice == DialogResult.Yes) await RunOperation(true);
+                if (choice == DialogResult.Yes)
+                {
+                    await RunOperation(true);
+                    if (result.Text.StartsWith("Download cancelled", StringComparison.Ordinal)) deferredPackUpdate = summary.Pack;
+                }
+                else deferredPackUpdate = summary.Pack;
             }
             else MessageBox.Show(this, (summary.Installer == null ? "Installer: up to date." : "Installer update skipped.") + "\r\n" + summary.Pack, "Update check", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -638,8 +655,13 @@ namespace HyperRealismInstaller
                 appUpdate.Text = "Installer update";
                 if (update != null)
                 {
-                    var answer = MessageBox.Show(this, "A new installer version (" + update.Tag + ") is available on GitHub.\r\n\r\nDownload it, verify it and restart the installer now?", "Installer update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (answer == DialogResult.Yes) { await ApplyInstallerUpdate(update); return; }
+                    bool deferred = automatic && String.Equals(deferredInstallerTag, update.Tag, StringComparison.Ordinal);
+                    if (!deferred)
+                    {
+                        var answer = MessageBox.Show(this, "A new installer version (" + update.Tag + ") is available on GitHub.\r\n\r\nDownload it, verify it and restart the installer now?", "Installer update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                        if (answer == DialogResult.Yes) { await ApplyInstallerUpdate(update); return; }
+                        deferredInstallerTag = update.Tag;
+                    }
                 }
                 else if (!automatic) MessageBox.Show(this, "You have the latest published installer (" + SelfUpdater.CurrentTag + ").", "Installer updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -661,10 +683,15 @@ namespace HyperRealismInstaller
                 if (!File.Exists(Path.Combine(folder, PackInstaller.PackName))) return;
                 string state = await Task.Run(() => PackInstaller.Check(new WebTransfer(), folder));
                 if (IsDisposed || busy || !automaticUpdates || !String.Equals(path, pathBox.Text, StringComparison.Ordinal)) return;
-                if (state.Contains("Installed file differs"))
+                if (state.Contains("Installed file differs") && !String.Equals(state, deferredPackUpdate, StringComparison.Ordinal))
                 {
                     var answer = MessageBox.Show(this, state + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (answer == DialogResult.Yes) await RunOperation(true);
+                    if (answer == DialogResult.Yes)
+                    {
+                        await RunOperation(true);
+                        if (result.Text.StartsWith("Download cancelled", StringComparison.Ordinal)) deferredPackUpdate = state;
+                    }
+                    else deferredPackUpdate = state;
                 }
             }
             catch { /* Offline checks are silent; the user can retry via the button. */ }
@@ -676,23 +703,35 @@ namespace HyperRealismInstaller
             bool handedOff = false;
             busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
             UpdateFolderStatus(); progress.Visible = true;
+            int generation = StartTransferProgress(true);
+            result.ForeColor = Foreground;
             result.Text = "Downloading and verifying installer " + update.Tag + "...";
             try
             {
                 SavePath();
                 string target = Application.ExecutablePath;
                 string checksum = null;
-                stage = await Task.Run(() => SelfUpdater.DownloadUpdate(new WebTransfer(), update, target, out checksum));
-                SelfUpdater.LaunchHelper(target, stage, target, checksum);
+                stage = await Task.Run(() => SelfUpdater.DownloadUpdate(
+                    new WebTransfer((received, total) => ReportTransferProgress(generation, "installer", received, total), () => cancelTransfer),
+                    update, target, out checksum));
+                if (cancelTransfer) throw new OperationCanceledException("Download cancelled.");
+                using (SelfUpdater.LaunchHelper(target, stage, target, checksum)) { }
                 handedOff = true;
                 busy = false;
                 Application.Exit();
             }
-            catch (Exception ex) { ShowError(ex); }
+            catch (OperationCanceledException)
+            {
+                deferredInstallerTag = update.Tag;
+                result.ForeColor = Foreground;
+                result.Text = "Download cancelled. Your current installer was not changed.";
+            }
+            catch (Exception ex) { deferredInstallerTag = update.Tag; ShowError(ex); }
             finally
             {
                 if (!handedOff && stage != null) { try { if (File.Exists(stage)) File.Delete(stage); } catch { } }
                 busy = false;
+                FinishTransferProgress(generation);
                 if (!IsDisposed) { progress.Visible = false; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = true; UpdateFolderStatus(); }
             }
         }
@@ -732,23 +771,91 @@ namespace HyperRealismInstaller
             pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
             UpdateFolderStatus();
             progress.Visible = true;
+            int generation = StartTransferProgress(doInstall);
             result.ForeColor = Foreground;
             result.Text = doInstall ? "Downloading and verifying the latest preview..." : "Checking the latest preview...";
             try
             {
-                string message = await Task.Run(() => doInstall ? PackInstaller.Install(new WebTransfer(), path) : PackInstaller.Check(new WebTransfer(), path));
+                string message = await Task.Run(() => doInstall
+                    ? PackInstaller.Install(new WebTransfer((received, total) => ReportTransferProgress(generation, "resource pack", received, total), () => cancelTransfer), path)
+                    : PackInstaller.Check(new WebTransfer(), path));
                 result.Text = message;
                 result.ForeColor = Green;
+            }
+            catch (OperationCanceledException)
+            {
+                result.ForeColor = Foreground;
+                result.Text = doInstall ? "Download cancelled. Your current pack was not changed." : "Update check cancelled.";
             }
             catch (Exception ex) { ShowError(ex); }
             finally
             {
+                FinishTransferProgress(generation);
                 progress.Visible = false;
                 busy = false;
                 pathBox.Enabled = browse.Enabled = close.Enabled = true;
                 appUpdate.Enabled = !checkingApp;
                 UpdateFolderStatus();
             }
+        }
+
+        private int StartTransferProgress(bool cancellable)
+        {
+            transferGeneration++;
+            cancelTransfer = false;
+            cancelDownload.Visible = cancellable;
+            cancelDownload.Enabled = cancellable;
+            progress.Style = ProgressBarStyle.Marquee;
+            progress.MarqueeAnimationSpeed = 25;
+            progress.Value = 0;
+            return transferGeneration;
+        }
+
+        private void ReportTransferProgress(int generation, string label, long received, long total)
+        {
+            if (IsDisposed || !IsHandleCreated) return;
+            try
+            {
+                BeginInvoke(new Action(delegate
+                {
+                    if (IsDisposed || !busy || generation != transferGeneration) return;
+                    if (cancelTransfer) { result.ForeColor = Foreground; result.Text = "Cancelling download; please wait..."; return; }
+                    result.ForeColor = Foreground;
+                    if (total > 0)
+                    {
+                        progress.Style = ProgressBarStyle.Blocks;
+                        progress.Value = (int)Math.Max(0, Math.Min(100, received * 100.0 / total));
+                        result.Text = "Downloading " + label + ": " + FormatBytes(received) + " / " + FormatBytes(total);
+                    }
+                    else
+                    {
+                        progress.Style = ProgressBarStyle.Marquee;
+                        result.Text = "Downloading " + label + ": " + FormatBytes(received);
+                    }
+                }));
+            }
+            catch { /* The form may be closing while a transfer completes. */ }
+        }
+
+        private void FinishTransferProgress(int generation)
+        {
+            if (generation != transferGeneration) return;
+            transferGeneration++;
+            if (IsDisposed) return;
+            cancelDownload.Visible = false;
+            cancelDownload.Enabled = false;
+            progress.Style = ProgressBarStyle.Marquee;
+            progress.MarqueeAnimationSpeed = 25;
+            progress.Value = 0;
+        }
+
+        private static string FormatBytes(long bytes)
+        {
+            string[] units = { "B", "KB", "MB", "GB" };
+            double value = Math.Max(0, bytes);
+            int unit = 0;
+            while (value >= 1024 && unit < units.Length - 1) { value /= 1024; unit++; }
+            return unit == 0 ? value.ToString("0") + " " + units[unit] : value.ToString("0.0") + " " + units[unit];
         }
 
         private void ShowError(Exception ex)
@@ -764,7 +871,7 @@ namespace HyperRealismInstaller
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || launch.Text != "Launch" || BackColor != Background) throw new Exception("Expected launcher-style installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress") throw new Exception("Expected launcher-style installer controls are missing.");
             foreach (var button in new LauncherButton[] { toolBrowse, toolOpen, toolSettings, toolHelp, toolCheck })
                 if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Image.Width - 3)
                     throw new Exception("Toolbar button is missing an icon or has clipped text: " + button.Text);

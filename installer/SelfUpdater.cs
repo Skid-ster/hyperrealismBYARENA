@@ -25,8 +25,9 @@ namespace HyperRealismInstaller
 
     internal static class SelfUpdater
     {
-        internal const string CurrentTag = "v0.1.0-installer.11";
+        internal const string CurrentTag = "v0.1.0-installer.12";
         internal const string AssetName = "HyperRealism128-Installer.exe";
+        internal const long MaxInstallerBytes = 100L * 1024L * 1024L;
 
         internal static Version ParseVersion(string tag)
         {
@@ -50,7 +51,9 @@ namespace HyperRealismInstaller
             Version current = ParseVersion(currentTag);
             if (current == null) throw new InvalidDataException("Invalid current installer version.");
             var serializer = new JavaScriptSerializer { MaxJsonLength = 4 * 1024 * 1024 };
-            var releases = serializer.DeserializeObject(transfer.GetText(PackInstaller.Api)) as object[];
+            string response = transfer.GetText(PackInstaller.Api);
+            PackInstaller.CheckCancellation(transfer);
+            var releases = serializer.DeserializeObject(response) as object[];
             if (releases == null) throw new InvalidDataException("Unexpected GitHub release response.");
             var candidates = new List<InstallerRelease>();
             foreach (object item in releases)
@@ -97,6 +100,7 @@ namespace HyperRealismInstaller
             PackInstaller.ValidateUrl(release.ExeUrl);
             PackInstaller.ValidateUrl(release.ChecksumUrl);
             string text = transfer.GetText(release.ChecksumUrl).Trim();
+            PackInstaller.CheckCancellation(transfer);
             Match match = Regex.Match(text, @"\A([0-9a-fA-F]{64})\s+\*?HyperRealism128-Installer\.exe\z", RegexOptions.CultureInvariant);
             if (!match.Success) throw new InvalidDataException("The installer checksum has an unexpected format.");
             checksum = match.Groups[1].Value;
@@ -107,7 +111,8 @@ namespace HyperRealismInstaller
             string stage = Path.Combine(dir, ".hyperrealism-update-" + Guid.NewGuid().ToString("N") + ".tmp");
             try
             {
-                transfer.Download(release.ExeUrl, stage);
+                transfer.Download(release.ExeUrl, stage, MaxInstallerBytes);
+                PackInstaller.CheckCancellation(transfer);
                 if (!String.Equals(PackInstaller.HashFile(stage), checksum, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException("Installer SHA-256 mismatch; the current installer was not changed.");
                 return stage;
