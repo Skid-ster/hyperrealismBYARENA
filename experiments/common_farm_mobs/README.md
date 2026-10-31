@@ -19,7 +19,7 @@ The source code and input hashes are in `scripts/build_*_pilot.py` and
 cold/warm biome variants, other sheep dye/coat behaviors, saddles, collars,
 armor, hostile mobs, models or animations. It is not a complete mob pack. The
 same five entity paths are now included by the main source-pack generator via
-`work/material_manifest.json`; the published Preview 21 release is unchanged.
+`work/material_manifest.json`; these five targets are included in experimental Preview 22.
 
 ## Build and try
 

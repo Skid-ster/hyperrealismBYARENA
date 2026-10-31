@@ -1,4 +1,4 @@
-# HyperRealism 512×512 — Minecraft Java 26.3 experimental Preview 21
+# HyperRealism 512×512 — Minecraft Java 26.3 experimental Preview 22
 
 This 512×512 experimental resource pack now generates **344 block texture paths**. It remains a partial pack, not a replacement for every vanilla texture; animated and cutout Nether sprites that cannot yet be safely regenerated with their exact frame/alpha data remain vanilla. The archive retains its legacy `HyperRealism128` filename for updater compatibility. Minecraft displays **HyperRealism 512×512**.
 
@@ -14,6 +14,13 @@ This 512×512 experimental resource pack now generates **344 block texture paths
 All three new scans are CC0 and their creators, provenance and SHA-256 hashes are recorded in `work/ASSET_CREDITS.md` and `work/material_manifest.json`. The current catalog covers 344 targets, not the entire 26.3 block-texture inventory. Source choices are material-informed approximations rather than exact scans of Minecraft's fictional blocks.
 
 The global PBR strength remains `0.2`; every generated target uses the same strength. Models, UVs, cutout silhouettes, block states and existing animations are unchanged. No Minecraft reference image pixels are redistributed.
+
+
+## Farm-mob texture pilot
+
+Preview 22 adds five original, experimental adult temperate entity texture targets: chicken, cow, pig, sheep skin, and the tintable sheep wool layer. The chicken receives a soft feather/down surface; the cow and pig receive distinct hide/skin treatments; sheep keeps its wool tint behavior. Their vanilla UV layouts, models, animations, and behavior are unchanged.
+
+This is a limited pilot, not full mob coverage: babies, other biome variants, equipment, collars, and hostile mobs remain vanilla. These maps have structural and atlas checks, but have **not** been validated in-game with a shader or benchmarked for performance. Entity LabPBR support varies by shader.
 
 ## Automated checks and limitations
 

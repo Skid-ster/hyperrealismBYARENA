@@ -28,7 +28,7 @@ implementation, not a port or a claim of matching its results.
 This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU.
 
-See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 344, leaving 928 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. This source-build expansion is not in published Preview 21. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
+See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 344, leaving 928 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 
 ## Download and install the experimental preview
 
@@ -73,19 +73,19 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 21 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 22 uses 512×512
 textures (the legacy `HyperRealism128` archive name is retained for updater
 compatibility), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism 512×512 Preview 21 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.21/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism 512×512 Preview 22 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.22/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 344 distinct texture paths replace only a subset of the game; the rest remain
 vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
-this revision has not yet been validated there. Grass sides now have a
+the new entity maps in this revision have not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
 photographic foliage atlas with transparency and static mipmap metadata.
 Dirt, gravel, snow, mud, dirt paths and podzol use new scanned ground maps.
@@ -128,7 +128,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.21/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.22/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
