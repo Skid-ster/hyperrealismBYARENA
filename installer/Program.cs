@@ -170,7 +170,7 @@ namespace HyperRealismInstaller
             StyleButton(toolOpen, "Folders", "folder", 96, 34, true); toolOpen.DropArrow = true;
             StyleButton(toolSettings, "Settings", "settings", 94, 34, true);
             StyleButton(toolHelp, "Help", "help", 76, 34, true); toolHelp.DropArrow = true;
-            StyleButton(toolCheck, "Check updates", "update", 116, 34, true);
+            StyleButton(toolCheck, "Check updates", "update", 136, 34, true);
             tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp); tools.Controls.Add(toolCheck);
             tooltips.SetToolTip(toolCheck, "Check for installer and resource-pack updates.");
             var brand = new Panel { Dock = DockStyle.Right, Width = 150, BackColor = Surface };
