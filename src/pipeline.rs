@@ -376,6 +376,33 @@ fn build_stage(
     fs::write(pack.join("pack.mcmeta"), metadata_json).map_err(|e| e.to_string())?;
     fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n")
         .map_err(|e| e.to_string())?;
+    let texture_root = pack.join("assets/minecraft/textures");
+    for entity in &data.entity_textures {
+        let destination = texture_root.join(format!("{}.png", entity.path));
+        let parent = destination
+            .parent()
+            .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        fs::create_dir_all(parent).map_err(|e| format!("{}: {e}", parent.display()))?;
+        let stem = entity
+            .path
+            .rsplit('/')
+            .next()
+            .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        for (source, dest) in [
+            (&entity.albedo, destination.clone()),
+            (
+                &entity.normal,
+                destination.with_file_name(format!("{stem}_n.png")),
+            ),
+            (
+                &entity.specular,
+                destination.with_file_name(format!("{stem}_s.png")),
+            ),
+        ] {
+            fs::copy(manifest::safe_file(root, source)?, &dest)
+                .map_err(|e| format!("{}: {e}", dest.display()))?;
+        }
+    }
     let materials = manifest::by_id(data);
     // Carry attribution and honest coverage information into the distributable
     // ZIP. These fields are supplied by the manifest and are not independently
@@ -393,7 +420,17 @@ fn build_stage(
         ));
     }
     fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
-    fs::write(pack.join("README.txt"), format!("HyperRealism {size}×{size} experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}×{}, not the full game. Other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible LabPBR 1.3 shader setting is needed for normal/specular maps; support for optional channels varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt for material provenance.\n", data.textures.len(), size, size)).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism {size}×{size} experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}×{}, not the full game. It also replaces {} entity texture paths; other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible LabPBR 1.3 shader setting is needed for normal/specular maps; support for optional channels and entity materials varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt and ENTITY_TEXTURES.txt for material provenance.\n", data.textures.len(), size, size, data.entity_textures.len())).map_err(|e| e.to_string())?;
+    let mut entity_credits = String::from("Entity texture targets and provenance\n\n");
+    for entity in &data.entity_textures {
+        entity_credits.push_str(&format!(
+            "Path: {}\nSource: {}\nLicense: {}\n\n",
+            entity.path,
+            entity.source.as_deref().unwrap_or("not specified"),
+            entity.license.as_deref().unwrap_or("not specified")
+        ));
+    }
+    fs::write(pack.join("ENTITY_TEXTURES.txt"), entity_credits).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
     // Keep review thumbnails small even for the 512px pack.
@@ -413,7 +450,7 @@ fn build_stage(
             images,
             root,
             size,
-            t.pbr_strength.unwrap_or(data.pbr_strength),
+            data.pbr_strength,
         )
         .map_err(|e| format!("{}: {e}", t.name))?;
         if t.connected_glass {
@@ -459,7 +496,13 @@ fn build_stage(
             }
         }
     }
-    let verified = crate::verify::pack(&pack)?;
+    let (verified, entity_verified) = crate::verify::full_pack(&pack)?;
+    if entity_verified != data.entity_textures.len() {
+        return Err(format!(
+            "entity pack verification: expected {} texture triples, got {entity_verified}",
+            data.entity_textures.len()
+        ));
+    }
     if verified != data.textures.len() {
         return Err(format!(
             "pack verification: expected {} textures, got {verified}",
@@ -472,7 +515,8 @@ fn build_stage(
         "pbr_strength": data.pbr_strength,
         "resolution": size,
         "working_resolution": WORK,
-        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "pattern_seed": t.pattern_seed, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "pbr_strength": t.pbr_strength, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "pattern_seed": t.pattern_seed, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
+        "entity_textures": data.entity_textures.iter().map(|e| serde_json::json!({"path": e.path, "albedo": e.albedo, "normal": e.normal, "specular": e.specular, "source": e.source, "license": e.license})).collect::<Vec<_>>(),
         "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "arm": m.arm, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,

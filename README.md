@@ -28,7 +28,7 @@ implementation, not a port or a claim of matching its results.
 This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU.
 
-See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,236 distinct block texture references; this prototype covers 311 of them, so complete vanilla block coverage remains a substantial staged project. The first non-block pilot is a separate [adult temperate chicken entity-texture test](experiments/chicken_adult/README.md); it is not included in the main preview pack.
+See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 344, leaving 928 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. This source-build expansion is not in published Preview 21. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 
 ## Download and install the experimental preview
 
@@ -37,7 +37,11 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and t
 The launcher's dark interface inspires this installer; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.12/HyperRealism128-Installer.exe) and double-click it. Installer 12 adds cancellable pack and installer downloads, byte-level progress, 30-second network timeouts, and 1 GiB / 100 MiB size caps. It defers declined or cancelled automatic update prompts until the next launch. The app defaults to the current user's
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.12/HyperRealism128-Installer.exe)
+and double-click it. Installer 12 adds cancellable pack and installer downloads,
+byte-level progress, 30-second network timeouts, and 1 GiB / 100 MiB size caps.
+Declined or cancelled automatic update prompts are deferred until the next launch.
+The app defaults to the current user's
 `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
 browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually
@@ -49,8 +53,14 @@ provides folder actions, **Settings** controls automatic update checks,
 **Help** opens project guidance, and **Update** checks both the pack and installer. The sidebar **Launch** asks PineconeMC to launch the instance inferred from the selected standard `instances/<instance>/minecraft/resourcepacks` folder. It uses PineconeMC's own account and game settings; it does not log in or install the game. The first time, if the launcher is not found in common install locations, select `elyprismlauncher.exe` (or the PineconeMC executable); the selection is remembered under `%LOCALAPPDATA%\HyperRealism128\pineconemc-path.txt` and can be changed in **Settings**. For custom instance directories launch directly from PineconeMC. The request starts the launcher but cannot verify Minecraft actually started. The grass block artwork is used under CC BY-SA 4.0 with [attribution](installer/assets/ATTRIBUTION.txt); other glyphs are independently drawn. Only the named preview ZIP is replaced. By default, at startup and hourly while the
 installer is open, it checks for newer installer releases and, if a pack is
 already installed in the chosen folder, for a different latest pack. It asks
-before updating. An installer update is downloaded and checksum-verified,
-then a short-lived CMD helper replaces the executable and reopens it. No checks
+before updating. A declined automatic prompt is deferred for that version until
+the next installer launch. Pack and installer downloads can be cancelled from
+the progress row without replacing the current file. Downloads show byte progress,
+use 30-second network
+timeouts, and are capped at 1 GiB for a pack and 100 MiB for the installer. An
+installer update is
+checksum-verified, then a short-lived CMD helper replaces the executable and
+reopens it. No checks
 or notifications run while the app is closed; there is no background service or
 Windows startup entry. Installer version 1 cannot update itself, so download
 version 2 once manually. The selected existing resourcepacks path is remembered
@@ -167,8 +177,10 @@ The output directory must not already contain `pack`, `dist`, or
 for another run.
 Outputs:
 
-- `pilot_output/pack/` — the starter resource pack, including metadata, material credits and
-  `assets/minecraft/textures/block/{name}.png`, `{name}_n.png`, `{name}_s.png`.
+- `pilot_output/pack/` — the starter resource pack, including metadata,
+  `MATERIAL_CREDITS.txt`, `ENTITY_TEXTURES.txt`, block-map triples under
+  `assets/minecraft/textures/block/`, and declared entity albedo/`_n`/`_s`
+  triples under `assets/minecraft/textures/entity/`.
 - `pilot_output/dist/HyperRealism128-v1.0-MC26.3.zip` — pack contents at ZIP root.
 - `pilot_output/contact_sheet.png` — the albedo examples in manifest order,
   four tiles per row (outside the pack).
@@ -219,6 +231,13 @@ resolved inside the manifest's directory and must not escape it:
   "textures": [
     {"name":"iron_block", "material":"base", "recipe":"metal",
      "tint":[210,210,210], "f0":230, "porosity":0, "emissive":255}
+  ],
+  "entity_textures": [
+    {"path":"entity/chicken/chicken_temperate",
+     "albedo":"entity_textures/chicken_temperate.png",
+     "normal":"entity_textures/chicken_temperate_n.png",
+     "specular":"entity_textures/chicken_temperate_s.png",
+     "source":"original procedural artwork", "license":"not separately licensed"}
   ]
 }
 ```
@@ -273,6 +292,15 @@ encoded as 0–254 (black means zero emission); it cannot be combined with a
 non-default `emissive`. The 255 sentinel means emission is disabled. Per-pixel
 map paths use the same validation and SHA-256 reporting as material maps.
 
+`entity_textures` is optional. Each entry copies an existing entity atlas and
+its LabPBR normal/specular maps without resampling or changing the model or UVs.
+The `path` is relative to `assets/minecraft/textures/`, has no `.png` suffix,
+and must stay under `entity/`; the builder writes `_n` and `_s` siblings. All
+three source PNGs must be aligned 8-bit RGBA images with identical dimensions.
+This path is a direct-map integration, not generated from block materials.
+Entity `source` and `license` strings are recorded, not independently verified;
+entity animation metadata and in-game/shader appearance are not validated.
+
 LabPBR `_n` channels are DirectX tangent-space X/Y, ambient occlusion and
 height; `_s` channels are `1 - sqrt(roughness)`, F0/metal ID, porosity/SSS,
 and emission. Height output is clamped to a minimum byte value of 1 to avoid
@@ -292,10 +320,13 @@ used prepared material is cached. Albedo and normal PNGs currently use 8-bit
 precision; color profiles and EXR/TIFF are not supported. The ZIP currently
 uses the standard uncompressed/store method, not deflate.
 
-Each generated pack is checked before packaging for consistently sized 128×128 or 512×512 RGBA texture
-triples, version metadata, plausible normal XY, nonzero POM height, reserved
-material IDs, and metal blue-channel rules. You can rerun these structural
-checks on an unpacked generated pack:
+Each generated pack is checked before packaging for consistently sized
+128×128 or 512×512 block-map triples and aligned 8-bit RGBA entity atlas
+triples (entity atlas aspect ratios are preserved), version metadata, plausible
+normal XY, nonzero POM height, reserved material IDs, and metal blue-channel
+rules. The standalone `--verify-pack` check also scans nested entity paths and
+rejects missing or mismatched sidecars. You can rerun these structural checks
+on an unpacked generated pack:
 
 ```powershell
 cargo run --locked --release -- --verify-pack pilot_output/pack

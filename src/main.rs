@@ -56,9 +56,9 @@ fn run() -> Result<(), String> {
         }
     }
     if let Some(path) = verify_pack {
-        let count = hyperrealism_core::verify::pack(&path)?;
+        let (block_count, entity_count) = hyperrealism_core::verify::full_pack(&path)?;
         println!(
-            "Verified {count} LabPBR texture triples in {} (visual/shader testing still required)",
+            "Verified {block_count} block and {entity_count} entity LabPBR texture triples in {} (visual/shader testing still required)",
             path.display()
         );
         return Ok(());

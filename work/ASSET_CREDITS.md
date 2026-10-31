@@ -1,6 +1,24 @@
 # Bundled material sources
 
-Most maps are **CC0-1.0** scans from Poly Haven, ambientCG, TextureCan and
+## Original procedural entity pilot maps
+
+The source manifest now also declares five original procedural entity texture
+triples for the **adult temperate chicken and cow, adult temperate pig, and the
+sheep base plus its tintable wool overlay**. The recipes are implemented in
+`scripts/build_chicken_adult_pilot.py` and
+`scripts/build_common_mob_pilot.py`; they use no scanned image sources or
+Minecraft color pixels. Their alpha/UV atlas spans were recorded to preserve
+vanilla 26.3 mapping only. Chicken/cow/pig are 512×512, sheep base/wool are
+512×256; albedo, normal and specular maps are aligned. Provenance is marked as
+project-created procedural artwork in `work/material_manifest.json`; the
+repository does not currently declare a separate license for this original
+artwork. Other mob variants, babies, equipment overlays and hostile mobs remain
+vanilla. Entity PBR rendering depends on shader support and has not yet been
+validated in game.
+
+## Scanned block-material sources
+
+Most block maps are **CC0-1.0** scans from Poly Haven, ambientCG, TextureCan and
 other cited providers. Their files are provided solely as a compact,
 reproducible starter set for the in-progress
 resource-pack generator. Poly Haven's asset license permits redistribution:

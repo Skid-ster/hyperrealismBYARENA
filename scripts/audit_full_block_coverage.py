@@ -75,6 +75,11 @@ def model_textures(model_id: str, index: dict[str, Path], memo: dict[str, dict[s
         for key, value in own.items():
             if isinstance(value, str):
                 textures[key] = value
+            elif isinstance(value, dict) and isinstance(value.get("sprite"), str):
+                # Minecraft 26.3 metadata can wrap a sprite with rendering
+                # hints such as force_translucent. The audit follows the sprite
+                # path while leaving those model/render properties untouched.
+                textures[key] = value["sprite"]
     visiting.remove(model_id)
     memo[model_id] = textures
     return textures

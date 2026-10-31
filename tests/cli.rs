@@ -32,9 +32,34 @@ fn cpu_end_to_end_and_reproducibility() {
     for name in ["diffuse.png", "normal.png", "roughness.png"] {
         fs::copy(Path::new("test_assets").join(name), input.join(name)).unwrap();
     }
+    let entity_width = 128;
+    let entity_height = 64;
+    let entity_pixels = entity_width * entity_height;
+    hyperrealism_core::png_io::write(
+        &input.join("entity.png"),
+        entity_width,
+        entity_height,
+        &[180, 110, 75, 255].repeat(entity_pixels),
+    )
+    .unwrap();
+    hyperrealism_core::png_io::write(
+        &input.join("entity_normal.png"),
+        entity_width,
+        entity_height,
+        &[128, 128, 0, 255].repeat(entity_pixels),
+    )
+    .unwrap();
+    hyperrealism_core::png_io::write(
+        &input.join("entity_specular.png"),
+        entity_width,
+        entity_height,
+        &[128, 40, 0, 255].repeat(entity_pixels),
+    )
+    .unwrap();
     fs::write(input.join("material_manifest.json"),r#"{
       "version":1,"materials":[{"id":"test","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],
-      "textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}]
+      "textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}],
+      "entity_textures":[{"path":"entity/test/test","albedo":"entity.png","normal":"entity_normal.png","specular":"entity_specular.png","source":"test source","license":"test license"}]
     }"#).unwrap();
     let out1 = temp.join("first");
     let out2 = temp.join("second");
@@ -73,6 +98,49 @@ fn cpu_end_to_end_and_reproducibility() {
     );
     let pack_readme = fs::read_to_string(out1.join("pack/README.txt")).unwrap();
     assert!(pack_readme.contains("replaces 1 block textures"));
+    assert!(pack_readme.contains("replaces 1 entity texture paths"));
+    let entity_root = out1.join("pack/assets/minecraft/textures/entity/test");
+    assert_eq!(
+        fs::read(entity_root.join("test.png")).unwrap(),
+        fs::read(input.join("entity.png")).unwrap()
+    );
+    assert_eq!(
+        fs::read(entity_root.join("test_n.png")).unwrap(),
+        fs::read(input.join("entity_normal.png")).unwrap()
+    );
+    assert_eq!(
+        fs::read(entity_root.join("test_s.png")).unwrap(),
+        fs::read(input.join("entity_specular.png")).unwrap()
+    );
+    let entity_image = hyperrealism_core::png_io::read(&entity_root.join("test.png")).unwrap();
+    assert_eq!(
+        (entity_image.width, entity_image.height),
+        (entity_width, entity_height)
+    );
+    let verify = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--verify-pack")
+        .arg(out1.join("pack"))
+        .output()
+        .unwrap();
+    assert!(
+        verify.status.success(),
+        "{}",
+        String::from_utf8_lossy(&verify.stderr)
+    );
+    assert!(String::from_utf8_lossy(&verify.stdout).contains("1 entity LabPBR"));
+    let incomplete = temp.join("incomplete-entity-pack");
+    let incomplete_root = incomplete.join("assets/minecraft/textures/entity/test");
+    fs::create_dir_all(&incomplete_root).unwrap();
+    fs::copy(entity_root.join("test.png"), incomplete_root.join("test.png")).unwrap();
+    fs::copy(
+        entity_root.join("test_n.png"),
+        incomplete_root.join("test_n.png"),
+    )
+    .unwrap();
+    assert!(hyperrealism_core::verify::entity_pack(&incomplete).is_err());
+    let entity_credits = fs::read_to_string(out1.join("pack/ENTITY_TEXTURES.txt")).unwrap();
+    assert!(entity_credits.contains("Path: entity/test/test"));
+    assert!(entity_credits.contains("License: test license"));
     let credits = fs::read_to_string(out1.join("pack/MATERIAL_CREDITS.txt")).unwrap();
     assert!(credits.contains("Material: test"));
     assert!(credits.contains("not specified"));
@@ -365,7 +433,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let m = hyperrealism_core::manifest::read(&root.join("material_manifest.json")).unwrap();
     hyperrealism_core::manifest::validate(&m, root).unwrap();
     let hashes = hyperrealism_core::manifest::input_hashes(&m, root).unwrap();
-    assert_eq!(hashes.len(), 155);
+    assert_eq!(hashes.len(), 170);
     let leaf_material = m
         .materials
         .iter()
@@ -393,6 +461,24 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
     assert_eq!(m.textures.len(), 344);
+    let mut entity_paths: Vec<_> = m.entity_textures.iter().map(|entity| entity.path.as_str()).collect();
+    entity_paths.sort_unstable();
+    assert_eq!(
+        entity_paths,
+        vec![
+            "entity/chicken/chicken_temperate",
+            "entity/cow/cow_temperate",
+            "entity/pig/pig_temperate",
+            "entity/sheep/sheep",
+            "entity/sheep/sheep_wool",
+        ]
+    );
+    assert!(m.entity_textures.iter().all(|entity| {
+        entity.source.as_deref().unwrap_or_default().contains("Original procedural")
+            && [entity.albedo.as_str(), entity.normal.as_str(), entity.specular.as_str()]
+                .iter()
+                .all(|path| hashes.contains_key(*path))
+    }));
     let glass: Vec<_> = m
         .textures
         .iter()
@@ -407,7 +493,6 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         assert_eq!(texture.target_color, Some(slightly_darker), "{}", texture.name);
     }
     assert!((m.pbr_strength - 0.2).abs() < 1e-6);
-    assert!(m.textures.iter().all(|t| t.pbr_strength.is_none()));
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     for wood in [
         "acacia",
@@ -453,7 +538,6 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         })
         .collect();
     assert_eq!(toggled.len(), 55);
-    assert!(toggled.iter().all(|t| t.pbr_strength.is_none()));
     let lever = toggled.iter().find(|t| t.name == "lever").unwrap();
     assert_eq!(lever.material, "oak_veneer_02_vertical");
     assert_eq!(lever.target_color, Some([111, 93, 67]));
@@ -707,10 +791,18 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
     let summary = &catalog["summary"];
     assert_eq!(summary["blockstates"], 1290);
     assert_eq!(summary["block_model_files"], 2885);
-    assert_eq!(summary["unique_block_texture_references"], 1236);
-    assert_eq!(summary["currently_covered_block_texture_references"], 311);
-    assert_eq!(summary["uncovered_block_texture_references"], 925);
+    assert_eq!(summary["unique_block_texture_references"], 1272);
+    assert_eq!(summary["currently_covered_block_texture_references"], 344);
+    assert_eq!(summary["uncovered_block_texture_references"], 928);
     assert_eq!(summary["states_with_uncovered_textures"], 644);
+    assert!(summary["metadata_resolution_problems"]
+        .as_array()
+        .unwrap()
+        .is_empty());
+    assert!(summary["block_texture_references_not_referenced_by_any_blockstate"]
+        .as_array()
+        .unwrap()
+        .is_empty());
 
     let states = catalog["blockstates"].as_object().unwrap();
     assert_eq!(states.len(), 1290);
@@ -722,7 +814,21 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
             "{block}: uncovered list must be a subset of the block texture references"
         );
     }
-    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 925);
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 928);
+    let covered: std::collections::HashSet<&str> = catalog["covered_block_textures"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|name| name.as_str().unwrap())
+        .collect();
+    for sprite in [
+        "glass",
+        "glass_pane_top",
+        "black_stained_glass",
+        "black_stained_glass_pane_top",
+    ] {
+        assert!(covered.contains(sprite), "26.3 sprite metadata missed {sprite}");
+    }
 }
 
 #[test]
@@ -1509,7 +1615,8 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
     let (full_s, soft_s) = (pixel("full", "_s"), pixel("soft", "_s"));
     assert!((i32::from(soft_s[0]) - (f32::from(full_s[0]) * 0.4).round() as i32).abs() <= 1);
     assert_eq!(&full_s[1..], &soft_s[1..]);
-    // A texture-level override must affect only its PBR channels.
+    // Per-texture overrides are forbidden: every block must use the same
+    // manifest-wide strength, so adding this unknown field must be rejected.
     m["pbr_strength"] = 0.4.into();
     m["textures"][0]["pbr_strength"] = 0.65.into();
     fs::write(
@@ -1517,19 +1624,11 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
         serde_json::to_vec(&m).unwrap(),
     )
     .unwrap();
-    let result = run(&temp, &temp.join("override"), "2");
-    assert!(
-        result.status.success(),
-        "{}",
-        String::from_utf8_lossy(&result.stderr)
-    );
-    assert_eq!(pixel("override", ""), pixel("soft", ""));
-    let over = pixel("override", "_n");
-    assert!(slope(&over) > slope(&soft) && slope(&over) < slope(&full));
-    let over_s = pixel("override", "_s");
-    assert!(over_s[0] > soft_s[0] && over_s[0] < full_s[0]);
-    assert_eq!(&over_s[1..], &soft_s[1..]);
-    m["textures"][0]["pbr_strength"] = serde_json::Value::Null;
+    assert!(!run(&temp, &temp.join("override"), "2").status.success());
+    m["textures"][0]
+        .as_object_mut()
+        .unwrap()
+        .remove("pbr_strength");
     for invalid in [-0.1, 1.1] {
         m["pbr_strength"] = invalid.into();
         fs::write(
@@ -1539,16 +1638,6 @@ fn pbr_strength_softens_relief_ao_and_gloss_without_changing_color_or_ids() {
         .unwrap();
         assert!(!run(&temp, &temp.join("invalid"), "2").status.success());
     }
-    m["pbr_strength"] = 0.4.into();
-    m["textures"][0]["pbr_strength"] = 1.1.into();
-    fs::write(
-        temp.join("material_manifest.json"),
-        serde_json::to_vec(&m).unwrap(),
-    )
-    .unwrap();
-    assert!(!run(&temp, &temp.join("invalid_override"), "2")
-        .status
-        .success());
     fs::remove_dir_all(temp).unwrap();
 }
 

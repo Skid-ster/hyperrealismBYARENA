@@ -1313,7 +1313,9 @@
       ]
     },
     "black_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "black_stained_glass"
+      ],
       "models": [
         "minecraft:block/black_stained_glass"
       ],
@@ -1321,7 +1323,10 @@
       "uncovered_block_textures": []
     },
     "black_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "black_stained_glass",
+        "black_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/black_stained_glass_pane_noside",
         "minecraft:block/black_stained_glass_pane_noside_alt",
@@ -1639,7 +1644,9 @@
       ]
     },
     "blue_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "blue_stained_glass"
+      ],
       "models": [
         "minecraft:block/blue_stained_glass"
       ],
@@ -1647,7 +1654,10 @@
       "uncovered_block_textures": []
     },
     "blue_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "blue_stained_glass",
+        "blue_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/blue_stained_glass_pane_noside",
         "minecraft:block/blue_stained_glass_pane_noside_alt",
@@ -2041,7 +2051,9 @@
       ]
     },
     "brown_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "brown_stained_glass"
+      ],
       "models": [
         "minecraft:block/brown_stained_glass"
       ],
@@ -2049,7 +2061,10 @@
       "uncovered_block_textures": []
     },
     "brown_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "brown_stained_glass",
+        "brown_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/brown_stained_glass_pane_noside",
         "minecraft:block/brown_stained_glass_pane_noside_alt",
@@ -4175,7 +4190,9 @@
       ]
     },
     "cyan_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "cyan_stained_glass"
+      ],
       "models": [
         "minecraft:block/cyan_stained_glass"
       ],
@@ -4183,7 +4200,10 @@
       "uncovered_block_textures": []
     },
     "cyan_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "cyan_stained_glass",
+        "cyan_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/cyan_stained_glass_pane_noside",
         "minecraft:block/cyan_stained_glass_pane_noside_alt",
@@ -5875,7 +5895,9 @@
       "uncovered_block_textures": []
     },
     "glass": {
-      "block_textures": [],
+      "block_textures": [
+        "glass"
+      ],
       "models": [
         "minecraft:block/glass"
       ],
@@ -5883,7 +5905,10 @@
       "uncovered_block_textures": []
     },
     "glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "glass",
+        "glass_pane_top"
+      ],
       "models": [
         "minecraft:block/glass_pane_noside",
         "minecraft:block/glass_pane_noside_alt",
@@ -6198,7 +6223,9 @@
       ]
     },
     "gray_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "gray_stained_glass"
+      ],
       "models": [
         "minecraft:block/gray_stained_glass"
       ],
@@ -6206,7 +6233,10 @@
       "uncovered_block_textures": []
     },
     "gray_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "gray_stained_glass",
+        "gray_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/gray_stained_glass_pane_noside",
         "minecraft:block/gray_stained_glass_pane_noside_alt",
@@ -6432,7 +6462,9 @@
       ]
     },
     "green_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "green_stained_glass"
+      ],
       "models": [
         "minecraft:block/green_stained_glass"
       ],
@@ -6440,7 +6472,10 @@
       "uncovered_block_textures": []
     },
     "green_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "green_stained_glass",
+        "green_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/green_stained_glass_pane_noside",
         "minecraft:block/green_stained_glass_pane_noside_alt",
@@ -7504,7 +7539,9 @@
       ]
     },
     "light_blue_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "light_blue_stained_glass"
+      ],
       "models": [
         "minecraft:block/light_blue_stained_glass"
       ],
@@ -7512,7 +7549,10 @@
       "uncovered_block_textures": []
     },
     "light_blue_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "light_blue_stained_glass",
+        "light_blue_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/light_blue_stained_glass_pane_noside",
         "minecraft:block/light_blue_stained_glass_pane_noside_alt",
@@ -7738,7 +7778,9 @@
       ]
     },
     "light_gray_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "light_gray_stained_glass"
+      ],
       "models": [
         "minecraft:block/light_gray_stained_glass"
       ],
@@ -7746,7 +7788,10 @@
       "uncovered_block_textures": []
     },
     "light_gray_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "light_gray_stained_glass",
+        "light_gray_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/light_gray_stained_glass_pane_noside",
         "minecraft:block/light_gray_stained_glass_pane_noside_alt",
@@ -8039,7 +8084,9 @@
       ]
     },
     "lime_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "lime_stained_glass"
+      ],
       "models": [
         "minecraft:block/lime_stained_glass"
       ],
@@ -8047,7 +8094,10 @@
       "uncovered_block_textures": []
     },
     "lime_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "lime_stained_glass",
+        "lime_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/lime_stained_glass_pane_noside",
         "minecraft:block/lime_stained_glass_pane_noside_alt",
@@ -8305,7 +8355,9 @@
       ]
     },
     "magenta_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "magenta_stained_glass"
+      ],
       "models": [
         "minecraft:block/magenta_stained_glass"
       ],
@@ -8313,7 +8365,10 @@
       "uncovered_block_textures": []
     },
     "magenta_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "magenta_stained_glass",
+        "magenta_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/magenta_stained_glass_pane_noside",
         "minecraft:block/magenta_stained_glass_pane_noside_alt",
@@ -9555,7 +9610,9 @@
       ]
     },
     "orange_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "orange_stained_glass"
+      ],
       "models": [
         "minecraft:block/orange_stained_glass"
       ],
@@ -9563,7 +9620,10 @@
       "uncovered_block_textures": []
     },
     "orange_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "orange_stained_glass",
+        "orange_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/orange_stained_glass_pane_noside",
         "minecraft:block/orange_stained_glass_pane_noside_alt",
@@ -10397,7 +10457,9 @@
       ]
     },
     "pink_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "pink_stained_glass"
+      ],
       "models": [
         "minecraft:block/pink_stained_glass"
       ],
@@ -10405,7 +10467,10 @@
       "uncovered_block_textures": []
     },
     "pink_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "pink_stained_glass",
+        "pink_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/pink_stained_glass_pane_noside",
         "minecraft:block/pink_stained_glass_pane_noside_alt",
@@ -12288,7 +12353,9 @@
       ]
     },
     "purple_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "purple_stained_glass"
+      ],
       "models": [
         "minecraft:block/purple_stained_glass"
       ],
@@ -12296,7 +12363,10 @@
       "uncovered_block_textures": []
     },
     "purple_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "purple_stained_glass",
+        "purple_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/purple_stained_glass_pane_noside",
         "minecraft:block/purple_stained_glass_pane_noside_alt",
@@ -12848,7 +12918,9 @@
       ]
     },
     "red_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "red_stained_glass"
+      ],
       "models": [
         "minecraft:block/red_stained_glass"
       ],
@@ -12856,7 +12928,10 @@
       "uncovered_block_textures": []
     },
     "red_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "red_stained_glass",
+        "red_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/red_stained_glass_pane_noside",
         "minecraft:block/red_stained_glass_pane_noside_alt",
@@ -13002,7 +13077,10 @@
     },
     "redstone_wire": {
       "block_textures": [
-        "redstone_dust_dot"
+        "redstone_dust_dot",
+        "redstone_dust_line0",
+        "redstone_dust_line1",
+        "redstone_dust_overlay"
       ],
       "models": [
         "minecraft:block/redstone_dust_dot",
@@ -13014,7 +13092,10 @@
       ],
       "other_textures": [],
       "uncovered_block_textures": [
-        "redstone_dust_dot"
+        "redstone_dust_dot",
+        "redstone_dust_line0",
+        "redstone_dust_line1",
+        "redstone_dust_overlay"
       ]
     },
     "reinforced_deepslate": {
@@ -16948,7 +17029,9 @@
       ]
     },
     "white_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "white_stained_glass"
+      ],
       "models": [
         "minecraft:block/white_stained_glass"
       ],
@@ -16956,7 +17039,10 @@
       "uncovered_block_textures": []
     },
     "white_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "white_stained_glass",
+        "white_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/white_stained_glass_pane_noside",
         "minecraft:block/white_stained_glass_pane_noside_alt",
@@ -17255,7 +17341,9 @@
       ]
     },
     "yellow_stained_glass": {
-      "block_textures": [],
+      "block_textures": [
+        "yellow_stained_glass"
+      ],
       "models": [
         "minecraft:block/yellow_stained_glass"
       ],
@@ -17263,7 +17351,10 @@
       "uncovered_block_textures": []
     },
     "yellow_stained_glass_pane": {
-      "block_textures": [],
+      "block_textures": [
+        "yellow_stained_glass",
+        "yellow_stained_glass_pane_top"
+      ],
       "models": [
         "minecraft:block/yellow_stained_glass_pane_noside",
         "minecraft:block/yellow_stained_glass_pane_noside_alt",
@@ -17379,17 +17470,23 @@
     "birch_trapdoor",
     "black_concrete",
     "black_concrete_powder",
+    "black_stained_glass",
+    "black_stained_glass_pane_top",
     "black_terracotta",
     "black_wool",
     "blackstone",
     "blackstone_top",
     "blue_concrete",
     "blue_concrete_powder",
+    "blue_stained_glass",
+    "blue_stained_glass_pane_top",
     "blue_terracotta",
     "blue_wool",
     "bricks",
     "brown_concrete",
     "brown_concrete_powder",
+    "brown_stained_glass",
+    "brown_stained_glass_pane_top",
     "brown_terracotta",
     "brown_wool",
     "calcite",
@@ -17430,6 +17527,8 @@
     "cut_sandstone",
     "cyan_concrete",
     "cyan_concrete_powder",
+    "cyan_stained_glass",
+    "cyan_stained_glass_pane_top",
     "cyan_terracotta",
     "cyan_wool",
     "dark_oak_door_bottom",
@@ -17466,6 +17565,7 @@
     "exposed_copper_trapdoor",
     "gilded_blackstone",
     "glass",
+    "glass_pane_top",
     "glowstone",
     "gold_ore",
     "granite",
@@ -17475,10 +17575,14 @@
     "gravel",
     "gray_concrete",
     "gray_concrete_powder",
+    "gray_stained_glass",
+    "gray_stained_glass_pane_top",
     "gray_terracotta",
     "gray_wool",
     "green_concrete",
     "green_concrete_powder",
+    "green_stained_glass",
+    "green_stained_glass_pane_top",
     "green_terracotta",
     "green_wool",
     "iron_bars",
@@ -17498,18 +17602,26 @@
     "lever",
     "light_blue_concrete",
     "light_blue_concrete_powder",
+    "light_blue_stained_glass",
+    "light_blue_stained_glass_pane_top",
     "light_blue_terracotta",
     "light_blue_wool",
     "light_gray_concrete",
     "light_gray_concrete_powder",
+    "light_gray_stained_glass",
+    "light_gray_stained_glass_pane_top",
     "light_gray_terracotta",
     "light_gray_wool",
     "lime_concrete",
     "lime_concrete_powder",
+    "lime_stained_glass",
+    "lime_stained_glass_pane_top",
     "lime_terracotta",
     "lime_wool",
     "magenta_concrete",
     "magenta_concrete_powder",
+    "magenta_stained_glass",
+    "magenta_stained_glass_pane_top",
     "magenta_terracotta",
     "magenta_wool",
     "mangrove_door_bottom",
@@ -17538,6 +17650,8 @@
     "obsidian",
     "orange_concrete",
     "orange_concrete_powder",
+    "orange_stained_glass",
+    "orange_stained_glass_pane_top",
     "orange_terracotta",
     "orange_wool",
     "oxidized_copper",
@@ -17554,6 +17668,8 @@
     "pale_oak_trapdoor",
     "pink_concrete",
     "pink_concrete_powder",
+    "pink_stained_glass",
+    "pink_stained_glass_pane_top",
     "pink_terracotta",
     "pink_wool",
     "podzol_top",
@@ -17573,6 +17689,8 @@
     "poplar_trapdoor",
     "purple_concrete",
     "purple_concrete_powder",
+    "purple_stained_glass",
+    "purple_stained_glass_pane_top",
     "purple_terracotta",
     "purple_wool",
     "quartz_block_bottom",
@@ -17588,6 +17706,8 @@
     "red_sandstone",
     "red_sandstone_bottom",
     "red_sandstone_top",
+    "red_stained_glass",
+    "red_stained_glass_pane_top",
     "red_terracotta",
     "red_wool",
     "redstone_ore",
@@ -17655,10 +17775,14 @@
     "weathered_copper_trapdoor",
     "white_concrete",
     "white_concrete_powder",
+    "white_stained_glass",
+    "white_stained_glass_pane_top",
     "white_terracotta",
     "white_wool",
     "yellow_concrete",
     "yellow_concrete_powder",
+    "yellow_stained_glass",
+    "yellow_stained_glass_pane_top",
     "yellow_terracotta",
     "yellow_wool"
   ],
@@ -17667,50 +17791,13 @@
   "source_commit": "6c088630459d8ca369ef0d6c07636d7d63a3b0f1",
   "summary": {
     "block_model_files": 2885,
-    "block_texture_references_not_referenced_by_any_blockstate": [
-      "black_stained_glass",
-      "black_stained_glass_pane_top",
-      "blue_stained_glass",
-      "blue_stained_glass_pane_top",
-      "brown_stained_glass",
-      "brown_stained_glass_pane_top",
-      "cyan_stained_glass",
-      "cyan_stained_glass_pane_top",
-      "glass_pane_top",
-      "gray_stained_glass",
-      "gray_stained_glass_pane_top",
-      "green_stained_glass",
-      "green_stained_glass_pane_top",
-      "light_blue_stained_glass",
-      "light_blue_stained_glass_pane_top",
-      "light_gray_stained_glass",
-      "light_gray_stained_glass_pane_top",
-      "lime_stained_glass",
-      "lime_stained_glass_pane_top",
-      "magenta_stained_glass",
-      "magenta_stained_glass_pane_top",
-      "orange_stained_glass",
-      "orange_stained_glass_pane_top",
-      "pink_stained_glass",
-      "pink_stained_glass_pane_top",
-      "purple_stained_glass",
-      "purple_stained_glass_pane_top",
-      "red_stained_glass",
-      "red_stained_glass_pane_top",
-      "white_stained_glass",
-      "white_stained_glass_pane_top",
-      "yellow_stained_glass",
-      "yellow_stained_glass_pane_top"
-    ],
+    "block_texture_references_not_referenced_by_any_blockstate": [],
     "blockstates": 1290,
-    "currently_covered_block_texture_references": 311,
-    "metadata_resolution_problems": [
-      "unresolved texture variable: #all",
-      "unresolved texture variable: #pane"
-    ],
+    "currently_covered_block_texture_references": 344,
+    "metadata_resolution_problems": [],
     "states_with_uncovered_textures": 644,
-    "uncovered_block_texture_references": 925,
-    "unique_block_texture_references": 1236
+    "uncovered_block_texture_references": 928,
+    "unique_block_texture_references": 1272
   },
   "uncovered_block_textures": [
     "acacia_hanging_sign",
@@ -18380,6 +18467,9 @@
     "red_tulip",
     "redstone_block",
     "redstone_dust_dot",
+    "redstone_dust_line0",
+    "redstone_dust_line1",
+    "redstone_dust_overlay",
     "redstone_lamp",
     "redstone_lamp_on",
     "redstone_torch",
