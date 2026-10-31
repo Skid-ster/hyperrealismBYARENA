@@ -12,30 +12,10 @@ jobs:
             & ./installer/build.ps1 *> "$env:RUNNER_TEMP\installer-build.log"
             if ($LASTEXITCODE -ne 0) { throw "Installer build failed with exit code $LASTEXITCODE" }
           } catch {
-            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Output "::error::$($_)" }
-            Write-Output "::error::$($_.Exception.Message)"
-            "## Installer build diagnostics`n" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
-            Get-Content "$env:RUNNER_TEMP\installer-build.log" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Host "::error::$($_)" }
+            Write-Host "::error::$($_.Exception.Message)"
             exit 1
           }
-      - name: Encode installer build log for diagnosis
-        id: encode-build-log
-        if: failure()
-        shell: powershell
-        run: |
-          $logPath = Join-Path $env:RUNNER_TEMP 'installer-build.log'
-          $logText = if (Test-Path -LiteralPath $logPath) { Get-Content -LiteralPath $logPath -Raw } else { 'Build log was not produced.' }
-          $diagnostic = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($logText)).Replace('+', '-').Replace('/', '_').TrimEnd('=')
-          if ($diagnostic.Length -gt 220) { $diagnostic = $diagnostic.Substring(0, 220) }
-          [IO.File]::AppendAllText($env:GITHUB_OUTPUT, "encoded=$diagnostic`n", [System.Text.UTF8Encoding]::new($false))
-      - name: Upload installer build log on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: installer-build-log-${{ steps.encode-build-log.outputs.encoded }}
-          path: ${{ runner.temp }}/installer-build.log
-          if-no-files-found: warn
-          retention-days: 7
       - name: Test live download to temporary folder
         if: github.event_name == 'push'
         shell: powershell
