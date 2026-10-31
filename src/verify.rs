@@ -77,8 +77,8 @@ pub fn pack(root: &Path) -> Result<usize, String> {
     let first_path = block.join(format!("{}.png", base[0]));
     let first = png_io::read(&first_path)?;
     let size = first.width;
-    if (size != 128 && size != 512) || first.height != size {
-        return Err("pack resolution must be 128x128 or 512x512".into());
+    if (size != 128 && size != 256 && size != 512) || first.height != size {
+        return Err("pack resolution must be 128x128, 256x256, or 512x512".into());
     }
     drop(first);
     for name in &base {
@@ -132,6 +132,12 @@ fn verify_entity_triple(texture_root: &Path, stem: &str) -> Result<(), String> {
     let color = png_io::read(&color_path)?;
     let width = color.width;
     let height = color.height;
+    if ![128, 256, 512].contains(&width) || height * 2 != width {
+        return Err(format!(
+            "{}: entity atlas must be 128x64, 256x128, or 512x256 to preserve vanilla UVs",
+            color_path.display()
+        ));
+    }
     let color = rgba_dimensions(&color_path, width, height)?;
     let normal_path = texture_root.join(format!("{stem}_n.png"));
     let specular_path = texture_root.join(format!("{stem}_s.png"));

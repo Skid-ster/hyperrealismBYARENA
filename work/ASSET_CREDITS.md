@@ -92,7 +92,7 @@ used to derive normals; roughness is the generator's default, not a scanned
 roughness map. Edge blending can blur individual stones, and these tiles still
 need in-game review.
 
-The 349 texture names and approximate sRGB color targets were checked against
+The 352 texture names and approximate sRGB color targets were checked against
 an independently maintained [Minecraft 26.3 asset inventory](https://github.com/InventivetalentDev/minecraft-assets/tree/6c088630459d8ca369ef0d6c07636d7d63a3b0f1/assets/minecraft/textures/block),
 with source commit and PNG blob IDs recorded in
 `catalog/vanilla_26.3_audit.json`. No vanilla image data is bundled. These
@@ -333,14 +333,16 @@ fit still needs in-game review.
 
 ### Current development branch: copper block coverage
 
-Five static copper paths were added: `copper_block`, `cut_copper`, and the
-exposed, weathered and oxidized `cut_copper` variants. They reuse the existing
-CC0 Poly Haven `Metal Plate 02` and `Rusted Shutter` scan inputs; no new source
-art was copied. Their target RGB averages and Git blob IDs are recorded in the
-pinned 26.3 audit catalog. The `metal_cut` recipe adds periodic 4×4 panel seams
-and restrained recessed relief while retaining the existing block models, UVs
-and states. Opaque source pixels are used only locally to calculate mean colors;
-no vanilla artwork is packed or committed. Automated checks verify the mapping,
-source licenses, recipe periodicity and coverage counts. This branch increases
-coverage to 349 of 1,272 paths (923 remain); Minecraft/shader appearance has not
-been visually validated.
+Five static copper paths were added: `copper_block`, `cut_copper`, and its
+exposed, weathered and oxidized variants. Three raw-ore blocks (`raw_copper_block`,
+`raw_gold_block`, `raw_iron_block`) use the existing CC0 Poly Haven Rock Face 03
+scan and deterministic ore recipe. Copper reuses the project's CC0 Poly Haven
+`Metal Plate 02` and `Rusted Shutter` scans; no new source art was copied. Target
+RGB averages and Git blob IDs are recorded in the pinned 26.3 audit catalog.
+The `metal_cut` recipe adds periodic 4×4 panel seams and restrained recessed
+relief without changing models, UVs or states. Vanilla pixels were used only
+locally to calculate average-color hints; no game art is packed or committed.
+The current development build defaults to 256×256 block maps and 256×128 entity
+atlases. Automated tests verify the mapping, source licensing, seam periodicity,
+UV aspect ratios and coverage counts. Coverage is 352 of 1,272 paths (920 remain);
+Minecraft/shader appearance has not been visually validated.

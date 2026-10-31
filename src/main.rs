@@ -12,7 +12,7 @@ fn run() -> Result<(), String> {
     let mut threads = None;
     let mut minecraft_jar = None;
     let mut verify_pack = None;
-    let mut size = 512usize;
+    let mut size = 256usize;
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--input" => input = PathBuf::from(args.next().ok_or("--input requires a path")?),
@@ -30,12 +30,12 @@ fn run() -> Result<(), String> {
                 ))
             }
             "--resolution" => {
-                let value = args.next().ok_or("--resolution requires 128 or 512")?;
+                let value = args.next().ok_or("--resolution requires 128, 256, or 512")?;
                 size = value
                     .parse()
-                    .map_err(|_| "--resolution requires 128 or 512")?;
-                if size != 128 && size != 512 {
-                    return Err("--resolution requires 128 or 512".into());
+                    .map_err(|_| "--resolution requires 128, 256, or 512")?;
+                if size != 128 && size != 256 && size != 512 {
+                    return Err("--resolution requires 128, 256, or 512".into());
                 }
             }
             "--threads" => {
@@ -49,7 +49,7 @@ fn run() -> Result<(), String> {
                 threads = Some(count);
             }
             "--help" | "-h" => {
-                println!("HyperRealism CPU prototype\n\nUsage: hyperrealism-core [--input MANIFEST_OR_DIR] [--output DIR] [--cpu-only] [--threads N] [--resolution 128|512] [--minecraft-jar CLIENT_JAR] [--verify-pack PACK_DIR]\n\nThe input directory must contain material_manifest.json. This prototype supports CPU execution only and does not yet generate the full catalog.");
+                println!("HyperRealism CPU prototype\n\nUsage: hyperrealism-core [--input MANIFEST_OR_DIR] [--output DIR] [--cpu-only] [--threads N] [--resolution 128|256|512] [--minecraft-jar CLIENT_JAR] [--verify-pack PACK_DIR]\n\nThe input directory must contain material_manifest.json. This prototype supports CPU execution only and does not yet generate the full catalog.");
                 return Ok(());
             }
             _ => return Err(format!("unknown option: {arg}; use --help")),

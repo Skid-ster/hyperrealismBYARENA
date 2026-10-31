@@ -160,6 +160,120 @@ fn cpu_end_to_end_and_reproducibility() {
 }
 
 #[test]
+fn default_256_resolution_downsamples_entity_uvs_and_preserves_labpbr_ids() {
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-256-{}-{unique}",
+        std::process::id()
+    ));
+    let input = temp.join("input");
+    fs::create_dir_all(&input).unwrap();
+    for name in ["diffuse.png", "normal.png", "roughness.png"] {
+        fs::copy(Path::new("test_assets").join(name), input.join(name)).unwrap();
+    }
+
+    let (width, height) = (512, 256);
+    let mut albedo = Vec::with_capacity(width * height * 4);
+    let mut normal = Vec::with_capacity(width * height * 4);
+    let mut specular = Vec::with_capacity(width * height * 4);
+    for _y in 0..height {
+        for x in 0..width {
+            let color = if x < width / 2 {
+                [175, 105, 70, 255]
+            } else {
+                [210, 160, 120, 255]
+            };
+            albedo.extend_from_slice(&color);
+            normal.extend_from_slice(&[128, 128, 255, 128]);
+            specular.extend_from_slice(if x < width / 2 {
+                &[128, 10, 0, 255]
+            } else {
+                &[128, 231, 0, 0]
+            });
+        }
+    }
+    for (name, pixels) in [
+        ("entity.png", albedo),
+        ("entity_normal.png", normal),
+        ("entity_specular.png", specular),
+    ] {
+        hyperrealism_core::png_io::write(&input.join(name), width, height, &pixels).unwrap();
+    }
+    fs::write(
+        input.join("material_manifest.json"),
+        r#"{"version":1,"materials":[{"id":"test","albedo":"diffuse.png","normal":"normal.png","roughness":"roughness.png"}],"textures":[{"name":"iron_block","material":"test","recipe":"metal","tint":[255,255,255],"f0":230}],"entity_textures":[{"path":"entity/test/test","albedo":"entity.png","normal":"entity_normal.png","specular":"entity_specular.png","source":"test source","license":"test license"}]}"#,
+    )
+    .unwrap();
+
+    let output = temp.join("output");
+    let result = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--input")
+        .arg(&input)
+        .arg("--output")
+        .arg(&output)
+        .arg("--cpu-only")
+        .arg("--threads")
+        .arg("2")
+        .output()
+        .unwrap();
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    let pack = output.join("pack");
+    assert_eq!(hyperrealism_core::verify::full_pack(&pack).unwrap(), (1, 1));
+    let block = hyperrealism_core::png_io::read(
+        &pack.join("assets/minecraft/textures/block/iron_block.png"),
+    )
+    .unwrap();
+    assert_eq!((block.width, block.height), (256, 256));
+    let entity = pack.join("assets/minecraft/textures/entity/test/test");
+    for name in ["test.png", "test_n.png", "test_s.png"] {
+        let image = hyperrealism_core::png_io::read(&entity.with_file_name(name)).unwrap();
+        assert_eq!((image.width, image.height), (256, 128));
+    }
+    let spec = hyperrealism_core::png_io::read(&entity.with_file_name("test_s.png")).unwrap();
+    let ids: std::collections::HashSet<u8> =
+        spec.pixels.chunks_exact(4).map(|p| p[1]).collect();
+    let emissions: std::collections::HashSet<u8> =
+        spec.pixels.chunks_exact(4).map(|p| p[3]).collect();
+    assert_eq!(ids, [10, 231].into_iter().collect());
+    assert_eq!(emissions, [0, 255].into_iter().collect());
+    let meta: serde_json::Value =
+        serde_json::from_slice(&fs::read(pack.join("pack.mcmeta")).unwrap()).unwrap();
+    assert_eq!(
+        meta["pack"]["description"],
+        "HyperRealism 256×256 — LabPBR 1.3 (experimental)"
+    );
+
+    let explicit_output = temp.join("explicit-256");
+    let explicit = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
+        .arg("--input")
+        .arg(&input)
+        .arg("--output")
+        .arg(&explicit_output)
+        .arg("--cpu-only")
+        .arg("--resolution")
+        .arg("256")
+        .output()
+        .unwrap();
+    assert!(
+        explicit.status.success(),
+        "{}",
+        String::from_utf8_lossy(&explicit.stderr)
+    );
+    assert_eq!(
+        hyperrealism_core::verify::full_pack(&explicit_output.join("pack")).unwrap(),
+        (1, 1)
+    );
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
 fn real_material_channels_and_input_downsampling() {
     use hyperrealism_core::png_io::{read, read_material, write};
     let unique = SystemTime::now()
@@ -231,8 +345,8 @@ fn real_material_channels_and_input_downsampling() {
         .pixels
         .chunks_exact(4)
         .all(|p| (126..=128).contains(&p[0]) && p[1] == 230 && p[3] == 255));
-    // The new default is 512px; inspect its actual LabPBR values after a 1K
-    // source is downsampled. Test DX and GL normals, AO, height and smoothness.
+    // Exercise the optional 512px output and inspect its LabPBR values after a
+    // 1K source is downsampled; test DX/GL normals, AO, height and smoothness.
     let output512 = temp.join("output512");
     let result512 = Command::new(env!("CARGO_BIN_EXE_hyperrealism-core"))
         .arg("--input")
@@ -240,6 +354,8 @@ fn real_material_channels_and_input_downsampling() {
         .arg("--output")
         .arg(&output512)
         .arg("--cpu-only")
+        .arg("--resolution")
+        .arg("512")
         .arg("--threads")
         .arg("2")
         .output()
@@ -483,7 +599,17 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 349);
+    assert_eq!(m.textures.len(), 352);
+    for (name, ore_id) in [
+        ("raw_copper_block", 10),
+        ("raw_gold_block", 231),
+        ("raw_iron_block", 10),
+    ] {
+        let texture = m.textures.iter().find(|texture| texture.name == name).unwrap();
+        assert_eq!(texture.material, "rock_face");
+        assert_eq!(texture.recipe, "ore");
+        assert_eq!(texture.ore_f0, Some(ore_id));
+    }
     let mut entity_paths: Vec<_> = m.entity_textures.iter().map(|entity| entity.path.as_str()).collect();
     entity_paths.sort_unstable();
     assert_eq!(
@@ -815,9 +941,9 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
     assert_eq!(summary["blockstates"], 1290);
     assert_eq!(summary["block_model_files"], 2885);
     assert_eq!(summary["unique_block_texture_references"], 1272);
-    assert_eq!(summary["currently_covered_block_texture_references"], 349);
-    assert_eq!(summary["uncovered_block_texture_references"], 923);
-    assert_eq!(summary["states_with_uncovered_textures"], 614);
+    assert_eq!(summary["currently_covered_block_texture_references"], 352);
+    assert_eq!(summary["uncovered_block_texture_references"], 920);
+    assert_eq!(summary["states_with_uncovered_textures"], 611);
     assert!(summary["metadata_resolution_problems"]
         .as_array()
         .unwrap()
@@ -837,7 +963,7 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
             "{block}: uncovered list must be a subset of the block texture references"
         );
     }
-    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 923);
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 920);
     let covered: std::collections::HashSet<&str> = catalog["covered_block_textures"]
         .as_array()
         .unwrap()

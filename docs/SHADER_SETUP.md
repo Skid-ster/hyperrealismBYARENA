@@ -20,8 +20,9 @@ pack unless its license permits it.
 2. Put it in your Minecraft instance's `minecraft/shaderpacks` folder. For the
    supplied ElyPrism instance that is
    `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\shaderpacks`.
-3. Enable **HyperRealism 512×512** in **Options → Resource Packs**; put it above any
-   competing pack, or disable other packs for an isolated test.
+3. The published Preview 23 is named **HyperRealism 512×512**; current development
+   builds are named **HyperRealism 256×256**. Enable the version you installed in
+   **Options → Resource Packs** and put it above competing packs.
 4. With the already-installed Iris, select Photon in **Options → Video
    Settings → Shader Packs** and open **Shader Pack Settings**.
 5. In **Materials**, enable **Normal Mapping**, **Specular Mapping**, and
@@ -49,7 +50,8 @@ open **Materials → labPBR/seuspbr Materials** and leave **Normal Map Strength*
 enabled at a moderate value. For specular highlights, make sure
 **Performance Settings → Block Reflection Quality** is not **OFF**; the High
 profile shown in the screenshot normally selects High reflection quality, but
-check the actual option. Put HyperRealism 512×512 above conflicting resource
+check the actual option. Put the installed HyperRealism build (published Preview 23
+is 512×512; current development builds are 256×256) above conflicting resource
 packs and press F3+T.
 
 **POM is optional**: normal and specular PBR do not depend on it. First verify
@@ -84,7 +86,7 @@ format to labPBR and enable normal/specular mapping. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
 without it. Preview 14 introduced a global PBR strength of `0.2`, with no
 per-texture overrides; the current development manifest applies that same global
-setting across all 349 texture targets. In this generator that scales
+setting across all 352 texture targets. In this generator that scales
 tangent-space normal slopes, height deviations around neutral, and smoothness
 to 20% of unit-strength, while AO fades toward white. Albedo and discrete
 LabPBR metal/F0 IDs, porosity and emission are preserved. This is defined
@@ -104,9 +106,11 @@ Specular Mapping on/off. If nothing changes, check Iris/Photon versions, pack
 order, and shader settings; reload resources with F3+T. This is a diagnostic
 procedure, not proof of a test on your PC.
 
-At 512px, shader atlas memory and load times can increase substantially; if you
-see stutter or texture-load errors, reduce shader settings and try the optional
-128px build rather than assuming 8 GB is sufficient.
+The development build now defaults to 256px: that is one quarter the texel
+count of 512px, so it should reduce texture storage and atlas pressure, but no
+VRAM, load-time or FPS benchmark has been run. The published Preview 23 is still
+512px. Use the optional 128px build for a smaller pack or 512px for more detail;
+actual memory and performance depend on Minecraft, shader, driver and hardware.
 
 ## How to evaluate
 
@@ -114,9 +118,9 @@ Compare in daylight and in darker light, with and without the resource pack,
 then with and without the shader. Try stone, cobblestone stairs/slabs/walls,
 oak and bamboo planks/fences, sand, netherrack and Nether gold ore. Ask which
 details are visible from a normal playing distance, whether seams repeat, and
-whether metals reflect plausibly. The 349 covered block texture paths do not
+whether metals reflect plausibly. The 352 covered block texture paths do not
 replace the entire game; animations, most blocks and entities are not supplied. The pack cannot guarantee visual
-quality merely because it contains 512×512 images and valid LabPBR channels.
+quality merely because it contains high-resolution images and valid LabPBR channels.
 
 ## Connected glass
 

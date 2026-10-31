@@ -12546,9 +12546,7 @@
         "minecraft:block/raw_copper_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "raw_copper_block"
-      ]
+      "uncovered_block_textures": []
     },
     "raw_gold_block": {
       "block_textures": [
@@ -12558,9 +12556,7 @@
         "minecraft:block/raw_gold_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "raw_gold_block"
-      ]
+      "uncovered_block_textures": []
     },
     "raw_iron_block": {
       "block_textures": [
@@ -12570,9 +12566,7 @@
         "minecraft:block/raw_iron_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "raw_iron_block"
-      ]
+      "uncovered_block_textures": []
     },
     "red_banner": {
       "block_textures": [
@@ -17643,6 +17637,9 @@
     "quartz_bricks",
     "quartz_pillar_side",
     "quartz_pillar_top",
+    "raw_copper_block",
+    "raw_gold_block",
+    "raw_iron_block",
     "red_concrete",
     "red_concrete_powder",
     "red_nether_bricks",
@@ -17738,10 +17735,10 @@
     "block_model_files": 2885,
     "block_texture_references_not_referenced_by_any_blockstate": [],
     "blockstates": 1290,
-    "currently_covered_block_texture_references": 349,
+    "currently_covered_block_texture_references": 352,
     "metadata_resolution_problems": [],
-    "states_with_uncovered_textures": 614,
-    "uncovered_block_texture_references": 923,
+    "states_with_uncovered_textures": 611,
+    "uncovered_block_texture_references": 920,
     "unique_block_texture_references": 1272
   },
   "uncovered_block_textures": [
@@ -18387,9 +18384,6 @@
     "purpur_pillar_top",
     "rail",
     "rail_corner",
-    "raw_copper_block",
-    "raw_gold_block",
-    "raw_iron_block",
     "red_bed_foot_east",
     "red_bed_foot_south",
     "red_bed_foot_up",

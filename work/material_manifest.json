@@ -1450,6 +1450,72 @@
       "porosity": 40
     },
     {
+      "name": "raw_copper_block",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        156,
+        106,
+        79
+      ],
+      "f0": 10,
+      "ore_color": [
+        151,
+        102,
+        68
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "raw_gold_block",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        221,
+        169,
+        47
+      ],
+      "f0": 10,
+      "ore_color": [
+        204,
+        161,
+        63
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "raw_iron_block",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        166,
+        136,
+        107
+      ],
+      "f0": 10,
+      "ore_color": [
+        180,
+        141,
+        119
+      ],
+      "ore_f0": 10
+    },
+    {
       "name": "copper_block",
       "material": "metal_plate_02",
       "recipe": "metal",

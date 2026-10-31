@@ -3,7 +3,7 @@ use crate::{
     manifest::{self, Texture},
     material::{self, Prepared},
     png_io, recipes,
-    resample::resize_wrap,
+    resample::{resize_clamp, resize_wrap},
     zip,
 };
 use rayon::prelude::*;
@@ -34,6 +34,130 @@ fn resize(values: &[f32], size: usize) -> Result<Vec<f32>, String> {
     }
     resize_wrap(values, WORK, WORK, size, size).map_err(str::to_string)
 }
+
+#[derive(Clone, Copy)]
+enum EntityMap {
+    Albedo,
+    Normal,
+    Specular,
+}
+
+/// Downsample an entity atlas without wrapping its UV edges or changing its
+/// vanilla 2:1 width-to-height aspect ratio. Continuous channels use clamped
+/// Lanczos; LabPBR IDs and the no-emission sentinel use nearest-neighbor.
+fn resize_entity_map(
+    source: &Path,
+    destination: &Path,
+    size: usize,
+    kind: EntityMap,
+) -> Result<(), String> {
+    let image = png_io::read(source)?;
+    if image.width != image.height.saturating_mul(2) {
+        return Err(format!(
+            "{}: entity atlas must preserve the vanilla 2:1 UV aspect ratio, got {}x{}",
+            source.display(), image.width, image.height
+        ));
+    }
+    let out_height = size / 2;
+    if image.width == size && image.height == out_height {
+        fs::copy(source, destination).map_err(|e| format!("{}: {e}", destination.display()))?;
+        return Ok(());
+    }
+
+    let count = image.width * image.height;
+    let mut channels: Vec<Vec<f32>> = (0..4).map(|_| vec![0.0; count]).collect();
+    for i in 0..count {
+        let pixel = &image.pixels[i * 4..i * 4 + 4];
+        for c in 0..4 {
+            channels[c][i] = f32::from(pixel[c]) / 255.0;
+        }
+    }
+    let mut output = vec![0u8; size * out_height * 4];
+    match kind {
+        EntityMap::Albedo => {
+            let alpha = resize_clamp(&channels[3], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            let mut rgb = Vec::with_capacity(3);
+            for c in 0..3 {
+                let premultiplied: Vec<f32> = channels[c]
+                    .iter()
+                    .zip(&channels[3])
+                    .map(|(&v, &a)| material::srgb_to_linear(v) * a)
+                    .collect();
+                rgb.push(
+                    resize_clamp(&premultiplied, image.width, image.height, size, out_height)
+                        .map_err(str::to_string)?,
+                );
+            }
+            for i in 0..size * out_height {
+                let a = alpha[i].clamp(0.0, 1.0);
+                for c in 0..3 {
+                    output[i * 4 + c] = if a > 1e-6 {
+                        linear_to_srgb((rgb[c][i] / a).clamp(0.0, 1.0))
+                    } else {
+                        0
+                    };
+                }
+                output[i * 4 + 3] = unit(a);
+            }
+        }
+        EntityMap::Normal => {
+            let mut xy = Vec::with_capacity(2);
+            for c in 0..2 {
+                let decoded: Vec<f32> = channels[c].iter().map(|v| v * 2.0 - 1.0).collect();
+                xy.push(
+                    resize_clamp(&decoded, image.width, image.height, size, out_height)
+                        .map_err(str::to_string)?,
+                );
+            }
+            let ao = resize_clamp(&channels[2], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            let height = resize_clamp(&channels[3], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            for i in 0..size * out_height {
+                let mut x = xy[0][i];
+                let mut y = xy[1][i];
+                let length = (x * x + y * y).sqrt();
+                if length > 0.999 {
+                    x *= 0.999 / length;
+                    y *= 0.999 / length;
+                }
+                output[i * 4] = unit(0.5 + x * 0.5);
+                output[i * 4 + 1] = unit(0.5 + y * 0.5);
+                output[i * 4 + 2] = unit(ao[i]);
+                output[i * 4 + 3] = unit(height[i]).max(1);
+            }
+        }
+        EntityMap::Specular => {
+            for c in [0, 2] {
+                let resized = resize_clamp(&channels[c], image.width, image.height, size, out_height)
+                    .map_err(str::to_string)?;
+                for (i, value) in resized.into_iter().enumerate() {
+                    output[i * 4 + c] = unit(value);
+                }
+            }
+            // Green is the discrete LabPBR F0/metal ID; alpha may carry the
+            // 255 no-emission sentinel. Never interpolate either categorical
+            // channel across UV/material boundaries.
+            for y in 0..out_height {
+                for x in 0..size {
+                    let sx = (((x as f64 + 0.5) * image.width as f64 / size as f64).floor()
+                        as usize)
+                        .min(image.width - 1);
+                    let sy = (((y as f64 + 0.5) * image.height as f64 / out_height as f64).floor()
+                        as usize)
+                        .min(image.height - 1);
+                    let src = (sy * image.width + sx) * 4;
+                    let dst = (y * size + x) * 4;
+                    output[dst + 1] = image.pixels[src + 1];
+                    output[dst + 3] = image.pixels[src + 3];
+                }
+            }
+        }
+    }
+    png_io::write(destination, size, out_height, &output)
+}
+
 type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
 
 fn build(
@@ -281,8 +405,8 @@ pub fn generate(
     minecraft_jar: Option<&Path>,
     size: usize,
 ) -> Result<(), String> {
-    if size != 128 && size != 512 {
-        return Err("resolution must be 128 or 512".into());
+    if size != 128 && size != 256 && size != 512 {
+        return Err("resolution must be 128, 256, or 512".into());
     }
     let path = if input.is_dir() {
         input.join("material_manifest.json")
@@ -388,19 +512,21 @@ fn build_stage(
             .rsplit('/')
             .next()
             .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
-        for (source, dest) in [
-            (&entity.albedo, destination.clone()),
+        for (source, dest, kind) in [
+            (&entity.albedo, destination.clone(), EntityMap::Albedo),
             (
                 &entity.normal,
                 destination.with_file_name(format!("{stem}_n.png")),
+                EntityMap::Normal,
             ),
             (
                 &entity.specular,
                 destination.with_file_name(format!("{stem}_s.png")),
+                EntityMap::Specular,
             ),
         ] {
-            fs::copy(manifest::safe_file(root, source)?, &dest)
-                .map_err(|e| format!("{}: {e}", dest.display()))?;
+            resize_entity_map(&manifest::safe_file(root, source)?, &dest, size, kind)
+                .map_err(|e| format!("{}: {e}", entity.path))?;
         }
     }
     let materials = manifest::by_id(data);
@@ -433,7 +559,7 @@ fn build_stage(
     fs::write(pack.join("ENTITY_TEXTURES.txt"), entity_credits).map_err(|e| e.to_string())?;
     let cols = 4;
     let rows = data.textures.len().div_ceil(cols);
-    // Keep review thumbnails small even for the 512px pack.
+    // Keep review thumbnails small even for the highest-resolution output.
     let mut sheet = vec![0; cols * SHEET_TILE * rows * SHEET_TILE * 4];
     // Keep only the most recently used prepared material; this bounds memory.
     let mut cached: Option<(&str, Prepared)> = None;

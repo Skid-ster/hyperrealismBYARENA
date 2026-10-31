@@ -1,10 +1,12 @@
-# HyperRealism 512×512 — Minecraft Java LabPBR pack
+# HyperRealism 256×256 — Minecraft Java LabPBR pack
 
 This is an **early prototype**, not the requested complete production pack.
-It generates manifest-defined 512×512 (or optional 128×128) Minecraft Java 26.3 block textures and
-LabPBR 1.3 maps using a CPU-only pipeline. Most starter materials use 1K
+The development build defaults to manifest-defined 256×256 Minecraft Java 26.3
+block textures and aligned LabPBR 1.3 maps using a CPU-only pipeline; optional
+outputs are 128×128 or 512×512. The currently published Preview 23 remains the
+older 512×512 build until a new pack release. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
-are approximated as described below. The current source catalog contains 349
+are approximated as described below. The current source catalog contains 352
 distinct block texture targets based on CC0 scans from Poly Haven, ambientCG,
 TextureCan and other credited providers, plus original procedural work; Preview 13 added the lever texture, Preview 14 unified PBR
 strength at 20% and softened door/glass treatments, Preview 15 added
@@ -31,7 +33,7 @@ implementation, not a port or a claim of matching its results.
 This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU.
 
-See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 349, leaving 923 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
+See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 352, leaving 920 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 
 ## Download and install the experimental preview
 
@@ -85,9 +87,12 @@ in the [shader guide](docs/SHADER_SETUP.md). Download
 [HyperRealism 512×512 Preview 23 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.23/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Preview 23
-contains 344 distinct block texture paths; the current development branch adds
-five copper paths but has not yet been published. Both remain subsets of the
-game; all other textures stay vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
+contains 344 distinct block texture paths at 512×512; the current development
+branch adds five copper and three raw-ore paths, defaults to 256×256, and has not
+yet been published. That default has one quarter as many block texels as the
+512×512 preview, which should reduce texture storage, but no in-game VRAM/FPS
+benchmark has been run. Both remain subsets of the game; all other textures stay
+vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
 the new roughness calibration and normal-derived height estimates have not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
@@ -172,8 +177,10 @@ repository:
 ```powershell
 cargo test --locked
 cargo run --locked --release -- --input work --output pilot_output --cpu-only
-# Optional smaller 128×128 pack, to a separate fresh directory:
+# Optional lower-memory 128×128 pack:
 cargo run --locked --release -- --input work --output pilot_128 --cpu-only --resolution 128
+# Optional higher-detail 512×512 pack:
+cargo run --locked --release -- --input work --output pilot_512 --cpu-only --resolution 512
 ```
 
 The output directory must not already contain `pack`, `dist`, or
@@ -191,9 +198,9 @@ Outputs:
 - `pilot_output/build_report.json` — output recipes, material provenance and
   SHA-256 hashes of the manifest and input maps (outside the pack).
 
-The legacy ZIP filename is retained for compatibility with the updater; the
-pack generated by default is **512×512**, not 128×128. The v1.0 filename is
-**not** an indication that the full pack is finished. The `work` starter manifest uses twenty-five CC0 Poly Haven
+The ZIP retains its legacy `HyperRealism128` filename for updater compatibility;
+the development build now defaults to **256×256**. The 512×512 option remains
+available, and the filename/v1.0 marker does not imply full texture coverage. The `work` starter manifest uses twenty-five CC0 Poly Haven
 material sources; `test_assets` contains synthetic test inputs. See
 `work/ASSET_CREDITS.md`. A LabPBR-compatible shader is required for PBR maps. Windows CI passes on a GitHub-hosted runner; in-game validation and tests
 on your Windows 11 machine remain outstanding.
@@ -206,7 +213,7 @@ run uses CPU, and there is no GPU backend.
 
 ## PBR strength
 
-The bundled manifest uses a single global `pbr_strength` of **0.2** for all 349
+The bundled manifest uses a single global `pbr_strength` of **0.2** for all 352
 texture targets; per-texture overrides have been removed. This scales normal
 slope, height deviation and smoothness to 20% of their unit-strength values,
 and fades AO toward white. Base colors and discrete metal/SSS/emission fields
@@ -319,20 +326,23 @@ See the [LabPBR 1.3 material standard](https://shaderlabs.org/wiki/LabPBR_Materi
 Shader packs vary in support for AO, height, SSS, porosity and emission; map
 encoding alone does not guarantee that any particular shader renders them.
 
-The working size is 512×512. Source maps are periodically resampled using
-Lanczos-3 before recipe processing; albedo filtering uses premultiplied alpha
-and linear light. Continuous channels are then kept at 512×512 by default, or downsampled to 128×128 with `--resolution 128` using a
-scalar periodic Lanczos-3 filter. Normals are filtered as vectors and
-renormalized. Alpha cutout coverage preservation, non-tiling edge modes and
-animations need further work. Inputs up to 8192×8192 are
+The material working size remains 512×512. Source maps are periodically
+resampled using Lanczos-3 before recipe processing; albedo filtering uses
+premultiplied alpha and linear light. Block maps default to 256×256 and can be
+set to 128×128 or 512×512 with `--resolution`; continuous channels use a
+periodic Lanczos-3 filter and normals are filtered as vectors then renormalized.
+Entity maps default to 256×128, preserving their vanilla 2:1 UV atlas ratio;
+their non-tiling edges are clamped, albedo is filtered in linear premultiplied
+space, and LabPBR ID/sentinel channels are kept discrete. Animated sources remain
+unsupported. Inputs up to 8192×8192 are
 supported, but large inputs may use substantial RAM. Only the most recently
 used prepared material is cached. Albedo and normal PNGs currently use 8-bit
 precision; color profiles and EXR/TIFF are not supported. The ZIP currently
 uses the standard uncompressed/store method, not deflate.
 
 Each generated pack is checked before packaging for consistently sized
-128×128 or 512×512 block-map triples and aligned 8-bit RGBA entity atlas
-triples (entity atlas aspect ratios are preserved), version metadata, plausible
+128×128, 256×256 or 512×512 block-map triples and aligned 8-bit RGBA entity atlas
+triples (128×64, 256×128 or 512×256), preserving vanilla aspect ratios, version metadata, plausible
 normal XY, nonzero POM height, reserved material IDs, and metal blue-channel
 rules. The standalone `--verify-pack` check also scans nested entity paths and
 rejects missing or mismatched sidecars. You can rerun these structural checks
@@ -366,7 +376,7 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand beyond the current 349-output subset, especially animated/cutout
+- Expand beyond the current 352-output subset, especially animated/cutout
   Nether vegetation; acquire suitable materials for each family and review
   palettes/geometry in game. It is not guaranteed to overlap the missing Python
   implementation.

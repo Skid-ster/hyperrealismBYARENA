@@ -4549,6 +4549,45 @@
         154,
         127
       ]
+    },
+    "raw_copper_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "5285b8876ef6c70603fa8c249e33c6cb72ee1e0d",
+      "has_mcmeta": false,
+      "target_rgb": [
+        156,
+        106,
+        79
+      ]
+    },
+    "raw_gold_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "701be5d5bc0b09015cee48edb464ef5a920148b9",
+      "has_mcmeta": false,
+      "target_rgb": [
+        221,
+        169,
+        47
+      ]
+    },
+    "raw_iron_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7736fc2619fe0a1f75e219f203261f059b3b962a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        166,
+        136,
+        107
+      ]
     }
   },
   "version": "26.3"
