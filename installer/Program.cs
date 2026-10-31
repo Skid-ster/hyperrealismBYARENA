@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -228,8 +229,9 @@ namespace HyperRealismInstaller
             var progressRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty };
             progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 78));
             StyleButton(cancelDownload, "Cancel", "close", 76, 20, false); cancelDownload.Dock = DockStyle.Fill; cancelDownload.Visible = false;
-            cancelDownload.AccessibleName = "Cancel download";
-            cancelDownload.Click += delegate { if (busy && !cancelTransfer) { cancelTransfer = true; cancelDownload.Enabled = false; result.Text = "Cancelling download; the current install will be preserved."; } };
+            cancelDownload.AccessibleName = "Cancel current update check or download";
+            tooltips.SetToolTip(cancelDownload, "Cancel the current check or download. Existing installed files are preserved.");
+            cancelDownload.Click += delegate { if (busy && !cancelTransfer) { cancelTransfer = true; cancelDownload.Enabled = false; result.ForeColor = Foreground; result.Text = "Cancelling; please wait..."; } };
             progressRow.Controls.Add(progress, 0, 0); progressRow.Controls.Add(cancelDownload, 1, 0); left.Controls.Add(progressRow, 0, 6);
             left.Controls.Add(new Label { Dock = DockStyle.Bottom, AutoSize = true, Text = "Folder name is a helpful check, not proof this is the active instance.\r\nChecksums detect corruption but are not an independent signature.", ForeColor = Color.FromArgb(155, 155, 155) }, 0, 7);
 
@@ -339,6 +341,8 @@ namespace HyperRealismInstaller
             install.Click += async delegate { await RunOperation(true); };
             close.Click += delegate { Close(); };
             appUpdate.Click += async delegate { await CheckInstallerUpdate(false); };
+            AcceptButton = install;
+            CancelButton = close;
             FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; else SavePath(); };
             string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElyPrismLauncher", "instances", "26.3(1)", "minecraft", "resourcepacks");
             pathBox.Text = LoadPath(defaultPath);
@@ -590,20 +594,28 @@ namespace HyperRealismInstaller
             string folder = null;
             try { folder = PackInstaller.ValidateFolder(pathBox.Text); } catch { }
             UpdateSummary summary = null;
-            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
+            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = toolCheck.Enabled = false;
             UpdateFolderStatus(); progress.Visible = true; result.ForeColor = Foreground; result.Text = "Checking GitHub for installer and pack updates...";
+            int generation = StartTransferProgress(true);
             try
             {
                 summary = await Task.Run(() => {
-                    var web = new WebTransfer();
+                    var web = new WebTransfer(null, () => cancelTransfer);
                     return new UpdateSummary { Installer = SelfUpdater.FindUpdate(web, SelfUpdater.CurrentTag), Pack = folder == null ? "Choose an existing resourcepacks folder to check the pack." : PackInstaller.Check(web, folder) };
                 });
+            }
+            catch (OperationCanceledException)
+            {
+                result.ForeColor = Foreground;
+                result.Text = "Update check cancelled. No files were changed.";
+                return;
             }
             catch (Exception ex) { ShowError(ex); return; }
             finally
             {
                 busy = false;
-                if (!IsDisposed) { pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = true; progress.Visible = false; UpdateFolderStatus(); }
+                FinishTransferProgress(generation);
+                if (!IsDisposed) { pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = toolCheck.Enabled = true; progress.Visible = false; UpdateFolderStatus(); }
             }
             if (IsDisposed || summary == null) return;
             result.Text = summary.Pack; result.ForeColor = Foreground;
@@ -647,11 +659,22 @@ namespace HyperRealismInstaller
         private async Task CheckInstallerUpdate(bool automatic)
         {
             if (checkingApp || busy || (automatic && !automaticUpdates)) return;
+            int generation = 0;
             checkingApp = true; appUpdate.Enabled = false; toolCheck.Enabled = false;
+            if (!automatic)
+            {
+                busy = true;
+                pathBox.Enabled = browse.Enabled = close.Enabled = false;
+                UpdateFolderStatus();
+                progress.Visible = true;
+                result.ForeColor = Foreground;
+                result.Text = "Checking GitHub for installer updates...";
+                generation = StartTransferProgress(true);
+            }
             try
             {
-                InstallerRelease update = await Task.Run(() => SelfUpdater.FindUpdate(new WebTransfer(), SelfUpdater.CurrentTag));
-                if (IsDisposed || busy || (automatic && !automaticUpdates)) return;
+                InstallerRelease update = await Task.Run(() => SelfUpdater.FindUpdate(new WebTransfer(null, () => !automatic && cancelTransfer), SelfUpdater.CurrentTag));
+                if (IsDisposed || busy && automatic || (automatic && !automaticUpdates)) return;
                 appUpdate.Text = "Installer update";
                 if (update != null)
                 {
@@ -661,16 +684,36 @@ namespace HyperRealismInstaller
                         var answer = MessageBox.Show(this, "A new installer version (" + update.Tag + ") is available on GitHub.\r\n\r\nDownload it, verify it and restart the installer now?", "Installer update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                         if (answer == DialogResult.Yes) { await ApplyInstallerUpdate(update); return; }
                         deferredInstallerTag = update.Tag;
+                        if (!automatic) { result.ForeColor = Foreground; result.Text = "Installer update " + update.Tag + " is available when you're ready."; }
                     }
                 }
-                else if (!automatic) MessageBox.Show(this, "You have the latest published installer (" + SelfUpdater.CurrentTag + ").", "Installer updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                else if (!automatic)
+                {
+                    result.ForeColor = Green;
+                    result.Text = "Installer is up to date (" + SelfUpdater.CurrentTag + ").";
+                    MessageBox.Show(this, "You have the latest published installer (" + SelfUpdater.CurrentTag + ").", "Installer updates", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                if (!IsDisposed && !automatic) { result.ForeColor = Foreground; result.Text = "Installer update check cancelled."; }
             }
             catch (Exception ex)
             {
                 if (!IsDisposed && !automatic) ShowError(ex);
                 else if (!IsDisposed) appUpdate.Text = "Retry app update";
             }
-            finally { checkingApp = false; if (!IsDisposed) { appUpdate.Enabled = !busy; toolCheck.Enabled = !busy; } }
+            finally
+            {
+                checkingApp = false;
+                if (!automatic)
+                {
+                    busy = false;
+                    FinishTransferProgress(generation);
+                    if (!IsDisposed) { progress.Visible = false; pathBox.Enabled = browse.Enabled = close.Enabled = true; UpdateFolderStatus(); }
+                }
+                if (!IsDisposed) { appUpdate.Enabled = !busy; toolCheck.Enabled = !busy; }
+            }
             if (automatic && automaticUpdates && !IsDisposed && !busy) await CheckPackOnStartup();
         }
 
@@ -778,7 +821,7 @@ namespace HyperRealismInstaller
             {
                 string message = await Task.Run(() => doInstall
                     ? PackInstaller.Install(new WebTransfer((received, total) => ReportTransferProgress(generation, "resource pack", received, total), () => cancelTransfer), path)
-                    : PackInstaller.Check(new WebTransfer(), path));
+                    : PackInstaller.Check(new WebTransfer(null, () => cancelTransfer), path));
                 result.Text = message;
                 result.ForeColor = Green;
             }
@@ -805,6 +848,7 @@ namespace HyperRealismInstaller
             cancelTransfer = false;
             cancelDownload.Visible = cancellable;
             cancelDownload.Enabled = cancellable;
+            CancelButton = cancellable ? (IButtonControl)cancelDownload : close;
             progress.Style = ProgressBarStyle.Marquee;
             progress.MarqueeAnimationSpeed = 25;
             progress.Value = 0;
@@ -844,6 +888,7 @@ namespace HyperRealismInstaller
             if (IsDisposed) return;
             cancelDownload.Visible = false;
             cancelDownload.Enabled = false;
+            CancelButton = close;
             progress.Style = ProgressBarStyle.Marquee;
             progress.MarqueeAnimationSpeed = 25;
             progress.Value = 0;
@@ -860,9 +905,17 @@ namespace HyperRealismInstaller
 
         private void ShowError(Exception ex)
         {
+            string guidance;
+            var web = ex as WebException;
+            if (web == null) web = ex.InnerException as WebException;
+            if (web != null) guidance = "Could not complete the request to GitHub. Check your internet connection and try again.";
+            else if (ex is UnauthorizedAccessException) guidance = "Windows denied access to a file or folder. Check permissions and close any application using the pack.";
+            else if (ex is InvalidDataException) guidance = "The downloaded release did not pass its size or integrity checks. Nothing unverified was installed.";
+            else if (ex is DirectoryNotFoundException) guidance = "The selected folder is no longer available. Choose the resourcepacks folder for the intended Minecraft instance.";
+            else guidance = "The operation could not be completed. Check the details below, then try again.";
             result.ForeColor = Color.FromArgb(255, 142, 142);
-            result.Text = "Unable to finish. See the error for details.";
-            MessageBox.Show(this, ex.Message, "HyperRealism Installer", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            result.Text = guidance;
+            MessageBox.Show(this, guidance + "\r\n\r\nDetails: " + ex.Message, "Couldn't complete that action", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         internal void SmokeTest()
@@ -871,7 +924,11 @@ namespace HyperRealismInstaller
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress") throw new Exception("Expected launcher-style installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != install || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected launcher-style installer controls are missing.");
+            int progressGeneration = StartTransferProgress(true);
+            if (!cancelDownload.Visible || !cancelDownload.Enabled || CancelButton != cancelDownload) throw new Exception("Active operations must expose an accessible cancel action.");
+            FinishTransferProgress(progressGeneration);
+            if (cancelDownload.Visible || cancelDownload.Enabled || CancelButton != close) throw new Exception("The cancel action did not restore after an operation.");
             foreach (var button in new LauncherButton[] { toolBrowse, toolOpen, toolSettings, toolHelp, toolCheck })
                 if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Image.Width - 3)
                     throw new Exception("Toolbar button is missing an icon or has clipped text: " + button.Text);
