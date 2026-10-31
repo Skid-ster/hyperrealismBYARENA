@@ -28,19 +28,18 @@ resource names only. No Minecraft image data is copied or committed.
 The current audit reports:
 
 - 1,290 blockstate JSON files and 2,885 block-model JSON files.
-- 1,236 distinct `minecraft:block/*` texture references.
-- 311 referenced paths currently covered by the material manifest; 925 are
-  uncovered. There are 344 manifest targets overall; 33 are glass/CTM-related
-  sprites not directly referenced by these blockstates.
+- 1,272 distinct `minecraft:block/*` texture references.
+- 344 referenced paths are covered by the material manifest; 928 remain
+  uncovered.
 - 644 blockstates currently have at least one uncovered referenced texture.
+- The pinned-metadata resolver reports zero unresolved texture variables and
+  zero block texture paths unrelated to any blockstate.
 
-This establishes that Preview 21 is a subset, not full block coverage. These
-counts describe the pinned asset mirror's metadata, not a live client-JAR
-validation or proof of visual correctness. The resolver reports two remaining
-texture-variable aliases (`#all` and `#pane`) to investigate; those need to be
-explained or eliminated before treating the audit as a final zero-warning
-coverage gate. Re-run the audit against the exact 26.3 client JAR used for
-release before claiming version-complete support.
+This establishes that the current source catalog is still a subset, not full
+block coverage. These counts describe the pinned asset mirror's metadata, not a
+live client-JAR validation or proof of visual correctness. The audit still needs
+to be rerun against the exact 26.3 client JAR used for a release before claiming
+version-complete support.
 
 Rebuild the catalog after preparing a local metadata checkout (only JSON
 metadata is needed):
@@ -61,7 +60,7 @@ photographic material.
    missing, unsupported and intentionally vanilla-fallback paths separate
    machine-readable statuses. Add reproducible coverage checks for every
    blockstate, not a hand-selected sample.
-2. **Build material families, not 925 unrelated recipes.** Group semantically
+2. **Build material families, not 928 unrelated recipes.** Group semantically
    related block paths into defensible families (stone/ore, soil/sand, wood/bark,
    masonry, metal, glass, foliage/crops, Nether/End, liquids and utility blocks).
    Preserve distinct target colors, alpha, face masks, rotations, state/model
