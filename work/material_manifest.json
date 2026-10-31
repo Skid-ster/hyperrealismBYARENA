@@ -1516,6 +1516,125 @@
       "ore_f0": 10
     },
     {
+      "name": "amethyst_block",
+      "material": "rock_face",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        134,
+        98,
+        191
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cinnabar",
+      "material": "rock_face",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        152,
+        83,
+        78
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cinnabar_bricks",
+      "material": "rock_face",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        148,
+        56,
+        54
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_cinnabar",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        147,
+        55,
+        55
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "sulfur",
+      "material": "rock_face",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        190,
+        175,
+        102
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "sulfur_bricks",
+      "material": "rock_face",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        187,
+        168,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_sulfur",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        187,
+        170,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
       "name": "chiseled_deepslate",
       "material": "rock_face",
       "recipe": "carved",

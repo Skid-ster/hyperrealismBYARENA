@@ -295,9 +295,7 @@
         "minecraft:block/amethyst_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "amethyst_block"
-      ]
+      "uncovered_block_textures": []
     },
     "amethyst_cluster": {
       "block_textures": [
@@ -2793,9 +2791,7 @@
         "minecraft:block/chiseled_cinnabar"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_cinnabar"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_copper": {
       "block_textures": [
@@ -2900,9 +2896,7 @@
         "minecraft:block/chiseled_sulfur"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "chiseled_sulfur"
-      ]
+      "uncovered_block_textures": []
     },
     "chiseled_tuff": {
       "block_textures": [
@@ -2967,9 +2961,7 @@
         "minecraft:block/cinnabar"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_brick_slab": {
       "block_textures": [
@@ -2981,9 +2973,7 @@
         "minecraft:block/cinnabar_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_brick_stairs": {
       "block_textures": [
@@ -2995,9 +2985,7 @@
         "minecraft:block/cinnabar_brick_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_brick_wall": {
       "block_textures": [
@@ -3009,9 +2997,7 @@
         "minecraft:block/cinnabar_brick_wall_side_tall"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_bricks": {
       "block_textures": [
@@ -3021,9 +3007,7 @@
         "minecraft:block/cinnabar_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_slab": {
       "block_textures": [
@@ -3035,9 +3019,7 @@
         "minecraft:block/cinnabar_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_stairs": {
       "block_textures": [
@@ -3049,9 +3031,7 @@
         "minecraft:block/cinnabar_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar"
-      ]
+      "uncovered_block_textures": []
     },
     "cinnabar_wall": {
       "block_textures": [
@@ -3063,9 +3043,7 @@
         "minecraft:block/cinnabar_wall_side_tall"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "cinnabar"
-      ]
+      "uncovered_block_textures": []
     },
     "clay": {
       "block_textures": [
@@ -14686,9 +14664,7 @@
         "minecraft:block/sulfur"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_brick_slab": {
       "block_textures": [
@@ -14700,9 +14676,7 @@
         "minecraft:block/sulfur_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_brick_stairs": {
       "block_textures": [
@@ -14714,9 +14688,7 @@
         "minecraft:block/sulfur_brick_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_brick_wall": {
       "block_textures": [
@@ -14728,9 +14700,7 @@
         "minecraft:block/sulfur_brick_wall_side_tall"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_bricks": {
       "block_textures": [
@@ -14740,9 +14710,7 @@
         "minecraft:block/sulfur_bricks"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur_bricks"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_slab": {
       "block_textures": [
@@ -14754,9 +14722,7 @@
         "minecraft:block/sulfur_slab_top"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_spike": {
       "block_textures": [
@@ -14807,9 +14773,7 @@
         "minecraft:block/sulfur_stairs_outer"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur"
-      ]
+      "uncovered_block_textures": []
     },
     "sulfur_wall": {
       "block_textures": [
@@ -14821,9 +14785,7 @@
         "minecraft:block/sulfur_wall_side_tall"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "sulfur"
-      ]
+      "uncovered_block_textures": []
     },
     "sunflower": {
       "block_textures": [
@@ -17350,6 +17312,7 @@
     "acacia_log_top",
     "acacia_planks",
     "acacia_trapdoor",
+    "amethyst_block",
     "ancient_debris_side",
     "ancient_debris_top",
     "andesite",
@@ -17398,6 +17361,7 @@
     "cherry_log_top",
     "cherry_planks",
     "cherry_trapdoor",
+    "chiseled_cinnabar",
     "chiseled_copper",
     "chiseled_deepslate",
     "chiseled_nether_bricks",
@@ -17407,10 +17371,13 @@
     "chiseled_red_sandstone",
     "chiseled_sandstone",
     "chiseled_stone_bricks",
+    "chiseled_sulfur",
     "chiseled_tuff",
     "chiseled_tuff_bricks",
     "chiseled_tuff_bricks_top",
     "chiseled_tuff_top",
+    "cinnabar",
+    "cinnabar_bricks",
     "clay",
     "coal_ore",
     "coarse_dirt",
@@ -17676,6 +17643,8 @@
     "stripped_spruce_log_top",
     "stripped_warped_stem",
     "stripped_warped_stem_top",
+    "sulfur",
+    "sulfur_bricks",
     "terracotta",
     "tinted_glass",
     "tuff",
@@ -17715,10 +17684,10 @@
     "block_model_files": 2885,
     "block_texture_references_not_referenced_by_any_blockstate": [],
     "blockstates": 1290,
-    "currently_covered_block_texture_references": 364,
+    "currently_covered_block_texture_references": 371,
     "metadata_resolution_problems": [],
-    "states_with_uncovered_textures": 596,
-    "uncovered_block_texture_references": 908,
+    "states_with_uncovered_textures": 577,
+    "uncovered_block_texture_references": 901,
     "unique_block_texture_references": 1272
   },
   "uncovered_block_textures": [
@@ -17729,7 +17698,6 @@
     "activator_rail",
     "activator_rail_on",
     "allium",
-    "amethyst_block",
     "amethyst_cluster",
     "anvil",
     "anvil_top",
@@ -17882,14 +17850,10 @@
     "chiseled_bookshelf_occupied",
     "chiseled_bookshelf_side",
     "chiseled_bookshelf_top",
-    "chiseled_cinnabar",
     "chiseled_resin_bricks",
-    "chiseled_sulfur",
     "chorus_flower",
     "chorus_flower_dead",
     "chorus_plant",
-    "cinnabar",
-    "cinnabar_bricks",
     "closed_eyeblossom",
     "coal_block",
     "cobweb",
@@ -18489,8 +18453,6 @@
     "structure_block_load",
     "structure_block_save",
     "sugar_cane",
-    "sulfur",
-    "sulfur_bricks",
     "sulfur_spike_down_base",
     "sulfur_spike_down_frustum",
     "sulfur_spike_down_middle",

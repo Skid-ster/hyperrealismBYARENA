@@ -4744,6 +4744,97 @@
         151,
         111
       ]
+    },
+    "amethyst_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4a0e0534e91486f6d8ca1225c1e9585ee934d3b6",
+      "has_mcmeta": false,
+      "target_rgb": [
+        134,
+        98,
+        191
+      ]
+    },
+    "cinnabar": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c983786a4900d304401d57f379f6fa17d90b46c8",
+      "has_mcmeta": false,
+      "target_rgb": [
+        152,
+        83,
+        78
+      ]
+    },
+    "cinnabar_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4e242d993fa6d8e2aabd1d854fe833dda2e50c20",
+      "has_mcmeta": false,
+      "target_rgb": [
+        148,
+        56,
+        54
+      ]
+    },
+    "chiseled_cinnabar": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "e3c3f0ce8e0d2981958a0207dc8cf086d5fdc03c",
+      "has_mcmeta": false,
+      "target_rgb": [
+        147,
+        55,
+        55
+      ]
+    },
+    "sulfur": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "4edbb8c9f7f69e4ea9a5b5d6be67ac399b1752d3",
+      "has_mcmeta": false,
+      "target_rgb": [
+        190,
+        175,
+        102
+      ]
+    },
+    "sulfur_bricks": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f3708485405416b110a53977d0c3d8037d053cf1",
+      "has_mcmeta": false,
+      "target_rgb": [
+        187,
+        168,
+        91
+      ]
+    },
+    "chiseled_sulfur": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "1eadf25261d5738afc489d755a1a70ff1f5806b2",
+      "has_mcmeta": false,
+      "target_rgb": [
+        187,
+        170,
+        91
+      ]
     }
   },
   "version": "26.3"
