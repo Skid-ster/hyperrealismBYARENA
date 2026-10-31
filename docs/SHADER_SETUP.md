@@ -6,6 +6,25 @@ pack generator is CPU-only; it has not been benchmarked on this hardware. Iris
 and the shader render on the GPU. Keep other memory-heavy apps closed on a 16 GB
 machine; excessive Java heap allocation can make Windows page memory.
 
+## Experimental project shader: HyperRealism: Gilded Dusk
+
+The repository includes an optional, experimental Iris shader at
+[`shaderpacks/HyperRealism-Stylized-PBR`](../shaderpacks/HyperRealism-Stylized-PBR/README.md).
+It is based on **Glimmer** by jbritain, pinned to commit
+[`6a591097b6348155a4ba5a1aab92b79a2c9896d3`](https://github.com/jbritain/glimmer-shaders/commit/6a591097b6348155a4ba5a1aab92b79a2c9896d3),
+which advertises LabPBR 1.3 support and is MIT licensed. The source tree retains
+the upstream license and acknowledgements. HyperRealism adds an adjustable
+teal-shadow/amber-highlight display grade and punchier AgX/contrast defaults;
+LabPBR lighting remains the material foundation.
+
+Install the folder into the instance's `shaderpacks` directory, select
+**HyperRealism: Gilded Dusk** in Iris, and set **PBR Support** to **LabPBR 1.3**.
+The **Teal–Amber Style** slider controls the effect; 0 disables the split tone.
+This prototype has **not** been shader-compiled or tested in Minecraft, so do
+not treat it as the verified/default recommendation. Visual artifacts,
+compatibility, and performance remain unknown. Photon below remains the
+existing general recommendation until in-game checks can be done.
+
 ## Recommended free shader: Photon
 
 [Photon Shaders by sixthsurge](https://modrinth.com/shader/photon-shader) is a

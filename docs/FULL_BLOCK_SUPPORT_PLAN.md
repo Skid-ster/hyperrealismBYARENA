@@ -104,37 +104,34 @@ photographic material.
    exceptional sprite has a documented policy, and runtime checks pass—not when
    an arbitrary texture count is reached.
 
-## Should this pack have its own shader?
+## Project-specific shader status
 
-**Not as the next implementation step.** Keep the pack shader-agnostic and
-LabPBR 1.3-compatible while texture coverage and material calibration are still
-in progress. Continue validating with established Iris-compatible LabPBR
-shaders (currently the setup guide recommends Photon and also documents
-Complementary Reimagined). This gives users a tested rendering path without
-forcing them to install a project-specific renderer, and exposes material errors
-across more than one shader implementation.
+At the user's request, an **optional experimental Iris shader prototype** now
+lives at `shaderpacks/HyperRealism-Stylized-PBR`. It starts from the MIT-licensed
+Glimmer source at pinned commit
+`6a591097b6348155a4ba5a1aab92b79a2c9896d3`, retaining the upstream license and
+acknowledgements. The prototype keeps the upstream LabPBR path and adds an
+adjustable teal-shadow/amber-highlight display grade. This is an opt-in
+companion, not a reason to make the resource pack depend on one renderer.
 
-A custom shader could eventually be worthwhile as an **optional companion** if
-real testing identifies pack-specific needs that existing shaders cannot meet:
-for example, carefully controlled emission, restrained normal/height response,
-consistent roughness interpretation, or a purpose-tuned profile for the target
-GPU. It cannot make incomplete or inaccurate source textures realistic by
-itself. It would also add a separate product surface: GLSL maintenance across
-Minecraft/Iris versions, compatibility and licensing review, device/driver
-coverage, settings and documentation, shader compilation failures, and an
-ongoing performance budget on lower-end hardware. Shader-pack behavior is not
-portable enough to assume one implementation works identically in Iris,
-OptiFine and every LabPBR shader.
+The shader has **not** yet been compiled with a shader compiler or tested in
+Minecraft/Iris. Keep Photon and other established LabPBR shaders documented as
+the practical choices until a compatible runtime test can validate this
+prototype. A custom shader cannot make incomplete or inaccurate source textures
+realistic by itself. It adds ongoing GLSL/version maintenance, compatibility
+and licensing review, device/driver coverage, settings and documentation, and
+a performance budget. Shader-pack behavior is not portable enough to assume one
+implementation works identically in Iris, OptiFine and every LabPBR shader.
 
-Recommended decision gates before starting a shader implementation:
+Recommended gates before treating the prototype as a supported shader:
 
 - Finish representative texture families and obtain in-game screenshots and
   measurements on the stated target hardware.
 - Reproduce a concrete visual or performance problem with at least two current
   LabPBR shaders, and verify that it is not a bad material map or setting.
-- Prototype an optional Iris shaderpack (rather than modifying the generator or
-  requiring a particular shader) with a short feature list, a low/medium/high
-  profile, explicit LabPBR 1.3 behavior, graceful fallback and a version matrix.
+- Compile and validate the optional Iris prototype against LabPBR 1.3 maps;
+  define a clear version matrix, sensible quality profiles, and graceful
+  fallback before recommending or distributing it.
 - Compare its output and frame-time/VRAM cost to established shaders under the
   same scenes and settings. Do not claim it is “more realistic” without
   controlled visual review.

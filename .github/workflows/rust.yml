@@ -9,6 +9,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: Check optional shader structure and MIT provenance
+        run: python scripts/check_stylized_shader.py
       - run: cargo test --locked
       - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only
       - run: cargo run --locked --release -- --input work --output pilot_output --cpu-only --threads 2

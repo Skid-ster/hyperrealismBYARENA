@@ -1,5 +1,16 @@
 # Bundled material sources
 
+## Experimental shader-source attribution
+
+`shaderpacks/HyperRealism-Stylized-PBR` is an optional shader source tree based
+on [Glimmer by jbritain](https://github.com/jbritain/glimmer-shaders) at commit
+`6a591097b6348155a4ba5a1aab92b79a2c9896d3`, under its MIT license. The original
+`LICENSE`, README/development notes, and bundled Tony McMapface texture-license
+notice are retained. HyperRealism's modifications are an AgX default and a
+controllable teal-shadow/amber-highlight display grade. This shader directory
+is not part of the published resource-pack ZIP; the prototype has not yet been
+compiled or tested in-game.
+
 ## Original procedural entity pilot maps
 
 The source manifest now also declares five original procedural entity texture

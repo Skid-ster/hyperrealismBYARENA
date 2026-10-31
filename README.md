@@ -31,7 +31,11 @@ implementation, not a port or a claim of matching its results.
 
 **Design target:** Windows 11, RTX 5060 Ti 8 GB, i5-13400 and 16 GB RAM.
 This is a target, not a claim of measured performance or GPU acceleration.
-The generator is currently CPU-only; shader rendering uses your GPU.
+The generator is currently CPU-only; shader rendering uses your GPU. This
+repository also includes an experimental Iris/LabPBR shader prototype at
+[`shaderpacks/HyperRealism-Stylized-PBR`](shaderpacks/HyperRealism-Stylized-PBR/README.md),
+based on MIT-licensed Glimmer. It has not yet been shader-compiled or validated
+in Minecraft; Photon remains the documented practical option for now.
 
 See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 371, leaving 901 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 
@@ -52,10 +56,13 @@ browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually
 uses that folder. Use **Check updates** to compare the installed file's
 hash with the latest preview, or **Install / Update** to download and install
-it. The toolbar mirrors the reference: **Add Instance** selects an existing
-instance's resourcepacks folder (it does not create an instance), **Folders**
-provides folder actions, **Settings** controls automatic update checks,
-**Help** opens project guidance, and **Update** checks both the pack and installer. The sidebar **Launch** asks PineconeMC to launch the instance inferred from the selected standard `instances/<instance>/minecraft/resourcepacks` folder. It uses PineconeMC's own account and game settings; it does not log in or install the game. The first time, if the launcher is not found in common install locations, select `elyprismlauncher.exe` (or the PineconeMC executable); the selection is remembered under `%LOCALAPPDATA%\HyperRealism128\pineconemc-path.txt` and can be changed in **Settings**. For custom instance directories launch directly from PineconeMC. The request starts the launcher but cannot verify Minecraft actually started. The grass block artwork is used under CC BY-SA 4.0 with [attribution](installer/assets/ATTRIBUTION.txt); other glyphs are independently drawn. Only the named preview ZIP is replaced. By default, at startup and hourly while the
+it. The toolbar keeps to standard installer actions: **Folders** provides folder
+shortcuts, **Settings** controls automatic update checks, **Help** opens project
+guidance, and **Check updates** checks both the pack and installer. Use the
+resource-pack path's **Browse...** button to select an existing folder; the app
+does not create or manage launcher instances. The sidebar **Launch** asks
+PineconeMC to launch the instance inferred from the selected standard
+`instances/<instance>/minecraft/resourcepacks` folder. It uses PineconeMC's own account and game settings; it does not log in or install the game. The first time, if the launcher is not found in common install locations, select `elyprismlauncher.exe` (or the PineconeMC executable); the selection is remembered under `%LOCALAPPDATA%\HyperRealism128\pineconemc-path.txt` and can be changed in **Settings**. For custom instance directories launch directly from PineconeMC. The request starts the launcher but cannot verify Minecraft actually started. The grass block artwork is used under CC BY-SA 4.0 with [attribution](installer/assets/ATTRIBUTION.txt); other glyphs are independently drawn. Only the named preview ZIP is replaced. By default, at startup and hourly while the
 installer is open, it checks for newer installer releases and, if a pack is
 already installed in the chosen folder, for a different latest pack. It asks
 before updating. A declined automatic prompt is deferred for that version until

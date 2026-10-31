@@ -67,6 +67,8 @@ namespace HyperRealismInstaller
         {
             Color surface = Enabled && pressed ? FlatAppearance.MouseDownBackColor : Enabled && hovered ? FlatAppearance.MouseOverBackColor : BackColor;
             using (var brush = new SolidBrush(surface)) e.Graphics.FillRectangle(brush, ClientRectangle);
+            Color border = Enabled && hovered ? Color.FromArgb(112, 112, 112) : FlatAppearance.BorderColor;
+            using (var pen = new Pen(border, 1f)) e.Graphics.DrawRectangle(pen, 0, 0, Math.Max(0, Width - 1), Math.Max(0, Height - 1));
             int x = Padding.Left;
             if (Image != null)
             {
@@ -75,7 +77,7 @@ namespace HyperRealismInstaller
                 else ControlPaint.DrawImageDisabled(e.Graphics, Image, x, y, surface);
                 x += Image.Width + 3;
             }
-            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x), ClientSize.Height);
+            var bounds = new Rectangle(x, 0, Math.Max(0, ClientSize.Width - x - Padding.Right), ClientSize.Height);
             TextRenderer.DrawText(e.Graphics, Text, Font, bounds, Enabled ? ForeColor : Color.FromArgb(145, 145, 145),
                 TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding);
             if (DropArrow)
@@ -87,16 +89,6 @@ namespace HyperRealismInstaller
         }
     }
 
-    internal sealed class ToolbarGrip : Control
-    {
-        public ToolbarGrip() { Width = 11; Height = 34; Margin = Padding.Empty; }
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.Clear(BackColor);
-            using (var brush = new SolidBrush(Color.FromArgb(110, 110, 110)))
-                for (int y = 8; y <= 24; y += 3) for (int x = 3; x <= 6; x += 3) e.Graphics.FillRectangle(brush, x, y, 1, 1);
-        }
-    }
     internal sealed class DarkMenuColors : ProfessionalColorTable
     {
         public override Color ToolStripDropDownBackground { get { return Color.FromArgb(49, 49, 49); } }
@@ -119,18 +111,14 @@ namespace HyperRealismInstaller
         private readonly LauncherButton cancelDownload = new LauncherButton();
         private readonly LauncherButton browse = new LauncherButton();
         private readonly LauncherButton openFolder = new LauncherButton();
-        private readonly LauncherButton check = new LauncherButton();
         private readonly LauncherButton install = new LauncherButton();
         private readonly LauncherButton launch = new LauncherButton();
         private readonly LauncherButton close = new LauncherButton();
-        private readonly LauncherButton appUpdate = new LauncherButton();
-        private readonly LauncherButton toolBrowse = new LauncherButton();
         private readonly LauncherButton toolOpen = new LauncherButton();
         private readonly LauncherButton toolCheck = new LauncherButton();
         private readonly LauncherButton toolSettings = new LauncherButton();
         private readonly LauncherButton toolHelp = new LauncherButton();
         private readonly ToolTip tooltips = new ToolTip();
-        private readonly LauncherButton sideBrowse = new LauncherButton();
         private static readonly Color Background = Color.FromArgb(34, 34, 34);
         private static readonly Color Surface = Color.FromArgb(50, 50, 50);
         private static readonly Color Sidebar = Color.FromArgb(49, 49, 49);
@@ -167,8 +155,8 @@ namespace HyperRealismInstaller
             BackColor = Background;
             ForeColor = Foreground;
 
-            // The dark toolbar, selected pack tile, right-hand actions and
-            // double status strip intentionally echo the user's launcher.
+            // A compact, conventional toolbar with standard folder, settings,
+            // help and update actions; instance management stays in the launcher.
             var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Background };
             root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             root.RowStyles.Add(new RowStyle(SizeType.Absolute, 37));
@@ -179,16 +167,11 @@ namespace HyperRealismInstaller
 
             var toolbar = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
             var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = Padding.Empty, BackColor = Surface };
-            // Match the reference's five compact buttons; each performs an
-            // installer action rather than pretending to manage launcher data.
-            StyleButton(toolBrowse, "Add Instance", "folder-add", 112, 34, true);
-            StyleButton(toolOpen, "Folders", "folder", 82, 34, true); toolOpen.DropArrow = true;
-            StyleButton(toolSettings, "Settings", "settings", 85, 34, true);
-            StyleButton(toolHelp, "Help", "help", 67, 34, true); toolHelp.DropArrow = true;
-            StyleButton(toolCheck, "Update", "update", 76, 34, true);
-            tools.Controls.Add(new ToolbarGrip { BackColor = Surface });
-            tools.Controls.Add(toolBrowse); tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp); tools.Controls.Add(toolCheck);
-            tooltips.SetToolTip(toolBrowse, "Choose an existing instance's resourcepacks folder; this does not create a Minecraft instance.");
+            StyleButton(toolOpen, "Folders", "folder", 96, 34, true); toolOpen.DropArrow = true;
+            StyleButton(toolSettings, "Settings", "settings", 94, 34, true);
+            StyleButton(toolHelp, "Help", "help", 76, 34, true); toolHelp.DropArrow = true;
+            StyleButton(toolCheck, "Check updates", "update", 116, 34, true);
+            tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp); tools.Controls.Add(toolCheck);
             tooltips.SetToolTip(toolCheck, "Check for installer and resource-pack updates.");
             var brand = new Panel { Dock = DockStyle.Right, Width = 150, BackColor = Surface };
             var brandIcon = new PictureBox { Image = BlockIcon(22), Size = new Size(22, 22), Location = new Point(5, 7), SizeMode = PictureBoxSizeMode.Normal };
@@ -203,7 +186,7 @@ namespace HyperRealismInstaller
 
             var main = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
             main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            main.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 118));
+            main.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150));
             root.Controls.Add(main, 0, 1);
             var left = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 8, Margin = Padding.Empty, Padding = new Padding(6, 0, 6, 0), BackColor = Background };
             left.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
@@ -244,14 +227,14 @@ namespace HyperRealismInstaller
             progressRow.Controls.Add(progress, 0, 0); progressRow.Controls.Add(cancelDownload, 1, 0); left.Controls.Add(progressRow, 0, 6);
             left.Controls.Add(new Label { Dock = DockStyle.Bottom, AutoSize = true, Text = "Folder name is a helpful check, not proof this is the active instance.\r\nChecksums detect corruption but are not an independent signature.", ForeColor = Color.FromArgb(155, 155, 155) }, 0, 7);
 
-            var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 12, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
+            var side = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 9, Margin = Padding.Empty, Padding = new Padding(1, 0, 0, 0), BackColor = Color.FromArgb(77, 77, 77) };
             side.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 104)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 30)); side.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
-            for (int i = 0; i < 3; i++) side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
             side.RowStyles.Add(new RowStyle(SizeType.Absolute, 7));
-            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 27));
+            side.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
             side.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             main.Controls.Add(side, 1, 0);
             var sideIcon = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
@@ -264,29 +247,23 @@ namespace HyperRealismInstaller
             };
             side.Controls.Add(sideIcon, 0, 0);
             side.Controls.Add(new Label { Dock = DockStyle.Fill, Text = "HyperRealism 512", TextAlign = ContentAlignment.MiddleCenter, ForeColor = Foreground, BackColor = Sidebar, AutoEllipsis = true }, 0, 1);
-            StyleButton(launch, "Launch", "launch", 123, 27, false);
-            tooltips.SetToolTip(launch, "Launch the selected instance through PineconeMC.");
-            StyleButton(install, "Install / Update", "install", 123, 27, false);
-            StyleButton(check, "Check updates", "update", 123, 27, false);
-            StyleButton(openFolder, "Open folder", "folder", 123, 27, false);
-            StyleButton(sideBrowse, "Choose folder", "folder", 123, 27, false);
-            StyleButton(appUpdate, "Installer update", "update", 123, 27, false);
-            StyleButton(close, "Close", "close", 123, 27, false);
-            foreach (var b in new Button[] { launch, install, check, openFolder, sideBrowse, appUpdate, close }) { b.Dock = DockStyle.Fill; b.Margin = Padding.Empty; }
-            side.Controls.Add(launch, 0, 2); side.Controls.Add(install, 0, 3); side.Controls.Add(check, 0, 4);
+            StyleButton(install, "Install / Update", "install", 142, 30, false);
+            StyleButton(launch, "Launch", "launch", 142, 30, false);
+            StyleButton(openFolder, "Open folder", "folder", 142, 30, false);
+            StyleButton(close, "Close", "close", 142, 30, false);
+            foreach (var b in new Button[] { install, launch, openFolder, close }) { b.Dock = DockStyle.Fill; b.Margin = Padding.Empty; }
+            side.Controls.Add(install, 0, 2); side.Controls.Add(launch, 0, 3);
             var divider = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
-            divider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 3, 3, divider.Width - 4, 3); };
-            side.Controls.Add(divider, 0, 5);
-            side.Controls.Add(openFolder, 0, 6); side.Controls.Add(sideBrowse, 0, 7); side.Controls.Add(appUpdate, 0, 8);
+            divider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 8, 3, divider.Width - 8, 3); };
+            side.Controls.Add(divider, 0, 4);
+            side.Controls.Add(openFolder, 0, 5);
             var closeDivider = new Panel { Dock = DockStyle.Fill, Margin = Padding.Empty, BackColor = Sidebar };
-            closeDivider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 3, 3, closeDivider.Width - 4, 3); };
-            side.Controls.Add(closeDivider, 0, 9); side.Controls.Add(close, 0, 10);
-            side.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Margin = Padding.Empty }, 0, 11);
+            closeDivider.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Color.FromArgb(69, 69, 69))) e.Graphics.DrawLine(pen, 8, 3, closeDivider.Width - 8, 3); };
+            side.Controls.Add(closeDivider, 0, 6); side.Controls.Add(close, 0, 7);
+            side.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Margin = Padding.Empty }, 0, 8);
             tooltips.SetToolTip(install, "Download and install the latest experimental pack into the selected folder.");
-            tooltips.SetToolTip(check, "Compare the installed pack against the latest published preview.");
+            tooltips.SetToolTip(launch, "Launch the selected instance through PineconeMC.");
             tooltips.SetToolTip(openFolder, "Open the selected resourcepacks folder.");
-            tooltips.SetToolTip(sideBrowse, "Choose an existing resourcepacks folder.");
-            tooltips.SetToolTip(appUpdate, "Check for a newer version of this installer.");
             tooltips.SetToolTip(close, "Close the installer.");
 
             var news = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Margin = Padding.Empty };
@@ -302,8 +279,6 @@ namespace HyperRealismInstaller
             bottom.Controls.Add(new Label { Dock = DockStyle.Right, Width = 170, TextAlign = ContentAlignment.MiddleRight, Padding = new Padding(0, 0, 8, 0), ForeColor = Color.FromArgb(180, 180, 180), Text = "Installer " + SelfUpdater.CurrentTag });
             root.Controls.Add(bottom, 0, 3);
 
-            toolBrowse.Click += delegate { browse.PerformClick(); };
-            sideBrowse.Click += delegate { browse.PerformClick(); };
             var folders = CreateMenu();
             var chooseFolder = folders.Items.Add("Choose resourcepacks folder...");
             var openSelected = folders.Items.Add("Open selected folder");
@@ -346,10 +321,8 @@ namespace HyperRealismInstaller
                 catch (Exception ex) { ShowError(ex); }
             };
             launch.Click += delegate { LaunchGame(); };
-            check.Click += async delegate { await RunOperation(false); };
             install.Click += async delegate { await RunOperation(true); };
             close.Click += delegate { Close(); };
-            appUpdate.Click += async delegate { await CheckInstallerUpdate(false); };
             AcceptButton = install;
             CancelButton = close;
             FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; else SavePath(); };
@@ -381,14 +354,15 @@ namespace HyperRealismInstaller
         private static void StyleButton(Button button, string text, string glyph, int width, int height, bool toolbar)
         {
             button.Text = text; button.Size = new Size(width, height); button.Margin = Padding.Empty;
-            button.FlatStyle = FlatStyle.Flat; button.FlatAppearance.BorderSize = 0;
-            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(66, 66, 66);
-            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(78, 78, 78);
+            button.FlatStyle = FlatStyle.Flat; button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = Color.FromArgb(76, 76, 76);
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(62, 62, 62);
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(74, 74, 74);
             button.BackColor = toolbar ? Surface : Sidebar; button.ForeColor = Foreground;
-            button.Image = Glyph(glyph, toolbar ? 24 : 18);
+            button.Image = Glyph(glyph, toolbar ? 16 : 18);
             button.TextImageRelation = TextImageRelation.ImageBeforeText;
             button.ImageAlign = ContentAlignment.MiddleLeft; button.TextAlign = ContentAlignment.MiddleLeft;
-            button.Padding = new Padding(toolbar ? 3 : 1, 0, 0, 0);
+            button.Padding = toolbar ? new Padding(8, 0, 10, 0) : new Padding(8, 0, 8, 0);
             button.UseVisualStyleBackColor = false; button.AutoEllipsis = true;
         }
 
@@ -435,7 +409,7 @@ namespace HyperRealismInstaller
                 using (var blue = new SolidBrush(Color.FromArgb(102, 153, 204)))
                 using (var tan = new SolidBrush(Color.FromArgb(140, 98, 57)))
                 {
-                    if (name == "folder" || name == "folder-add" || name == "settings" || name == "close")
+                    if (name == "folder" || name == "settings" || name == "close")
                     {
                         // A compact green header, warm backing and light inset,
                         // drawn at the display size instead of scaled afterwards.
@@ -450,12 +424,7 @@ namespace HyperRealismInstaller
                         else
                         {
                             FillRound(g, white, 4, 6, 16, 14, 1.5f);
-                            if (name == "folder-add")
-                            {
-                                using (var plus = new Pen(darkGreen, 3) { StartCap = LineCap.Round, EndCap = LineCap.Round })
-                                { g.DrawLine(plus, 12, 10, 12, 17); g.DrawLine(plus, 8.5f, 13.5f, 15.5f, 13.5f); }
-                            }
-                            else if (name == "close")
+                            if (name == "close")
                             {
                                 // Reference: a dark-green cross on a white inset,
                                 // framed by a green header and warm brown base.
@@ -603,7 +572,7 @@ namespace HyperRealismInstaller
             string folder = null;
             try { folder = PackInstaller.ValidateFolder(pathBox.Text); } catch { }
             UpdateSummary summary = null;
-            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = toolCheck.Enabled = false;
+            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = toolCheck.Enabled = false;
             UpdateFolderStatus(); progress.Visible = true; result.ForeColor = Foreground; result.Text = "Checking GitHub for installer and pack updates...";
             int generation = StartTransferProgress(true);
             try
@@ -624,7 +593,7 @@ namespace HyperRealismInstaller
             {
                 busy = false;
                 FinishTransferProgress(generation);
-                if (!IsDisposed) { pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = toolCheck.Enabled = true; progress.Visible = false; UpdateFolderStatus(); }
+                if (!IsDisposed) { pathBox.Enabled = browse.Enabled = close.Enabled = toolCheck.Enabled = true; progress.Visible = false; UpdateFolderStatus(); }
             }
             if (IsDisposed || summary == null) return;
             result.Text = summary.Pack; result.ForeColor = Foreground;
@@ -669,7 +638,7 @@ namespace HyperRealismInstaller
         {
             if (checkingApp || busy || (automatic && !automaticUpdates)) return;
             int generation = 0;
-            checkingApp = true; appUpdate.Enabled = false; toolCheck.Enabled = false;
+            checkingApp = true; toolCheck.Enabled = false;
             if (!automatic)
             {
                 busy = true;
@@ -684,7 +653,6 @@ namespace HyperRealismInstaller
             {
                 InstallerRelease update = await Task.Run(() => SelfUpdater.FindUpdate(new WebTransfer(null, () => !automatic && cancelTransfer), SelfUpdater.CurrentTag));
                 if (IsDisposed || busy && automatic || (automatic && !automaticUpdates)) return;
-                appUpdate.Text = "Installer update";
                 if (update != null)
                 {
                     bool deferred = automatic && String.Equals(deferredInstallerTag, update.Tag, StringComparison.Ordinal);
@@ -710,7 +678,6 @@ namespace HyperRealismInstaller
             catch (Exception ex)
             {
                 if (!IsDisposed && !automatic) ShowError(ex);
-                else if (!IsDisposed) appUpdate.Text = "Retry app update";
             }
             finally
             {
@@ -721,7 +688,7 @@ namespace HyperRealismInstaller
                     FinishTransferProgress(generation);
                     if (!IsDisposed) { progress.Visible = false; pathBox.Enabled = browse.Enabled = close.Enabled = true; UpdateFolderStatus(); }
                 }
-                if (!IsDisposed) { appUpdate.Enabled = !busy; toolCheck.Enabled = !busy; }
+                if (!IsDisposed) { toolCheck.Enabled = !busy; }
             }
             if (automatic && automaticUpdates && !IsDisposed && !busy) await CheckPackOnStartup();
         }
@@ -753,7 +720,7 @@ namespace HyperRealismInstaller
         {
             string stage = null;
             bool handedOff = false;
-            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
+            busy = true; pathBox.Enabled = browse.Enabled = close.Enabled = toolCheck.Enabled = false;
             UpdateFolderStatus(); progress.Visible = true;
             int generation = StartTransferProgress(true);
             result.ForeColor = Foreground;
@@ -784,7 +751,7 @@ namespace HyperRealismInstaller
                 if (!handedOff && stage != null) { try { if (File.Exists(stage)) File.Delete(stage); } catch { } }
                 busy = false;
                 FinishTransferProgress(generation);
-                if (!IsDisposed) { progress.Visible = false; pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = true; UpdateFolderStatus(); }
+                if (!IsDisposed) { progress.Visible = false; pathBox.Enabled = browse.Enabled = close.Enabled = toolCheck.Enabled = true; UpdateFolderStatus(); }
             }
         }
 
@@ -804,15 +771,12 @@ namespace HyperRealismInstaller
                 folderStatus.ForeColor = Color.FromArgb(241, 176, 87);
                 valid = false;
             }
-            check.Enabled = valid && !busy;
             install.Enabled = valid && !busy;
             openFolder.Enabled = valid && !busy;
             toolOpen.Enabled = !busy;
             toolCheck.Enabled = !busy && !checkingApp;
-            toolBrowse.Enabled = !busy;
             launch.Enabled = !busy;
             toolSettings.Enabled = !busy;
-            sideBrowse.Enabled = !busy;
         }
 
         private async Task RunOperation(bool doInstall)
@@ -820,7 +784,7 @@ namespace HyperRealismInstaller
             string path = pathBox.Text;
             SavePath();
             busy = true;
-            pathBox.Enabled = browse.Enabled = close.Enabled = appUpdate.Enabled = false;
+            pathBox.Enabled = browse.Enabled = close.Enabled = toolCheck.Enabled = false;
             UpdateFolderStatus();
             progress.Visible = true;
             int generation = StartTransferProgress(doInstall);
@@ -846,7 +810,7 @@ namespace HyperRealismInstaller
                 progress.Visible = false;
                 busy = false;
                 pathBox.Enabled = browse.Enabled = close.Enabled = true;
-                appUpdate.Enabled = !checkingApp;
+                toolCheck.Enabled = !checkingApp && !busy;
                 UpdateFolderStatus();
             }
         }
@@ -931,22 +895,22 @@ namespace HyperRealismInstaller
         {
             if (String.IsNullOrEmpty(pathBox.Text)) throw new Exception("No default or saved path.");
             pathBox.Text = Path.GetTempPath();
-            if (install.Enabled || check.Enabled) throw new Exception("Invalid folder was accepted.");
+            if (install.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || check.Text != "Check updates" || toolBrowse.Text != "Add Instance" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != install || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected launcher-style installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || toolOpen.Text != "Folders" || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != install || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected installer controls are missing.");
             int progressGeneration = StartTransferProgress(true);
             if (!cancelDownload.Visible || !cancelDownload.Enabled || CancelButton != cancelDownload) throw new Exception("Active operations must expose an accessible cancel action.");
             FinishTransferProgress(progressGeneration);
             if (cancelDownload.Visible || cancelDownload.Enabled || CancelButton != close) throw new Exception("The cancel action did not restore after an operation.");
-            foreach (var button in new LauncherButton[] { toolBrowse, toolOpen, toolSettings, toolHelp, toolCheck })
-                if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Image.Width - 3)
+            foreach (var button in new LauncherButton[] { toolOpen, toolSettings, toolHelp, toolCheck })
+                if (button.Image == null || TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width > button.Width - button.Padding.Left - button.Padding.Right - button.Image.Width - 3)
                     throw new Exception("Toolbar button is missing an icon or has clipped text: " + button.Text);
             var closeIcon = close.Image as Bitmap;
             if (closeIcon == null) throw new Exception("Close icon missing.");
             Color cross = closeIcon.GetPixel(9, 10), inset = closeIcon.GetPixel(4, 10), header = closeIcon.GetPixel(9, 2);
             if (cross.G <= cross.R * 1.5 || inset.R < 190 || inset.G < 190 || inset.B < 190 || header.G <= header.R * 1.5)
                 throw new Exception("Close icon must have a green cross, white inset and green header.");
-            if (!toolOpen.DropArrow || !toolHelp.DropArrow || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Update") throw new Exception("Toolbar actions are missing.");
+            if (!toolOpen.DropArrow || !toolHelp.DropArrow || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates") throw new Exception("Toolbar actions are missing.");
         }
     }
 }
