@@ -115,9 +115,9 @@ internal static class InstallerTests
         Assert(update != null && update.Tag == "v0.1.0-installer.12", "Installer version ordering or draft filtering failed.");
         update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.10");
         Assert(update != null && update.Tag == "v0.1.0-installer.12", "Installer 10 should update directly to installer 12.");
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.12", false, "https://github.com") });
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.13", false, "https://github.com") });
         update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
-        Assert(update != null && update.Tag == "v0.1.0-installer.12", "Newer update fixture not found.");
+        Assert(update != null && update.Tag == "v0.1.0-installer.13", "Newer update fixture not found.");
         string dir = Path.Combine(root, "self update & 50%! test"); Directory.CreateDirectory(dir);
         string target = Path.Combine(dir, "The Installer.exe"); File.WriteAllText(target, "old executable");
         string payload = Path.Combine(root, "app-payload"); File.WriteAllBytes(payload, fake.Payload);
