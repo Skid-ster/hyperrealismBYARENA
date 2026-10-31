@@ -12,8 +12,10 @@ jobs:
             & ./installer/build.ps1 *> "$env:RUNNER_TEMP\installer-build.log"
             if ($LASTEXITCODE -ne 0) { throw "Installer build failed with exit code $LASTEXITCODE" }
           } catch {
-            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Host "::error::$($_)" }
-            Write-Host "::error::$($_.Exception.Message)"
+            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Output "::error::$($_)" }
+            Write-Output "::error::$($_.Exception.Message)"
+            "## Installer build diagnostics`n" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+            Get-Content "$env:RUNNER_TEMP\installer-build.log" | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
             exit 1
           }
       - name: Test live download to temporary folder
