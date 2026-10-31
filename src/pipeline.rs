@@ -517,7 +517,7 @@ fn build_stage(
         "working_resolution": WORK,
         "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "pattern_seed": t.pattern_seed, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
         "entity_textures": data.entity_textures.iter().map(|e| serde_json::json!({"path": e.path, "albedo": e.albedo, "normal": e.normal, "specular": e.specular, "source": e.source, "license": e.license})).collect::<Vec<_>>(),
-        "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "arm": m.arm, "height": m.height, "ao": m.ao})).collect::<Vec<_>>(),
+        "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "roughness_bias": m.roughness_bias, "roughness_from_height": m.roughness_from_height, "arm": m.arm, "height": m.height, "height_from_normal": m.height_from_normal, "ao": m.ao})).collect::<Vec<_>>(),
         "manifest_sha256": manifest_hash,
         "client_paths_checked": client_paths_checked,
         "input_sha256": hashes,

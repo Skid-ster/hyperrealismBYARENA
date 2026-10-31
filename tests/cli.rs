@@ -443,6 +443,29 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         leaf_material.height.as_deref(),
         Some("materials/tree_leaves/height.png")
     );
+    let derived_height_count = m
+        .materials
+        .iter()
+        .filter(|material| material.height_from_normal)
+        .count();
+    assert_eq!(derived_height_count, 26);
+    assert!(m.materials.iter().all(|material| {
+        material.roughness_bias.is_finite() && (-0.5..=0.5).contains(&material.roughness_bias)
+    }));
+    let material = |id: &str| {
+        m.materials
+            .iter()
+            .find(|material| material.id == id)
+            .unwrap_or_else(|| panic!("missing material profile: {id}"))
+    };
+    assert!(material("procedural_glass").roughness_bias < 0.0);
+    assert!(material("metal_plate_02").roughness_bias < 0.0);
+    assert!(material("brown_mud_dry").roughness_bias > 0.0);
+    assert!(material("aerial_sand").roughness_bias > 0.0);
+    for stone in ["cobble_photo", "mossy_cobble_photo"] {
+        assert!(material(stone).roughness_from_height);
+        assert!(material(stone).height.is_some());
+    }
     assert_eq!(
         leaf_material.ao.as_deref(),
         Some("materials/tree_leaves/ao.png")
@@ -1183,7 +1206,7 @@ fn packed_arm_uses_occlusion_and_roughness_not_metallic() {
     let report: serde_json::Value =
         serde_json::from_slice(&fs::read(output.join("build_report.json")).unwrap()).unwrap();
     assert!(report["input_sha256"]["arm.png"].is_string());
-    let mut invalid = base;
+    let mut invalid = base.clone();
     invalid["materials"][0]["roughness"] = "arm.png".into();
     fs::write(
         temp.join("material_manifest.json"),
@@ -1193,6 +1216,21 @@ fn packed_arm_uses_occlusion_and_roughness_not_metallic() {
     let failed = temp.join("invalid");
     assert!(!run(&temp, &failed, "2").status.success());
     assert!(!failed.exists());
+    for (field, value) in [
+        ("roughness_bias", serde_json::json!(0.75)),
+        ("height_from_normal", serde_json::json!(true)),
+        ("roughness_from_height", serde_json::json!(true)),
+    ] {
+        let mut invalid = base.clone();
+        invalid["materials"][0][field] = value;
+        fs::write(
+            temp.join("material_manifest.json"),
+            serde_json::to_vec(&invalid).unwrap(),
+        )
+        .unwrap();
+        assert!(!run(&temp, &failed, "2").status.success(), "accepted {field}");
+        assert!(!failed.exists());
+    }
     let input16 = temp.join("arm16.png");
     {
         let file = fs::File::create(&input16).unwrap();

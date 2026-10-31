@@ -8,7 +8,8 @@
       "albedo": "materials/concrete_wall/color.jpg",
       "roughness": "materials/concrete_wall/roughness.jpg",
       "normal": "materials/concrete_wall/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true
     },
     {
       "id": "gravel_concrete",
@@ -17,7 +18,8 @@
       "albedo": "materials/gravel_concrete/color.jpg",
       "roughness": "materials/gravel_concrete/roughness.jpg",
       "normal": "materials/gravel_concrete/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true
     },
     {
       "id": "brick_red",
@@ -26,7 +28,8 @@
       "albedo": "materials/brick_red/color.jpg",
       "roughness": "materials/brick_red/roughness.jpg",
       "normal": "materials/brick_red/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true
     },
     {
       "id": "walnut",
@@ -36,7 +39,9 @@
       "roughness": "materials/walnut/roughness.jpg",
       "normal": "materials/walnut/normal.jpg",
       "normal_y": "opengl",
-      "ao": "materials/walnut/ao.jpg"
+      "ao": "materials/walnut/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "rusted_shutter",
@@ -45,7 +50,9 @@
       "albedo": "materials/rusted_shutter/color.jpg",
       "roughness": "materials/rusted_shutter/roughness.jpg",
       "normal": "materials/rusted_shutter/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true,
+      "roughness_bias": 0.08
     },
     {
       "id": "forest_ground",
@@ -54,7 +61,8 @@
       "albedo": "materials/forest_ground/color.jpg",
       "normal": "materials/forest_ground/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/forest_ground/arm.jpg"
+      "arm": "materials/forest_ground/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "sandstone_cracks",
@@ -63,7 +71,8 @@
       "albedo": "materials/sandstone_cracks/color.jpg",
       "normal": "materials/sandstone_cracks/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/sandstone_cracks/arm.jpg"
+      "arm": "materials/sandstone_cracks/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "aerial_sand",
@@ -72,21 +81,26 @@
       "albedo": "materials/aerial_sand/color.jpg",
       "normal": "materials/aerial_sand/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/aerial_sand/roughness.jpg"
+      "roughness": "materials/aerial_sand/roughness.jpg",
+      "height_from_normal": true,
+      "roughness_bias": 0.18
     },
     {
       "id": "cobble_photo",
       "source": "Cobblestone Floor 04: https://polyhaven.com/a/cobblestone_floor_04; creator: Rob Tuytel; modified CC0 source",
       "license": "CC0-1.0",
       "albedo": "materials/cobble_photo/gray_color.png",
-      "height": "materials/cobble_photo/height.png"
+      "height": "materials/cobble_photo/height.png",
+      "roughness_from_height": true
     },
     {
       "id": "mossy_cobble_photo",
       "source": "Cobblestone Floor 04: https://polyhaven.com/a/cobblestone_floor_04; creator: Rob Tuytel; modified CC0 source",
       "license": "CC0-1.0",
       "albedo": "materials/cobble_photo/mossy_color.png",
-      "height": "materials/cobble_photo/height.png"
+      "height": "materials/cobble_photo/height.png",
+      "roughness_from_height": true,
+      "roughness_bias": 0.04
     },
     {
       "id": "rock_face",
@@ -95,7 +109,8 @@
       "albedo": "materials/rock_face/color.jpg",
       "normal": "materials/rock_face/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/rock_face/arm.jpg"
+      "arm": "materials/rock_face/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "bark_willow_02",
@@ -105,7 +120,8 @@
       "normal": "materials/bark_willow_02/normal.jpg",
       "normal_y": "directx",
       "roughness": "materials/bark_willow_02/roughness.jpg",
-      "height": "materials/bark_willow_02/displacement.jpg"
+      "height": "materials/bark_willow_02/displacement.jpg",
+      "roughness_bias": 0.12
     },
     {
       "id": "oak_veneer_02",
@@ -115,7 +131,9 @@
       "normal": "materials/oak_veneer_02/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/oak_veneer_02/roughness.jpg",
-      "ao": "materials/oak_veneer_02/ao.jpg"
+      "ao": "materials/oak_veneer_02/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "cherry_veneer",
@@ -125,7 +143,9 @@
       "normal": "materials/cherry_veneer/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/cherry_veneer/roughness.jpg",
-      "ao": "materials/cherry_veneer/ao.jpg"
+      "ao": "materials/cherry_veneer/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "natural_walnut_veneer",
@@ -135,7 +155,9 @@
       "normal": "materials/natural_walnut_veneer/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/natural_walnut_veneer/roughness.jpg",
-      "ao": "materials/natural_walnut_veneer/ao.jpg"
+      "ao": "materials/natural_walnut_veneer/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "white_maple_veneer",
@@ -145,7 +167,9 @@
       "normal": "materials/white_maple_veneer/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/white_maple_veneer/roughness.jpg",
-      "ao": "materials/white_maple_veneer/ao.jpg"
+      "ao": "materials/white_maple_veneer/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "leafy_grass",
@@ -154,7 +178,8 @@
       "albedo": "materials/leafy_grass/neutral_color.png",
       "normal": "materials/leafy_grass/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/leafy_grass/roughness.jpg"
+      "roughness": "materials/leafy_grass/roughness.jpg",
+      "height_from_normal": true
     },
     {
       "id": "snow_02",
@@ -184,7 +209,8 @@
       "normal": "materials/brown_mud_dry/normal.jpg",
       "normal_y": "opengl",
       "arm": "materials/brown_mud_dry/arm.jpg",
-      "height": "materials/brown_mud_dry/height.jpg"
+      "height": "materials/brown_mud_dry/height.jpg",
+      "roughness_bias": 0.22
     },
     {
       "id": "brown_mud_03",
@@ -194,7 +220,8 @@
       "normal": "materials/brown_mud_03/normal.jpg",
       "normal_y": "opengl",
       "arm": "materials/brown_mud_03/arm.jpg",
-      "height": "materials/brown_mud_03/height.jpg"
+      "height": "materials/brown_mud_03/height.jpg",
+      "roughness_bias": 0.2
     },
     {
       "id": "forest_leaves_04",
@@ -224,7 +251,8 @@
       "normal_y": "opengl",
       "roughness": "materials/tree_leaves/roughness.png",
       "height": "materials/tree_leaves/height.png",
-      "ao": "materials/tree_leaves/ao.png"
+      "ao": "materials/tree_leaves/ao.png",
+      "roughness_bias": -0.05
     },
     {
       "id": "clay_floor",
@@ -233,7 +261,9 @@
       "albedo": "materials/clay_floor/color.png",
       "normal": "materials/clay_floor/normal.png",
       "normal_y": "opengl",
-      "arm": "materials/clay_floor/arm.png"
+      "arm": "materials/clay_floor/arm.png",
+      "height_from_normal": true,
+      "roughness_bias": 0.12
     },
     {
       "id": "cherry_veneer_vertical",
@@ -244,7 +274,9 @@
       "normal_y": "opengl",
       "roughness": "materials/cherry_veneer/roughness.jpg",
       "ao": "materials/cherry_veneer/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "natural_walnut_veneer_vertical",
@@ -255,7 +287,9 @@
       "normal_y": "opengl",
       "roughness": "materials/natural_walnut_veneer/roughness.jpg",
       "ao": "materials/natural_walnut_veneer/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "oak_veneer_02_vertical",
@@ -266,7 +300,9 @@
       "normal_y": "opengl",
       "roughness": "materials/oak_veneer_02/roughness.jpg",
       "ao": "materials/oak_veneer_02/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "white_maple_veneer_vertical",
@@ -277,14 +313,17 @@
       "normal_y": "opengl",
       "roughness": "materials/white_maple_veneer/roughness.jpg",
       "ao": "materials/white_maple_veneer/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "procedural_glass",
       "source": "Original procedural neutral glass base; no photographic scan",
       "license": "CC0-1.0",
       "albedo": "materials/procedural_glass/color.png",
-      "roughness": "materials/procedural_glass/roughness.png"
+      "roughness": "materials/procedural_glass/roughness.png",
+      "roughness_bias": -0.09
     },
     {
       "id": "metal_plate_02",
@@ -293,7 +332,9 @@
       "albedo": "materials/metal_plate_02/diff.jpg",
       "normal": "materials/metal_plate_02/nor.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/metal_plate_02/rough.jpg"
+      "roughness": "materials/metal_plate_02/rough.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.12
     },
     {
       "id": "walnut_horizontal",
@@ -304,7 +345,9 @@
       "normal_y": "opengl",
       "roughness": "materials/walnut/roughness.jpg",
       "ao": "materials/walnut/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "poly_wool_herringbone",
@@ -313,7 +356,8 @@
       "albedo": "materials/poly_wool_herringbone/color.jpg",
       "normal": "materials/poly_wool_herringbone/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/poly_wool_herringbone/roughness.jpg"
+      "roughness": "materials/poly_wool_herringbone/roughness.jpg",
+      "height_from_normal": true
     },
     {
       "id": "bark_brown_01",
@@ -322,7 +366,8 @@
       "albedo": "materials/bark_brown_01/color.jpg",
       "normal": "materials/bark_brown_01/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/bark_brown_01/roughness.jpg"
+      "roughness": "materials/bark_brown_01/roughness.jpg",
+      "height_from_normal": true
     },
     {
       "id": "bark_platanus",
@@ -331,7 +376,8 @@
       "albedo": "materials/bark_platanus/color.jpg",
       "normal": "materials/bark_platanus/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/bark_platanus/roughness.jpg"
+      "roughness": "materials/bark_platanus/roughness.jpg",
+      "height_from_normal": true
     },
     {
       "id": "nether_lava_003",
@@ -340,7 +386,9 @@
       "albedo": "materials/nether_lava_003/color.jpg",
       "normal": "materials/nether_lava_003/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/nether_lava_003/arm.jpg"
+      "arm": "materials/nether_lava_003/arm.jpg",
+      "height_from_normal": true,
+      "roughness_bias": 0.18
     },
     {
       "id": "nether_dark_rock",
@@ -349,7 +397,8 @@
       "albedo": "materials/nether_dark_rock/color.jpg",
       "normal": "materials/nether_dark_rock/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/nether_dark_rock/arm.jpg"
+      "arm": "materials/nether_dark_rock/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "nether_lava_flow",
@@ -358,7 +407,8 @@
       "albedo": "materials/nether_lava_flow/color.jpg",
       "normal": "materials/nether_lava_flow/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/nether_lava_flow/arm.jpg"
+      "arm": "materials/nether_lava_flow/arm.jpg",
+      "roughness_bias": -0.12
     }
   ],
   "textures": [

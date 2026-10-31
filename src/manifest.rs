@@ -33,6 +33,15 @@ pub struct Material {
     pub normal: Option<String>,
     pub height: Option<String>,
     pub ao: Option<String>,
+    /// Derive a conservative periodic height field by integrating the normal map.
+    #[serde(default)]
+    pub height_from_normal: bool,
+    /// Derive surface roughness from an authored height map (stone faces vs joints).
+    #[serde(default)]
+    pub roughness_from_height: bool,
+    /// Additive, material-wide roughness calibration; does not change global PBR strength.
+    #[serde(default)]
+    pub roughness_bias: f32,
     /// Rotate aligned maps clockwise by 90 degrees after preparation.
     #[serde(default)]
     pub rotate_cw: bool,
@@ -169,6 +178,26 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         if material.normal_y != "directx" && material.normal_y != "opengl" {
             return Err(format!(
                 "{}: normal_y must be directx or opengl",
+                material.id
+            ));
+        }
+        if !material.roughness_bias.is_finite() || !(-0.5..=0.5).contains(&material.roughness_bias) {
+            return Err(format!(
+                "{}: roughness_bias must be finite and in -0.5..=0.5",
+                material.id
+            ));
+        }
+        if material.height_from_normal && (material.normal.is_none() || material.height.is_some()) {
+            return Err(format!(
+                "{}: height_from_normal requires a normal map and no explicit height map",
+                material.id
+            ));
+        }
+        if material.roughness_from_height
+            && (material.height.is_none() || material.roughness.is_some() || material.arm.is_some())
+        {
+            return Err(format!(
+                "{}: roughness_from_height requires height and no separate roughness/arm map",
                 material.id
             ));
         }

@@ -17,7 +17,10 @@ scan. Preview 20 adds a woven wool scan, distinct CC0 bark scans for oak,
 dark-oak and jungle logs, and full-PBR Walnut Veneer maps for dark-oak wood.
 Preview 21 expands coverage to 344 block texture paths, adding 36 static Nether
 surfaces with volcanic rock and aligned emission maps; animated and cutout Nether
-sprites remain unchanged. Pale oak keeps the color-matched maple source. These
+sprites remain unchanged. Preview 22 adds five adult temperate farm-mob texture
+paths. Preview 23 calibrates roughness by material and reconstructs subtle height
+from 26 aligned normal maps; these remain experimental and need in-game review.
+Pale oak keeps the color-matched maple source. These
 are targeted source improvements, not a complete or visually validated
 photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
@@ -73,19 +76,19 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 22 uses 512×512
+No Rust installation is needed to use the prebuilt pack. Preview 23 uses 512×512
 textures (the legacy `HyperRealism128` archive name is retained for updater
 compatibility), which requires substantially more GPU
 memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
 not yet been tested. Enable a compatible shader and LabPBR settings as described
 in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism 512×512 Preview 22 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.22/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+[HyperRealism 512×512 Preview 23 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.23/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Its
 344 distinct texture paths replace only a subset of the game; the rest remain
 vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
-the new entity maps in this revision have not yet been validated there. Grass sides now have a
+the new roughness calibration and normal-derived height estimates have not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
 photographic foliage atlas with transparency and static mipmap metadata.
 Dirt, gravel, snow, mud, dirt paths and podzol use new scanned ground maps.
@@ -128,7 +131,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.22/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.23/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell
@@ -248,10 +251,16 @@ red/gray channel as linear 0–1 data; 16-bit PNG precision is preserved for
 these scalar maps. Alternatively, `arm` is a packed PNG/JPEG with linear AO
 in red and roughness in green; its metallic blue channel is ignored and LabPBR
 metal IDs must be chosen separately. `arm` cannot be combined with separate
-`ao` or `roughness`. Roughness defaults to 0.8 and AO to 1. If height is absent,
-a luminance-based approximation is used; without a normal map, normals are
-derived from height. When a normal map is present, it is combined with recipe
-relief without adding the height-map gradients twice. JPEG alpha is opaque;
+`ao` or `roughness`. Roughness defaults to 0.8 and AO to 1. Material-level
+`roughness_bias` adds a bounded calibration to source roughness; it does not
+change the global PBR strength. `roughness_from_height` can derive a rougher
+stone-joint response from an authored height map. If height is absent, a
+luminance-based approximation is used unless `height_from_normal` is enabled;
+that option estimates a periodic height field from the normal map for surfaces
+with meaningful relief. These reconstructions are conservative approximations,
+not measured displacement. Without a normal map, normals are derived from
+height. When a normal map is present, it is combined with recipe relief without
+adding the height-map gradients twice. JPEG alpha is opaque;
 CMYK JPEG is not supported. Source and license are optional, user-provided
 provenance fields and are recorded, not verified. `tint` is an sRGB multiplier,
 not a target palette match. An optional `target_color: [R,G,B]` applies a bounded gain to move the

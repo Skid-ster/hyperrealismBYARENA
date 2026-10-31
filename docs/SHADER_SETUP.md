@@ -90,13 +90,18 @@ LabPBR metal/F0 IDs, porosity and emission are preserved. This is defined
 channel scaling, not a guarantee of 20% perceived brightness or relief. Preview
 15 supplies explicit, normal-derived height and conservative cavity AO for the
 shared leaf atlas; use POM if you want to inspect the shallow surface relief.
-This does not change leaf block geometry or create a fuller canopy. Compare the same sunlit oak log or cobblestone with
-Normal Mapping on and off; rotate the view/light to check for changes in shading.
-For specular, compare a smooth metallic block in the manifest, with Specular Mapping on/off.
-If nothing changes, check Iris/Photon versions, pack order, and shader settings;
-reload resources with F3+T. Scan-driven height exists on the new bark and
-cobblestone; many older materials still use approximate height, so parallax
-can look wrong. This is a diagnostic procedure, not proof of a test on your PC.
+This does not change leaf block geometry or create a fuller canopy. Roughness
+is tuned at the material-map level, not by changing the global strength: finished
+wood, metal and glass are kept smoother; sand, mud, bark and oxidized surfaces
+stay rough. Cobblestone roughness varies between its stone faces and mortar from
+the authored height map. For 26 other scanned materials with no displacement
+scan, a conservative periodic height estimate is reconstructed from the normal
+map; it is an approximation, not measured geometry. Compare the same sunlit oak
+log or cobblestone with Normal Mapping on and off; rotate the view/light to
+check for shading changes. For specular, compare a smooth metallic block with
+Specular Mapping on/off. If nothing changes, check Iris/Photon versions, pack
+order, and shader settings; reload resources with F3+T. This is a diagnostic
+procedure, not proof of a test on your PC.
 
 At 512px, shader atlas memory and load times can increase substantially; if you
 see stutter or texture-load errors, reduce shader settings and try the optional

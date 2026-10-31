@@ -1,4 +1,4 @@
-# HyperRealism 512×512 — Minecraft Java 26.3 experimental Preview 22
+# HyperRealism 512×512 — Minecraft Java 26.3 experimental Preview 23
 
 This 512×512 experimental resource pack now generates **344 block texture paths**. It remains a partial pack, not a replacement for every vanilla texture; animated and cutout Nether sprites that cannot yet be safely regenerated with their exact frame/alpha data remain vanilla. The archive retains its legacy `HyperRealism128` filename for updater compatibility. Minecraft displays **HyperRealism 512×512**.
 
@@ -18,9 +18,13 @@ The global PBR strength remains `0.2`; every generated target uses the same stre
 
 ## Farm-mob texture pilot
 
-Preview 22 adds five original, experimental adult temperate entity texture targets: chicken, cow, pig, sheep skin, and the tintable sheep wool layer. The chicken receives a soft feather/down surface; the cow and pig receive distinct hide/skin treatments; sheep keeps its wool tint behavior. Their vanilla UV layouts, models, animations, and behavior are unchanged.
+Preview 22 added five original, experimental adult temperate entity texture targets: chicken, cow, pig, sheep skin, and the tintable sheep wool layer. The chicken receives a soft feather/down surface; the cow and pig receive distinct hide/skin treatments; sheep keeps its wool tint behavior. Their vanilla UV layouts, models, animations, and behavior are unchanged.
 
 This is a limited pilot, not full mob coverage: babies, other biome variants, equipment, collars, and hostile mobs remain vanilla. These maps have structural and atlas checks, but have **not** been validated in-game with a shader or benchmarked for performance. Entity LabPBR support varies by shader.
+
+## Material-channel refinement
+
+The material catalog now applies modest, material-specific roughness calibration while retaining one global block PBR strength of 0.2. Finished glass, metal and wood receive smoother calibrated source roughness; sand, mud, bark, rust and oxidized materials retain rougher response. Cobblestone and mossy cobblestone now vary roughness between stone faces and joints using their height field. For 26 textured materials without a dedicated displacement scan, a conservative periodic height estimate is reconstructed from the aligned normal map. These estimates preserve original source maps and remain approximations, not measured geometry.
 
 ## Automated checks and limitations
 
