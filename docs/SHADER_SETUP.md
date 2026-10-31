@@ -17,13 +17,27 @@ the upstream license and acknowledgements. HyperRealism adds an adjustable
 teal-shadow/amber-highlight display grade and punchier AgX/contrast defaults;
 LabPBR lighting remains the material foundation.
 
-Install the folder into the instance's `shaderpacks` directory, select
-**HyperRealism: Gilded Dusk** in Iris, and set **PBR Support** to **LabPBR 1.3**.
-The **Teal–Amber Style** slider controls the effect; 0 disables the split tone.
-This prototype has **not** been shader-compiled or tested in Minecraft, so do
-not treat it as the verified/default recommendation. Visual artifacts,
-compatibility, and performance remain unknown. Photon below remains the
-existing general recommendation until in-game checks can be done.
+Build a ready-to-install archive with `python3 scripts/package_stylized_shader.py`; it writes
+`shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip` with `shaders/` at the
+ZIP root. Put the ZIP (do not extract it) in the active instance's
+`shaderpacks` folder, enable the matching HyperRealism resource pack, then
+select **HyperRealism: Gilded Dusk** in Iris. Leave **PBR Support** on **LabPBR
+1.3**. The **Teal–Amber Style** slider ranges from 0 (neutral) to 100; default
+70.
+
+Validation is stronger than the initial prototype: a compiler check now
+expands the Iris-style includes and compiles all 227 ordinary stages, 227 PBR-off/style-maximum stages, and a
+239-stage all-features/Distant-Horizons matrix against the Iris 26.3 macro
+interface (693 stage compiles total). CI runs this check with glslang. This
+catches GLSL syntax/type errors, but it is not a running game or GPU: in-game
+loading, visual output, driver compatibility, artifacts, and performance
+remain unverified. Glimmer's upstream README states Iris 1.6+ and OpenGL 4.3+;
+its latest published [v1.5.2 version metadata](https://modrinth.com/shader/glimmer-shaders/version/1dD3KC4h)
+lists support through Minecraft 1.21.11, not 26.3. The 26.3 compile matrix
+is our own validation, not upstream certification. See the
+shader folder's README for exact setup and the current known limits. Photon
+below remains the established practical recommendation until an actual
+Minecraft/Iris runtime check is completed.
 
 ## Recommended free shader: Photon
 

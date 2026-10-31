@@ -9,8 +9,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: Install GLSL compiler for Iris-stage validation
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes glslang-tools
       - name: Check optional shader structure and MIT provenance
         run: python scripts/check_stylized_shader.py
+      - name: Compile Iris 26.3 shader stages and feature matrix
+        if: runner.os == 'Linux'
+        run: python3 scripts/compile_stylized_shader.py
+      - name: Build and verify the installable Iris ZIP
+        if: runner.os == 'Linux'
+        run: python3 scripts/package_stylized_shader.py
       - run: cargo test --locked
       - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only
       - run: cargo run --locked --release -- --input work --output pilot_output --cpu-only --threads 2

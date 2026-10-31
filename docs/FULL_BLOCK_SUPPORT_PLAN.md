@@ -114,14 +114,21 @@ acknowledgements. The prototype keeps the upstream LabPBR path and adds an
 adjustable teal-shadow/amber-highlight display grade. This is an opt-in
 companion, not a reason to make the resource pack depend on one renderer.
 
-The shader has **not** yet been compiled with a shader compiler or tested in
-Minecraft/Iris. Keep Photon and other established LabPBR shaders documented as
-the practical choices until a compatible runtime test can validate this
-prototype. A custom shader cannot make incomplete or inaccurate source textures
-realistic by itself. It adds ongoing GLSL/version maintenance, compatibility
-and licensing review, device/driver coverage, settings and documentation, and
-a performance budget. Shader-pack behavior is not portable enough to assume one
-implementation works identically in Iris, OptiFine and every LabPBR shader.
+The source has passed a **glslang compiler matrix** against the Iris 26.3
+shader-macro interface: 227 ordinary stages, 227 stages with PBR off and the
+style slider at its maximum, and 239 stages with optional features plus the
+Distant Horizons interface (693 successful stage compiles). A structural check
+also verifies the retained MIT notices and ZIP root layout. These checks catch
+source-level GLSL errors; they do **not** establish that the pack loads or looks
+right on an actual Minecraft/Iris/GPU setup. In-game compatibility, visual
+artifacts, and performance are still unknown. Keep Photon and other established
+LabPBR shaders documented as the practical choices until a runtime test
+validates this prototype. A custom shader cannot make incomplete or inaccurate
+source textures realistic by itself. It adds ongoing GLSL/version maintenance,
+compatibility and licensing review, device/driver coverage, settings and
+documentation, and a performance budget. Shader-pack behavior is not portable
+enough to assume one implementation works identically in Iris, OptiFine and
+every LabPBR shader.
 
 Recommended gates before treating the prototype as a supported shader:
 
@@ -129,9 +136,9 @@ Recommended gates before treating the prototype as a supported shader:
   measurements on the stated target hardware.
 - Reproduce a concrete visual or performance problem with at least two current
   LabPBR shaders, and verify that it is not a bad material map or setting.
-- Compile and validate the optional Iris prototype against LabPBR 1.3 maps;
-  define a clear version matrix, sensible quality profiles, and graceful
-  fallback before recommending or distributing it.
+- Load the prototype in Minecraft Java 26.3 with a stated Iris/Sodium build and
+  actual LabPBR maps; verify the main/Nether/End worlds, shader-setting changes,
+  reloads, and common video modes. Define a tested version matrix and fallback.
 - Compare its output and frame-time/VRAM cost to established shaders under the
   same scenes and settings. Do not claim it is “more realistic” without
   controlled visual review.

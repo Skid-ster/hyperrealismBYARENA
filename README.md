@@ -34,8 +34,11 @@ This is a target, not a claim of measured performance or GPU acceleration.
 The generator is currently CPU-only; shader rendering uses your GPU. This
 repository also includes an experimental Iris/LabPBR shader prototype at
 [`shaderpacks/HyperRealism-Stylized-PBR`](shaderpacks/HyperRealism-Stylized-PBR/README.md),
-based on MIT-licensed Glimmer. It has not yet been shader-compiled or validated
-in Minecraft; Photon remains the documented practical option for now.
+based on MIT-licensed Glimmer. The Iris 26.3 source/feature matrix now passes
+693 glslang stage compiles, and `python3 scripts/package_stylized_shader.py`
+builds a ready-to-install ZIP. It has not yet been loaded in Minecraft, so
+in-game visuals, driver compatibility, and performance remain unverified;
+Photon remains the documented practical recommendation.
 
 See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 371, leaving 901 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 

@@ -32,6 +32,8 @@ option.CONTRAST=对比度
 option.CONTRAST.comment=§9无性能影响！
 option.SATURATION=饱和度
 option.SATURATION.comment=§9无性能影响！
+option.STYLE_STRENGTH=青绿—琥珀色调
+option.STYLE_STRENGTH.comment=阴影偏青绿色，高光偏暖琥珀色；设为 0 可关闭分色效果。§9性能影响极小。
 
 option.EXPOSURE=曝光度
 option.EXPOSURE.comment=控制屏幕最终亮度。若启用§e自动曝光§f则此设置无效。§9无性能影响！

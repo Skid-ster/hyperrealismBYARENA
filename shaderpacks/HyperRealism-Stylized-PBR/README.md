@@ -24,22 +24,46 @@ author and contributors. See the MIT notice before copying or redistributing.
 
 ## Install and configure
 
-1. Use Minecraft Java 26.3 with Iris and Sodium. This prototype does not claim
-   OptiFine compatibility.
-2. Copy the `HyperRealism-Stylized-PBR` folder into that instance's
-   `shaderpacks` directory (or zip the folder with `shaders/` at the archive
-   root).
-3. Select **HyperRealism: Gilded Dusk** in Iris. For this resource pack, set
-   **PBR Support** to **LabPBR 1.3** and start with parallax mapping off; raise
-   parallax only after checking that the texture's estimated height looks
-   plausible.
-4. Adjust **Post-Processing → Teal–Amber Style** from 0 (neutral) to 100
-   (strong split tone). The default is 70.
+**Target:** Minecraft Java 26.3, the matching Iris/Sodium build, Fabric or
+NeoForge, and an OpenGL 4.3-capable GPU. Iris does not run with OptiFine or the
+Minecraft Vulkan renderer; use the normal OpenGL renderer. The upstream
+Glimmer README also excludes macOS and Raspberry Pi because they do not provide
+the required OpenGL feature level. Use the [official Iris installer](https://irisshaders.dev/download)
+for your Minecraft version; it installs Iris and Sodium together.
 
-## Validation status
+1. Run `python3 scripts/package_stylized_shader.py` from the project root, or
+   use the supplied `HyperRealism-Gilded-Dusk-MC-26.3.zip`.
+2. Put the ZIP itself in the active instance's `shaderpacks` directory. Do not
+   unzip it. The archive is laid out with `shaders/` at its root, as Iris
+   expects; it is not a resource pack.
+3. Enable the HyperRealism resource pack in the resource-pack screen, then
+   select **HyperRealism: Gilded Dusk** under **Options → Video Settings →
+   Shader Packs**.
+4. In shader settings, leave **PBR Support** on **LabPBR 1.3** for this pack.
+   Keep parallax mapping off initially; enable it only if you want the
+   height/depth effect. Adjust **Post-Processing → Teal–Amber Style** from 0
+   (neutral) to 100 (strong split tone); the default is 70.
 
-This is an early source integration, not a release-ready or visually validated
-shader. The source is pinned, the upstream license is included, and the new
-color-grade control is wired into Iris settings. Shader compilation, Minecraft
-26.3/Iris runtime, LabPBR appearance, visual artifacts and performance have not
-yet been tested in-game. No hardware-performance claim is made.
+If the shader does not appear, check that the ZIP is in the launcher's actual
+instance directory, not `resourcepacks`. If Iris reports a compile problem,
+check that instance's `logs/latest.log` and capture the first shader error.
+
+## Validation and compatibility limits
+
+The pack is pinned to Glimmer's MIT-licensed upstream source commit shown above.
+Its source has now been compiler-checked with glslang against the Iris 26.3 macro interface (from
+Iris's [`StandardMacros`](https://github.com/IrisShaders/Iris/blob/26.3/common/src/main/java/net/irisshaders/iris/gl/shader/StandardMacros.java)
+and [`WorldRenderingPhase`](https://github.com/IrisShaders/Iris/blob/26.3/common/src/main/java/net/irisshaders/iris/pipeline/WorldRenderingPhase.java)):
+all 227 default stages, 227 PBR-off/style-maximum stages, and a 239-stage
+all-features/Distant-Horizons matrix passed (693 stage compilations). A
+source/archive check also verifies the LabPBR default, style setting, root ZIP
+layout, and retained notices.
+
+This is not the same as running Minecraft: **in-game loading, actual GPU/driver
+compatibility, image quality, artifacts, and performance have not been
+verified here.** Glimmer's own README states Iris 1.6+ and OpenGL 4.3+, while
+its latest published [v1.5.2 version metadata](https://modrinth.com/shader/glimmer-shaders/version/1dD3KC4h)
+lists Minecraft through 1.21.11; that is not an upstream certification for
+26.3. The 26.3 compile matrix is our additional
+check, not a promise that every modded instance or GPU will render it
+identically. No hardware-performance claim is made.
