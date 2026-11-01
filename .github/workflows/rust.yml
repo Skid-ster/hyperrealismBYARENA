@@ -41,10 +41,10 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  publish-preview-23:
+  publish-preview-24:
     # This explicitly requested prerelease only runs for its release commit on
     # the assigned session branch, after Linux and Windows checks pass.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 23')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 24')
     needs: test
     runs-on: ubuntu-latest
     permissions:
@@ -53,6 +53,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo run --locked --release -- --input work --output release_build --cpu-only --threads 2
+      - name: Build and verify the distributable Iris shader ZIP
+        run: python3 scripts/package_stylized_shader.py
       - name: Fetch the latest GUI installer for the pack release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -69,12 +71,16 @@ jobs:
           cp release_build/dist/HyperRealism128-v1.0-MC26.3.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip
           cp release_build/build_report.json release_assets/build_report.json
           cp scripts/Install-HyperRealismPreview.ps1 release_assets/Install-HyperRealismPreview.ps1
+          cp shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip
           cd release_assets
           sha256sum HyperRealism128-MC26.3-EXPERIMENTAL.zip > HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum HyperRealism-Gilded-Dusk-MC-26.3.zip > HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
           sha256sum -c HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum -c HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
           python -c "import zipfile; z=zipfile.ZipFile('HyperRealism128-MC26.3-EXPERIMENTAL.zip'); assert z.testzip() is None; names=set(z.namelist()); pngs=[n for n in names if n.endswith('.png')]; expected=['assets/minecraft/textures/entity/'+p+s+'.png' for p in ['chicken/chicken_temperate','cow/cow_temperate','pig/pig_temperate','sheep/sheep','sheep/sheep_wool'] for s in ['', '_n', '_s']]; assert len(pngs)==1317, len(pngs); assert all(n in names for n in expected); assert 'MATERIAL_CREDITS.txt' in names; assert 'ENTITY_TEXTURES.txt' in names; assert 'pack.mcmeta' in names"
+          python -c "import zipfile; z=zipfile.ZipFile('HyperRealism-Gilded-Dusk-MC-26.3.zip'); assert z.testzip() is None; n=set(z.namelist()); assert 'shaders/shaders.properties' in n and 'README.md' in n and 'LICENSE' in n; assert not any(x.startswith('HyperRealism-Stylized-PBR/') for x in n)"
       - name: Publish experimental prerelease
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v0.1.0-preview.23 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 — experimental 26.3 preview 23' --notes-file .github/preview-release-notes.md --prerelease
+          gh release create v0.1.0-preview.24 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 + Gilded Dusk — experimental 26.3 preview 24' --notes-file .github/preview-release-notes.md --prerelease

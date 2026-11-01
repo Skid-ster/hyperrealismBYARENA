@@ -3,8 +3,8 @@
 This is an **early prototype**, not the requested complete production pack.
 The development build defaults to manifest-defined 256×256 Minecraft Java 26.3
 block textures and aligned LabPBR 1.3 maps using a CPU-only pipeline; optional
-outputs are 128×128 or 512×512. The currently published Preview 23 remains the
-older 512×512 build until a new pack release. Most starter materials use 1K
+outputs are 128×128 or 512×512. Preview 24 publishes the current 512×512 resource
+pack and adds the separately installable experimental Gilded Dusk Iris shader. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
 are approximated as described below. The current source catalog contains 371
 distinct block texture targets based on CC0 scans from Poly Haven, ambientCG,
@@ -49,9 +49,13 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and t
 The launcher's dark interface inspires this installer; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.12/HyperRealism128-Installer.exe)
-and double-click it. Installer 12 adds cancellable pack and installer downloads,
-byte-level progress, 30-second network timeouts, and 1 GiB / 100 MiB size caps.
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.13/HyperRealism128-Installer.exe)
+and double-click it. Installer 13 adds a separate **Install shader** action for
+Gilded Dusk, alongside the experimental resource pack. It places the shader ZIP
+in the `shaderpacks` sibling of the selected `resourcepacks` folder, and
+**Check updates** checks the shader when one is installed. Installer 13 retains
+cancellable downloads, byte-level progress, 30-second network timeouts, and
+size caps of 1 GiB for the resource pack and 100 MiB each for the installer and shader ZIP.
 Declined or cancelled automatic update prompts are deferred until the next launch.
 The app defaults to the current user's
 `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\resourcepacks`;
@@ -61,14 +65,14 @@ uses that folder. Use **Check updates** to compare the installed file's
 hash with the latest preview, or **Install / Update** to download and install
 it. The toolbar keeps to standard installer actions: **Folders** provides folder
 shortcuts, **Settings** controls automatic update checks, **Help** opens project
-guidance, and **Check updates** checks both the pack and installer. Use the
+guidance, and **Check updates** checks the resource pack, installed shader, and installer. Use the
 resource-pack path's **Browse...** button to select an existing folder; the app
 does not create or manage launcher instances. The sidebar **Launch** asks
 PineconeMC to launch the instance inferred from the selected standard
-`instances/<instance>/minecraft/resourcepacks` folder. It uses PineconeMC's own account and game settings; it does not log in or install the game. The first time, if the launcher is not found in common install locations, select `elyprismlauncher.exe` (or the PineconeMC executable); the selection is remembered under `%LOCALAPPDATA%\HyperRealism128\pineconemc-path.txt` and can be changed in **Settings**. For custom instance directories launch directly from PineconeMC. The request starts the launcher but cannot verify Minecraft actually started. The grass block artwork is used under CC BY-SA 4.0 with [attribution](installer/assets/ATTRIBUTION.txt); other glyphs are independently drawn. Only the named preview ZIP is replaced. By default, at startup and hourly while the
-installer is open, it checks for newer installer releases and, if a pack is
-already installed in the chosen folder, for a different latest pack. It asks
-before updating. A declined automatic prompt is deferred for that version until
+`instances/<instance>/minecraft/resourcepacks` folder. It uses PineconeMC's own account and game settings; it does not log in or install the game. The first time, if the launcher is not found in common install locations, select `elyprismlauncher.exe` (or the PineconeMC executable); the selection is remembered under `%LOCALAPPDATA%\HyperRealism128\pineconemc-path.txt` and can be changed in **Settings**. For custom instance directories launch directly from PineconeMC. The request starts the launcher but cannot verify Minecraft actually started. The grass block artwork is used under CC BY-SA 4.0 with [attribution](installer/assets/ATTRIBUTION.txt); other glyphs are independently drawn. Only the named resource-pack or shader ZIP is replaced; other files in those
+folders are left alone. By default, at startup and hourly while the installer is
+open, it checks for newer installer releases and, if a pack or shader is already
+installed, for a newer version. It asks before updating. A declined automatic prompt is deferred for that version until
 the next installer launch. Pack and installer downloads can be cancelled from
 the progress row without replacing the current file. Downloads show byte progress,
 use 30-second network
@@ -88,21 +92,24 @@ release, not an independent signature. GUI source and offline tests are under
 
 ### Manual installation
 
-No Rust installation is needed to use the prebuilt pack. Preview 23 uses 512×512
-textures (the legacy `HyperRealism128` archive name is retained for updater
-compatibility), which requires substantially more GPU
-memory than the previous 128×128 preview; performance on the RTX 5060 Ti has
-not yet been tested. Enable a compatible shader and LabPBR settings as described
-in the [shader guide](docs/SHADER_SETUP.md). Download
-[HyperRealism 512×512 Preview 23 ZIP](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.23/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+No Rust installation is needed to use the prebuilt resource pack or shader.
+Preview 24's resource pack uses 512×512 textures (the legacy `HyperRealism128`
+archive name is retained for updater compatibility), which requires substantially
+more GPU memory than the previous 128×128 preview; performance on the RTX 5060 Ti
+has not been tested. Download [HyperRealism Preview 24 resource pack](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.24/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
-and enable it in Minecraft Java 26.3 under **Options → Resource Packs**. Preview 23
-contains 344 distinct block texture paths at 512×512; the current development
-branch adds five copper and three raw-ore paths, defaults to 256×256, and has not
-yet been published. That default has one quarter as many block texels as the
-512×512 preview, which should reduce texture storage, but no in-game VRAM/FPS
-benchmark has been run. Both remain subsets of the game; all other textures stay
-vanilla or come from other enabled packs. A compatible shader is required for PBR, and optional
+and enable it in Minecraft Java 26.3 under **Options → Resource Packs**.
+For the experimental Iris shader, download [HyperRealism: Gilded Dusk](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.24/HyperRealism-Gilded-Dusk-MC-26.3.zip)
+and put the ZIP in the active instance's `shaderpacks` folder, not
+`resourcepacks`. Enable the HyperRealism resource pack and select the shader in
+Iris; keep PBR Support set to LabPBR 1.3. See the [shader guide](docs/SHADER_SETUP.md)
+for compatibility caveats. Preview 24 remains a partial experimental pack;
+all unmodified textures stay vanilla or come from other enabled packs. The
+current development build defaults to 256×256, one quarter as many block texels
+as the 512×512 preview, which should reduce texture storage, but no in-game
+VRAM/FPS benchmark has been run. The shader has passed 693 glslang stage
+compilations, but has not been loaded in Minecraft; rendering, performance, and
+GPU/driver compatibility remain unverified. A compatible shader is required for PBR, and optional
 LabPBR features vary by shader. The previous preview was tried in-game;
 the new roughness calibration and normal-derived height estimates have not yet been validated there. Grass sides now have a
 separate biome-tinted cutout fringe; six common broadleaf types share a
@@ -147,7 +154,7 @@ for a newer preview, download its ZIP, and replace the older preview ZIP in the
 resourcepacks folder. Keep only one preview version enabled.
 
 Alternatively, Windows users can download and review the
-[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.23/Install-HyperRealismPreview.ps1).
+[preview installer script](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.24/Install-HyperRealismPreview.ps1).
 In PowerShell, from the folder where it was downloaded, run:
 
 ```powershell

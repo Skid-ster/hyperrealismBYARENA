@@ -17,12 +17,17 @@ the upstream license and acknowledgements. HyperRealism adds an adjustable
 teal-shadow/amber-highlight display grade and punchier AgX/contrast defaults;
 LabPBR lighting remains the material foundation.
 
-Build a ready-to-install archive with `python3 scripts/package_stylized_shader.py`; it writes
-`shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip` with `shaders/` at the
-ZIP root. Put the ZIP (do not extract it) in the active instance's
-`shaderpacks` folder, enable the matching HyperRealism resource pack, then
-select **HyperRealism: Gilded Dusk** in Iris. Leave **PBR Support** on **LabPBR
-1.3**. The **Teal–Amber Style** slider ranges from 0 (neutral) to 100; default
+Windows users can download **HyperRealism128-Installer.exe** from the
+[installer 13 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-installer.13),
+select the intended existing `resourcepacks` folder, and use **Install shader**.
+It puts the shader ZIP in the sibling `shaderpacks` folder for that instance.
+You can also download the ZIP from the [Preview 24 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-preview.24)
+or build it with `python3 scripts/package_stylized_shader.py`; the generated
+archive is `shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip` with
+`shaders/` at the ZIP root. For manual installation, put the ZIP (do not
+extract it) in the active instance's `shaderpacks` folder. Enable the matching
+HyperRealism resource pack, then select **HyperRealism: Gilded Dusk** in Iris.
+Leave **PBR Support** on **LabPBR 1.3**. The **Teal–Amber Style** slider ranges from 0 (neutral) to 100; default
 70.
 
 Validation is stronger than the initial prototype: a compiler check now
@@ -53,7 +58,7 @@ pack unless its license permits it.
 2. Put it in your Minecraft instance's `minecraft/shaderpacks` folder. For the
    supplied ElyPrism instance that is
    `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\shaderpacks`.
-3. The published Preview 23 is named **HyperRealism 512×512**; current development
+3. The published Preview 24 is named **HyperRealism 512×512**; current development
    builds are named **HyperRealism 256×256**. Enable the version you installed in
    **Options → Resource Packs** and put it above competing packs.
 4. With the already-installed Iris, select Photon in **Options → Video
@@ -83,7 +88,7 @@ open **Materials → labPBR/seuspbr Materials** and leave **Normal Map Strength*
 enabled at a moderate value. For specular highlights, make sure
 **Performance Settings → Block Reflection Quality** is not **OFF**; the High
 profile shown in the screenshot normally selects High reflection quality, but
-check the actual option. Put the installed HyperRealism build (published Preview 23
+check the actual option. Put the installed HyperRealism build (published Preview 24
 is 512×512; current development builds are 256×256) above conflicting resource
 packs and press F3+T.
 
@@ -141,7 +146,7 @@ procedure, not proof of a test on your PC.
 
 The development build now defaults to 256px: that is one quarter the texel
 count of 512px, so it should reduce texture storage and atlas pressure, but no
-VRAM, load-time or FPS benchmark has been run. The published Preview 23 is still
+VRAM, load-time or FPS benchmark has been run. The published Preview 24 is still
 512px. Use the optional 128px build for a smaller pack or 512px for more detail;
 actual memory and performance depend on Minecraft, shader, driver and hardware.
 

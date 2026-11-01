@@ -1,6 +1,8 @@
-# HyperRealism 512×512 — Minecraft Java 26.3 experimental Preview 23
+# HyperRealism 512×512 + Gilded Dusk — Minecraft Java 26.3 experimental Preview 24
 
-This 512×512 experimental resource pack now generates **344 block texture paths**. It remains a partial pack, not a replacement for every vanilla texture; animated and cutout Nether sprites that cannot yet be safely regenerated with their exact frame/alpha data remain vanilla. The archive retains its legacy `HyperRealism128` filename for updater compatibility. Minecraft displays **HyperRealism 512×512**.
+This 512×512 experimental resource pack remains a partial pack, not a replacement for every vanilla texture; animated and cutout Nether sprites that cannot yet be safely regenerated with their exact frame/alpha data remain vanilla. The resource-pack archive retains its legacy `HyperRealism128` filename for updater compatibility. Minecraft displays **HyperRealism 512×512**.
+
+Preview 24 also publishes the separate **HyperRealism: Gilded Dusk** Iris shader ZIP and checksum, plus Windows GUI installer 13. The installer can place the shader beside the selected instance's resourcepacks folder and update it later. The shader requires Iris and LabPBR 1.3; compiler validation passed, but it has not yet been runtime-tested inside Minecraft.
 
 ## Nether material pass
 
