@@ -24,6 +24,48 @@ internal sealed class FakeTransfer : ITransfer
     }
 }
 
+internal sealed class BundleFakeTransfer : ITransfer
+{
+    public string Json;
+    public Dictionary<string, byte[]> Files = new Dictionary<string, byte[]>();
+    public Dictionary<string, string> Sums = new Dictionary<string, string>();
+    public HashSet<string> Corrupt = new HashSet<string>();
+    public int Downloads;
+    public List<long> Caps = new List<long>();
+    public int CancelAfterDownload = -1;
+    public bool IsCancellationRequested { get { return CancelAfterDownload >= 0 && Downloads >= CancelAfterDownload; } }
+    public string GetText(string url) { return url == PackInstaller.Api ? Json : Sums[url]; }
+    public void Download(string url, string destination, long maxBytes)
+    {
+        Downloads++;
+        Caps.Add(maxBytes);
+        byte[] bytes = Files[url];
+        if (Corrupt.Contains(url)) bytes = Encoding.UTF8.GetBytes("corrupt bundle asset");
+        if (bytes.LongLength > maxBytes) throw new InvalidDataException("Test download exceeds its size limit.");
+        File.WriteAllBytes(destination, bytes);
+    }
+}
+
+// Fault injection for the paired commit: the second target becomes locked
+// after preflight but before File.Replace, forcing rollback of the first.
+internal sealed class CommitFaultTransfer : ITransfer
+{
+    public BundleEntry Second;
+    public int Checks;
+    public FileStream Lock;
+    public bool IsCancellationRequested
+    {
+        get
+        {
+            Checks++;
+            if (Checks == 2 && Lock == null) Lock = new FileStream(Second.Target, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            return false;
+        }
+    }
+    public string GetText(string url) { throw new NotSupportedException(); }
+    public void Download(string url, string destination, long maxBytes) { throw new NotSupportedException(); }
+}
+
 internal static class InstallerTests
 {
     private static void Assert(bool condition, string message) { if (!condition) throw new Exception(message); }
@@ -49,6 +91,16 @@ internal static class InstallerTests
             new { name = ShaderPackInstaller.PackName + ".sha256", browser_download_url = prefix + ShaderPackInstaller.PackName + ".sha256" }
         } };
     }
+    private static object CombinedRelease(string tag, string date, bool draft, string host)
+    {
+        string prefix = host + "/Skid-ster/hyperrealismBYARENA/releases/download/" + tag + "/";
+        return new { draft = draft, tag_name = tag, published_at = date, assets = new object[] {
+            new { name = PackInstaller.PackName, browser_download_url = prefix + PackInstaller.PackName },
+            new { name = PackInstaller.PackName + ".sha256", browser_download_url = prefix + PackInstaller.PackName + ".sha256" },
+            new { name = ShaderPackInstaller.PackName, browser_download_url = prefix + ShaderPackInstaller.PackName },
+            new { name = ShaderPackInstaller.PackName + ".sha256", browser_download_url = prefix + ShaderPackInstaller.PackName + ".sha256" }
+        } };
+    }
     // This runs only on CI push, against the real public GitHub API and assets,
     // in a temporary folder. It never touches a Minecraft installation.
     private static int LiveTest()
@@ -67,10 +119,16 @@ internal static class InstallerTests
             string downloadedApp = Path.Combine(root, "downloaded-installer.exe");
             web.Download(app.ExeUrl, downloadedApp, SelfUpdater.MaxInstallerBytes);
             Assert(String.Equals(PackInstaller.HashFile(downloadedApp), sumMatch.Groups[1].Value, StringComparison.OrdinalIgnoreCase), "Live installer asset hash mismatch.");
-            string result = PackInstaller.Install(web, folder);
-            Assert(result.Contains("Installed"), "Live install did not complete.");
-            Assert(PackInstaller.Check(web, folder).Contains("Installed file matches"), "Live installed file did not match the published checksum.");
-            Console.WriteLine("Live GitHub download and update check passed: " + result);
+            BundleReleaseInfo bundle = BundleInstaller.Latest(web);
+            string result = BundleInstaller.Install(web, folder, null, plan => true);
+            Assert(result.Contains(bundle.Tag), "Live bundle install did not report the matched release.");
+            string packTarget = Path.Combine(folder, PackInstaller.PackName);
+            string shaderTarget = Path.Combine(ShaderPackInstaller.ShaderpacksFolder(folder), ShaderPackInstaller.PackName);
+            Assert(PackInstaller.HashFile(packTarget) == bundle.Pack.Checksum, "Live resource pack did not match the published checksum.");
+            Assert(PackInstaller.HashFile(shaderTarget) == bundle.Shader.Checksum, "Live shader did not match the published checksum.");
+            string again = BundleInstaller.Install(web, folder, null, plan => true);
+            Assert(again.Contains("already installed and verified"), "Live second bundle install did not detect current files.");
+            Console.WriteLine("Live GitHub bundle download, verification, and no-op update check passed: " + result);
             return 0;
         }
         finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
@@ -115,19 +173,19 @@ internal static class InstallerTests
             AppRelease("v0.1.0-installer.11", false, "https://github.com"),
             AppRelease("v0.1.0-installer.12", false, "https://github.com"),
             AppRelease("v0.1.0-installer.13", false, "https://github.com"),
-            AppRelease("v0.1.0-installer.17", false, "https://github.com"),
-            AppRelease("v0.1.0-installer.18", true, "https://github.com"),
+            AppRelease("v0.1.0-installer.18", false, "https://github.com"),
+            AppRelease("v0.1.0-installer.19", true, "https://github.com"),
             Release("v9.0.0-preview.1", "2028-01-01T00:00:00Z", false, "https://github.com")
         });
         InstallerRelease update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
         Assert(update == null, "Current installer falsely reported outdated.");
         update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.9");
-        Assert(update != null && update.Tag == "v0.1.0-installer.17", "Installer version ordering or draft filtering failed.");
+        Assert(update != null && update.Tag == "v0.1.0-installer.18", "Installer version ordering or draft filtering failed.");
         update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.10");
-        Assert(update != null && update.Tag == "v0.1.0-installer.17", "Installer 10 should update directly to installer 17.");
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.18", false, "https://github.com") });
+        Assert(update != null && update.Tag == "v0.1.0-installer.18", "Installer 10 should update directly to installer 18.");
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.19", false, "https://github.com") });
         update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
-        Assert(update != null && update.Tag == "v0.1.0-installer.18", "Newer update fixture not found.");
+        Assert(update != null && update.Tag == "v0.1.0-installer.19", "Newer update fixture not found.");
         string dir = Path.Combine(root, "self update & 50%! test"); Directory.CreateDirectory(dir);
         string target = Path.Combine(dir, "The Installer.exe"); File.WriteAllText(target, "old executable");
         string payload = Path.Combine(root, "app-payload"); File.WriteAllBytes(payload, fake.Payload);
@@ -142,7 +200,7 @@ internal static class InstallerTests
         Assert(PackInstaller.HashFile(staged) == sum, "App update not staged correctly.");
         Assert(fake.LastMaxBytes == SelfUpdater.MaxInstallerBytes, "Installer download size cap was not applied.");
         File.Delete(staged);
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.18", false, "https://evil.example") });
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.19", false, "https://evil.example") });
         Throws(() => SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag), "Untrusted app release host accepted.");
 
         // End-to-end test of the real cmd -> copied GUI helper -> replace ->
@@ -187,6 +245,116 @@ internal static class InstallerTests
         WaitForRelease(target);
         Assert(PackInstaller.HashFile(target) == oldHash && !File.Exists(staged), "Invalid update damaged old executable or stage remains.");
         Environment.SetEnvironmentVariable("HR_UPDATE_TEST_MARKER", null);
+    }
+
+    private static void TestBundle(string root)
+    {
+        string folder = Path.Combine(root, "bundle", "resourcepacks");
+        Directory.CreateDirectory(folder);
+        string shaders = ShaderPackInstaller.ShaderpacksFolder(folder);
+        string packTarget = Path.Combine(folder, PackInstaller.PackName);
+        string shaderTarget = Path.Combine(shaders, ShaderPackInstaller.PackName);
+        byte[] packBytes = Encoding.UTF8.GetBytes("verified bundle resource pack");
+        byte[] shaderBytes = Encoding.UTF8.GetBytes("verified bundle shader");
+        string packSource = Path.Combine(root, "bundle-pack-fixture"); File.WriteAllBytes(packSource, packBytes);
+        string shaderSource = Path.Combine(root, "bundle-shader-fixture"); File.WriteAllBytes(shaderSource, shaderBytes);
+        string packHash = PackInstaller.HashFile(packSource);
+        string shaderHash = PackInstaller.HashFile(shaderSource);
+        var fake = new BundleFakeTransfer();
+        string prefix = "https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/bundle-new/";
+        fake.Files[prefix + PackInstaller.PackName] = packBytes;
+        fake.Files[prefix + ShaderPackInstaller.PackName] = shaderBytes;
+        fake.Sums[prefix + PackInstaller.PackName + ".sha256"] = packHash + "  " + PackInstaller.PackName;
+        fake.Sums[prefix + ShaderPackInstaller.PackName + ".sha256"] = shaderHash + "  " + ShaderPackInstaller.PackName;
+        var serializer = new JavaScriptSerializer();
+        fake.Json = serializer.Serialize(new object[] {
+            CombinedRelease("bundle-old", "2025-01-01T00:00:00Z", false, "https://github.com"),
+            CombinedRelease("bundle-new", "2026-01-01T00:00:00Z", false, "https://github.com"),
+            Release("pack-only-newer", "2028-01-01T00:00:00Z", false, "https://github.com"),
+            ShaderRelease("shader-only-newer", "2029-01-01T00:00:00Z", false, "https://github.com"),
+            CombinedRelease("bundle-draft", "2030-01-01T00:00:00Z", true, "https://github.com")
+        });
+        BundleReleaseInfo latest = BundleInstaller.Latest(fake);
+        Assert(latest.Tag == "bundle-new", "Bundle did not select the newest release containing both complete asset pairs.");
+        BundleCheckResult check = BundleInstaller.Check(fake, folder);
+        Assert(check.Tag == "bundle-new" && check.PackNeeds && check.ShaderNeeds, "Bundle check did not report both missing files against the matched release.");
+        int confirms = 0;
+        Func<BundleInstallPlan, bool> yes = plan => { confirms++; return true; };
+        string result = BundleInstaller.Install(fake, folder, null, yes);
+        Assert(result.Contains("bundle-new") && confirms == 0, "Fresh bundle install should not ask to replace files.");
+        Assert(fake.Downloads == 2 && fake.Caps[0] == PackInstaller.MaxPackBytes && fake.Caps[1] == ShaderPackInstaller.MaxPackBytes, "Bundle download caps/order failed.");
+        Assert(PackInstaller.HashFile(packTarget) == packHash && PackInstaller.HashFile(shaderTarget) == shaderHash, "Fresh bundle install produced wrong hashes.");
+        Assert(Directory.GetFiles(folder, ".hyperrealism-*.tmp").Length == 0 && Directory.GetFiles(shaders, ".hyperrealism-*.tmp").Length == 0, "Fresh bundle left staging files.");
+        check = BundleInstaller.Check(fake, folder);
+        Assert(!check.PackNeeds && !check.ShaderNeeds, "Bundle check did not recognize the current pair.");
+        result = BundleInstaller.Install(fake, folder, null, yes);
+        Assert(result.Contains("already installed and verified") && fake.Downloads == 2, "Current bundle was downloaded again.");
+
+        // Partial update: only the changed ZIP is downloaded, but both are verified.
+        File.WriteAllText(packTarget, "old pack");
+        check = BundleInstaller.Check(fake, folder);
+        Assert(check.PackNeeds && !check.ShaderNeeds, "Bundle check did not isolate the changed pack.");
+        result = BundleInstaller.Install(fake, folder, null, yes);
+        Assert(fake.Downloads == 3 && confirms == 1, "Partial bundle update did not download only the changed pack after confirmation.");
+        Assert(PackInstaller.HashFile(packTarget) == packHash && PackInstaller.HashFile(shaderTarget) == shaderHash, "Partial bundle update failed.");
+
+        // Corrupt shader must leave the existing pair untouched.
+        File.WriteAllText(packTarget, "old pack");
+        File.WriteAllText(shaderTarget, "old shader");
+        fake.Corrupt.Add(prefix + ShaderPackInstaller.PackName);
+        Throws(() => BundleInstaller.Install(fake, folder, null, yes), "Corrupt bundle shader accepted.");
+        Assert(File.ReadAllText(packTarget) == "old pack" && File.ReadAllText(shaderTarget) == "old shader", "Corrupt shader changed installed files.");
+        Assert(Directory.GetFiles(folder, ".hyperrealism-*.tmp").Length == 0 && Directory.GetFiles(shaders, ".hyperrealism-*.tmp").Length == 0, "Corrupt bundle left staging files.");
+        fake.Corrupt.Clear();
+
+        // Cancellation after the first download must not commit either file.
+        int before = fake.Downloads;
+        fake.CancelAfterDownload = 1;
+        Throws(() => BundleInstaller.Install(fake, folder, null, yes), "Cancelled bundle download accepted.");
+        fake.CancelAfterDownload = -1;
+        Assert(fake.Downloads == before + 1 && File.ReadAllText(packTarget) == "old pack" && File.ReadAllText(shaderTarget) == "old shader", "Cancellation committed or downloaded too much.");
+        Assert(Directory.GetFiles(folder, ".hyperrealism-*.tmp").Length == 0 && Directory.GetFiles(shaders, ".hyperrealism-*.tmp").Length == 0, "Cancelled bundle left staging files.");
+
+        // Declined confirmation must leave both files untouched.
+        Throws(() => BundleInstaller.Install(fake, folder, null, plan => false), "Declined bundle confirmation accepted.");
+        Assert(File.ReadAllText(packTarget) == "old pack" && File.ReadAllText(shaderTarget) == "old shader", "Declined confirmation changed installed files.");
+
+        // Commit rollback: lock the second target after preflight, replace the
+        // first, then prove the first is restored from its backup.
+        string rollbackFolder = Path.Combine(root, "bundle-rollback", "resourcepacks");
+        Directory.CreateDirectory(rollbackFolder);
+        string rollbackShaders = ShaderPackInstaller.ShaderpacksFolder(rollbackFolder);
+        Directory.CreateDirectory(rollbackShaders);
+        string oldPack = Path.Combine(rollbackFolder, PackInstaller.PackName); File.WriteAllText(oldPack, "old rollback pack");
+        string oldShader = Path.Combine(rollbackShaders, ShaderPackInstaller.PackName); File.WriteAllText(oldShader, "old rollback shader");
+        string packStage = Path.Combine(rollbackFolder, ".hyperrealism-bundle-test-pack.tmp"); File.WriteAllBytes(packStage, packBytes);
+        string shaderStage = Path.Combine(rollbackShaders, ".hyperrealism-bundle-test-shader.tmp"); File.WriteAllBytes(shaderStage, shaderBytes);
+        var entries = new[] {
+            new BundleEntry { Name = "resource pack", Target = oldPack, Stage = packStage, ExpectedHash = packHash, PreviousHash = PackInstaller.HashFile(oldPack), Update = true },
+            new BundleEntry { Name = "shader", Target = oldShader, Stage = shaderStage, ExpectedHash = shaderHash, PreviousHash = PackInstaller.HashFile(oldShader), Update = true }
+        };
+        var fault = new CommitFaultTransfer { Second = entries[1] };
+        Throws(() => BundleInstaller.CommitEntries(entries, fault), "Locked second bundle target did not fail the commit.");
+        if (fault.Lock != null) fault.Lock.Dispose();
+        Assert(File.ReadAllText(oldPack) == "old rollback pack" && File.ReadAllText(oldShader) == "old rollback shader", "Failed second commit did not roll back the first file.");
+        Assert(Directory.GetFiles(rollbackFolder, ".hyperrealism-backup-*.tmp").Length == 0 && Directory.GetFiles(rollbackShaders, ".hyperrealism-backup-*.tmp").Length == 0, "Rollback left backup files.");
+        File.Delete(packStage); File.Delete(shaderStage);
+
+        // New-file rollback: if the second target fails, the newly created first
+        // file is removed rather than leaving a half-installed pair.
+        File.Delete(oldPack);
+        packStage = Path.Combine(rollbackFolder, ".hyperrealism-bundle-test-pack.tmp"); File.WriteAllBytes(packStage, packBytes);
+        shaderStage = Path.Combine(rollbackShaders, ".hyperrealism-bundle-test-shader.tmp"); File.WriteAllBytes(shaderStage, shaderBytes);
+        entries = new[] {
+            new BundleEntry { Name = "resource pack", Target = oldPack, Stage = packStage, ExpectedHash = packHash, PreviousHash = null, Update = true },
+            new BundleEntry { Name = "shader", Target = oldShader, Stage = shaderStage, ExpectedHash = shaderHash, PreviousHash = PackInstaller.HashFile(oldShader), Update = true }
+        };
+        fault = new CommitFaultTransfer { Second = entries[1] };
+        Throws(() => BundleInstaller.CommitEntries(entries, fault), "Locked second target did not fail the new-file commit.");
+        if (fault.Lock != null) fault.Lock.Dispose();
+        Assert(!File.Exists(oldPack) && File.ReadAllText(oldShader) == "old rollback shader", "Failed new-file commit left a half-installed pair.");
+        if (File.Exists(packStage)) File.Delete(packStage);
+        if (File.Exists(shaderStage)) File.Delete(shaderStage);
     }
 
     private static void TestLaunch(string root)
@@ -309,6 +477,7 @@ internal static class InstallerTests
             shaderFake.Json = serializer.Serialize(new object[] { ShaderRelease("shader-bad", "2026-01-01T00:00:00Z", false, "https://evil.example") });
             Throws(() => ShaderPackInstaller.Install(shaderFake, folder), "Untrusted shader host accepted.");
             if (args.Length != 1) throw new Exception("Expected path to the built GUI installer.");
+            TestBundle(root);
             TestLaunch(root);
             TestSelfUpdate(root, args[0]);
             Console.WriteLine("GUI installer backend and self-update tests passed.");

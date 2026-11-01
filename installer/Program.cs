@@ -161,6 +161,7 @@ namespace HyperRealismInstaller
         private readonly LauncherButton cancelDownload = new LauncherButton();
         private readonly Button browse = new Button();
         private readonly LauncherButton openFolder = new LauncherButton();
+        private readonly LauncherButton installBoth = new LauncherButton();
         private readonly LauncherButton install = new LauncherButton();
         private readonly LauncherButton installShader = new LauncherButton();
         private readonly LauncherButton launch = new LauncherButton();
@@ -192,6 +193,8 @@ namespace HyperRealismInstaller
         private string deferredInstallerTag;
         private string deferredPackUpdate;
         private string deferredShaderUpdate;
+        private string deferredBundleUpdate;
+        private string bundleAssetLabel = "pack + shader";
         private static readonly string AutoCheckPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "auto-update-checks.txt");
         private static readonly string LauncherPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "pineconemc-path.txt");
         private static readonly string SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "resourcepacks-path.txt");
@@ -259,14 +262,14 @@ namespace HyperRealismInstaller
             packCopy.Controls.Add(new Label { Text = "Partial coverage  ·  LabPBR 1.3  ·  CC0 sources", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 2);
             packLayout.Controls.Add(packCopy, 1, 0); packGroup.Controls.Add(packLayout); content.Controls.Add(packGroup, 0, 0);
 
-            var shaderGroup = new PrismGroup { HeaderText = "Optional shader", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = new Padding(0, 0, 0, 8) };
+            var shaderGroup = new PrismGroup { HeaderText = "Shader", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = new Padding(0, 0, 0, 8) };
             var shaderLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
             shaderLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 78)); shaderLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             shaderLayout.Controls.Add(new PictureBox { Image = ShaderIcon(64), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.Left | AnchorStyles.Top, AccessibleName = "Gilded Dusk shader icon" }, 0, 0);
             var shaderCopy = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Background };
             shaderCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); shaderCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); shaderCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
             shaderCopy.Controls.Add(new Label { Text = "Gilded Dusk", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 11F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
-            shaderCopy.Controls.Add(new Label { Text = "Teal shadows and amber light for Iris. Installs beside the resource pack.", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 1);
+            shaderCopy.Controls.Add(new Label { Text = "Teal shadows and amber light for Iris. Included by Install both.", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 1);
             shaderCopy.Controls.Add(new Label { Text = "Iris/Sodium required  ·  LabPBR 1.3  ·  experimental", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 2);
             shaderLayout.Controls.Add(shaderCopy, 1, 0); shaderGroup.Controls.Add(shaderLayout); content.Controls.Add(shaderGroup, 0, 1);
 
@@ -284,9 +287,9 @@ namespace HyperRealismInstaller
             var statusGroup = new PrismGroup { HeaderText = "Status", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = Padding.Empty };
             var statusLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, BackColor = Background };
             statusLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); statusLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); statusLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
-            result.Dock = DockStyle.Fill; result.Text = "Ready — choose a folder, then install the resource pack or optional shader."; result.ForeColor = Muted; result.Font = new Font("Segoe UI", 9F); result.TextAlign = ContentAlignment.TopLeft; result.AutoEllipsis = true;
+            result.Dock = DockStyle.Fill; result.Text = "Ready — choose the instance resourcepacks folder, then Install both."; result.ForeColor = Muted; result.Font = new Font("Segoe UI", 9F); result.TextAlign = ContentAlignment.TopLeft; result.AutoEllipsis = true;
             statusLayout.Controls.Add(result, 0, 0);
-            var notes = new Label { Text = "Downloads are SHA-256 verified and size-capped. Only the named resource-pack or shader ZIP is replaced; other files stay untouched.\r\nThis is an experimental preview, not a full vanilla-coverage or performance-certified pack.", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.TopLeft };
+            var notes = new Label { Text = "Install both verifies the pack and shader before replacing either ZIP, and rolls back a failed replacement. Other files stay untouched.\r\nExperimental preview: partial coverage, not a full vanilla or performance-certified pack.", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.TopLeft };
             statusLayout.Controls.Add(notes, 0, 1);
             progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; progress.AccessibleName = "Download progress"; progress.BackColor = CardSurface; progress.ForeColor = Green; progress.Margin = new Padding(0, 4, 8, 4);
             var progressRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
@@ -299,22 +302,24 @@ namespace HyperRealismInstaller
             statusGroup.Controls.Add(statusLayout); content.Controls.Add(statusGroup, 0, 3);
 
             var sidebar = new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Padding = new Padding(12, 12, 12, 12), Margin = Padding.Empty };
-            var sideLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 9, Margin = Padding.Empty, BackColor = Sidebar };
+            var sideLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 10, Margin = Padding.Empty, BackColor = Sidebar };
             sideLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 72)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 12));
-            sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 40)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             sideLayout.Controls.Add(new PictureBox { Image = BlockIcon(64), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.None, AccessibleName = "Selected resource pack" }, 0, 0);
             sideLayout.Controls.Add(new Label { Text = "HyperRealism 512", Dock = DockStyle.Fill, ForeColor = Foreground, TextAlign = ContentAlignment.MiddleCenter, AutoEllipsis = true }, 0, 1);
             sideLayout.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Border, Margin = new Padding(0, 5, 0, 5) }, 0, 2);
-            StyleButton(install, "Install / Update", 200, 30, false); install.Dock = DockStyle.Fill; install.Margin = new Padding(0, 0, 0, 4); install.Primary = true; install.AccentColor = Green; install.AccentTextColor = Color.Black; install.Image = GlyphIcon("install", 16, Color.Black); install.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            StyleButton(installShader, "Install shader", 200, 30, false); installShader.Dock = DockStyle.Fill; installShader.Margin = new Padding(0, 0, 0, 4); installShader.Image = GlyphIcon("shader", 16, Foreground);
+            StyleButton(installBoth, "Install both", 200, 36, false); installBoth.Dock = DockStyle.Fill; installBoth.Margin = new Padding(0, 0, 0, 4); installBoth.Primary = true; installBoth.AccentColor = Green; installBoth.AccentTextColor = Color.Black; installBoth.Image = GlyphIcon("install", 16, Color.Black); installBoth.Font = new Font("Segoe UI", 9F, FontStyle.Bold); installBoth.AccessibleName = "Install or update both the resource pack and shader";
+            StyleButton(install, "Resource pack only", 200, 30, false); install.Dock = DockStyle.Fill; install.Margin = new Padding(0, 0, 0, 4); install.Image = GlyphIcon("install", 16, Foreground);
+            StyleButton(installShader, "Shader only", 200, 30, false); installShader.Dock = DockStyle.Fill; installShader.Margin = new Padding(0, 0, 0, 4); installShader.Image = GlyphIcon("shader", 16, Foreground);
             StyleButton(launch, "Launch", 200, 30, false); launch.Dock = DockStyle.Fill; launch.Margin = new Padding(0, 0, 0, 4); launch.Image = GlyphIcon("launch", 16, Foreground);
             StyleButton(openFolder, "Open folder", 200, 30, false); openFolder.Dock = DockStyle.Fill; openFolder.Margin = new Padding(0, 0, 0, 4); openFolder.Image = GlyphIcon("folders", 16, Foreground);
             StyleButton(close, "Close", 200, 30, false); close.Dock = DockStyle.Fill; close.Margin = Padding.Empty; close.Image = GlyphIcon("close", 16, Foreground);
-            sideLayout.Controls.Add(install, 0, 3); sideLayout.Controls.Add(installShader, 0, 4); sideLayout.Controls.Add(launch, 0, 5); sideLayout.Controls.Add(openFolder, 0, 6); sideLayout.Controls.Add(close, 0, 7);
+            sideLayout.Controls.Add(installBoth, 0, 3); sideLayout.Controls.Add(install, 0, 4); sideLayout.Controls.Add(installShader, 0, 5); sideLayout.Controls.Add(launch, 0, 6); sideLayout.Controls.Add(openFolder, 0, 7); sideLayout.Controls.Add(close, 0, 8);
             sidebar.Controls.Add(sideLayout); main.Controls.Add(sidebar, 1, 0);
             sidebar.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Border)) e.Graphics.DrawLine(pen, 0, 0, 0, sidebar.Height); };
-            tooltips.SetToolTip(install, "Install or update the experimental LabPBR resource pack in the selected resourcepacks folder.");
+            tooltips.SetToolTip(installBoth, "One click: verify and install the matching resource pack and Gilded Dusk shader into this instance.");
+            tooltips.SetToolTip(install, "Install or update only the experimental LabPBR resource pack in the selected resourcepacks folder.");
             tooltips.SetToolTip(installShader, "Install Gilded Dusk into the shaderpacks folder beside this instance's resourcepacks folder.");
             tooltips.SetToolTip(launch, "Launch the selected instance through PineconeMC.");
             tooltips.SetToolTip(openFolder, "Open the selected resourcepacks folder.");
@@ -356,8 +361,9 @@ namespace HyperRealismInstaller
             about.Click += delegate { MessageBox.Show(this, "HyperRealism 512×512 Installer " + SelfUpdater.CurrentTag + "\r\n\r\nIndependent pack and shader installer, not PineconeMC.\r\nThe resource pack and Gilded Dusk Iris shader are experimental. Use Iris with LabPBR 1.3; actual in-game shader compatibility and performance are not certified.", "About", MessageBoxButtons.OK, MessageBoxIcon.Information); };
             toolHelp.Click += delegate { helpMenu.Show(toolHelp, 0, toolHelp.Height); };
             toolCheck.Click += async delegate { await CheckAllUpdates(); };
+            installBoth.Click += async delegate { await RunBundleOperation(); };
             installShader.Click += async delegate { await RunShaderOperation(); };
-            pathBox.TextChanged += delegate { UpdateFolderStatus(); if (!busy) { result.Text = "Ready. Install the resource pack or Gilded Dusk shader."; result.ForeColor = Foreground; } };
+            pathBox.TextChanged += delegate { UpdateFolderStatus(); if (!busy) { result.Text = "Ready. Install both, or choose an individual pack/shader action."; result.ForeColor = Foreground; } };
             browse.Click += delegate {
                 using (var picker = new FolderBrowserDialog())
                 {
@@ -374,7 +380,7 @@ namespace HyperRealismInstaller
             launch.Click += delegate { LaunchGame(); };
             install.Click += async delegate { await RunOperation(true); };
             close.Click += delegate { Close(); };
-            AcceptButton = install;
+            AcceptButton = installBoth;
             CancelButton = close;
             FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; else if (!captureMode) SavePath(); };
             string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElyPrismLauncher", "instances", "26.3(1)", "minecraft", "resourcepacks");
@@ -636,7 +642,7 @@ namespace HyperRealismInstaller
             public string Shader;
         }
 
-        // One toolbar action checks the installer, resource pack and shader.
+        // One toolbar action checks the installer and the matched pack + shader pair.
         // It never installs a changed asset without user confirmation.
         private async Task CheckAllUpdates()
         {
@@ -651,18 +657,19 @@ namespace HyperRealismInstaller
             {
                 summary = await Task.Run(() => {
                     var web = new WebTransfer(null, () => cancelTransfer);
-                    string shader;
-                    if (folder == null) shader = "Choose an existing resourcepacks folder to locate this instance's shaderpacks folder.";
+                    string packState, shaderState;
+                    if (folder == null)
+                    {
+                        packState = "Choose an existing resourcepacks folder to check the pack.";
+                        shaderState = "Choose an existing resourcepacks folder to locate this instance's shaderpacks folder.";
+                    }
                     else
                     {
-                        try { shader = ShaderPackInstaller.Check(web, folder); }
-                        catch (InvalidDataException ex)
-                        {
-                            if (!ex.Message.StartsWith("No published preview with the Iris shader ZIP", StringComparison.Ordinal)) throw;
-                            shader = "Gilded Dusk shader: not published yet.";
-                        }
+                        BundleCheckResult bundle = BundleInstaller.Check(web, folder);
+                        packState = bundle.Pack;
+                        shaderState = bundle.Shader;
                     }
-                    return new UpdateSummary { Installer = SelfUpdater.FindUpdate(web, SelfUpdater.CurrentTag), Pack = folder == null ? "Choose an existing resourcepacks folder to check the pack." : PackInstaller.Check(web, folder), Shader = shader };
+                    return new UpdateSummary { Installer = SelfUpdater.FindUpdate(web, SelfUpdater.CurrentTag), Pack = packState, Shader = shaderState };
                 });
             }
             catch (OperationCanceledException)
@@ -687,30 +694,27 @@ namespace HyperRealismInstaller
                 deferredInstallerTag = summary.Installer.Tag;
             }
             bool prompted = summary.Installer != null;
-            if (summary.Pack.Contains("Installed file differs"))
+            bool packNeeds = NeedsBundleInstall(summary.Pack);
+            bool shaderNeeds = NeedsBundleInstall(summary.Shader);
+            if (packNeeds || shaderNeeds)
             {
                 prompted = true;
-                var choice = MessageBox.Show(this, summary.Pack + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                string key = summary.Pack + "|" + summary.Shader;
+                var choice = MessageBox.Show(this, summary.Pack + "\r\n" + summary.Shader + "\r\n\r\nInstall both the latest resource pack and shader now?", "Pack + shader update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                 if (choice == DialogResult.Yes)
                 {
-                    await RunOperation(true);
-                    if (result.Text.StartsWith("Download cancelled", StringComparison.Ordinal)) deferredPackUpdate = summary.Pack;
+                    await RunBundleOperation();
+                    if (result.Text.StartsWith("Bundle install cancelled", StringComparison.Ordinal)) deferredBundleUpdate = key;
                 }
-                else deferredPackUpdate = summary.Pack;
-            }
-            if (summary.Shader != null && summary.Shader.Contains("Installed file differs"))
-            {
-                prompted = true;
-                var choice = MessageBox.Show(this, summary.Shader + "\r\n\r\nInstall the latest Gilded Dusk shader now?", "Shader update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                if (choice == DialogResult.Yes)
-                {
-                    await RunShaderOperation();
-                    if (result.Text.StartsWith("Shader download cancelled", StringComparison.Ordinal)) deferredShaderUpdate = summary.Shader;
-                }
-                else deferredShaderUpdate = summary.Shader;
+                else deferredBundleUpdate = key;
             }
             if (!prompted)
                 MessageBox.Show(this, (summary.Installer == null ? "Installer: up to date." : "Installer update skipped.") + "\r\n" + summary.Pack + "\r\n" + summary.Shader, "Update check", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private static bool NeedsBundleInstall(string state)
+        {
+            return state != null && (state.Contains("Installed file differs") || state.Contains("Not installed"));
         }
 
         private static string LoadPath(string fallback)
@@ -799,34 +803,22 @@ namespace HyperRealismInstaller
                 bool hasPack = File.Exists(Path.Combine(folder, PackInstaller.PackName));
                 bool hasShader = File.Exists(Path.Combine(ShaderPackInstaller.ShaderpacksFolder(folder), ShaderPackInstaller.PackName));
                 if (!hasPack && !hasShader) return;
-                string[] states = await Task.Run(() => {
-                    var web = new WebTransfer();
-                    string pack = hasPack ? PackInstaller.Check(web, folder) : null;
-                    string shader = hasShader ? ShaderPackInstaller.Check(web, folder) : null;
-                    return new string[] { pack, shader };
-                });
+                BundleCheckResult bundle = await Task.Run(() => BundleInstaller.Check(new WebTransfer(), folder));
                 if (IsDisposed || busy || !automaticUpdates || !String.Equals(path, pathBox.Text, StringComparison.Ordinal)) return;
-                string packState = states[0];
-                string shaderState = states[1];
-                if (packState != null && packState.Contains("Installed file differs") && !String.Equals(packState, deferredPackUpdate, StringComparison.Ordinal))
+                string packState = bundle.Pack;
+                string shaderState = bundle.Shader;
+                bool packNeeds = bundle.PackNeeds;
+                bool shaderNeeds = bundle.ShaderNeeds;
+                string key = bundle.Tag + "|" + packState + "|" + shaderState;
+                if ((packNeeds || shaderNeeds) && !String.Equals(key, deferredBundleUpdate, StringComparison.Ordinal))
                 {
-                    var answer = MessageBox.Show(this, packState + "\r\n\r\nInstall the latest resource-pack preview now?", "Resource pack update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                    var answer = MessageBox.Show(this, packState + "\r\n" + shaderState + "\r\n\r\nInstall both the latest matched resource pack and shader now?", "Pack + shader update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (answer == DialogResult.Yes)
                     {
-                        await RunOperation(true);
-                        if (result.Text.StartsWith("Download cancelled", StringComparison.Ordinal)) deferredPackUpdate = packState;
+                        await RunBundleOperation();
+                        if (result.Text.StartsWith("Bundle install cancelled", StringComparison.Ordinal)) deferredBundleUpdate = key;
                     }
-                    else deferredPackUpdate = packState;
-                }
-                if (shaderState != null && shaderState.Contains("Installed file differs") && !String.Equals(shaderState, deferredShaderUpdate, StringComparison.Ordinal))
-                {
-                    var answer = MessageBox.Show(this, shaderState + "\r\n\r\nInstall the latest Gilded Dusk shader now?", "Shader update available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-                    if (answer == DialogResult.Yes)
-                    {
-                        await RunShaderOperation();
-                        if (result.Text.StartsWith("Shader download cancelled", StringComparison.Ordinal)) deferredShaderUpdate = shaderState;
-                    }
-                    else deferredShaderUpdate = shaderState;
+                    else deferredBundleUpdate = key;
                 }
             }
             catch { /* Offline checks are silent; the user can retry via the button. */ }
@@ -887,6 +879,7 @@ namespace HyperRealismInstaller
                 folderStatus.ForeColor = Amber;
                 valid = false;
             }
+            installBoth.Enabled = valid && !busy;
             install.Enabled = valid && !busy;
             installShader.Enabled = valid && !busy;
             openFolder.Enabled = valid && !busy;
@@ -894,6 +887,81 @@ namespace HyperRealismInstaller
             toolCheck.Enabled = !busy && !checkingApp;
             launch.Enabled = !busy;
             toolSettings.Enabled = !busy;
+        }
+
+        private async Task RunBundleOperation()
+        {
+            string path = pathBox.Text;
+            SavePath();
+            busy = true;
+            pathBox.Enabled = browse.Enabled = close.Enabled = toolCheck.Enabled = false;
+            UpdateFolderStatus();
+            progress.Visible = true;
+            int generation = StartTransferProgress(true);
+            bundleAssetLabel = "pack + shader";
+            result.ForeColor = Foreground;
+            result.Text = "Finding a release with both the resource pack and shader...";
+            try
+            {
+                string message = await Task.Run(() => BundleInstaller.Install(
+                    new WebTransfer((received, total) => ReportTransferProgress(generation, bundleAssetLabel, received, total), () => cancelTransfer),
+                    path,
+                    text => ReportBundleStatus(generation, text),
+                    plan => ConfirmBundleReplacement(plan)));
+                result.Text = message;
+                result.ForeColor = Green;
+            }
+            catch (OperationCanceledException)
+            {
+                result.ForeColor = Foreground;
+                result.Text = "Bundle install cancelled. Your existing resource pack and shader were not changed.";
+            }
+            catch (Exception ex) { ShowError(ex); }
+            finally
+            {
+                FinishTransferProgress(generation);
+                progress.Visible = false;
+                busy = false;
+                pathBox.Enabled = browse.Enabled = close.Enabled = true;
+                toolCheck.Enabled = !checkingApp && !busy;
+                UpdateFolderStatus();
+            }
+        }
+
+        private void ReportBundleStatus(int generation, string text)
+        {
+            if (IsDisposed || !IsHandleCreated) return;
+            try
+            {
+                BeginInvoke(new Action(delegate
+                {
+                    if (IsDisposed || !busy || generation != transferGeneration) return;
+                    result.ForeColor = Foreground;
+                    result.Text = text;
+                    if (text.StartsWith("Downloading resource pack", StringComparison.Ordinal)) bundleAssetLabel = "resource pack (1/2)";
+                    else if (text.StartsWith("Downloading shader", StringComparison.Ordinal)) bundleAssetLabel = "shader (2/2)";
+                    if (text.StartsWith("Downloading ", StringComparison.Ordinal)) { progress.Value = 0; progress.Style = ProgressBarStyle.Marquee; }
+                    bool committing = text.StartsWith("Installing verified", StringComparison.Ordinal);
+                    if (committing)
+                    {
+                        progress.Style = ProgressBarStyle.Marquee;
+                        cancelDownload.Enabled = false;
+                    }
+                    else if (!cancelTransfer) cancelDownload.Enabled = true;
+                }));
+            }
+            catch { }
+        }
+
+        private bool ConfirmBundleReplacement(BundleInstallPlan plan)
+        {
+            if (IsDisposed) return false;
+            if (InvokeRequired) return (bool)Invoke(new Func<BundleInstallPlan, bool>(ConfirmBundleReplacement), plan);
+            string message = "Install the verified resource pack + shader from " + plan.Tag + "?\r\n\r\n" +
+                "Resource pack: " + (plan.ResourcePackChanged ? (plan.ResourcePackExists ? "replace existing ZIP" : "install new ZIP") : "already current") + "\r\n" +
+                "Shader: " + (plan.ShaderChanged ? (plan.ShaderExists ? "replace existing ZIP" : "install new ZIP") : "already current") + "\r\n\r\n" +
+                "Only these two named ZIPs are changed. Keep Minecraft closed while installing.";
+            return MessageBox.Show(this, message, "Install both", MessageBoxButtons.YesNo, MessageBoxIcon.Information) == DialogResult.Yes;
         }
 
         private async Task RunShaderOperation()
@@ -1035,6 +1103,7 @@ namespace HyperRealismInstaller
             if (web == null) web = ex.InnerException as WebException;
             if (web != null) guidance = "Could not complete the request to GitHub. Check your internet connection and try again.";
             else if (ex is UnauthorizedAccessException) guidance = "Windows denied access to a file or folder. Check permissions and close any application using the pack.";
+            else if (ex is InvalidDataException && ex.Message.StartsWith("Installation failed and automatic rollback", StringComparison.Ordinal)) guidance = "A file replacement failed and rollback could not finish. Close Minecraft, then restore the preserved backups listed below before retrying.";
             else if (ex is InvalidDataException) guidance = "The downloaded release did not pass its size or integrity checks. Nothing unverified was installed.";
             else if (ex is DirectoryNotFoundException) guidance = "The selected folder is no longer available. Choose the resourcepacks folder for the intended Minecraft instance.";
             else guidance = "The operation could not be completed. Check the details below, then try again.";
@@ -1047,14 +1116,14 @@ result.ForeColor = Color.FromArgb(248, 113, 113);
         {
             if (String.IsNullOrEmpty(pathBox.Text)) throw new Exception("No default or saved path.");
             pathBox.Text = Path.GetTempPath();
-            if (install.Enabled || installShader.Enabled) throw new Exception("Invalid folder was accepted.");
+            if (installBoth.Enabled || install.Enabled || installShader.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || installShader.Text != "Install shader" || toolOpen.Text != "Folders" || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != install || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || installBoth.Text != "Install both" || install.Text != "Resource pack only" || installShader.Text != "Shader only" || toolOpen.Text != "Folders" || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != installBoth || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected installer controls are missing.");
             int progressGeneration = StartTransferProgress(true);
             if (!cancelDownload.Visible || !cancelDownload.Enabled || CancelButton != cancelDownload) throw new Exception("Active operations must expose an accessible cancel action.");
             FinishTransferProgress(progressGeneration);
             if (cancelDownload.Visible || cancelDownload.Enabled || CancelButton != close) throw new Exception("The cancel action did not restore after an operation.");
-            foreach (var button in new LauncherButton[] { toolOpen, toolSettings, toolHelp, toolCheck })
+            foreach (var button in new LauncherButton[] { toolOpen, toolSettings, toolHelp, toolCheck, installBoth, install, installShader, launch, openFolder, close })
             {
                 int arrowInset = button.DropArrow ? 16 : 0;
                 int imageInset = button.Image == null ? 0 : button.Image.Width + 7;
@@ -1062,7 +1131,7 @@ result.ForeColor = Color.FromArgb(248, 113, 113);
                 int measured = TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width;
                 if (measured > available) throw new Exception("Toolbar button is not cleanly sized: " + button.Text);
             }
-            if (close.Image == null || install.Image == null || installShader.Image == null) throw new Exception("Launcher-style action icons are missing.");
+            if (close.Image == null || installBoth.Image == null || install.Image == null || installShader.Image == null) throw new Exception("Launcher-style action icons are missing.");
             if (!toolOpen.DropArrow || !toolHelp.DropArrow || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates") throw new Exception("Toolbar actions are missing.");
         }
     }

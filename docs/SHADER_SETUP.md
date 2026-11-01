@@ -18,9 +18,10 @@ teal-shadow/amber-highlight display grade and punchier AgX/contrast defaults;
 LabPBR lighting remains the material foundation.
 
 Windows users can download **HyperRealism128-Installer.exe** from the
-[installer 17 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-installer.17),
-select the intended existing `resourcepacks` folder, and use **Install shader**.
-It puts the shader ZIP in the sibling `shaderpacks` folder for that instance.
+[installer 18 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-installer.18),
+select the intended existing `resourcepacks` folder, and use **Install both**.
+It verifies and installs the matching resource pack and shader together; the
+shader ZIP goes in the sibling `shaderpacks` folder for that instance.
 You can also download the ZIP from the [Preview 25 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-preview.25)
 or build it with `python3 scripts/package_stylized_shader.py`; the generated
 archive is `shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip` with

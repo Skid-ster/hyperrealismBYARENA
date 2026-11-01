@@ -9,17 +9,17 @@ are actually reaching Gilded Dusk.
 1. Use Minecraft Java 26.3 with the matching Iris/Sodium build and the normal
    OpenGL renderer. Iris does not run with OptiFine or the Minecraft Vulkan
    renderer.
-2. Install the HyperRealism resource pack ZIP in `resourcepacks` and enable it
-   above competing packs.
-3. Install `HyperRealism-Gilded-Dusk-MC-26.3.zip` in the sibling `shaderpacks`
-   folder. Installer 17’s **Install shader** button does this automatically.
-4. Select **HyperRealism: Gilded Dusk** in Iris.
-5. In **Shader Pack Settings → Materials**, set **PBR Support** to **LabPBR 1.3**.
+2. Use Installer 18’s **Install both** button to install the matching
+   HyperRealism resource pack ZIP in `resourcepacks` and
+   `HyperRealism-Gilded-Dusk-MC-26.3.zip` in the sibling `shaderpacks` folder,
+   then enable the resource pack above competing packs.
+3. Select **HyperRealism: Gilded Dusk** in Iris.
+4. In **Shader Pack Settings → Materials**, set **PBR Support** to **LabPBR 1.3**.
    Leave **Normal Map Strength** and **Material AO Strength** at 1.0 for the
    authored pack response. Preview 25 enables conservative parallax by default;
    disable **Parallax** if you only want normal/specular PBR. Keep **PBR Channel
    Debug** off for normal play.
-6. Reload resources with `F3+T` after changing packs or shader settings.
+5. Reload resources with `F3+T` after changing packs or shader settings.
 
 ## Channel checks
 

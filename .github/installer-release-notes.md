@@ -1,26 +1,28 @@
-## Windows GUI installer 17 — fixed launcher-style layout
+## Windows GUI installer 18 — one-click pack + shader install
 
-Installer 17 fixes the broken parts of the installer-16 window and keeps the
-PineconeMC/Prism-style dark layout.
+Installer 18 adds a primary **Install both** button that installs the matching
+HyperRealism resource pack and Gilded Dusk shader into the selected instance in
+one action.
 
-- Browse is a native button again, so its text/icon cannot disappear.
-- The resource-pack path uses a normal bordered dark text box; the gray wrapper
-  band under the field is gone.
-- Resource-pack and shader summaries no longer clip. The main area now has
-  separate Resource pack and Optional shader groups, matching the launcher’s
-  group-box style instead of leaving a large empty void.
-- Status is top-aligned and includes concise verification/experimental notes.
-- Right-side action list remains: Install / Update, Install shader, Launch,
-  Open folder, Close.
-- The CI capture now renders the normal enabled state and stores the preview
-  image in the repository so the actual Windows render can be inspected.
+- One release is selected only when it contains all four required assets:
+  resource-pack ZIP + checksum and shader ZIP + checksum. Newer pack-only or
+  shader-only releases cannot create a mismatched pair.
+- Both ZIPs are downloaded to hidden same-folder staging files and SHA-256
+  verified before either installed file is replaced.
+- Files already matching the release checksum are skipped. Replacement uses
+  atomic `File.Replace` / `File.Move`; if the second commit fails, the first is
+  rolled back from a same-folder backup. Cancellation before commit leaves the
+  existing pair untouched.
+- The right-side action list is now **Install both**, **Resource pack only**,
+  **Shader only**, **Launch**, **Open folder**, **Close**. The individual
+  actions remain available for advanced/manual use.
+- Automatic update checks now offer one combined pack + shader update prompt.
 
-The existing functionality remains: verified and capped downloads, atomic
-installation into the selected resourcepacks folder and sibling shaderpacks
-folder, cancellable transfers, explicit confirmation before replacing changed
-files, deferred automatic update prompts, launcher integration, settings, and
-self-updates. Only the named resource-pack or shader ZIP is replaced; other
-files are left untouched.
+The PineconeMC/Prism-style dark layout from installer 17 is retained, with the
+new primary action render-verified by CI. Existing functionality remains:
+verified/capped downloads, cancellable transfers, confirm-before-replace,
+deferred update prompts, launcher integration, settings, and self-update. Only
+the named resource-pack and shader ZIPs are changed; other files stay untouched.
 
 The resource pack and Gilded Dusk shader are experimental. Use a matching Iris
 and Minecraft 26.3 setup, and keep PBR Support on LabPBR 1.3. Shader compiler

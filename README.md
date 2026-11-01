@@ -46,14 +46,16 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and t
 
 ### Windows GUI installer / updater
 
-Installer 17 uses a PineconeMC/Prism-style dark window; it is a separate app,
+Installer 18 uses a PineconeMC/Prism-style dark window; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.17/HyperRealism128-Installer.exe)
-and double-click it. Installer 17 replaces the generic dark dashboard with a PineconeMC/Prism-style toolbar, group boxes, right-side action list and status bar, and adds a separate **Install shader** action for
-Gilded Dusk, alongside the experimental resource pack. It places the shader ZIP
-in the `shaderpacks` sibling of the selected `resourcepacks` folder, and
-**Check updates** checks the shader when one is installed. Installer 17 retains
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.18/HyperRealism128-Installer.exe)
+and double-click it. Installer 18 adds a primary **Install both** button that
+selects one published release containing the resource pack and Gilded Dusk
+shader, verifies both ZIPs, and installs them together into the selected
+instance (`resourcepacks` and its sibling `shaderpacks`). Individual **Resource
+pack only** and **Shader only** actions remain. **Check updates** offers a
+combined update prompt. Installer 18 retains
 cancellable downloads, byte-level progress, 30-second network timeouts, and
 size caps of 1 GiB for the resource pack and 100 MiB each for the installer and shader ZIP.
 Declined or cancelled automatic update prompts are deferred until the next launch.
@@ -62,8 +64,8 @@ The app defaults to the current user's
 browse or type another **existing** `resourcepacks` folder if needed. Green
 means the folder exists and has the expected name—not that the game actually
 uses that folder. Use **Check updates** to compare the installed file's
-hash with the latest preview, or **Install / Update** to download and install
-it. The toolbar keeps to standard installer actions: **Folders** provides folder
+hash with the latest preview, or **Install both** to download, verify, and
+install the matching pair. The toolbar keeps to standard installer actions: **Folders** provides folder
 shortcuts, **Settings** controls automatic update checks, **Help** opens project
 guidance, and **Check updates** checks the resource pack, installed shader, and installer. Use the
 resource-pack path's **Browse...** button to select an existing folder; the app
@@ -73,7 +75,7 @@ PineconeMC to launch the instance inferred from the selected standard
 folders are left alone. By default, at startup and hourly while the installer is
 open, it checks for newer installer releases and, if a pack or shader is already
 installed, for a newer version. It asks before updating. A declined automatic prompt is deferred for that version until
-the next installer launch. Pack and installer downloads can be cancelled from
+the next installer launch. Bundle, pack, shader, and installer downloads can be cancelled from
 the progress row without replacing the current file. Downloads show byte progress,
 use 30-second network
 timeouts, and are capped at 1 GiB for a pack and 100 MiB for the installer. An

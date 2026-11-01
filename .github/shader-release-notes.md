@@ -36,7 +36,8 @@ Under **Materials**:
 
 ### Install
 
-Use Installer 17’s **Install shader** button; it selects the newest published
+Use Installer 18’s **Install both** button to install the matching resource
+pack and shader together, or **Shader only** to select the newest published
 release containing the shader ZIP and checksum. Or download
 `HyperRealism-Gilded-Dusk-MC-26.3.zip` from this release and place the ZIP itself
 in the active instance’s `shaderpacks` folder. Enable the HyperRealism resource

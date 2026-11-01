@@ -29,9 +29,9 @@ compatibility; Minecraft displays **HyperRealism 512×512**.
 
 ## Install / update
 
-Use Windows GUI installer 17 or newer: **Install / Update** for the resource
-pack and **Install shader** for Gilded Dusk. Both discover the newest published
-release containing the matching ZIP and SHA-256. Or download the two ZIPs from
+Use Windows GUI installer 18 or newer: **Install both** selects one published
+release containing the resource pack and Gilded Dusk shader, verifies both
+ZIPs and checksums, and installs the matched pair together. Or download the two ZIPs from
 this release and place them in the active instance's `resourcepacks` and
 `shaderpacks` folders. Enable the HyperRealism resource pack above competing
 packs, select Gilded Dusk in Iris, set **PBR Support** to **LabPBR 1.3**, and
