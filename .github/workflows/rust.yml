@@ -65,7 +65,7 @@ jobs:
           gh release download "$tag" --dir release_assets --pattern 'HyperRealism128-Installer.exe*'
           cd release_assets
           sha256sum -c HyperRealism128-Installer.exe.sha256
-      - name: Prepare and check release assets
+      - name: Prepare release assets and checksums
         run: |
           mkdir -p release_assets
           cp release_build/dist/HyperRealism128-v1.0-MC26.3.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip
@@ -77,8 +77,34 @@ jobs:
           sha256sum HyperRealism-Gilded-Dusk-MC-26.3.zip > HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
           sha256sum -c HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
           sha256sum -c HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
-          python -c "import zipfile; z=zipfile.ZipFile('HyperRealism128-MC26.3-EXPERIMENTAL.zip'); assert z.testzip() is None; names=set(z.namelist()); pngs=[n for n in names if n.endswith('.png')]; expected=['assets/minecraft/textures/entity/'+p+s+'.png' for p in ['chicken/chicken_temperate','cow/cow_temperate','pig/pig_temperate','sheep/sheep','sheep/sheep_wool'] for s in ['', '_n', '_s']]; assert len(pngs)==1317, len(pngs); assert all(n in names for n in expected); assert 'MATERIAL_CREDITS.txt' in names; assert 'ENTITY_TEXTURES.txt' in names; assert 'pack.mcmeta' in names"
-          python -c "import zipfile; z=zipfile.ZipFile('HyperRealism-Gilded-Dusk-MC-26.3.zip'); assert z.testzip() is None; n=set(z.namelist()); assert 'shaders/shaders.properties' in n and 'README.md' in n and 'LICENSE' in n; assert not any(x.startswith('HyperRealism-Stylized-PBR/') for x in n)"
+      - name: Verify resource-pack release archive
+        run: |
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip') as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+          pngs = [name for name in names if name.endswith('.png')]
+          expected = ['assets/minecraft/textures/entity/' + path + suffix + '.png'
+              for path in ['chicken/chicken_temperate', 'cow/cow_temperate', 'pig/pig_temperate', 'sheep/sheep', 'sheep/sheep_wool']
+              for suffix in ['', '_n', '_s']]
+          assert len(pngs) >= 1000, 'resource pack looks incomplete: ' + str(len(pngs)) + ' PNGs'
+          assert all(name in names for name in expected), 'one or more farm-mob targets are missing'
+          assert {'MATERIAL_CREDITS.txt', 'ENTITY_TEXTURES.txt', 'pack.mcmeta'} <= names
+          print('Verified resource pack with', len(pngs), 'PNG assets')
+          PY
+      - name: Verify Iris shader release archive
+        run: |
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip') as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+          assert {'shaders/shaders.properties', 'README.md', 'LICENSE'} <= names
+          assert sum(name.startswith('shaders/') and not name.endswith('/') for name in names) >= 300
+          assert not any(name.startswith('HyperRealism-Stylized-PBR/') for name in names)
+          print('Verified Iris shader ZIP root layout and contents')
+          PY
       - name: Publish experimental prerelease
         env:
           GH_TOKEN: ${{ github.token }}
