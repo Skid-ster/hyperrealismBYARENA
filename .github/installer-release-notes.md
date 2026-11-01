@@ -1,17 +1,16 @@
 ## Windows GUI installer 14 — a modern HyperRealism setup experience
 
-Installer 14 refreshes the Windows installer with a larger, polished dark UI
-while preserving existing install, update, cancellation, settings, folder,
-launcher, and self-update behavior.
+Installer 14 replaces the cramped legacy window with a compact, light, responsive
+setup screen designed to fit small displays while preserving existing install,
+update, cancellation, settings, folder, launcher, and self-update behavior.
 
-- A responsive two-column layout presents the resource pack and optional Gilded
-  Dusk Iris shader as separate products, with clear experimental and LabPBR
-  requirements.
-- Instance destination selection, folder validation, quick-start guidance,
-  download status/progress, and instance actions are visible together.
-- Custom rounded cards and standard owner-drawn buttons use accessible contrast,
-  keyboard behavior, tooltips, and familiar controls; the previous Add Instance
-  action remains absent.
+- Resource-pack and optional Gilded Dusk cards are aligned side by side, with
+  concise experimental, Iris, and LabPBR requirements.
+- The instance path, folder validation, quick-start steps, progress/status, and
+  launch/open-folder shortcuts are organized into clear groups.
+- Plain, familiar text buttons and restrained green/amber accents replace the
+  old pixel-art toolbar buttons and heavy borders. Keyboard focus, tooltips,
+  and the previous removal of **Add Instance** are retained.
 - The Windows CI build renders the full window to a PNG smoke artifact in
   addition to compiling the app, running backend tests, and checking UI
   construction. This image verifies that the UI renders, not a substitute for
