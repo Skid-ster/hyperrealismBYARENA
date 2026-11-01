@@ -125,8 +125,8 @@ internal static class InstallerTests
             Assert(result.Contains(bundle.Tag), "Live bundle install did not report the matched release.");
             string packTarget = Path.Combine(folder, PackInstaller.PackName);
             string shaderTarget = Path.Combine(ShaderPackInstaller.ShaderpacksFolder(folder), ShaderPackInstaller.PackName);
-            Assert(PackInstaller.HashFile(packTarget) == bundle.Pack.Checksum, "Live resource pack did not match the published checksum.");
-            Assert(PackInstaller.HashFile(shaderTarget) == bundle.Shader.Checksum, "Live shader did not match the published checksum.");
+            Assert(String.Equals(PackInstaller.HashFile(packTarget), bundle.Pack.Checksum, StringComparison.OrdinalIgnoreCase), "Live resource pack did not match the published checksum.");
+            Assert(String.Equals(PackInstaller.HashFile(shaderTarget), bundle.Shader.Checksum, StringComparison.OrdinalIgnoreCase), "Live shader did not match the published checksum.");
             string again = BundleInstaller.Install(web, folder, null, plan => true);
             Assert(again.Contains("already installed and verified"), "Live second bundle install did not detect current files.");
             Console.WriteLine("Live GitHub bundle download, verification, and no-op update check passed: " + result);
