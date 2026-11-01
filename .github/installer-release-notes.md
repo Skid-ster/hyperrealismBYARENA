@@ -19,7 +19,9 @@ one action.
 - Automatic update checks now offer one combined pack + shader update prompt.
 
 The PineconeMC/Prism-style dark layout from installer 17 is retained, with the
-new primary action render-verified by CI. Existing functionality remains:
+new primary action render-verified by CI. Windows CI also compiles the app, runs
+the backend/self-update tests, and performs a live GitHub bundle download,
+verification, install, and no-op update check into a temporary folder. Existing functionality remains:
 verified/capped downloads, cancellable transfers, confirm-before-replace,
 deferred update prompts, launcher integration, settings, and self-update. Only
 the named resource-pack and shader ZIPs are changed; other files stay untouched.
