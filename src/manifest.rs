@@ -1,16 +1,16 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Manifest {
     pub version: u32,
     pub materials: Vec<Material>,
     pub textures: Vec<Texture>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Material {
     pub id: String,
@@ -23,7 +23,7 @@ pub struct Material {
 fn default_normal_y() -> String {
     "directx".into()
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Texture {
     pub name: String,
@@ -36,7 +36,13 @@ pub struct Texture {
     pub porosity: u8,
     #[serde(default = "default_emissive")]
     pub emissive: u8,
+    #[serde(default = "default_roughness_scale")]
+    pub roughness_scale: f32,
+    #[serde(default = "default_normal_strength")]
+    pub normal_strength: f32,
 }
+fn default_roughness_scale() -> f32 { 1.0 }
+fn default_normal_strength() -> f32 { 2.5 }
 fn default_f0() -> u8 {
     10
 }
@@ -119,6 +125,15 @@ pub fn validate(m: &Manifest, root: &Path) -> Result<(), String> {
         .contains(&t.recipe.as_str())
         {
             return Err(format!("{}: unknown recipe {}", t.name, t.recipe));
+        }
+        if !t.roughness_scale.is_finite() || !(0.0..=1.0).contains(&t.roughness_scale) {
+            return Err(format!("{}: roughness_scale must be 0..1", t.name));
+        }
+        if !t.normal_strength.is_finite() || !(0.0..=8.0).contains(&t.normal_strength) {
+            return Err(format!("{}: normal_strength must be 0..8", t.name));
+        }
+        if t.name.len() > 80 || t.material.len() > 80 {
+            return Err(format!("{}: name and material must be at most 80 characters", t.name));
         }
         if t.porosity > 64 {
             return Err(format!("{}: porosity must be 0..64", t.name));

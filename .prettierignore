@@ -1,0 +1,12 @@
+node_modules
+target
+dist
+dist-web
+.workspace
+playwright-report
+test-results
+package-lock.json
+Cargo.lock
+test_assets
+public
+*.md

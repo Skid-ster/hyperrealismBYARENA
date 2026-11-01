@@ -1,4 +1,11 @@
 /target/
 /test_output/
 /dist/
+/dist-web/
 /pack/
+/node_modules/
+/.workspace/
+/playwright-report/
+/test-results/
+/.env
+*.log
