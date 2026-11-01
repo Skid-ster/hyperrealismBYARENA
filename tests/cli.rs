@@ -599,7 +599,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         serde_json::from_slice(&fs::read("catalog/vanilla_26.3_audit.json").unwrap()).unwrap();
     let entries = audit["textures"].as_object().unwrap();
     assert_eq!(entries.len(), m.textures.len());
-    assert_eq!(m.textures.len(), 371);
+    assert_eq!(m.textures.len(), 380);
     for (name, rounded_target) in [
         ("chiseled_deepslate", [54, 54, 55]),
         ("chiseled_red_sandstone", [183, 97, 28]),
@@ -643,6 +643,25 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         assert_eq!(texture.recipe, "ore");
         assert_eq!(texture.ore_f0, Some(ore_id));
     }
+    // Preview 26 adds the common storage/lamp blocks players use to judge PBR.
+    // Iron/gold must be predefined LabPBR metals, not dielectric lookalikes.
+    for (name, f0) in [
+        ("iron_block", 230),
+        ("gold_block", 231),
+        ("diamond_block", 43),
+        ("emerald_block", 20),
+        ("lapis_block", 20),
+        ("redstone_block", 10),
+        ("coal_block", 10),
+        ("redstone_lamp", 10),
+        ("redstone_lamp_on", 10),
+    ] {
+        let texture = m.textures.iter().find(|t| t.name == name).unwrap();
+        assert_eq!(texture.f0, f0, "{name} LabPBR F0/metal ID");
+        assert!(entries.contains_key(name), "{name} must be audited against 26.3");
+    }
+    let lamp_on = m.textures.iter().find(|t| t.name == "redstone_lamp_on").unwrap();
+    assert_eq!(lamp_on.emissive, 180);
     let mut entity_paths: Vec<_> = m.entity_textures.iter().map(|entity| entity.path.as_str()).collect();
     entity_paths.sort_unstable();
     assert_eq!(
@@ -974,9 +993,9 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
     assert_eq!(summary["blockstates"], 1290);
     assert_eq!(summary["block_model_files"], 2885);
     assert_eq!(summary["unique_block_texture_references"], 1272);
-    assert_eq!(summary["currently_covered_block_texture_references"], 371);
-    assert_eq!(summary["uncovered_block_texture_references"], 901);
-    assert_eq!(summary["states_with_uncovered_textures"], 577);
+    assert_eq!(summary["currently_covered_block_texture_references"], 380);
+    assert_eq!(summary["uncovered_block_texture_references"], 892);
+    assert_eq!(summary["states_with_uncovered_textures"], 567);
     assert!(summary["metadata_resolution_problems"]
         .as_array()
         .unwrap()
@@ -996,7 +1015,7 @@ fn exhaustive_26_3_block_texture_inventory_is_explicit_about_gaps() {
             "{block}: uncovered list must be a subset of the block texture references"
         );
     }
-    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 901);
+    assert_eq!(catalog["uncovered_block_textures"].as_array().unwrap().len(), 892);
     let covered: std::collections::HashSet<&str> = catalog["covered_block_textures"]
         .as_array()
         .unwrap()
@@ -1998,5 +2017,42 @@ fn malformed_construction_layout_is_rejected() {
     let result = run(&temp, &temp.join("output"), "2");
     assert!(!result.status.success());
     assert!(String::from_utf8_lossy(&result.stderr).contains("construction layout"));
+    fs::remove_dir_all(temp).unwrap();
+}
+
+#[test]
+fn connected_ctm_verifier_requires_labpbr_tiles() {
+    use hyperrealism_core::png_io::write;
+    let unique = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp = std::env::temp_dir().join(format!(
+        "hyperrealism-ctm-verify-{}-{unique}",
+        std::process::id()
+    ));
+    let ctm = temp.join("pack/assets/minecraft/optifine/ctm/glass");
+    fs::create_dir_all(&ctm).unwrap();
+    let size = 128usize;
+    let color = vec![180u8; size * size * 4];
+    let normal = vec![128u8, 128, 255, 255]
+        .into_iter()
+        .cycle()
+        .take(size * size * 4)
+        .collect::<Vec<_>>();
+    let specular = vec![128u8, 10, 0, 255]
+        .into_iter()
+        .cycle()
+        .take(size * size * 4)
+        .collect::<Vec<_>>();
+    for index in 0..5 {
+        write(&ctm.join(format!("{index}.png")), size, size, &color).unwrap();
+        write(&ctm.join(format!("{index}_n.png")), size, size, &normal).unwrap();
+        write(&ctm.join(format!("{index}_s.png")), size, size, &specular).unwrap();
+    }
+    let pack = temp.join("pack");
+    assert_eq!(hyperrealism_core::verify::connected_pack(&pack).unwrap(), 5);
+    fs::remove_file(ctm.join("2_n.png")).unwrap();
+    assert!(hyperrealism_core::verify::connected_pack(&pack).is_err());
     fs::remove_dir_all(temp).unwrap();
 }

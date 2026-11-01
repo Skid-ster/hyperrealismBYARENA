@@ -245,9 +245,74 @@ pub fn entity_pack(root: &Path) -> Result<usize, String> {
     Ok(bases.len())
 }
 
-/// Verify block and entity LabPBR maps in a generated pack.
+/// Verify OptiFine/Continuity compact CTM LabPBR tiles, if present.
+///
+/// Connected glass is written outside `textures/block`, so the block verifier
+/// alone would miss a missing `_n`/`_s` sidecar on a CTM tile.
+pub fn connected_pack(root: &Path) -> Result<usize, String> {
+    let ctm = root.join("assets/minecraft/optifine/ctm");
+    if !ctm.exists() {
+        return Ok(0);
+    }
+    if !ctm.is_dir() {
+        return Err(format!("{}: expected CTM directory", ctm.display()));
+    }
+    let mut tiles = 0usize;
+    for entry in fs::read_dir(&ctm).map_err(|e| format!("{}: {e}", ctm.display()))? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        if !entry.file_type().map_err(|e| e.to_string())?.is_dir() {
+            continue;
+        }
+        let directory = entry.path();
+        for index in 0..5 {
+            let color_path = directory.join(format!("{index}.png"));
+            let color = png_io::read(&color_path)?;
+            let size = color.width;
+            if color.height != size || ![128, 256, 512].contains(&size) {
+                return Err(format!(
+                    "{}: CTM tile must be square 128/256/512px",
+                    color_path.display()
+                ));
+            }
+            rgba_dimensions(&color_path, size, size)?;
+            let normal_path = directory.join(format!("{index}_n.png"));
+            let normal = rgba_dimensions(&normal_path, size, size)?;
+            for pixel in normal.pixels.chunks_exact(4) {
+                let x = f32::from(pixel[0]) / 127.5 - 1.0;
+                let y = f32::from(pixel[1]) / 127.5 - 1.0;
+                if x * x + y * y > 1.02 {
+                    return Err(format!("{}: invalid CTM normal XY", normal_path.display()));
+                }
+                if pixel[3] == 0 {
+                    return Err(format!("{}: zero CTM height", normal_path.display()));
+                }
+            }
+            let specular_path = directory.join(format!("{index}_s.png"));
+            let specular = rgba_dimensions(&specular_path, size, size)?;
+            for pixel in specular.pixels.chunks_exact(4) {
+                if (238..=254).contains(&pixel[1]) {
+                    return Err(format!(
+                        "{}: reserved LabPBR CTM material ID",
+                        specular_path.display()
+                    ));
+                }
+                if pixel[1] >= 230 && pixel[2] != 0 {
+                    return Err(format!(
+                        "{}: CTM metal has nonzero reserved blue channel",
+                        specular_path.display()
+                    ));
+                }
+            }
+            tiles += 1;
+        }
+    }
+    Ok(tiles)
+}
+
+/// Verify block, connected-glass and entity LabPBR maps in a generated pack.
 pub fn full_pack(root: &Path) -> Result<(usize, usize), String> {
     let block_count = pack(root)?;
+    connected_pack(root)?;
     let entity_count = entity_pack(root)?;
     Ok((block_count, entity_count))
 }

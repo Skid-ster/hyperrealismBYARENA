@@ -29,13 +29,14 @@ The current audit reports:
 
 - 1,290 blockstate JSON files and 2,885 block-model JSON files.
 - 1,272 distinct `minecraft:block/*` texture references.
-- 371 referenced paths are covered by the material manifest; 901 remain
+- 380 referenced paths are covered by the material manifest; 892 remain
   uncovered.
-- 577 blockstates currently have at least one uncovered referenced texture.
+- 567 blockstates currently have at least one uncovered referenced texture.
 - The pinned-metadata resolver reports zero unresolved texture variables and
   zero block texture paths unrelated to any blockstate.
 
-Recent additions include raw copper, gold and iron blocks; five copper
+Recent additions include the iron, gold, diamond, emerald, lapis, redstone and
+coal storage blocks plus redstone lamps (Preview 26), raw copper, gold and iron blocks; five copper
 surfaces; twelve chiseled stone/copper targets; and seven amethyst, cinnabar and
 sulfur targets. They reuse documented CC0 Poly Haven scans already in the
 project (`Metal Plate 02`, `Rusted Shutter`, `Rock Face 03`, and `Sandstone
@@ -71,7 +72,7 @@ photographic material.
    missing, unsupported and intentionally vanilla-fallback paths separate
    machine-readable statuses. Add reproducible coverage checks for every
    blockstate, not a hand-selected sample.
-2. **Build material families, not 901 unrelated recipes.** Group semantically
+2. **Build material families, not 892 unrelated recipes.** Group semantically
    related block paths into defensible families (stone/ore, soil/sand, wood/bark,
    masonry, metal, glass, foliage/crops, Nether/End, liquids and utility blocks).
    Preserve distinct target colors, alpha, face masks, rotations, state/model

@@ -3,10 +3,10 @@
 This is an **experimental partial preview**, not a complete production pack.
 The development build defaults to manifest-defined 256×256 Minecraft Java 26.3
 block textures and aligned LabPBR 1.3 maps using a CPU-only pipeline; optional
-outputs are 128×128 or 512×512. Preview 25 publishes the current 512×512 resource
+outputs are 128×128 or 512×512. Preview 26 publishes the current 512×512 resource
 pack and adds the separately installable experimental Gilded Dusk Iris shader. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
-are approximated as described below. The current source catalog contains 371
+are approximated as described below. The current source catalog contains 380
 distinct block texture targets based on CC0 scans from Poly Haven, ambientCG,
 TextureCan and other credited providers, plus original procedural work; Preview 13 added the lever texture, Preview 14 unified PBR
 strength at 20% and softened door/glass treatments, Preview 15 added
@@ -22,7 +22,9 @@ surfaces with volcanic rock and aligned emission maps; animated and cutout Nethe
 sprites remain unchanged. Preview 22 adds five adult temperate farm-mob texture
 paths. Preview 23 calibrates roughness by material and reconstructs subtle height
 from 26 aligned normal maps; these remain experimental and need in-game review.
-Pale oak keeps the color-matched maple source. These
+Preview 26 adds the common iron, gold, diamond, emerald, lapis, redstone and
+coal storage blocks plus powered/unpowered redstone lamps, and CI now executes
+the shader's LabPBR decoder against generated maps in headless OpenGL. Pale oak keeps the color-matched maple source. These
 are targeted source improvements, not a complete or visually validated
 photorealistic catalog. A separate synthetic manifest contains eight
 test examples. The repository did
@@ -40,7 +42,7 @@ builds a ready-to-install ZIP. It has not yet been loaded in Minecraft, so
 in-game visuals, driver compatibility, and performance remain unverified;
 Photon remains the documented practical recommendation.
 
-See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 371, leaving 901 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
+See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and the custom-shader assessment](docs/FULL_BLOCK_SUPPORT_PLAN.md), [Continuity compatibility notes](docs/CONTINUITY_SUPPORT.md), and [the research and staged rebuild plan](docs/REBUILD_PLAN.md). The pinned 26.3 metadata audit currently finds 1,272 distinct block texture references; the block catalog covers 380, leaving 892 uncovered, so complete vanilla block coverage remains unfinished. The current source build additionally supports five experimental entity texture paths (adult temperate chicken, cow and pig, plus sheep base and wool layer); baby, other-biome, equipment and hostile-mob textures remain vanilla. Experimental Preview 22 includes these five adult temperate entity paths; all other mob variants remain vanilla. See the [farm-mob pilot notes](experiments/common_farm_mobs/README.md).
 
 ## Download and install the experimental preview
 
@@ -232,7 +234,7 @@ run uses CPU, and there is no GPU backend.
 
 ## PBR strength
 
-The bundled manifest uses a single global `pbr_strength` of **1.0** for all 371
+The bundled manifest uses a single global `pbr_strength` of **1.0** for all 380
 texture targets; per-texture overrides have been removed. This preserves the
 authored normal slope, height deviation, smoothness and AO response. Base colors
 and discrete metal/SSS/emission fields are not scaled. Actual appearance and
@@ -393,7 +395,7 @@ JAR and appropriate, lawfully obtained input materials.
 
 ## Still needed
 
-- Expand beyond the current 371-output subset, especially animated/cutout
+- Expand beyond the current 380-output subset, especially animated/cutout
   Nether vegetation; acquire suitable materials for each family and review
   palettes/geometry in game. It is not guaranteed to overlap the missing Python
   implementation.

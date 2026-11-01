@@ -3075,9 +3075,7 @@
         "minecraft:block/coal_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "coal_block"
-      ]
+      "uncovered_block_textures": []
     },
     "coal_ore": {
       "block_textures": [
@@ -5008,9 +5006,7 @@
         "minecraft:block/diamond_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "diamond_block"
-      ]
+      "uncovered_block_textures": []
     },
     "diamond_ore": {
       "block_textures": [
@@ -5265,9 +5261,7 @@
         "minecraft:block/emerald_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "emerald_block"
-      ]
+      "uncovered_block_textures": []
     },
     "emerald_ore": {
       "block_textures": [
@@ -5905,9 +5899,7 @@
         "minecraft:block/gold_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "gold_block"
-      ]
+      "uncovered_block_textures": []
     },
     "gold_ore": {
       "block_textures": [
@@ -6547,9 +6539,7 @@
         "minecraft:block/heavy_weighted_pressure_plate_down"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "iron_block"
-      ]
+      "uncovered_block_textures": []
     },
     "honey_block": {
       "block_textures": [
@@ -6752,9 +6742,7 @@
         "minecraft:block/iron_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "iron_block"
-      ]
+      "uncovered_block_textures": []
     },
     "iron_chain": {
       "block_textures": [
@@ -7159,9 +7147,7 @@
         "minecraft:block/lapis_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "lapis_block"
-      ]
+      "uncovered_block_textures": []
     },
     "lapis_ore": {
       "block_textures": [
@@ -7805,9 +7791,7 @@
         "minecraft:block/light_weighted_pressure_plate_down"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "gold_block"
-      ]
+      "uncovered_block_textures": []
     },
     "lightning_rod": {
       "block_textures": [
@@ -12942,9 +12926,7 @@
         "minecraft:block/redstone_block"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "redstone_block"
-      ]
+      "uncovered_block_textures": []
     },
     "redstone_lamp": {
       "block_textures": [
@@ -12956,10 +12938,7 @@
         "minecraft:block/redstone_lamp_on"
       ],
       "other_textures": [],
-      "uncovered_block_textures": [
-        "redstone_lamp",
-        "redstone_lamp_on"
-      ]
+      "uncovered_block_textures": []
     },
     "redstone_ore": {
       "block_textures": [
@@ -17379,6 +17358,7 @@
     "cinnabar",
     "cinnabar_bricks",
     "clay",
+    "coal_block",
     "coal_ore",
     "coarse_dirt",
     "cobbled_deepslate",
@@ -17430,11 +17410,13 @@
     "deepslate_redstone_ore",
     "deepslate_tiles",
     "deepslate_top",
+    "diamond_block",
     "diamond_ore",
     "diorite",
     "dirt",
     "dirt_path_top",
     "dripstone_block",
+    "emerald_block",
     "emerald_ore",
     "end_stone",
     "end_stone_bricks",
@@ -17449,6 +17431,7 @@
     "glass",
     "glass_pane_top",
     "glowstone",
+    "gold_block",
     "gold_ore",
     "granite",
     "grass_block_side",
@@ -17468,6 +17451,7 @@
     "green_terracotta",
     "green_wool",
     "iron_bars",
+    "iron_block",
     "iron_door_bottom",
     "iron_door_top",
     "iron_ore",
@@ -17480,6 +17464,7 @@
     "jungle_planks",
     "jungle_trapdoor",
     "ladder",
+    "lapis_block",
     "lapis_ore",
     "lever",
     "light_blue_concrete",
@@ -17597,6 +17582,9 @@
     "red_stained_glass_pane_top",
     "red_terracotta",
     "red_wool",
+    "redstone_block",
+    "redstone_lamp",
+    "redstone_lamp_on",
     "redstone_ore",
     "rooted_dirt",
     "sand",
@@ -17684,10 +17672,10 @@
     "block_model_files": 2885,
     "block_texture_references_not_referenced_by_any_blockstate": [],
     "blockstates": 1290,
-    "currently_covered_block_texture_references": 371,
+    "currently_covered_block_texture_references": 380,
     "metadata_resolution_problems": [],
-    "states_with_uncovered_textures": 577,
-    "uncovered_block_texture_references": 901,
+    "states_with_uncovered_textures": 567,
+    "uncovered_block_texture_references": 892,
     "unique_block_texture_references": 1272
   },
   "uncovered_block_textures": [
@@ -17855,7 +17843,6 @@
     "chorus_flower_dead",
     "chorus_plant",
     "closed_eyeblossom",
-    "coal_block",
     "cobweb",
     "cocoa_stage0",
     "cocoa_stage1",
@@ -17950,7 +17937,6 @@
     "dead_tube_coral_fan",
     "detector_rail",
     "detector_rail_on",
-    "diamond_block",
     "dirt_path_side",
     "dispenser_front",
     "dispenser_front_vertical",
@@ -17988,7 +17974,6 @@
     "dried_kelp_top",
     "dropper_front",
     "dropper_front_vertical",
-    "emerald_block",
     "enchanting_table_bottom",
     "enchanting_table_side",
     "enchanting_table_top",
@@ -18032,7 +18017,6 @@
     "furnace_top",
     "glow_item_frame",
     "glow_lichen",
-    "gold_block",
     "golden_dandelion",
     "grass_block_snow",
     "gray_bed_foot_east",
@@ -18075,7 +18059,6 @@
     "horn_coral_block",
     "horn_coral_fan",
     "ice",
-    "iron_block",
     "iron_chain",
     "item_frame",
     "jack_o_lantern",
@@ -18092,7 +18075,6 @@
     "kelp",
     "kelp_plant",
     "lantern",
-    "lapis_block",
     "large_amethyst_bud",
     "large_fern_bottom",
     "large_fern_top",
@@ -18333,13 +18315,10 @@
     "red_shrub",
     "red_shulker_box",
     "red_tulip",
-    "redstone_block",
     "redstone_dust_dot",
     "redstone_dust_line0",
     "redstone_dust_line1",
     "redstone_dust_overlay",
-    "redstone_lamp",
-    "redstone_lamp_on",
     "redstone_torch",
     "redstone_torch_off",
     "reinforced_deepslate_bottom",

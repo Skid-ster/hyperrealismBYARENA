@@ -4835,6 +4835,123 @@
         170,
         91
       ]
+    },
+    "coal_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "694e5f0dd656a3dae23b96795aa513b69610fcec",
+      "has_mcmeta": false,
+      "target_rgb": [
+        16,
+        16,
+        16
+      ]
+    },
+    "diamond_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "f41ce98bbbe6c717b67e66823c17fe5a75f9c001",
+      "has_mcmeta": false,
+      "target_rgb": [
+        98,
+        237,
+        228
+      ]
+    },
+    "emerald_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "bbb33bc50a2ad1b06caf76658d36f3da828e0077",
+      "has_mcmeta": false,
+      "target_rgb": [
+        42,
+        203,
+        88
+      ]
+    },
+    "gold_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "8ee2f41e3a7edfa51e70fcdf06ed9a0b5bcbf495",
+      "has_mcmeta": false,
+      "target_rgb": [
+        246,
+        208,
+        62
+      ]
+    },
+    "iron_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "b7bb5794b7f74da3156fbf51d88e43eb11dd1f89",
+      "has_mcmeta": false,
+      "target_rgb": [
+        220,
+        220,
+        220
+      ]
+    },
+    "lapis_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "235fc334b729219a3e34ab89891597930bc558cc",
+      "has_mcmeta": false,
+      "target_rgb": [
+        31,
+        67,
+        140
+      ]
+    },
+    "redstone_block": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "c7a1416a3469a99877532a20beeaffff2bc9dd8e",
+      "has_mcmeta": false,
+      "target_rgb": [
+        176,
+        25,
+        5
+      ]
+    },
+    "redstone_lamp": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "7ee28dc5386c4abba243f04c404056e9c356089a",
+      "has_mcmeta": false,
+      "target_rgb": [
+        95,
+        55,
+        30
+      ]
+    },
+    "redstone_lamp_on": {
+      "dimensions": [
+        16,
+        16
+      ],
+      "git_blob_sha1": "50f291c539ec1b988cfed180dcceba947c3fc5da",
+      "has_mcmeta": false,
+      "target_rgb": [
+        143,
+        102,
+        61
+      ]
     }
   },
   "version": "26.3"

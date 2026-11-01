@@ -23,8 +23,8 @@ are actually reaching Gilded Dusk.
 
 ## Channel checks
 
-Use a covered block such as cobblestone, oak log/planks, iron door/bars, copper
-block, glass, glowstone, or leaves. Uncovered vanilla textures will not show
+Use a covered block such as cobblestone, oak log/planks, iron/gold/diamond/
+emerald blocks, copper block, redstone lamp, glass, glowstone, or leaves. Uncovered vanilla textures will not show
 HyperRealism PBR. First select **PBR Channel Debug → Map Presence**: green means
 both normal and specular sidecars reached the shader, yellow means one, red means
 neither. A blue tint means Iris also detected the LabPBR texture-format flag.
@@ -53,6 +53,17 @@ neither. A blue tint means Iris also detected the LabPBR texture-format flag.
   height; excessive height exaggerates approximated maps and can cause artifacts.
 - If a channel debug view is flat, check pack order, the `_n.png`/`_s.png`
   sidecars, Iris version, and `logs/latest.log` for resource/shader errors.
+
+## Headless decode test
+
+`python3 scripts/test_pbr_pipeline.py --pack pilot_output/pack --require-gl`
+validates every generated block/CTM/entity triple and, when ModernGL/EGL is
+available, compiles the actual `lib/common/material.glsl` and renders the
+pack's `_n`/`_s` maps through it. It asserts iron/gold metal IDs, glowstone/
+redstone-lamp emission, leaf subsurface, Map Presence colors, normal-driven
+lighting variation, and the rough-dielectric fallback for missing sidecars.
+CI runs this on Linux with Mesa llvmpipe. This is stronger than a compile-only
+check, but it is still not Minecraft/Iris rendering on your GPU.
 
 ## Known limits
 

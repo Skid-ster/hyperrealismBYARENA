@@ -6840,6 +6840,153 @@
         129,
         124
       ]
+    },
+    {
+      "name": "iron_block",
+      "material": "metal_plate_02",
+      "recipe": "metal",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        220,
+        220,
+        220
+      ],
+      "f0": 230
+    },
+    {
+      "name": "gold_block",
+      "material": "metal_plate_02",
+      "recipe": "metal",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        246,
+        208,
+        62
+      ],
+      "f0": 231
+    },
+    {
+      "name": "diamond_block",
+      "material": "procedural_glass",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        98,
+        237,
+        228
+      ],
+      "f0": 43
+    },
+    {
+      "name": "emerald_block",
+      "material": "procedural_glass",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        42,
+        203,
+        88
+      ],
+      "f0": 20
+    },
+    {
+      "name": "lapis_block",
+      "material": "procedural_glass",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        31,
+        67,
+        140
+      ],
+      "f0": 20
+    },
+    {
+      "name": "redstone_block",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        176,
+        25,
+        5
+      ],
+      "f0": 10,
+      "porosity": 20
+    },
+    {
+      "name": "coal_block",
+      "material": "rock_face",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        16,
+        16,
+        16
+      ],
+      "f0": 10,
+      "porosity": 10
+    },
+    {
+      "name": "redstone_lamp",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        95,
+        55,
+        30
+      ],
+      "f0": 10
+    },
+    {
+      "name": "redstone_lamp_on",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        143,
+        102,
+        61
+      ],
+      "f0": 10,
+      "emissive": 180
     }
   ],
   "entity_textures": [

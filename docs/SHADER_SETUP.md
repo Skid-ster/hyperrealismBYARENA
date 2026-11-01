@@ -123,8 +123,8 @@ In Complementary Reimagined, the pack must be enabled **above** competing packs
 and **RP Support** must be **labPBR (RP Required)**; in Photon, set the texture
 format to labPBR and enable normal/specular mapping. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
-without it. Preview 25 uses a global PBR strength of `1.0`, with no
-per-texture overrides, across all 371 texture targets. Earlier previews used
+without it. Preview 26 uses a global PBR strength of `1.0`, with no
+per-texture overrides, across all 380 texture targets. Earlier previews used
 `0.2`, which compressed normal slopes, height deviations and smoothness to 20%
 and made PBR very subtle. Albedo and discrete LabPBR metal/F0 IDs, porosity and
 emission are preserved. Full channel strength is not a guarantee of a particular
@@ -147,7 +147,7 @@ procedure, not proof of a test on your PC.
 
 The development build now defaults to 256px: that is one quarter the texel
 count of 512px, so it should reduce texture storage and atlas pressure, but no
-VRAM, load-time or FPS benchmark has been run. The published Preview 25 is still
+VRAM, load-time or FPS benchmark has been run. The published Preview 26 is still
 512px. Use the optional 128px build for a smaller pack or 512px for more detail;
 actual memory and performance depend on Minecraft, shader, driver and hardware.
 
@@ -157,7 +157,7 @@ Compare in daylight and in darker light, with and without the resource pack,
 then with and without the shader. Try stone, cobblestone stairs/slabs/walls,
 oak and bamboo planks/fences, sand, netherrack and Nether gold ore. Ask which
 details are visible from a normal playing distance, whether seams repeat, and
-whether metals reflect plausibly. The 371 covered block texture paths do not
+whether metals reflect plausibly. The 380 covered block texture paths do not
 replace the entire game; animations, most blocks and entities are not supplied. The pack cannot guarantee visual
 quality merely because it contains high-resolution images and valid LabPBR channels.
 
