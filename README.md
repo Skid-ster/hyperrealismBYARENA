@@ -99,7 +99,7 @@ more GPU memory than the previous 128×128 preview; performance on the RTX 5060 
 has not been tested. Download [HyperRealism Preview 24 resource pack](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.24/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**.
-For the experimental Iris shader, download [HyperRealism: Gilded Dusk](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.24/HyperRealism-Gilded-Dusk-MC-26.3.zip)
+For the experimental Iris shader, download [HyperRealism: Gilded Dusk](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-shader.1/HyperRealism-Gilded-Dusk-MC-26.3.zip)
 and put the ZIP in the active instance's `shaderpacks` folder, not
 `resourcepacks`. Enable the HyperRealism resource pack and select the shader in
 Iris; keep PBR Support set to LabPBR 1.3. See the [shader guide](docs/SHADER_SETUP.md)
