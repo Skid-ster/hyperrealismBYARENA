@@ -29,11 +29,19 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --yes libegl1 libgl1 libgl1-mesa-dri
+          sudo apt-get install --yes libegl1 libegl-mesa0 libgl1 libgl1-mesa-dri libglx-mesa0 libopengl0
           python3 -m pip install --user pillow moderngl
       - name: Execute the real LabPBR decoder against generated maps
         if: runner.os == 'Linux'
-        run: python3 scripts/test_pbr_pipeline.py --pack pilot_output/pack --require-gl --report pilot_output/pbr_pipeline_report.json
+        run: |
+          set +e
+          python3 scripts/test_pbr_pipeline.py --pack pilot_output/pack --require-gl --report pilot_output/pbr_pipeline_report.json > pbr_decode_test.log 2>&1
+          code=$?
+          cat pbr_decode_test.log
+          if [ "$code" -ne 0 ]; then
+            tail -n 60 pbr_decode_test.log | while IFS= read -r line; do echo "::error::$line"; done
+            exit "$code"
+          fi
       - name: Test preview installer
         if: runner.os == 'Windows'
         shell: pwsh
@@ -284,10 +292,18 @@ jobs:
       - name: Install headless OpenGL and Pillow for release PBR validation
         run: |
           sudo apt-get update
-          sudo apt-get install --yes libegl1 libgl1 libgl1-mesa-dri
+          sudo apt-get install --yes libegl1 libegl-mesa0 libgl1 libgl1-mesa-dri libglx-mesa0 libopengl0
           python3 -m pip install --user pillow moderngl
       - name: Execute the real LabPBR decoder against the release pack
-        run: python3 scripts/test_pbr_pipeline.py --pack release_build/pack --require-gl --report release_build/pbr_pipeline_report.json
+        run: |
+          set +e
+          python3 scripts/test_pbr_pipeline.py --pack release_build/pack --require-gl --report release_build/pbr_pipeline_report.json > pbr_decode_test.log 2>&1
+          code=$?
+          cat pbr_decode_test.log
+          if [ "$code" -ne 0 ]; then
+            tail -n 60 pbr_decode_test.log | while IFS= read -r line; do echo "::error::$line"; done
+            exit "$code"
+          fi
       - name: Check build report declares full-strength 512px PBR
         run: |
           python - <<'PY'

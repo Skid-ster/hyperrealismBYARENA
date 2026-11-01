@@ -13,6 +13,7 @@ import argparse
 import array
 import json
 import sys
+import traceback
 from pathlib import Path
 
 from PIL import Image
@@ -124,6 +125,7 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
         return {"skipped": "moderngl is not installed"}
 
     ctx = None
+    errors = []
     for backend in ("egl", None):
         try:
             ctx = (
@@ -132,10 +134,10 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
                 else moderngl.create_standalone_context()
             )
             break
-        except Exception:
-            continue
+        except Exception as error:
+            errors.append(f"{backend or 'default'}: {type(error).__name__}: {error}")
     if ctx is None:
-        return {"skipped": "no headless OpenGL context"}
+        return {"skipped": "no headless OpenGL context: " + "; ".join(errors)}
 
     material_source = (shader_root / "lib/common/material.glsl").read_text()
     vertex = """
@@ -330,4 +332,7 @@ if __name__ == "__main__":
         raise SystemExit(main())
     except AssertionError as error:
         print(f"PBR pipeline check failed: {error}", file=sys.stderr)
+        raise SystemExit(1)
+    except Exception:
+        traceback.print_exc()
         raise SystemExit(1)
