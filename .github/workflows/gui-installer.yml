@@ -3,6 +3,9 @@ on: [push, pull_request]
 jobs:
   build-test:
     runs-on: windows-latest
+    permissions:
+      contents: read
+      issues: write
     steps:
       - uses: actions/checkout@v4
       - name: Compile and test installer
@@ -30,14 +33,24 @@ jobs:
           if (Test-Path -LiteralPath $source) { Copy-Item -LiteralPath $source -Destination "$env:GITHUB_WORKSPACE\installer-build.log" -Force }
       - name: Temporarily expose failed build log for diagnosis
         if: failure() && github.event_name == 'push'
-        shell: powershell
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $log = Get-Content -LiteralPath "$env:GITHUB_WORKSPACE\installer-build.log" -Raw
-          $body = "Temporary installer build diagnostics for run $env:GITHUB_RUN_ID`n`n````text`n$log`n````"
-          $payload = @{ body = $body } | ConvertTo-Json -Depth 3 -Compress
-          $payload | gh api "repos/$env:GITHUB_REPOSITORY/issues/3/comments" --input -
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('installer-build.log', 'utf8');
+            const fence = String.fromCharCode(96).repeat(3);
+            const body = [
+              `Temporary installer build diagnostics for run ${context.runId}`,
+              '',
+              `${fence}text`,
+              log.slice(0, 40000),
+              fence
+            ].join('\n');
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: 3,
+              body
+            });
       - uses: actions/upload-artifact@v4
         with:
           name: HyperRealism128-Windows-GUI-installer
