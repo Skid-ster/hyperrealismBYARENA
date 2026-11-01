@@ -115,19 +115,19 @@ internal static class InstallerTests
             AppRelease("v0.1.0-installer.11", false, "https://github.com"),
             AppRelease("v0.1.0-installer.12", false, "https://github.com"),
             AppRelease("v0.1.0-installer.13", false, "https://github.com"),
-            AppRelease("v0.1.0-installer.15", false, "https://github.com"),
-            AppRelease("v0.1.0-installer.16", true, "https://github.com"),
+            AppRelease("v0.1.0-installer.16", false, "https://github.com"),
+            AppRelease("v0.1.0-installer.17", true, "https://github.com"),
             Release("v9.0.0-preview.1", "2028-01-01T00:00:00Z", false, "https://github.com")
         });
         InstallerRelease update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
         Assert(update == null, "Current installer falsely reported outdated.");
         update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.9");
-        Assert(update != null && update.Tag == "v0.1.0-installer.15", "Installer version ordering or draft filtering failed.");
+        Assert(update != null && update.Tag == "v0.1.0-installer.16", "Installer version ordering or draft filtering failed.");
         update = SelfUpdater.FindUpdate(fake, "v0.1.0-installer.10");
-        Assert(update != null && update.Tag == "v0.1.0-installer.15", "Installer 10 should update directly to installer 15.");
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.16", false, "https://github.com") });
+        Assert(update != null && update.Tag == "v0.1.0-installer.16", "Installer 10 should update directly to installer 16.");
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.17", false, "https://github.com") });
         update = SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag);
-        Assert(update != null && update.Tag == "v0.1.0-installer.16", "Newer update fixture not found.");
+        Assert(update != null && update.Tag == "v0.1.0-installer.17", "Newer update fixture not found.");
         string dir = Path.Combine(root, "self update & 50%! test"); Directory.CreateDirectory(dir);
         string target = Path.Combine(dir, "The Installer.exe"); File.WriteAllText(target, "old executable");
         string payload = Path.Combine(root, "app-payload"); File.WriteAllBytes(payload, fake.Payload);
@@ -142,7 +142,7 @@ internal static class InstallerTests
         Assert(PackInstaller.HashFile(staged) == sum, "App update not staged correctly.");
         Assert(fake.LastMaxBytes == SelfUpdater.MaxInstallerBytes, "Installer download size cap was not applied.");
         File.Delete(staged);
-        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.16", false, "https://evil.example") });
+        fake.Json = json.Serialize(new object[] { AppRelease("v0.1.0-installer.17", false, "https://evil.example") });
         Throws(() => SelfUpdater.FindUpdate(fake, SelfUpdater.CurrentTag), "Untrusted app release host accepted.");
 
         // End-to-end test of the real cmd -> copied GUI helper -> replace ->

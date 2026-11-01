@@ -1,20 +1,19 @@
-## Windows GUI installer 15 — dark premium setup screen
+## Windows GUI installer 16 — matches the PineconeMC/Prism launcher
 
-Installer 15 is a full UI rebuild after the cramped installer-14 light layout.
-It keeps the existing verified install/update behavior, but presents it in a
-larger, readable, dark game-installer layout.
+Installer 16 replaces the generic dark dashboard with a window modeled on the
+launcher’s actual dark theme. It is still a standalone installer, not PineconeMC,
+but it should no longer look like a different product.
 
-- 980×660 default window with a dark charcoal palette, emerald primary accent,
-  and amber shader accent. The Windows title bar is dark where supported.
-- Full-width install-location card with a readable path field, Browse button,
-  and clear folder validation. No clipped right-hand action rail.
-- Two large product cards: HyperRealism 512×512 resource pack and optional
-  Gilded Dusk Iris shader. The resource-pack install is the obvious primary
-  action; shader install is secondary.
-- Larger toolbar buttons with text-fit smoke checks, dark menus, and a dedicated
-  status/progress card with an accessible Cancel action.
-- Footer keeps Open folder, Launch, and Close available without squeezing the
-  main install flow.
+- Uses the launcher-style gray palette: window/button/base grays, white text,
+  green highlight, and rectangular flat controls. No rounded neon cards.
+- Top toolbar with icon + text actions: Folders, Settings, Help, Check updates.
+- Main area uses launcher-style group boxes: Resource pack, Installation folder,
+  and Status/progress.
+- Right-side action list matches the launcher pattern: Install / Update,
+  Install shader, Launch, Open folder, Close.
+- Bottom status bar shows Minecraft/LabPBR context and the installer version.
+- Fixes the black corner/focus artifacts from the previous custom rounded
+  buttons by using rectangular Qt/Fusion-like chrome.
 
 The existing functionality remains: verified and capped downloads, atomic
 installation into the selected resourcepacks folder and sibling shaderpacks

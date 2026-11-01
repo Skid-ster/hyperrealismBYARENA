@@ -46,14 +46,14 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and t
 
 ### Windows GUI installer / updater
 
-Installer 15 uses a larger dark premium setup screen; it is a separate app,
+Installer 16 uses a PineconeMC/Prism-style dark window; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
-Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.15/HyperRealism128-Installer.exe)
-and double-click it. Installer 15 replaces the cramped light window with a larger dark premium setup screen and adds a separate **Install shader** action for
+Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.16/HyperRealism128-Installer.exe)
+and double-click it. Installer 16 replaces the generic dark dashboard with a PineconeMC/Prism-style toolbar, group boxes, right-side action list and status bar, and adds a separate **Install shader** action for
 Gilded Dusk, alongside the experimental resource pack. It places the shader ZIP
 in the `shaderpacks` sibling of the selected `resourcepacks` folder, and
-**Check updates** checks the shader when one is installed. Installer 15 retains
+**Check updates** checks the shader when one is installed. Installer 16 retains
 cancellable downloads, byte-level progress, 30-second network timeouts, and
 size caps of 1 GiB for the resource pack and 100 MiB each for the installer and shader ZIP.
 Declined or cancelled automatic update prompts are deferred until the next launch.

@@ -50,8 +50,8 @@ namespace HyperRealismInstaller
         }
     }
 
-    // Owner-drawn buttons keep the installer polished and readable on dark
-    // Windows themes while preserving native keyboard/accessibility behavior.
+    // Rectangular, flat controls modeled on the launcher’s Qt/Fusion dark UI.
+    // No rounded regions: they produced black corner artifacts on Windows.
     internal sealed class LauncherButton : Button
     {
         private bool hovered;
@@ -59,138 +59,97 @@ namespace HyperRealismInstaller
         public bool DropArrow { get; set; }
         public bool Primary { get; set; }
         public bool CenterContent { get; set; }
+        public bool DrawBorder { get; set; }
         public Color AccentColor { get; set; }
         public Color AccentTextColor { get; set; }
 
-        public LauncherButton() { AccentColor = Color.FromArgb(52, 211, 153); AccentTextColor = Color.FromArgb(6, 18, 13); }
+        public LauncherButton()
+        {
+            DrawBorder = true;
+            AccentColor = Color.FromArgb(150, 219, 89);
+            AccentTextColor = Color.Black;
+        }
         protected override void OnMouseEnter(EventArgs e) { base.OnMouseEnter(e); hovered = true; Invalidate(); }
         protected override void OnMouseLeave(EventArgs e) { base.OnMouseLeave(e); hovered = false; pressed = false; Invalidate(); }
         protected override void OnMouseDown(MouseEventArgs e) { base.OnMouseDown(e); if (e.Button == MouseButtons.Left) { pressed = true; Invalidate(); } }
         protected override void OnMouseUp(MouseEventArgs e) { base.OnMouseUp(e); pressed = false; Invalidate(); }
         protected override void OnEnabledChanged(EventArgs e) { base.OnEnabledChanged(e); Invalidate(); }
 
-        private GraphicsPath RoundedPath(Rectangle bounds, int radius)
-        {
-            int diameter = Math.Max(2, radius * 2);
-            var path = new GraphicsPath();
-            path.AddArc(bounds.X, bounds.Y, diameter, diameter, 180, 90);
-            path.AddArc(bounds.Right - diameter, bounds.Y, diameter, diameter, 270, 90);
-            path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0, 90);
-            path.AddArc(bounds.X, bounds.Bottom - diameter, diameter, diameter, 90, 90);
-            path.CloseFigure();
-            return path;
-        }
-
         protected override void OnPaint(PaintEventArgs e)
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
-            Rectangle bounds = Rectangle.Inflate(ClientRectangle, -1, -1);
             Color fill = BackColor;
             Color text = ForeColor;
             if (Primary)
             {
-                fill = !Enabled ? Color.FromArgb(36, 48, 58) : pressed ? ControlPaint.Dark(AccentColor, .08f) : hovered ? ControlPaint.Light(AccentColor, .08f) : AccentColor;
-                text = Enabled ? AccentTextColor : Color.FromArgb(107, 118, 132);
+                fill = !Enabled ? Color.FromArgb(58, 58, 58) : pressed ? ControlPaint.Dark(AccentColor, .10f) : hovered ? ControlPaint.Light(AccentColor, .08f) : AccentColor;
+                text = Enabled ? AccentTextColor : Color.FromArgb(145, 145, 145);
             }
             else if (Enabled && pressed) fill = FlatAppearance.MouseDownBackColor;
             else if (Enabled && hovered) fill = FlatAppearance.MouseOverBackColor;
-            using (var shape = RoundedPath(bounds, 9))
-            using (var brush = new SolidBrush(fill)) g.FillPath(brush, shape);
-            if (!Primary)
+            using (var brush = new SolidBrush(fill)) g.FillRectangle(brush, ClientRectangle);
+            if (DrawBorder)
             {
-                Color border = Enabled && hovered ? Color.FromArgb(88, 166, 140) : FlatAppearance.BorderColor;
-                using (var shape = RoundedPath(bounds, 9))
-                using (var pen = new Pen(border, 1f)) g.DrawPath(pen, shape);
+                Color border = Enabled && hovered ? Color.FromArgb(120, 120, 120) : FlatAppearance.BorderColor;
+                using (var pen = new Pen(border, 1f)) g.DrawRectangle(pen, 0, 0, Width - 1, Height - 1);
             }
             int textX = Padding.Left;
             if (Image != null)
             {
-                int imageX = CenterContent ? (ClientSize.Width - Image.Width - TextRenderer.MeasureText(Text, Font).Width - 6) / 2 : textX;
+                int imageX = textX;
                 int imageY = (ClientSize.Height - Image.Height) / 2;
                 if (Enabled) g.DrawImageUnscaled(Image, imageX, imageY);
                 else ControlPaint.DrawImageDisabled(g, Image, imageX, imageY, fill);
-                textX = imageX + Image.Width + 6;
+                textX = imageX + Image.Width + 7;
             }
-            int arrowInset = DropArrow ? 15 : 0;
+            int arrowInset = DropArrow ? 16 : 0;
             var textBounds = new Rectangle(textX, 0, Math.Max(0, ClientSize.Width - textX - Padding.Right - arrowInset), ClientSize.Height);
             TextFormatFlags flags = TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix | TextFormatFlags.NoPadding;
             flags |= CenterContent ? TextFormatFlags.HorizontalCenter : TextFormatFlags.Left;
-            TextRenderer.DrawText(g, Text, Font, textBounds, Enabled || Primary ? text : Color.FromArgb(127, 142, 151), flags);
+            TextRenderer.DrawText(g, Text, Font, textBounds, Enabled ? text : Color.FromArgb(145, 145, 145), flags);
             if (DropArrow)
             {
-                using (var pen = new Pen(Color.FromArgb(154, 167, 180), 1.4f))
+                using (var pen = new Pen(Enabled ? Color.FromArgb(220, 220, 220) : Color.FromArgb(120, 120, 120), 1.3f))
                 { g.DrawLine(pen, Width - 15, Height / 2 - 2, Width - 11, Height / 2 + 2); g.DrawLine(pen, Width - 11, Height / 2 + 2, Width - 7, Height / 2 - 2); }
             }
-            if (Focused && ShowFocusCues) ControlPaint.DrawFocusRectangle(g, Rectangle.Inflate(ClientRectangle, -4, -4), text, fill);
-        }
-    }
-
-    internal sealed class ModernCard : Panel
-    {
-        private int radius = 14;
-        public Color BorderColor { get; set; }
-        public int Radius { get { return radius; } set { radius = Math.Max(4, value); UpdateRegion(); Invalidate(); } }
-
-        public ModernCard()
-        {
-            BorderColor = Color.FromArgb(42, 51, 63);
-            DoubleBuffered = true;
-            ResizeRedraw = true;
-            SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
-        }
-
-        private GraphicsPath Shape(Rectangle bounds)
-        {
-            int d = Math.Min(radius * 2, Math.Min(bounds.Width, bounds.Height));
-            var path = new GraphicsPath();
-            path.AddArc(bounds.X, bounds.Y, d, d, 180, 90);
-            path.AddArc(bounds.Right - d, bounds.Y, d, d, 270, 90);
-            path.AddArc(bounds.Right - d, bounds.Bottom - d, d, d, 0, 90);
-            path.AddArc(bounds.X, bounds.Bottom - d, d, d, 90, 90);
-            path.CloseFigure();
-            return path;
-        }
-
-        private void UpdateRegion()
-        {
-            if (Width <= 0 || Height <= 0) return;
-            using (var path = Shape(new Rectangle(0, 0, Width, Height)))
+            if (Focused && ShowFocusCues)
             {
-                var next = new Region(path);
-                Region old = Region;
-                Region = next;
-                if (old != null) old.Dispose();
+                using (var pen = new Pen(AccentColor, 1f)) g.DrawRectangle(pen, 1, 1, Width - 3, Height - 3);
             }
-        }
-
-        protected override void OnResize(EventArgs e) { base.OnResize(e); UpdateRegion(); }
-        protected override void OnPaintBackground(PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var path = Shape(Rectangle.Inflate(ClientRectangle, -1, -1)))
-            using (var brush = new SolidBrush(BackColor)) e.Graphics.FillPath(brush, path);
-        }
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            using (var path = Shape(Rectangle.Inflate(ClientRectangle, -1, -1)))
-            using (var pen = new Pen(BorderColor, 1f)) e.Graphics.DrawPath(pen, path);
-            base.OnPaint(e);
         }
     }
 
     internal sealed class DarkMenuColors : ProfessionalColorTable
     {
-        public override Color ToolStripDropDownBackground { get { return Color.FromArgb(18, 23, 30); } }
-        public override Color MenuBorder { get { return Color.FromArgb(42, 51, 63); } }
-        public override Color MenuItemBorder { get { return Color.FromArgb(42, 51, 63); } }
-        public override Color MenuItemSelected { get { return Color.FromArgb(31, 41, 51); } }
-        public override Color MenuItemSelectedGradientBegin { get { return Color.FromArgb(31, 41, 51); } }
-        public override Color MenuItemSelectedGradientEnd { get { return Color.FromArgb(31, 41, 51); } }
-        public override Color ImageMarginGradientBegin { get { return Color.FromArgb(18, 23, 30); } }
-        public override Color ImageMarginGradientMiddle { get { return Color.FromArgb(18, 23, 30); } }
-        public override Color ImageMarginGradientEnd { get { return Color.FromArgb(18, 23, 30); } }
+        public override Color ToolStripDropDownBackground { get { return Color.FromArgb(49, 49, 49); } }
+        public override Color MenuBorder { get { return Color.FromArgb(85, 85, 85); } }
+        public override Color MenuItemBorder { get { return Color.FromArgb(85, 85, 85); } }
+        public override Color MenuItemSelected { get { return Color.FromArgb(60, 60, 60); } }
+        public override Color MenuItemSelectedGradientBegin { get { return Color.FromArgb(60, 60, 60); } }
+        public override Color MenuItemSelectedGradientEnd { get { return Color.FromArgb(60, 60, 60); } }
+        public override Color ImageMarginGradientBegin { get { return Color.FromArgb(49, 49, 49); } }
+        public override Color ImageMarginGradientMiddle { get { return Color.FromArgb(49, 49, 49); } }
+        public override Color ImageMarginGradientEnd { get { return Color.FromArgb(49, 49, 49); } }
+    }
+
+    internal sealed class PrismGroup : Panel
+    {
+        public string HeaderText { get; set; }
+        public PrismGroup()
+        {
+            HeaderText = "";
+            DoubleBuffered = true;
+            ResizeRedraw = true;
+            Padding = new Padding(12, 28, 12, 12);
+        }
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            using (var pen = new Pen(Color.FromArgb(85, 85, 85))) e.Graphics.DrawLine(pen, 0, 20, Width, 20);
+            TextRenderer.DrawText(e.Graphics, HeaderText, Font, new Rectangle(2, 2, Width - 4, 18), ForeColor,
+                TextFormatFlags.VerticalCenter | TextFormatFlags.Left | TextFormatFlags.SingleLine | TextFormatFlags.NoPrefix);
+        }
     }
 
     internal sealed class InstallerForm : Form
@@ -211,17 +170,18 @@ namespace HyperRealismInstaller
         private readonly LauncherButton toolSettings = new LauncherButton();
         private readonly LauncherButton toolHelp = new LauncherButton();
         private readonly ToolTip tooltips = new ToolTip();
-        private static readonly Color Background = Color.FromArgb(13, 17, 23);
-        private static readonly Color Surface = Color.FromArgb(18, 23, 30);
-        private static readonly Color Sidebar = Color.FromArgb(18, 23, 30);
-        private static readonly Color CardSurface = Color.FromArgb(23, 29, 37);
-        private static readonly Color Border = Color.FromArgb(42, 51, 63);
-        private static readonly Color Foreground = Color.FromArgb(230, 237, 243);
-        private static readonly Color Muted = Color.FromArgb(154, 167, 180);
-        private static readonly Color Green = Color.FromArgb(52, 211, 153);
-        private static readonly Color GreenSoft = Color.FromArgb(18, 53, 36);
-        private static readonly Color Amber = Color.FromArgb(245, 184, 92);
-        private static readonly Color AmberSoft = Color.FromArgb(51, 38, 21);
+        private static readonly Color Background = Color.FromArgb(49, 49, 49);
+        private static readonly Color Surface = Color.FromArgb(49, 49, 49);
+        private static readonly Color Sidebar = Color.FromArgb(42, 42, 42);
+        private static readonly Color CardSurface = Color.FromArgb(34, 34, 34);
+        private static readonly Color ButtonSurface = Color.FromArgb(48, 48, 48);
+        private static readonly Color Border = Color.FromArgb(85, 85, 85);
+        private static readonly Color Foreground = Color.White;
+        private static readonly Color Muted = Color.FromArgb(190, 190, 190);
+        private static readonly Color Green = Color.FromArgb(150, 219, 89);
+        private static readonly Color GreenSoft = Color.FromArgb(42, 42, 42);
+        private static readonly Color Amber = Color.FromArgb(255, 170, 0);
+        private static readonly Color AmberSoft = Color.FromArgb(42, 42, 42);
         private readonly Timer updateTimer = new Timer();
         private bool busy;
         private bool checkingApp;
@@ -247,137 +207,115 @@ namespace HyperRealismInstaller
                 finally { DestroyIcon(handle); }
             }
             StartPosition = FormStartPosition.CenterScreen;
-            ClientSize = new Size(980, 660);
-            MinimumSize = new Size(920, 620);
-            Font = new Font("Segoe UI", 9.5F);
+            ClientSize = new Size(920, 600);
+            MinimumSize = new Size(860, 540);
+            Font = new Font("Segoe UI", 9F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Background;
             ForeColor = Foreground;
 
             var root = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Background };
             root.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 84));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
             root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
+            root.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
             Controls.Add(root);
 
-            var header = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Padding = new Padding(24, 0, 24, 0), Margin = Padding.Empty };
-            var headerGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Surface };
-            headerGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            headerGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 452));
-            var brand = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Surface };
-            brand.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 54)); brand.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            var brandIcon = new PictureBox { Image = BlockIcon(40), Size = new Size(40, 40), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.Left };
-            var brandCopy = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = Padding.Empty, Padding = new Padding(0, 18, 0, 16), BackColor = Surface };
-            brandCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 26)); brandCopy.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            brandCopy.Controls.Add(new Label { Text = "HyperRealism", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 16F, FontStyle.Bold), TextAlign = ContentAlignment.BottomLeft }, 0, 0);
-            brandCopy.Controls.Add(new Label { Text = "512×512 LabPBR resource pack  ·  Gilded Dusk Iris shader", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 8.5F), TextAlign = ContentAlignment.TopLeft }, 0, 1);
-            brand.Controls.Add(brandIcon, 0, 0); brand.Controls.Add(brandCopy, 1, 0);
-            headerGrid.Controls.Add(brand, 0, 0);
-
-            var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(0, 24, 0, 0), Margin = Padding.Empty, BackColor = Surface };
-            StyleButton(toolCheck, "Check updates", 132, 36, true); toolCheck.Margin = new Padding(0, 0, 8, 0);
-            StyleButton(toolOpen, "Folders", 92, 36, true); toolOpen.DropArrow = true; toolOpen.Margin = new Padding(0, 0, 8, 0);
-            StyleButton(toolSettings, "Settings", 96, 36, true); toolSettings.Margin = new Padding(0, 0, 8, 0);
-            StyleButton(toolHelp, "Help", 80, 36, true); toolHelp.DropArrow = true;
-            tools.Controls.Add(toolCheck); tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp);
-            headerGrid.Controls.Add(tools, 1, 0);
-            header.Controls.Add(headerGrid);
-            header.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Border)) e.Graphics.DrawLine(pen, 0, header.Height - 1, header.Width, header.Height - 1); };
-            root.Controls.Add(header, 0, 0);
+            var toolbar = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Padding = new Padding(8, 0, 8, 0), Margin = Padding.Empty };
+            var tools = new FlowLayoutPanel { Dock = DockStyle.Fill, WrapContents = false, FlowDirection = FlowDirection.LeftToRight, Padding = new Padding(0, 5, 0, 5), Margin = Padding.Empty, BackColor = Surface };
+            StyleButton(toolOpen, "Folders", 104, 32, true); toolOpen.DropArrow = true; toolOpen.Image = GlyphIcon("folders", 16, Foreground); toolOpen.Margin = new Padding(0, 0, 4, 0);
+            StyleButton(toolSettings, "Settings", 104, 32, true); toolSettings.Image = GlyphIcon("settings", 16, Foreground); toolSettings.Margin = new Padding(0, 0, 4, 0);
+            StyleButton(toolHelp, "Help", 92, 32, true); toolHelp.DropArrow = true; toolHelp.Image = GlyphIcon("help", 16, Foreground); toolHelp.Margin = new Padding(0, 0, 4, 0);
+            StyleButton(toolCheck, "Check updates", 144, 32, true); toolCheck.Image = GlyphIcon("update", 16, Foreground);
+            tools.Controls.Add(toolOpen); tools.Controls.Add(toolSettings); tools.Controls.Add(toolHelp); tools.Controls.Add(toolCheck);
+            toolbar.Controls.Add(tools);
+            toolbar.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Border)) e.Graphics.DrawLine(pen, 0, toolbar.Height - 1, toolbar.Width, toolbar.Height - 1); };
+            root.Controls.Add(toolbar, 0, 0);
             tooltips.SetToolTip(toolCheck, "Check for installer, resource-pack and installed shader updates.");
 
-            var main = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, Padding = new Padding(24, 18, 24, 12), BackColor = Background };
+            var main = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = new Padding(8, 8, 8, 8), BackColor = Background };
             main.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            main.RowStyles.Add(new RowStyle(SizeType.Absolute, 112));
-            main.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            main.RowStyles.Add(new RowStyle(SizeType.Absolute, 96));
+            main.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 230));
             root.Controls.Add(main, 0, 1);
 
-            var location = new ModernCard { Dock = DockStyle.Fill, BackColor = CardSurface, BorderColor = Border, Radius = 14, Padding = new Padding(18, 12, 18, 10), Margin = new Padding(0, 0, 0, 12) };
-            var locationGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = CardSurface };
-            locationGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            locationGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 20)); locationGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 38)); locationGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            var locationHeading = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = CardSurface };
-            locationHeading.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50)); locationHeading.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            locationHeading.Controls.Add(new Label { Text = "INSTALL LOCATION", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
-            locationHeading.Controls.Add(new Label { Text = "Shader installs to the sibling shaderpacks folder", Dock = DockStyle.Fill, ForeColor = Amber, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleRight }, 1, 0);
-            locationGrid.Controls.Add(locationHeading, 0, 0);
-            var pathRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = CardSurface };
-            pathRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); pathRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
-            pathBox.Dock = DockStyle.Fill; pathBox.BackColor = Color.FromArgb(16, 21, 27); pathBox.ForeColor = Foreground; pathBox.BorderStyle = BorderStyle.FixedSingle; pathBox.Font = new Font("Segoe UI", 9.5F); pathBox.Margin = new Padding(0, 3, 10, 3);
-            StyleButton(browse, "Browse…", 110, 34, false); browse.Dock = DockStyle.Fill; browse.Margin = new Padding(0, 2, 0, 2);
-            pathRow.Controls.Add(pathBox, 0, 0); pathRow.Controls.Add(browse, 1, 0); locationGrid.Controls.Add(pathRow, 0, 1);
-            folderStatus.Dock = DockStyle.Fill; folderStatus.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold); folderStatus.TextAlign = ContentAlignment.MiddleLeft;
-            locationGrid.Controls.Add(folderStatus, 0, 2); location.Controls.Add(locationGrid); main.Controls.Add(location, 0, 0);
+            var content = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = new Padding(0, 0, 8, 0), Padding = Padding.Empty, BackColor = Background };
+            content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            content.RowStyles.Add(new RowStyle(SizeType.Absolute, 132));
+            content.RowStyles.Add(new RowStyle(SizeType.Absolute, 112));
+            content.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            main.Controls.Add(content, 0, 0);
 
-            var products = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = new Padding(0, 0, 0, 12), Padding = Padding.Empty, BackColor = Background };
-            products.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50)); products.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-            main.Controls.Add(products, 0, 1);
+            var packGroup = new PrismGroup { HeaderText = "Resource pack", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = new Padding(0, 0, 0, 8) };
+            var packLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
+            packLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 78)); packLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            packLayout.Controls.Add(new PictureBox { Image = BlockIcon(64), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.Left | AnchorStyles.Top, AccessibleName = "HyperRealism resource-pack icon" }, 0, 0);
+            var packCopy = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Margin = Padding.Empty, BackColor = Background };
+            packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 20)); packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 20)); packCopy.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            packCopy.Controls.Add(new Label { Text = "HyperRealism 512×512", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 11F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
+            packCopy.Controls.Add(new Label { Text = "Experimental LabPBR resource pack for Minecraft Java 26.3.", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 1);
+            packCopy.Controls.Add(new Label { Text = "Partial coverage  ·  LabPBR 1.3  ·  CC0 sources", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 2);
+            packCopy.Controls.Add(new Label { Text = "Only the selected ZIP is replaced; other files stay untouched.", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 3);
+            packLayout.Controls.Add(packCopy, 1, 0); packGroup.Controls.Add(packLayout); content.Controls.Add(packGroup, 0, 0);
 
-            var resourceCard = new ModernCard { Dock = DockStyle.Fill, BackColor = CardSurface, BorderColor = Border, Radius = 14, Padding = new Padding(18, 16, 18, 16), Margin = new Padding(0, 0, 8, 0) };
-            var resourceGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = CardSurface };
-            resourceGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            resourceGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 36)); resourceGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); resourceGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 44)); resourceGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 20)); resourceGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); resourceGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            var resourceHeading = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = CardSurface };
-            resourceHeading.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 42)); resourceHeading.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            resourceHeading.Controls.Add(new PictureBox { Image = BlockIcon(32), Size = new Size(32, 32), SizeMode = PictureBoxSizeMode.Normal, AccessibleName = "HyperRealism resource-pack icon" }, 0, 0);
-            resourceHeading.Controls.Add(new Label { Text = "RESOURCE PACK", Dock = DockStyle.Fill, ForeColor = Green, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 1, 0);
-            resourceGrid.Controls.Add(resourceHeading, 0, 0);
-            resourceGrid.Controls.Add(new Label { Text = "HyperRealism 512×512", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 13F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 1);
-            resourceGrid.Controls.Add(new Label { Text = "LabPBR materials for Minecraft Java 26.3. Experimental partial coverage; installs one verified ZIP into resourcepacks.", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.TopLeft }, 0, 2);
-            resourceGrid.Controls.Add(new Label { Text = "512×512  ·  LABPBR 1.3  ·  CC0 SOURCES", Dock = DockStyle.Fill, ForeColor = Green, Font = new Font("Segoe UI", 7.5F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 3);
-            StyleButton(install, "Install pack", 180, 42, false); install.Primary = true; install.AccentColor = Green; install.AccentTextColor = Color.FromArgb(6, 18, 13); install.CenterContent = true; install.Font = new Font("Segoe UI", 10F, FontStyle.Bold); install.Dock = DockStyle.Fill; install.Margin = Padding.Empty;
-            resourceGrid.Controls.Add(install, 0, 5); resourceCard.Controls.Add(resourceGrid); products.Controls.Add(resourceCard, 0, 0);
+            var folderGroup = new PrismGroup { HeaderText = "Installation folder", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = new Padding(0, 0, 0, 8) };
+            var folderLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = Padding.Empty, BackColor = Background };
+            folderLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); folderLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            var pathRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
+            pathRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); pathRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100));
+            var pathBorder = new Panel { Dock = DockStyle.Fill, BackColor = Border, Padding = new Padding(1), Margin = new Padding(0, 3, 8, 3) };
+            pathBox.Dock = DockStyle.Fill; pathBox.BackColor = CardSurface; pathBox.ForeColor = Foreground; pathBox.BorderStyle = BorderStyle.None; pathBox.Font = new Font("Segoe UI", 9F); pathBox.Margin = Padding.Empty;
+            pathBorder.Controls.Add(pathBox);
+            StyleButton(browse, "Browse…", 100, 28, false); browse.Dock = DockStyle.Fill; browse.Margin = new Padding(0, 3, 0, 3); browse.Image = GlyphIcon("folders", 16, Foreground);
+            pathRow.Controls.Add(pathBorder, 0, 0); pathRow.Controls.Add(browse, 1, 0); folderLayout.Controls.Add(pathRow, 0, 0);
+            folderStatus.Dock = DockStyle.Fill; folderStatus.Font = new Font("Segoe UI", 9F); folderStatus.TextAlign = ContentAlignment.MiddleLeft; folderStatus.AutoEllipsis = true;
+            folderLayout.Controls.Add(folderStatus, 0, 1); folderGroup.Controls.Add(folderLayout); content.Controls.Add(folderGroup, 0, 1);
 
-            var shaderCard = new ModernCard { Dock = DockStyle.Fill, BackColor = CardSurface, BorderColor = Border, Radius = 14, Padding = new Padding(18, 16, 18, 16), Margin = new Padding(8, 0, 0, 0) };
-            var shaderGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = CardSurface };
-            shaderGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            shaderGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 36)); shaderGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); shaderGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 44)); shaderGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 20)); shaderGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); shaderGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 42));
-            var shaderHeading = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = CardSurface };
-            shaderHeading.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 42)); shaderHeading.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            shaderHeading.Controls.Add(new PictureBox { Image = ShaderIcon(32), Size = new Size(32, 32), SizeMode = PictureBoxSizeMode.Normal, AccessibleName = "Gilded Dusk shader icon" }, 0, 0);
-            shaderHeading.Controls.Add(new Label { Text = "OPTIONAL SHADER", Dock = DockStyle.Fill, ForeColor = Amber, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 1, 0);
-            shaderGrid.Controls.Add(shaderHeading, 0, 0);
-            shaderGrid.Controls.Add(new Label { Text = "Gilded Dusk", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 13F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 1);
-            shaderGrid.Controls.Add(new Label { Text = "Teal shadows and amber light for Iris. Requires Iris/Sodium and LabPBR 1.3; not yet certified in-game.", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.TopLeft }, 0, 2);
-            shaderGrid.Controls.Add(new Label { Text = "IRIS  ·  LABPBR 1.3  ·  EXPERIMENTAL", Dock = DockStyle.Fill, ForeColor = Amber, Font = new Font("Segoe UI", 7.5F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 3);
-            StyleButton(installShader, "Install shader", 180, 42, false); installShader.Primary = false; installShader.ForeColor = Amber; installShader.FlatAppearance.BorderColor = Color.FromArgb(122, 88, 42); installShader.FlatAppearance.MouseOverBackColor = Color.FromArgb(42, 35, 24); installShader.FlatAppearance.MouseDownBackColor = Color.FromArgb(52, 43, 29); installShader.CenterContent = true; installShader.Font = new Font("Segoe UI", 10F, FontStyle.Bold); installShader.Dock = DockStyle.Fill; installShader.Margin = Padding.Empty;
-            shaderGrid.Controls.Add(installShader, 0, 5); shaderCard.Controls.Add(shaderGrid); products.Controls.Add(shaderCard, 1, 0);
-            tooltips.SetToolTip(install, "Install the experimental LabPBR resource pack into the selected resourcepacks folder.");
-            tooltips.SetToolTip(installShader, "Install Gilded Dusk into the shaderpacks folder beside this instance's resourcepacks folder.");
-
-            var statusCard = new ModernCard { Dock = DockStyle.Fill, BackColor = CardSurface, BorderColor = Border, Radius = 14, Padding = new Padding(18, 10, 18, 10), Margin = Padding.Empty };
-            var statusGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = CardSurface };
-            statusGrid.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); statusGrid.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+            var statusGroup = new PrismGroup { HeaderText = "Status", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = Padding.Empty };
+            var statusLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = Padding.Empty, BackColor = Background };
+            statusLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); statusLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
             result.Dock = DockStyle.Fill; result.Text = "Ready — choose a folder, then install the resource pack or optional shader."; result.ForeColor = Muted; result.Font = new Font("Segoe UI", 9F); result.TextAlign = ContentAlignment.MiddleLeft; result.AutoEllipsis = true;
-            statusGrid.Controls.Add(result, 0, 0);
-            progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; progress.AccessibleName = "Download progress"; progress.BackColor = CardSurface; progress.ForeColor = Green; progress.Margin = new Padding(0, 5, 10, 5);
-            var progressRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = CardSurface };
-            progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 96));
-            StyleButton(cancelDownload, "Cancel", 96, 28, false); cancelDownload.Dock = DockStyle.Fill; cancelDownload.Visible = false; cancelDownload.Margin = Padding.Empty;
+            statusLayout.Controls.Add(result, 0, 0);
+            progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; progress.AccessibleName = "Download progress"; progress.BackColor = CardSurface; progress.ForeColor = Green; progress.Margin = new Padding(0, 4, 8, 4);
+            var progressRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
+            progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); progressRow.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 90));
+            StyleButton(cancelDownload, "Cancel", 90, 24, false); cancelDownload.Dock = DockStyle.Fill; cancelDownload.Visible = false; cancelDownload.Margin = Padding.Empty;
             cancelDownload.AccessibleName = "Cancel current update check or download";
             tooltips.SetToolTip(cancelDownload, "Cancel the current check or download. Existing installed files are preserved.");
             cancelDownload.Click += delegate { if (busy && !cancelTransfer) { cancelTransfer = true; cancelDownload.Enabled = false; result.ForeColor = Muted; result.Text = "Cancelling; please wait..."; } };
-            progressRow.Controls.Add(progress, 0, 0); progressRow.Controls.Add(cancelDownload, 1, 0); statusGrid.Controls.Add(progressRow, 0, 1);
-            statusCard.Controls.Add(statusGrid); main.Controls.Add(statusCard, 0, 2);
+            progressRow.Controls.Add(progress, 0, 0); progressRow.Controls.Add(cancelDownload, 1, 0); statusLayout.Controls.Add(progressRow, 0, 1);
+            statusGroup.Controls.Add(statusLayout); content.Controls.Add(statusGroup, 0, 2);
 
-            var footer = new Panel { Dock = DockStyle.Fill, BackColor = Surface, Padding = new Padding(24, 0, 24, 0), Margin = Padding.Empty };
-            var footerGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Surface };
-            footerGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); footerGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 360));
-            footerGrid.Controls.Add(new Label { Text = "SHA-256 verified downloads  ·  only the selected ZIP is replaced", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 8.5F), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
-            var footerActions = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = 1, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Surface };
-            footerActions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 34)); footerActions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33)); footerActions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33));
-            StyleButton(openFolder, "Open folder", 120, 36, false); openFolder.Dock = DockStyle.Fill; openFolder.Margin = new Padding(0, 14, 8, 14);
-            StyleButton(launch, "Launch", 110, 36, false); launch.Dock = DockStyle.Fill; launch.Margin = new Padding(0, 14, 8, 14);
-            StyleButton(close, "Close", 90, 36, false); close.Dock = DockStyle.Fill; close.Margin = new Padding(0, 14, 0, 14);
-            footerActions.Controls.Add(openFolder, 0, 0); footerActions.Controls.Add(launch, 1, 0); footerActions.Controls.Add(close, 2, 0);
-            footerGrid.Controls.Add(footerActions, 1, 0); footer.Controls.Add(footerGrid); root.Controls.Add(footer, 0, 2);
-            footer.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Border)) e.Graphics.DrawLine(pen, 0, 0, footer.Width, 0); };
-
-            tooltips.SetToolTip(browse, "Choose the resourcepacks folder for the instance you want to update.");
+            var sidebar = new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Padding = new Padding(12, 12, 12, 12), Margin = Padding.Empty };
+            var sideLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 9, Margin = Padding.Empty, BackColor = Sidebar };
+            sideLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 72)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 12));
+            sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 34)); sideLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            sideLayout.Controls.Add(new PictureBox { Image = BlockIcon(64), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.None, AccessibleName = "Selected resource pack" }, 0, 0);
+            sideLayout.Controls.Add(new Label { Text = "HyperRealism 512", Dock = DockStyle.Fill, ForeColor = Foreground, TextAlign = ContentAlignment.MiddleCenter, AutoEllipsis = true }, 0, 1);
+            sideLayout.Controls.Add(new Panel { Dock = DockStyle.Fill, BackColor = Border, Margin = new Padding(0, 5, 0, 5) }, 0, 2);
+            StyleButton(install, "Install / Update", 200, 30, false); install.Dock = DockStyle.Fill; install.Margin = new Padding(0, 0, 0, 4); install.Primary = true; install.AccentColor = Green; install.AccentTextColor = Color.Black; install.Image = GlyphIcon("install", 16, Color.Black); install.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            StyleButton(installShader, "Install shader", 200, 30, false); installShader.Dock = DockStyle.Fill; installShader.Margin = new Padding(0, 0, 0, 4); installShader.Image = GlyphIcon("shader", 16, Foreground);
+            StyleButton(launch, "Launch", 200, 30, false); launch.Dock = DockStyle.Fill; launch.Margin = new Padding(0, 0, 0, 4); launch.Image = GlyphIcon("launch", 16, Foreground);
+            StyleButton(openFolder, "Open folder", 200, 30, false); openFolder.Dock = DockStyle.Fill; openFolder.Margin = new Padding(0, 0, 0, 4); openFolder.Image = GlyphIcon("folders", 16, Foreground);
+            StyleButton(close, "Close", 200, 30, false); close.Dock = DockStyle.Fill; close.Margin = Padding.Empty; close.Image = GlyphIcon("close", 16, Foreground);
+            sideLayout.Controls.Add(install, 0, 3); sideLayout.Controls.Add(installShader, 0, 4); sideLayout.Controls.Add(launch, 0, 5); sideLayout.Controls.Add(openFolder, 0, 6); sideLayout.Controls.Add(close, 0, 7);
+            sidebar.Controls.Add(sideLayout); main.Controls.Add(sidebar, 1, 0);
+            sidebar.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Border)) e.Graphics.DrawLine(pen, 0, 0, 0, sidebar.Height); };
+            tooltips.SetToolTip(install, "Install or update the experimental LabPBR resource pack in the selected resourcepacks folder.");
+            tooltips.SetToolTip(installShader, "Install Gilded Dusk into the shaderpacks folder beside this instance's resourcepacks folder.");
             tooltips.SetToolTip(launch, "Launch the selected instance through PineconeMC.");
             tooltips.SetToolTip(openFolder, "Open the selected resourcepacks folder.");
+
+            var statusbar = new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Padding = new Padding(10, 0, 10, 0), Margin = Padding.Empty };
+            var statusGrid = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Sidebar };
+            statusGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100)); statusGrid.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 220));
+            statusGrid.Controls.Add(new Label { Text = "Minecraft Java 26.3  |  LabPBR preview", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
+            statusGrid.Controls.Add(new Label { Text = "Installer " + SelfUpdater.CurrentTag, Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleRight }, 1, 0);
+            statusbar.Controls.Add(statusGrid);
+            statusbar.Paint += delegate(object sender, PaintEventArgs e) { using (var pen = new Pen(Border)) e.Graphics.DrawLine(pen, 0, 0, statusbar.Width, 0); };
+            root.Controls.Add(statusbar, 0, 2);
+
+            tooltips.SetToolTip(browse, "Choose the resourcepacks folder for the instance you want to update.");
             var folders = CreateMenu();
             var chooseFolder = folders.Items.Add("Choose resourcepacks folder...");
             var openSelected = folders.Items.Add("Open selected folder");
@@ -465,16 +403,78 @@ namespace HyperRealismInstaller
             button.Text = text; button.Size = new Size(width, height); button.Margin = Padding.Empty;
             button.FlatStyle = FlatStyle.Flat; button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = Border;
-            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(31, 41, 51);
-            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(38, 49, 61);
-            button.BackColor = Surface; button.ForeColor = Foreground;
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(60, 60, 60);
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(70, 70, 70);
+            button.BackColor = toolbar ? Surface : ButtonSurface; button.ForeColor = Foreground;
             button.Image = null;
             button.TextAlign = ContentAlignment.MiddleCenter;
-            button.Padding = toolbar ? new Padding(10, 0, 10, 0) : new Padding(12, 0, 12, 0);
-            button.Font = new Font("Segoe UI", toolbar ? 9F : 9.5F);
+            button.Padding = toolbar ? new Padding(8, 0, 8, 0) : new Padding(10, 0, 10, 0);
+            button.Font = new Font("Segoe UI", 9F);
             button.UseVisualStyleBackColor = false; button.AutoEllipsis = true;
             var custom = button as LauncherButton;
-            if (custom != null) { custom.Primary = false; custom.CenterContent = true; custom.AccentColor = Green; custom.AccentTextColor = Color.FromArgb(6, 18, 13); }
+            if (custom != null) { custom.Primary = false; custom.CenterContent = false; custom.DrawBorder = !toolbar; custom.AccentColor = Green; custom.AccentTextColor = Color.Black; }
+        }
+
+        private static Bitmap GlyphIcon(string kind, int size, Color color)
+        {
+            var image = new Bitmap(size, size);
+            using (var g = Graphics.FromImage(image))
+            using (var pen = new Pen(color, 1.5f))
+            using (var brush = new SolidBrush(color))
+            {
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                g.Clear(Color.Transparent);
+                if (kind == "folders")
+                {
+                    g.DrawRectangle(pen, 2, 5, 12, 8);
+                    g.DrawLine(pen, 2, 5, 6, 5); g.DrawLine(pen, 6, 5, 8, 3); g.DrawLine(pen, 8, 3, 12, 3);
+                }
+                else if (kind == "settings")
+                {
+                    g.DrawEllipse(pen, 5, 5, 6, 6);
+                    for (int i = 0; i < 8; i++)
+                    {
+                        double a = i * Math.PI / 4;
+                        int x1 = 8 + (int)Math.Round(Math.Cos(a) * 5);
+                        int y1 = 8 + (int)Math.Round(Math.Sin(a) * 5);
+                        int x2 = 8 + (int)Math.Round(Math.Cos(a) * 7);
+                        int y2 = 8 + (int)Math.Round(Math.Sin(a) * 7);
+                        g.DrawLine(pen, x1, y1, x2, y2);
+                    }
+                }
+                else if (kind == "help")
+                {
+                    g.DrawEllipse(pen, 2, 2, 12, 12);
+                    TextRenderer.DrawText(g, "?", new Font("Segoe UI", 8F, FontStyle.Bold), new Rectangle(2, 1, 12, 13), color, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPrefix);
+                }
+                else if (kind == "update")
+                {
+                    g.DrawArc(pen, 3, 3, 10, 10, 30, 250);
+                    g.DrawLine(pen, 12, 2, 13, 6); g.DrawLine(pen, 13, 6, 9, 5);
+                }
+                else if (kind == "install")
+                {
+                    g.DrawLine(pen, 8, 2, 8, 9);
+                    g.DrawLine(pen, 5, 7, 8, 10); g.DrawLine(pen, 11, 7, 8, 10);
+                    g.DrawLine(pen, 3, 12, 13, 12); g.DrawLine(pen, 3, 12, 3, 14); g.DrawLine(pen, 13, 12, 13, 14);
+                }
+                else if (kind == "shader")
+                {
+                    g.DrawEllipse(pen, 3, 3, 10, 10);
+                    g.FillEllipse(brush, 8, 4, 4, 4);
+                    g.DrawLine(pen, 3, 10, 13, 10);
+                }
+                else if (kind == "launch")
+                {
+                    Point[] triangle = new Point[] { new Point(5, 3), new Point(12, 8), new Point(5, 13) };
+                    g.FillPolygon(brush, triangle);
+                }
+                else if (kind == "close")
+                {
+                    g.DrawLine(pen, 4, 4, 12, 12); g.DrawLine(pen, 12, 4, 4, 12);
+                }
+            }
+            return image;
         }
 
         // The embedded CC BY-SA grass block is rasterized and cropped from
@@ -1031,19 +1031,20 @@ result.ForeColor = Color.FromArgb(248, 113, 113);
             pathBox.Text = Path.GetTempPath();
             if (install.Enabled || installShader.Enabled) throw new Exception("Invalid folder was accepted.");
             using (var icon = BlockIcon(40)) { if (icon.GetPixel(0, 0).A != 0 || icon.GetPixel(24, 24).A == 0) throw new Exception("Rounded pack icon is invalid."); }
-            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install pack" || installShader.Text != "Install shader" || toolOpen.Text != "Folders" || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != install || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected installer controls are missing.");
+            if (String.IsNullOrEmpty(folderStatus.Text) || install.Text != "Install / Update" || installShader.Text != "Install shader" || toolOpen.Text != "Folders" || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates" || launch.Text != "Launch" || BackColor != Background || progress.Visible || progress.AccessibleName != "Download progress" || AcceptButton != install || CancelButton != close || cancelDownload.AccessibleName != "Cancel current update check or download") throw new Exception("Expected installer controls are missing.");
             int progressGeneration = StartTransferProgress(true);
             if (!cancelDownload.Visible || !cancelDownload.Enabled || CancelButton != cancelDownload) throw new Exception("Active operations must expose an accessible cancel action.");
             FinishTransferProgress(progressGeneration);
             if (cancelDownload.Visible || cancelDownload.Enabled || CancelButton != close) throw new Exception("The cancel action did not restore after an operation.");
             foreach (var button in new LauncherButton[] { toolOpen, toolSettings, toolHelp, toolCheck })
             {
-                int arrowInset = button.DropArrow ? 15 : 0;
-                int available = button.Width - button.Padding.Left - button.Padding.Right - arrowInset;
+                int arrowInset = button.DropArrow ? 16 : 0;
+                int imageInset = button.Image == null ? 0 : button.Image.Width + 7;
+                int available = button.Width - button.Padding.Left - button.Padding.Right - arrowInset - imageInset;
                 int measured = TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width;
-                if (button.Image != null || measured > available) throw new Exception("Toolbar button is not cleanly sized: " + button.Text);
+                if (measured > available) throw new Exception("Toolbar button is not cleanly sized: " + button.Text);
             }
-            if (close.Image != null || install.Image != null || installShader.Image != null) throw new Exception("Action buttons should use clean text-only styling.");
+            if (close.Image == null || install.Image == null || installShader.Image == null) throw new Exception("Launcher-style action icons are missing.");
             if (!toolOpen.DropArrow || !toolHelp.DropArrow || toolSettings.Text != "Settings" || toolHelp.Text != "Help" || toolCheck.Text != "Check updates") throw new Exception("Toolbar actions are missing.");
         }
     }
