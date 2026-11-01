@@ -22,6 +22,12 @@ jobs:
         run: |
           ./installer-output/InstallerTests.exe --live-test
           if ($LASTEXITCODE -ne 0) { throw 'Live preview download test failed.' }
+      - name: Preserve installer build log
+        if: always()
+        shell: powershell
+        run: |
+          $source = Join-Path $env:RUNNER_TEMP 'installer-build.log'
+          if (Test-Path -LiteralPath $source) { Copy-Item -LiteralPath $source -Destination "$env:GITHUB_WORKSPACE\installer-build.log" -Force }
       - uses: actions/upload-artifact@v4
         with:
           name: HyperRealism128-Windows-GUI-installer
@@ -30,6 +36,13 @@ jobs:
             installer-output/layout-smoke.png
           if-no-files-found: error
           retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: HyperRealism-installer-build-diagnostics
+          path: installer-build.log
+          if-no-files-found: warn
+          retention-days: 7
   publish-installer-14:
     if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 14')
     needs: build-test
