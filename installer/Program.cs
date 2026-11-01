@@ -183,6 +183,7 @@ namespace HyperRealismInstaller
         private static readonly Color Amber = Color.FromArgb(255, 170, 0);
         private static readonly Color AmberSoft = Color.FromArgb(42, 42, 42);
         private readonly Timer updateTimer = new Timer();
+        private readonly bool captureMode;
         private bool busy;
         private bool checkingApp;
         private volatile bool cancelTransfer;
@@ -199,6 +200,7 @@ namespace HyperRealismInstaller
 
         internal InstallerForm(string startup)
         {
+            captureMode = startup == "--capture-ui";
             Text = "HyperRealism 512×512 Installer";
             using (var bitmap = BlockIcon(32))
             {
@@ -238,9 +240,10 @@ namespace HyperRealismInstaller
             main.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 230));
             root.Controls.Add(main, 0, 1);
 
-            var content = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = new Padding(0, 0, 8, 0), Padding = Padding.Empty, BackColor = Background };
+            var content = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 4, Margin = new Padding(0, 0, 8, 0), Padding = Padding.Empty, BackColor = Background };
             content.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            content.RowStyles.Add(new RowStyle(SizeType.Absolute, 120));
+            content.RowStyles.Add(new RowStyle(SizeType.Absolute, 132));
+            content.RowStyles.Add(new RowStyle(SizeType.Absolute, 132));
             content.RowStyles.Add(new RowStyle(SizeType.Absolute, 104));
             content.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
             main.Controls.Add(content, 0, 0);
@@ -249,12 +252,23 @@ namespace HyperRealismInstaller
             var packLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
             packLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 78)); packLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
             packLayout.Controls.Add(new PictureBox { Image = BlockIcon(64), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.Left | AnchorStyles.Top, AccessibleName = "HyperRealism resource-pack icon" }, 0, 0);
-            var packCopy = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, BackColor = Background };
-            packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 26)); packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 22)); packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
+            var packCopy = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Background };
+            packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); packCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
             packCopy.Controls.Add(new Label { Text = "HyperRealism 512×512", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 11F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
             packCopy.Controls.Add(new Label { Text = "Experimental LabPBR resource pack for Minecraft Java 26.3.", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 1);
             packCopy.Controls.Add(new Label { Text = "Partial coverage  ·  LabPBR 1.3  ·  CC0 sources", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 2);
             packLayout.Controls.Add(packCopy, 1, 0); packGroup.Controls.Add(packLayout); content.Controls.Add(packGroup, 0, 0);
+
+            var shaderGroup = new PrismGroup { HeaderText = "Optional shader", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = new Padding(0, 0, 0, 8) };
+            var shaderLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
+            shaderLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 78)); shaderLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+            shaderLayout.Controls.Add(new PictureBox { Image = ShaderIcon(64), Size = new Size(64, 64), SizeMode = PictureBoxSizeMode.Normal, Anchor = AnchorStyles.Left | AnchorStyles.Top, AccessibleName = "Gilded Dusk shader icon" }, 0, 0);
+            var shaderCopy = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, Padding = Padding.Empty, BackColor = Background };
+            shaderCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); shaderCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24)); shaderCopy.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
+            shaderCopy.Controls.Add(new Label { Text = "Gilded Dusk", Dock = DockStyle.Fill, ForeColor = Foreground, Font = new Font("Segoe UI", 11F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
+            shaderCopy.Controls.Add(new Label { Text = "Teal shadows and amber light for Iris. Installs beside the resource pack.", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 1);
+            shaderCopy.Controls.Add(new Label { Text = "Iris/Sodium required  ·  LabPBR 1.3  ·  experimental", Dock = DockStyle.Fill, ForeColor = Muted, TextAlign = ContentAlignment.MiddleLeft, AutoEllipsis = true }, 0, 2);
+            shaderLayout.Controls.Add(shaderCopy, 1, 0); shaderGroup.Controls.Add(shaderLayout); content.Controls.Add(shaderGroup, 0, 1);
 
             var folderGroup = new PrismGroup { HeaderText = "Installation folder", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = new Padding(0, 0, 0, 8) };
             var folderLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Margin = Padding.Empty, BackColor = Background };
@@ -265,14 +279,14 @@ namespace HyperRealismInstaller
             StyleButton(browse, "Browse…", 110, 28, false); browse.Dock = DockStyle.Fill; browse.Margin = new Padding(0, 3, 0, 3); browse.Image = GlyphIcon("folders", 16, Foreground); browse.TextImageRelation = TextImageRelation.ImageBeforeText; browse.ImageAlign = ContentAlignment.MiddleLeft; browse.TextAlign = ContentAlignment.MiddleLeft;
             pathRow.Controls.Add(pathBox, 0, 0); pathRow.Controls.Add(browse, 1, 0); folderLayout.Controls.Add(pathRow, 0, 0);
             folderStatus.Dock = DockStyle.Fill; folderStatus.Font = new Font("Segoe UI", 9F); folderStatus.TextAlign = ContentAlignment.MiddleLeft; folderStatus.AutoEllipsis = true;
-            folderLayout.Controls.Add(folderStatus, 0, 1); folderGroup.Controls.Add(folderLayout); content.Controls.Add(folderGroup, 0, 1);
+            folderLayout.Controls.Add(folderStatus, 0, 1); folderGroup.Controls.Add(folderLayout); content.Controls.Add(folderGroup, 0, 2);
 
             var statusGroup = new PrismGroup { HeaderText = "Status", Dock = DockStyle.Fill, BackColor = Background, ForeColor = Foreground, Margin = Padding.Empty };
             var statusLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3, Margin = Padding.Empty, BackColor = Background };
             statusLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 28)); statusLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100)); statusLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 26));
             result.Dock = DockStyle.Fill; result.Text = "Ready — choose a folder, then install the resource pack or optional shader."; result.ForeColor = Muted; result.Font = new Font("Segoe UI", 9F); result.TextAlign = ContentAlignment.TopLeft; result.AutoEllipsis = true;
             statusLayout.Controls.Add(result, 0, 0);
-            var notes = new Label { Text = "Experimental preview: partial block coverage. The optional shader requires Iris/Sodium and LabPBR 1.3.\r\nDownloads are SHA-256 verified and size-capped. Only the named resource-pack or shader ZIP is replaced; other files stay untouched.", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.TopLeft };
+            var notes = new Label { Text = "Downloads are SHA-256 verified and size-capped. Only the named resource-pack or shader ZIP is replaced; other files stay untouched.\r\nThis is an experimental preview, not a full vanilla-coverage or performance-certified pack.", Dock = DockStyle.Fill, ForeColor = Muted, Font = new Font("Segoe UI", 9F), TextAlign = ContentAlignment.TopLeft };
             statusLayout.Controls.Add(notes, 0, 1);
             progress.Dock = DockStyle.Fill; progress.Style = ProgressBarStyle.Marquee; progress.MarqueeAnimationSpeed = 25; progress.Visible = false; progress.AccessibleName = "Download progress"; progress.BackColor = CardSurface; progress.ForeColor = Green; progress.Margin = new Padding(0, 4, 8, 4);
             var progressRow = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 1, Margin = Padding.Empty, BackColor = Background };
@@ -282,7 +296,7 @@ namespace HyperRealismInstaller
             tooltips.SetToolTip(cancelDownload, "Cancel the current check or download. Existing installed files are preserved.");
             cancelDownload.Click += delegate { if (busy && !cancelTransfer) { cancelTransfer = true; cancelDownload.Enabled = false; result.ForeColor = Muted; result.Text = "Cancelling; please wait..."; } };
             progressRow.Controls.Add(progress, 0, 0); progressRow.Controls.Add(cancelDownload, 1, 0); statusLayout.Controls.Add(progressRow, 0, 2);
-            statusGroup.Controls.Add(statusLayout); content.Controls.Add(statusGroup, 0, 2);
+            statusGroup.Controls.Add(statusLayout); content.Controls.Add(statusGroup, 0, 3);
 
             var sidebar = new Panel { Dock = DockStyle.Fill, BackColor = Sidebar, Padding = new Padding(12, 12, 12, 12), Margin = Padding.Empty };
             var sideLayout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 9, Margin = Padding.Empty, BackColor = Sidebar };
@@ -362,9 +376,14 @@ namespace HyperRealismInstaller
             close.Click += delegate { Close(); };
             AcceptButton = install;
             CancelButton = close;
-            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; else SavePath(); };
+            FormClosing += delegate(object sender, FormClosingEventArgs e) { if (busy) e.Cancel = true; else if (!captureMode) SavePath(); };
             string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ElyPrismLauncher", "instances", "26.3(1)", "minecraft", "resourcepacks");
             pathBox.Text = LoadPath(defaultPath);
+            if (captureMode)
+            {
+                string previewPath = Path.Combine(Path.GetTempPath(), "HyperRealism UI Preview", "resourcepacks");
+                try { Directory.CreateDirectory(previewPath); pathBox.Text = previewPath; } catch { }
+            }
             UpdateFolderStatus();
             if (startup == "--updated") result.Text = "Installer updated and reopened successfully.";
             if (startup == "--update-failed") { result.Text = "Installer update failed; the previous installer was reopened. Close other copies and check folder permissions."; result.ForeColor = Color.FromArgb(248, 113, 113); }
