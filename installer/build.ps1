@@ -11,8 +11,14 @@ $common = @('/nologo', '/codepage:65001', '/platform:anycpu', '/optimize+', '/re
 if ($LASTEXITCODE -ne 0) { throw 'GUI installer compilation failed.' }
 & $csc @common '/target:exe' '/reference:System.Windows.Forms.dll' "/out:$out\InstallerTests.exe" "$PSScriptRoot\PackInstaller.cs" "$PSScriptRoot\ShaderPackInstaller.cs" "$PSScriptRoot\SelfUpdater.cs" "$PSScriptRoot\LauncherIntegration.cs" "$PSScriptRoot\Tests.cs"
 if ($LASTEXITCODE -ne 0) { throw 'Installer test compilation failed.' }
-& "$out\InstallerTests.exe" "$out\HyperRealism128-Installer.exe"
-if ($LASTEXITCODE -ne 0) { throw 'Installer backend tests failed.' }
+$testStdout = Join-Path $out 'installer-tests.stdout.log'
+$testStderr = Join-Path $out 'installer-tests.stderr.log'
+$test = Start-Process -FilePath "$out\InstallerTests.exe" -ArgumentList "`"$out\HyperRealism128-Installer.exe`"" -Wait -PassThru -NoNewWindow -RedirectStandardOutput $testStdout -RedirectStandardError $testStderr
+$testOutput = ''
+if (Test-Path -LiteralPath $testStdout) { $testOutput += Get-Content -LiteralPath $testStdout -Raw }
+if (Test-Path -LiteralPath $testStderr) { $testOutput += "`n" + (Get-Content -LiteralPath $testStderr -Raw) }
+if ($test.ExitCode -ne 0) { throw "Installer backend tests failed with exit code $($test.ExitCode): $testOutput" }
+Write-Host $testOutput
 $smoke = Start-Process -FilePath "$out\HyperRealism128-Installer.exe" -ArgumentList '--smoke-test' -Wait -PassThru
 if ($smoke.ExitCode -ne 0) {
     $errorFile = Join-Path $env:TEMP 'hyperrealism-gui-smoke-error.txt'
