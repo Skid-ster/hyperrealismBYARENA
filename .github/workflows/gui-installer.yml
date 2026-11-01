@@ -3,6 +3,8 @@ on: [push, pull_request]
 jobs:
   build-test:
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Compile and test installer
@@ -30,6 +32,19 @@ jobs:
             installer-output/layout-smoke.png
           if-no-files-found: error
           retention-days: 30
+      - name: Store rendered UI preview in repository
+        if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          path=docs/installer-ui-preview.png
+          content=$(base64 -w 0 installer-output/layout-smoke.png)
+          sha=$(gh api "repos/${GITHUB_REPOSITORY}/contents/${path}?ref=${GITHUB_REF_NAME}" --jq .sha 2>/dev/null || true)
+          args=(--method PUT "repos/${GITHUB_REPOSITORY}/contents/${path}" -f message="chore: update installer UI preview [skip ci]" -f branch="${GITHUB_REF_NAME}" -f content="${content}")
+          if [ -n "$sha" ]; then args+=(-f sha="${sha}"); fi
+          gh api "${args[@]}"
   publish-installer-16:
     if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 16')
     needs: build-test
