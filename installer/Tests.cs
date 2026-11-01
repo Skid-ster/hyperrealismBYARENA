@@ -105,6 +105,7 @@ internal static class InstallerTests
     // in a temporary folder. It never touches a Minecraft installation.
     private static int LiveTest()
     {
+        Console.WriteLine("Live bundle test starting against the public GitHub release API.");
         string root = Path.Combine(Path.GetTempPath(), "hr-gui-live-" + Guid.NewGuid().ToString("N"));
         try
         {
@@ -131,7 +132,12 @@ internal static class InstallerTests
             Console.WriteLine("Live GitHub bundle download, verification, and no-op update check passed: " + result);
             return 0;
         }
-        finally { if (Directory.Exists(root)) Directory.Delete(root, true); }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine("Live bundle test failed: " + ex.ToString());
+            return 1;
+        }
+        finally { try { if (Directory.Exists(root)) Directory.Delete(root, true); } catch (Exception ex) { Console.Error.WriteLine("Live test cleanup failed: " + ex.Message); } }
     }
     private static object AppRelease(string tag, bool draft, string host)
     {

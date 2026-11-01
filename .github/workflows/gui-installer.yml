@@ -22,12 +22,17 @@ jobs:
         if: github.event_name == 'push'
         shell: powershell
         run: |
-          $log = Join-Path $env:RUNNER_TEMP 'installer-live-test.log'
-          & ./installer-output/InstallerTests.exe --live-test *> $log
-          $code = $LASTEXITCODE
-          if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log | ForEach-Object { Write-Host $_ } }
+          $stdout = Join-Path $env:RUNNER_TEMP 'installer-live-test.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'installer-live-test.stderr.log'
+          $proc = Start-Process -FilePath './installer-output/InstallerTests.exe' -ArgumentList '--live-test' -Wait -PassThru -NoNewWindow -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $code = $proc.ExitCode
+          $lines = @()
+          if (Test-Path -LiteralPath $stdout) { $lines += Get-Content -LiteralPath $stdout }
+          if (Test-Path -LiteralPath $stderr) { $lines += Get-Content -LiteralPath $stderr }
+          $lines | ForEach-Object { Write-Host $_ }
           if ($code -ne 0) {
-            if (Test-Path -LiteralPath $log) { Get-Content -LiteralPath $log | Select-Object -Last 60 | ForEach-Object { Write-Host "::error::$($_)" } }
+            if ($lines.Count -eq 0) { Write-Host "::error::Live test exited with code $code and produced no captured output." }
+            else { $lines | Select-Object -Last 80 | ForEach-Object { Write-Host "::error::$($_)" } }
             throw "Live preview download test failed with exit code $code."
           }
       - uses: actions/upload-artifact@v4
