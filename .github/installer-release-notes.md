@@ -1,20 +1,20 @@
-## Windows GUI installer 14 — a modern HyperRealism setup experience
+## Windows GUI installer 15 — dark premium setup screen
 
-Installer 14 replaces the cramped legacy window with a compact, light, responsive
-setup screen designed to fit small displays while preserving existing install,
-update, cancellation, settings, folder, launcher, and self-update behavior.
+Installer 15 is a full UI rebuild after the cramped installer-14 light layout.
+It keeps the existing verified install/update behavior, but presents it in a
+larger, readable, dark game-installer layout.
 
-- Resource-pack and optional Gilded Dusk cards are aligned side by side, with
-  concise experimental, Iris, and LabPBR requirements.
-- The instance path, folder validation, quick-start steps, progress/status, and
-  launch/open-folder shortcuts are organized into clear groups.
-- Plain, familiar text buttons and restrained green/amber accents replace the
-  old pixel-art toolbar buttons and heavy borders. Keyboard focus, tooltips,
-  and the previous removal of **Add Instance** are retained.
-- The Windows CI build renders the full window to a PNG smoke artifact in
-  addition to compiling the app, running backend tests, and checking UI
-  construction. This image verifies that the UI renders, not a substitute for
-  in-game visual or performance validation.
+- 980×660 default window with a dark charcoal palette, emerald primary accent,
+  and amber shader accent. The Windows title bar is dark where supported.
+- Full-width install-location card with a readable path field, Browse button,
+  and clear folder validation. No clipped right-hand action rail.
+- Two large product cards: HyperRealism 512×512 resource pack and optional
+  Gilded Dusk Iris shader. The resource-pack install is the obvious primary
+  action; shader install is secondary.
+- Larger toolbar buttons with text-fit smoke checks, dark menus, and a dedicated
+  status/progress card with an accessible Cancel action.
+- Footer keeps Open folder, Launch, and Close available without squeezing the
+  main install flow.
 
 The existing functionality remains: verified and capped downloads, atomic
 installation into the selected resourcepacks folder and sibling shaderpacks

@@ -2,6 +2,7 @@
 /test_output/
 /dist/
 /dist-web/
+/.vite/
 /pack/
 /node_modules/
 /.workspace/
