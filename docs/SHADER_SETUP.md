@@ -21,7 +21,7 @@ Windows users can download **HyperRealism128-Installer.exe** from the
 [installer 17 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-installer.17),
 select the intended existing `resourcepacks` folder, and use **Install shader**.
 It puts the shader ZIP in the sibling `shaderpacks` folder for that instance.
-You can also download the ZIP from the [Shader 1 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-shader.1)
+You can also download the ZIP from the [Preview 25 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-preview.25)
 or build it with `python3 scripts/package_stylized_shader.py`; the generated
 archive is `shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip` with
 `shaders/` at the ZIP root. For manual installation, put the ZIP (do not
