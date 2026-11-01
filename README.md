@@ -1,9 +1,9 @@
-# HyperRealism 256×256 — Minecraft Java LabPBR pack
+# HyperRealism 512×512 — Minecraft Java LabPBR pack
 
-This is an **early prototype**, not the requested complete production pack.
+This is an **experimental partial preview**, not a complete production pack.
 The development build defaults to manifest-defined 256×256 Minecraft Java 26.3
 block textures and aligned LabPBR 1.3 maps using a CPU-only pipeline; optional
-outputs are 128×128 or 512×512. Preview 24 publishes the current 512×512 resource
+outputs are 128×128 or 512×512. Published preview 24 ships the 512×512 pack. Preview 24 publishes the current 512×512 resource
 pack and adds the separately installable experimental Gilded Dusk Iris shader. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
 are approximated as described below. The current source catalog contains 371
@@ -46,7 +46,7 @@ See [shader setup and testing](docs/SHADER_SETUP.md), [full block coverage and t
 
 ### Windows GUI installer / updater
 
-The launcher's dark interface inspires this installer; it is a separate app,
+Installer 14 uses a compact, light setup screen; it is a separate app,
 not PineconeMC. Preview pack releases also include the installer as an asset.
 
 Download [HyperRealism128-Installer.exe](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-installer.14/HyperRealism128-Installer.exe)
