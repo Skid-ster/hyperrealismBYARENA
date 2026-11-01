@@ -31,7 +31,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
   publish-installer-14:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 14')
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 14')
     needs: build-test
     runs-on: ubuntu-latest
     permissions:
