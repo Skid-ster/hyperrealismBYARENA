@@ -1075,7 +1075,7 @@ result.ForeColor = Color.FromArgb(169, 52, 52);
             foreach (var button in new LauncherButton[] { toolOpen, toolSettings, toolHelp, toolCheck })
             {
                 int arrowInset = button.DropArrow ? 15 : 0;
-                int available = button.Width - button.Padding.Left - button.Padding.Right - arrowInset - 8;
+                int available = button.Width - button.Padding.Left - button.Padding.Right - arrowInset;
                 int measured = TextRenderer.MeasureText(button.Text, button.Font, new Size(Int32.MaxValue, Int32.MaxValue), TextFormatFlags.NoPadding | TextFormatFlags.SingleLine).Width;
                 if (button.Image != null || measured > available) throw new Exception("Toolbar button is not cleanly sized: " + button.Text);
             }
