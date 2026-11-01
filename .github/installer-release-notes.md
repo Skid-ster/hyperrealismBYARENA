@@ -1,37 +1,30 @@
-## Windows GUI installer 12 — HyperRealism 512×512
+## Windows GUI installer 13 — HyperRealism 512×512 + Gilded Dusk
 
-Installer 12 improves update-transfer usability and resilience:
+Installer 13 adds installation and update support for the separate experimental
+Iris shaderpack **HyperRealism: Gilded Dusk**:
 
-- Pack and installer downloads display byte-level progress and can be cancelled.
-  Cancellation removes temporary downloads and leaves the currently installed
-  file untouched.
-- Automatic prompts for a declined or cancelled version are deferred until the
-  next installer launch; manual update checks remain available.
-- Pack downloads are capped at 1 GiB and installer downloads at 100 MiB. Network
-  requests and reads use 30-second timeouts, and progress callbacks are
-  throttled to keep the interface responsive.
-- Update files remain SHA-256 checked and are staged before replacement.
+- **Install shader** downloads the published shader ZIP, verifies its SHA-256,
+  and atomically installs it into the `shaderpacks` folder beside the selected
+  instance's `resourcepacks` folder. If needed, it creates that standard
+  sibling folder. Other files are left untouched.
+- **Check updates** checks the installed resource pack and shader, as well as
+  the installer. When an installed pack or shader changes, it asks before
+  replacing it; automatic update prompts remain deferrable until the next launch.
+- Shader downloads are cancellable, use the existing byte-progress UI and
+  30-second network timeouts, and are capped at 100 MiB. Pack and installer
+  download limits remain 1 GiB and 100 MiB, respectively.
+- Downloads are staged and SHA-256 verified before replacement. Checksums are
+  published alongside assets; they detect corruption but are not independent
+  digital signatures.
 
-The executable filename, settings directory, and legacy preview ZIP asset name
-remain `HyperRealism128` for updater compatibility. The Minecraft resource pack
-itself is named **HyperRealism 512×512**.
+The shader is an experimental Iris shaderpack, not a resource pack. Use a
+matching Iris/Sodium Minecraft 26.3 instance, enable the HyperRealism resource
+pack, then select **HyperRealism: Gilded Dusk** in Iris and keep PBR Support on
+LabPBR 1.3. Compiler checks do not establish that it loads or renders correctly
+in every Minecraft, mod, GPU, or driver setup; in-game review and performance
+validation remain outstanding.
 
-The installer is a separate app, not PineconeMC. On Windows 11, download
-**HyperRealism128-Installer.exe** and double-click it. The GUI defaults to the
-ElyPrism `26.3(1)` instance's resourcepacks folder and allows browsing to a
-different existing `resourcepacks` directory. A valid folder name does not
-prove Minecraft is using that instance; enable the pack in Minecraft after
-installing it.
-
-The app checks for newer installer versions at startup and hourly while open,
-and can check for a different latest preview when one is installed. It asks
-before replacing either file. There is no service, scheduled task, or updater
-while the app is closed. Installer version 1 cannot self-update; later versions
-can replace themselves using a temporary helper. If the executable is in a
-protected folder, move it to a writable folder before updating.
-
-The preview remains experimental and partial. LabPBR effects need a compatible
-shader and correct shader/resource-pack settings; no in-game appearance or
-target-hardware performance is guaranteed. The installer executable is
-unsigned, so Windows may show a SmartScreen warning. Its checksum is published
-in the same release and is not an independent signature.
+The executable filename and settings directory remain `HyperRealism128` for
+updater compatibility. The GUI is a separate app, not PineconeMC; it does not
+install Minecraft or manage launcher instances. The executable is unsigned, so
+Windows may display a SmartScreen warning.

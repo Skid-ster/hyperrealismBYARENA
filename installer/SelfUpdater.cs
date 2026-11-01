@@ -25,7 +25,7 @@ namespace HyperRealismInstaller
 
     internal static class SelfUpdater
     {
-        internal const string CurrentTag = "v0.1.0-installer.12";
+        internal const string CurrentTag = "v0.1.0-installer.13";
         internal const string AssetName = "HyperRealism128-Installer.exe";
         internal const long MaxInstallerBytes = 100L * 1024L * 1024L;
 
