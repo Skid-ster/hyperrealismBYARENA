@@ -1,19 +1,19 @@
-## Windows GUI installer 16 — matches the PineconeMC/Prism launcher
+## Windows GUI installer 17 — fixed launcher-style layout
 
-Installer 16 replaces the generic dark dashboard with a window modeled on the
-launcher’s actual dark theme. It is still a standalone installer, not PineconeMC,
-but it should no longer look like a different product.
+Installer 17 fixes the broken parts of the installer-16 window and keeps the
+PineconeMC/Prism-style dark layout.
 
-- Uses the launcher-style gray palette: window/button/base grays, white text,
-  green highlight, and rectangular flat controls. No rounded neon cards.
-- Top toolbar with icon + text actions: Folders, Settings, Help, Check updates.
-- Main area uses launcher-style group boxes: Resource pack, Installation folder,
-  and Status/progress.
-- Right-side action list matches the launcher pattern: Install / Update,
-  Install shader, Launch, Open folder, Close.
-- Bottom status bar shows Minecraft/LabPBR context and the installer version.
-- Fixes the black corner/focus artifacts from the previous custom rounded
-  buttons by using rectangular Qt/Fusion-like chrome.
+- Browse is a native button again, so its text/icon cannot disappear.
+- The resource-pack path uses a normal bordered dark text box; the gray wrapper
+  band under the field is gone.
+- Resource-pack and shader summaries no longer clip. The main area now has
+  separate Resource pack and Optional shader groups, matching the launcher’s
+  group-box style instead of leaving a large empty void.
+- Status is top-aligned and includes concise verification/experimental notes.
+- Right-side action list remains: Install / Update, Install shader, Launch,
+  Open folder, Close.
+- The CI capture now renders the normal enabled state and stores the preview
+  image in the repository so the actual Windows render can be inspected.
 
 The existing functionality remains: verified and capped downloads, atomic
 installation into the selected resourcepacks folder and sibling shaderpacks

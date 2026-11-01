@@ -57,8 +57,8 @@ jobs:
               sha,
               branch,
             });
-  publish-installer-16:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 16')
+  publish-installer-17:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish installer 17')
     needs: build-test
     runs-on: ubuntu-latest
     permissions:
@@ -76,7 +76,7 @@ jobs:
           cd installer-assets
           sha256sum HyperRealism128-Installer.exe > HyperRealism128-Installer.exe.sha256
           sha256sum -c HyperRealism128-Installer.exe.sha256
-          gh release create v0.1.0-installer.16 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 layout-smoke.png --target "$GITHUB_SHA" --title 'HyperRealism 512×512 — Windows installer 16' --notes-file ../.github/installer-release-notes.md --prerelease
+          gh release create v0.1.0-installer.17 HyperRealism128-Installer.exe HyperRealism128-Installer.exe.sha256 layout-smoke.png --target "$GITHUB_SHA" --title 'HyperRealism 512×512 — Windows installer 17' --notes-file ../.github/installer-release-notes.md --prerelease
       - name: Attach current installer to all published preview releases
         env:
           GH_TOKEN: ${{ github.token }}
