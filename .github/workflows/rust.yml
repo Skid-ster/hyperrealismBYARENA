@@ -110,3 +110,49 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create v0.1.0-preview.24 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 + Gilded Dusk — experimental 26.3 preview 24' --notes-file .github/preview-release-notes.md --prerelease
+
+  publish-shader-1:
+    # Shader-only prerelease. The GUI installer discovers the newest release
+    # containing HyperRealism-Gilded-Dusk-MC-26.3.zip plus its .sha256 asset.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish shader 1')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GLSL compiler for Iris-stage validation
+        run: sudo apt-get update && sudo apt-get install --yes glslang-tools
+      - name: Check shader structure and LabPBR decode path
+        run: python3 scripts/check_stylized_shader.py
+      - name: Compile Iris 26.3 shader stages and LabPBR decode harness
+        run: python3 scripts/compile_stylized_shader.py
+      - name: Build the installable Iris ZIP
+        run: python3 scripts/package_stylized_shader.py
+      - name: Verify shader release archive
+        run: |
+          python - <<'PY'
+          import zipfile
+          path = 'shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip'
+          with zipfile.ZipFile(path) as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+              material = z.read('shaders/lib/common/material.glsl').decode('utf-8')
+          assert {'shaders/shaders.properties', 'shaders/lib/common/material.glsl', 'README.md', 'LICENSE'} <= names
+          assert not any(name.startswith('HyperRealism-Stylized-PBR/') for name in names)
+          assert 'materialFromLabPBR' in material and 'HYPERREALISM_LAB_PBR' in material
+          assert sum(name.startswith('shaders/') and not name.endswith('/') for name in names) >= 300
+          print('Verified Iris shader ZIP root layout and LabPBR decoder')
+          PY
+      - name: Prepare release assets and checksum
+        run: |
+          mkdir -p release_assets
+          cp shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip
+          cd release_assets
+          sha256sum HyperRealism-Gilded-Dusk-MC-26.3.zip > HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
+          sha256sum -c HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
+      - name: Publish shader prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0-shader.1 release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256 --target "$GITHUB_SHA" --title 'HyperRealism: Gilded Dusk — LabPBR shader 1 for Minecraft Java 26.3' --notes-file .github/shader-release-notes.md --prerelease

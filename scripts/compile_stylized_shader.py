@@ -38,6 +38,9 @@ DH_BLOCKS = (
     "DEEPSLATE", "SNOW", "SAND", "TERRACOTTA", "NETHER_STONE", "WATER",
     "GRASS", "AIR", "ILLUMINATED",
 )
+LAB_PBR_FORMAT_MACROS = """#define MC_TEXTURE_FORMAT_LAB_PBR
+#define MC_TEXTURE_FORMAT_LAB_PBR_1_3
+"""
 IRIS_MACROS = """#define IS_IRIS
 #define MC_VERSION 260300
 #define IRIS_VERSION 11107
@@ -46,8 +49,6 @@ IRIS_MACROS = """#define IS_IRIS
 #define MC_HAND_DEPTH 0.125
 #define MC_NORMAL_MAP
 #define MC_SPECULAR_MAP
-#define MC_TEXTURE_FORMAT_LAB_PBR
-#define MC_TEXTURE_FORMAT_LAB_PBR_1_3
 #define MC_RENDER_QUALITY 1.0
 #define MC_SHADOW_QUALITY 1.0
 #define MC_MIPMAP_LEVEL 4
@@ -57,7 +58,8 @@ IRIS_MACROS = """#define IS_IRIS
 """ + "".join(
     f"#define MC_RENDER_STAGE_{name} {value}\n"
     for value, name in enumerate(RENDER_STAGES)
-)
+) + LAB_PBR_FORMAT_MACROS
+NO_FORMAT_MACROS = IRIS_MACROS.replace(LAB_PBR_FORMAT_MACROS, "")
 DH_MACROS = "#define DISTANT_HORIZONS\n" + "".join(
     f"#define DH_BLOCK_{name} {value}\n"
     for value, name in enumerate(DH_BLOCKS)
@@ -111,8 +113,9 @@ def compile_variant(
     compiler: str,
     output_dir: Path,
     distant_horizons: bool,
+    macros: str = IRIS_MACROS,
 ) -> tuple[int, int, list[str]]:
-    macros = IRIS_MACROS + (DH_MACROS if distant_horizons else "")
+    macros = macros + (DH_MACROS if distant_horizons else "")
     stages = sorted(
         stage
         for world in root.iterdir()
@@ -147,6 +150,40 @@ def compile_variant(
     return len(stages), len(failures), failures
 
 
+def compile_decode_test(label: str, root: Path, compiler: str, output_dir: Path, macros: str) -> list[str]:
+    """Compile a small harness that exercises every LabPBR decode/debug path."""
+    settings = expand_includes(root, root / "lib/common/settings.glsl")
+    material = expand_includes(root, root / "lib/common/material.glsl")
+    source = f"""#version 460
+{macros}
+{settings}
+#define clamp01(x) clamp(x, 0.0, 1.0)
+float pow2(float x) {{ return x * x; }}
+{material}
+uniform vec4 normalData;
+uniform vec4 specularData;
+out vec4 fragColor;
+void main() {{
+  mat3 tbn = mat3(1.0);
+  vec3 normal = labPBRNormal(normalData, tbn);
+  Material material = materialFromLabPBR(vec3(0.5), normalData, specularData);
+  Material fallback = materialFromSpecularMap(vec3(0.5), specularData);
+  vec3 debug = vec3(0.0);
+  for (int mode = 0; mode <= 8; mode++) {{
+    debug += pbrDebugColor(mode, normalData, material);
+  }}
+  fragColor = vec4(normal + material.f0 + fallback.f0 + debug +
+    vec3(material.roughness, material.ao, material.emission), 1.0);
+}}
+"""
+    glsl = output_dir / f"{label}_labpbr_decode.frag"
+    glsl.write_text(source, encoding="utf-8")
+    result = subprocess.run([compiler, "-S", "frag", str(glsl)], capture_output=True, text=True, check=False)
+    if result.returncode:
+        return [f"{label}/labpbr-decode:\n{(result.stdout + result.stderr).strip()}"]
+    return []
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--compiler", default="glslangValidator", help="glslangValidator executable")
@@ -160,28 +197,34 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="hyperrealism-shader-") as temporary:
         work = Path(temporary)
         cases = (
-            ("default", (), False),
+            ("default", (), False, IRIS_MACROS),
             (
                 "pbr-off-style-max",
                 (("#define PBR_MODE 1", "#define PBR_MODE 0"),
                  ("#define STYLE_STRENGTH 70", "#define STYLE_STRENGTH 100")),
                 False,
+                IRIS_MACROS,
             ),
-            ("feature-matrix-dh", FEATURE_CHANGES, True),
+            ("no-labpbr-format", (), False, NO_FORMAT_MACROS),
+            ("feature-matrix-dh", FEATURE_CHANGES, True, IRIS_MACROS),
         )
         total = compiled = failures = 0
         diagnostics: list[str] = []
-        for label, changes, with_dh in cases:
+        for label, changes, with_dh, macros in cases:
             root = work / label / "shaders"
             output = work / "compiled"
             output.mkdir(exist_ok=True)
             prepare_variant(root, changes)
-            count, failed, messages = compile_variant(label, root, compiler, output, with_dh)
+            count, failed, messages = compile_variant(label, root, compiler, output, with_dh, macros)
+            decode_messages = compile_decode_test(label, root, compiler, output, macros)
+            count += 1
+            failed += len(decode_messages)
+            messages.extend(decode_messages)
             total += count
             compiled += count - failed
             failures += failed
             diagnostics.extend(f"{label}: {message}" for message in messages)
-            print(f"{label}: {count - failed}/{count} stages compiled")
+            print(f"{label}: {count - failed}/{count} stages/decode harnesses compiled")
         if diagnostics:
             print("\n".join(diagnostics), file=sys.stderr)
         print(f"Iris 26.3 GLSL validation: {compiled}/{total} stages compiled successfully.")

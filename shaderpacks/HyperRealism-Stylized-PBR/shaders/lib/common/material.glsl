@@ -4,7 +4,7 @@
 
       _____   __   _                          
      / ___/  / /  (_)  __ _   __ _  ___   ____
-    / (_ /  / /  / /  /  ' \ /  ' \/ -_) / __/
+    / (_ /  / /  / /  / ' \ /  ' \/ -_) / __/
     \___/  /_/  /_/  /_/_/_//_/_/_/\__/ /_/   
     
     By jbritain
@@ -26,6 +26,16 @@
 #define PLATINUM 7
 #define SILVER 8
 #define OTHER_METAL 9
+
+// LabPBR is only decoded when the user enabled PBR_MODE and Iris detected a
+// resource pack declaring format=lab-pbr/1.3. Without that declaration Iris
+// still binds default normal/specular textures, but their bytes are not a
+// LabPBR material and must not be interpreted as one.
+#if PBR_MODE == 1 && defined(MC_TEXTURE_FORMAT_LAB_PBR)
+#define HYPERREALISM_LAB_PBR 1
+#else
+#define HYPERREALISM_LAB_PBR 0
+#endif
 
 mat3x2 getMetalN_K(uint metalID) {
   switch (metalID) {
@@ -61,6 +71,18 @@ mat3x2 getMetalN_K(uint metalID) {
   return mat3x2(0.0);
 }
 
+// Normal-incidence conductor reflectance for the predefined LabPBR metals.
+// Keeping this separate from albedo prevents predefined metals from being
+// double-tinted by the block texture.
+vec3 getMetalF0(uint metalID) {
+  mat3x2 N_K = getMetalN_K(metalID);
+  vec3 n = vec3(N_K[0][0], N_K[1][0], N_K[2][0]);
+  vec3 k = vec3(N_K[0][1], N_K[1][1], N_K[2][1]);
+  vec3 nm1 = n - 1.0;
+  vec3 np1 = n + 1.0;
+  return (nm1 * nm1 + k * k) / (np1 * np1 + k * k);
+}
+
 struct Material {
   vec3 albedo;
   float emission;
@@ -85,12 +107,36 @@ const Material waterMaterial = Material(
   0.0
 );
 
-Material materialFromSpecularMap(vec3 albedo, vec4 specularData) {
+int labPBRByte(float value) {
+  return clamp(int(value * 255.0 + 0.5), 0, 255);
+}
+
+// LabPBR normal map: RG = tangent-space XY, B = ambient occlusion,
+// A = height. Z is reconstructed, never read from the blue channel.
+vec3 labPBRNormal(vec4 normalData, mat3 tbnMatrix) {
+  #if HYPERREALISM_LAB_PBR
+  vec2 xy = normalData.rg * 2.0 - 1.0;
+  xy *= PBR_NORMAL_STRENGTH;
+
+  // Strength above 1 can push XY outside the unit circle. Clamp the slope
+  // before sqrt so filtering/quantisation cannot produce NaNs.
+  float xy2 = dot(xy, xy);
+  if (xy2 > 1.0) {
+    xy *= inversesqrt(xy2);
+    xy2 = 1.0;
+  }
+
+  vec3 tangentNormal = vec3(xy, sqrt(max(1.0 - xy2, 0.0)));
+  return normalize(tbnMatrix * tangentNormal);
+  #else
+  return normalize(tbnMatrix[2]);
+  #endif
+}
+
+Material materialFromLabPBR(vec3 albedo, vec4 normalData, vec4 specularData) {
   Material material;
-
   material.albedo = albedo;
-
-  #if PBR_MODE == 0
+  material.N_K = mat3x2(0.0);
   material.roughness = 1.0;
   material.f0 = vec3(0.04);
   material.metalID = NO_METAL;
@@ -99,29 +145,71 @@ Material materialFromSpecularMap(vec3 albedo, vec4 specularData) {
   material.emission = 0.0;
   material.ao = 1.0;
 
-  return material;
-  #endif
+  #if HYPERREALISM_LAB_PBR
+  // Normal blue is AO, not normal Z.
+  material.ao = mix(1.0, clamp01(normalData.b), PBR_AO_STRENGTH);
 
-  material.roughness = pow2(1.0 - specularData.r);
-  if (specularData.g <= 229.0 / 255.0) {
-    material.f0 = vec3(specularData.g);
+  // Specular red is perceptual smoothness: roughness = (1 - smoothness)^2.
+  float smoothness = float(labPBRByte(specularData.r)) / 255.0;
+  material.roughness = clamp(pow2(1.0 - smoothness), 0.002, 1.0);
+
+  // Specular green: 0..229 dielectric F0, 230..237 predefined metals,
+  // 238..255 albedo-tinted/other metal. Do not let reserved/custom IDs index
+  // the predefined metal table and accidentally become perfect mirrors.
+  int f0Byte = labPBRByte(specularData.g);
+  if (f0Byte < 230) {
+    material.f0 = vec3(float(f0Byte) / 255.0);
     material.metalID = NO_METAL;
+  } else if (f0Byte < 238) {
+    material.metalID = uint(f0Byte - 229);
+    material.N_K = getMetalN_K(material.metalID);
+    material.f0 = getMetalF0(material.metalID);
   } else {
+    material.metalID = OTHER_METAL;
     material.f0 = albedo;
-    material.metalID = int(specularData.g * 255 + 0.5) - 229;
   }
 
-  if (specularData.b <= 0.25) {
-    material.porosity = specularData.b * 4.0;
+  // Specular blue multiplexes porosity (0..64) and subsurface scattering
+  // (65..255). They are mutually exclusive; SSS must not invent porosity.
+  int blueByte = labPBRByte(specularData.b);
+  if (blueByte <= 64) {
+    material.porosity = float(blueByte) / 64.0;
     material.sss = 0.0;
   } else {
-    material.porosity = (1.0 - specularData.r) * specularData.g; // fall back to using roughness and base reflectance for porosity
-    material.sss = (specularData.b - 0.25) * 4.0 / 3.0;
+    material.porosity = 0.0;
+    material.sss = float(blueByte - 64) / 191.0;
   }
 
-  material.emission = specularData.a < 1.0 ? specularData.a : 0.0;
+  // Specular alpha: 255 is the no-emission sentinel, 0..254 is emission.
+  int emissionByte = labPBRByte(specularData.a);
+  material.emission = emissionByte == 255 ? 0.0 : float(emissionByte) / 255.0;
+  #endif
 
   return material;
+}
+
+// Compatibility wrapper for programs without a LabPBR normal/specular pair
+// (for example weather). It still respects PBR_MODE and the detected format.
+Material materialFromSpecularMap(vec3 albedo, vec4 specularData) {
+  return materialFromLabPBR(albedo, vec4(0.5, 0.5, 1.0, 1.0), specularData);
+}
+
+// Diagnostic views for verifying that the resource-pack channels reach the
+// shader. These are development views, not a physically based lighting mode.
+vec3 pbrDebugColor(int mode, vec4 normalData, Material material) {
+  if (mode == 1) {
+    vec2 xy = normalData.rg * 2.0 - 1.0;
+    float z = sqrt(max(1.0 - dot(xy, xy), 0.0));
+    return vec3(xy, z) * 0.5 + 0.5;
+  }
+  if (mode == 2) return vec3(material.roughness);
+  if (mode == 3) return material.metalID == NO_METAL ? material.f0 : material.albedo;
+  if (mode == 4) return vec3(material.emission);
+  if (mode == 5) return vec3(material.ao);
+  if (mode == 6) return vec3(normalData.a);
+  if (mode == 7) return vec3(material.porosity);
+  if (mode == 8) return vec3(material.sss);
+  return material.albedo;
 }
 
 #endif // MATERIAL_GLSL

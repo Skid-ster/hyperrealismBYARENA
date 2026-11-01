@@ -18,9 +18,15 @@ README and development notes are retained in `UPSTREAM_GLIMMER_README.md` and
 
 HyperRealism modifications: a final teal-shadow/amber-highlight grade, an
 adjustable **Teal–Amber Style** control, stronger contrast and saturation
-defaults, an AgX tonemapper default, and pack-specific settings labels. The
-copyright and attribution for the upstream shader remain with its original
-author and contributors. See the MIT notice before copying or redistributing.
+defaults, an AgX tonemapper default, pack-specific settings labels, and a
+corrected explicit LabPBR 1.3 decode path. The PBR fixes gate decoding on the
+detected resource-pack format, separate normal XY/AO/height channels, decode
+dielectric/predefined-metal/other-metal F0 ranges without double-tinting
+predefined metals, treat porosity and subsurface as mutually exclusive, preserve
+the no-emission sentinel, and add Normal Map Strength, Material AO Strength, and
+PBR Channel Debug controls. The copyright and attribution for the upstream
+shader remain with its original author and contributors. See the MIT notice
+before copying or redistributing.
 
 ## Install and configure
 
@@ -40,9 +46,14 @@ for your Minecraft version; it installs Iris and Sodium together.
    select **HyperRealism: Gilded Dusk** under **Options → Video Settings →
    Shader Packs**.
 4. In shader settings, leave **PBR Support** on **LabPBR 1.3** for this pack.
-   Keep parallax mapping off initially; enable it only if you want the
-   height/depth effect. Adjust **Post-Processing → Teal–Amber Style** from 0
-   (neutral) to 100 (strong split tone); the default is 70.
+   Under **Materials**, keep **Normal Map Strength** and **Material AO Strength**
+   at 1.0 for the authored pack response. Use **PBR Channel Debug** only to
+   verify that normal/roughness/F0/emission/AO/height/porosity/subsurface maps
+   reach the shader. Keep parallax mapping off initially; enable it only if you
+   want the height/depth effect. Adjust **Post-Processing → Teal–Amber Style**
+   from 0 (neutral) to 100 (strong split tone); the default is 70. See
+   [`docs/PBR_VALIDATION.md`](../../docs/PBR_VALIDATION.md) for the in-game
+   checklist.
 
 If the shader does not appear, check that the ZIP is in the launcher's actual
 instance directory, not `resourcepacks`. If Iris reports a compile problem,
@@ -51,13 +62,14 @@ check that instance's `logs/latest.log` and capture the first shader error.
 ## Validation and compatibility limits
 
 The pack is pinned to Glimmer's MIT-licensed upstream source commit shown above.
-Its source has now been compiler-checked with glslang against the Iris 26.3 macro interface (from
+Its source is compiler-checked with glslang against the Iris 26.3 macro interface (from
 Iris's [`StandardMacros`](https://github.com/IrisShaders/Iris/blob/26.3/common/src/main/java/net/irisshaders/iris/gl/shader/StandardMacros.java)
-and [`WorldRenderingPhase`](https://github.com/IrisShaders/Iris/blob/26.3/common/src/main/java/net/irisshaders/iris/pipeline/WorldRenderingPhase.java)):
-all 227 default stages, 227 PBR-off/style-maximum stages, and a 239-stage
-all-features/Distant-Horizons matrix passed (693 stage compilations). A
-source/archive check also verifies the LabPBR default, style setting, root ZIP
-layout, and retained notices.
+and [`WorldRenderingPhase`](https://github.com/IrisShaders/Iris/blob/26.3/common/src/main/java/net/irisshaders/iris/pipeline/WorldRenderingPhase.java)).
+The matrix covers default stages, PBR-off/style-maximum stages, a
+no-LabPBR-format fallback, and an all-features/Distant-Horizons variant, plus a
+LabPBR decode harness that exercises the material decoder and every debug view.
+A source/archive check also verifies the LabPBR default, decode path, style
+setting, root ZIP layout, and retained notices.
 
 This is not the same as running Minecraft: **in-game loading, actual GPU/driver
 compatibility, image quality, artifacts, and performance have not been

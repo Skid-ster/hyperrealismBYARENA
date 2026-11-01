@@ -104,16 +104,11 @@ vec3 fresnel(Material material, float NoV) {
 }
 
 vec3 fresnelRoughness(Material material, float NoV) {
-  if (material.metalID == NO_METAL || material.metalID == OTHER_METAL) {
-    // you aren't supposed to square the roughness but stuff was ending up too shiny
-    return material.f0 +
+  // material.f0 is dielectric F0, predefined-metal F0, or albedo for
+  // OTHER_METAL. Predefined metals must not be tinted by albedo a second time.
+  return material.f0 +
     (max(vec3(1.0 - material.roughness), material.f0) - material.f0) *
-      pow5(clamp01(1.0 - NoV));
-  } else {
-    return material.albedo +
-    (max(vec3(1.0 - material.roughness), material.albedo) - material.albedo) *
-      pow5(clamp01(1.0 - NoV));
-  }
+    pow5(clamp01(1.0 - NoV));
 }
 
 vec3 brdf(
@@ -135,14 +130,16 @@ vec3 brdf(
   }
 
   vec3 V = normalize(-viewPos);
-  vec3 N = mappedNormal;
-  vec3 H = normalize(L + V);
+  vec3 N = normalize(mappedNormal);
+  vec3 halfVector = L + V;
+  float halfLength = length(halfVector);
+  vec3 H = halfLength > 1e-6 ? halfVector / halfLength : N;
 
-  float NoV = dot(N, V);
+  float NoV = clamp01(dot(N, V));
   float VoL = dot(V, L);
   float HoV = dot(H, V);
 
-  float alpha = max(1e-3, material.roughness);
+  float alpha = max(0.002, material.roughness);
   float NoHSquared = getNoHSquared(
     NoL,
     NoV,
@@ -162,11 +159,11 @@ vec3 brdf(
 
   float G = max0(geometrySmith(N, V, L, material.roughness));
 
-  if (material.metalID != NO_METAL) {
+  if (material.metalID == OTHER_METAL) {
     F *= material.albedo;
   }
 
-  vec3 Rs = F * D * G / (4.0 * NoV + 1e-6);
+  vec3 Rs = F * D * G / (4.0 * max(NoV, 1e-4) + 1e-6);
 
   // this was causing some weird issues
   if (NoL < 1e-6) {

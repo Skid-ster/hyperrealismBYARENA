@@ -132,6 +132,22 @@ option.PBR_MODE.comment=LabPBR requires a supported resource pack. §6Moderate p
 value.PBR_MODE.0=Off
 value.PBR_MODE.1=LabPBR 1.3
 
+option.PBR_NORMAL_STRENGTH=Normal Map Strength
+option.PBR_NORMAL_STRENGTH.comment=Scales LabPBR tangent-space normal slopes. 1.0 uses the resource-pack normal map as authored. §9No performance impact.
+option.PBR_AO_STRENGTH=Material AO Strength
+option.PBR_AO_STRENGTH.comment=Blends the LabPBR normal-map blue-channel ambient occlusion. 1.0 uses the authored AO. §9No performance impact.
+option.PBR_DEBUG=PBR Channel Debug
+option.PBR_DEBUG.comment=Development view for checking that resource-pack PBR channels reach the shader. Not a lighting mode.
+value.PBR_DEBUG.0=Off
+value.PBR_DEBUG.1=Normal XY
+value.PBR_DEBUG.2=Roughness
+value.PBR_DEBUG.3=F0 / Metal
+value.PBR_DEBUG.4=Emission
+value.PBR_DEBUG.5=Ambient Occlusion
+value.PBR_DEBUG.6=Height
+value.PBR_DEBUG.7=Porosity
+value.PBR_DEBUG.8=Subsurface
+
 option.CLOUDS=Clouds
 option.CLOUDS.comment=§aMinimal performance impact.
 

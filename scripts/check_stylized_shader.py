@@ -30,8 +30,33 @@ def main() -> int:
     require("hyperrealismGrade" in processing and "coolShadow" in processing
             and "warmHighlight" in processing, "Teal/amber grade is incomplete")
     require("#define tonemap agxTonemap" in tonemap, "Expected AgX default is missing")
-    require("materialFromSpecularMap" in material and "specularData" in material,
-            "Upstream LabPBR material parsing is missing")
+    require("materialFromLabPBR" in material and "specularData" in material,
+            "LabPBR material parsing is missing")
+    require("HYPERREALISM_LAB_PBR" in material and "MC_TEXTURE_FORMAT_LAB_PBR" in material,
+            "LabPBR decoding must be gated on the detected resource-pack format")
+    require("labPBRNormal" in material and "normalData.b" in material and "normalData.a" in material,
+            "LabPBR normal/AO/height channel separation is missing")
+    require("f0Byte < 230" in material and "f0Byte < 238" in material and "OTHER_METAL" in material,
+            "LabPBR dielectric/predefined-metal/other-metal ranges are missing")
+    require("getMetalF0" in material, "Predefined LabPBR metals need spectral F0, not albedo double-tinting")
+    require("blueByte <= 64" in material and "blueByte - 64" in material,
+            "LabPBR porosity/SSS multiplexing is missing")
+    require("emissionByte == 255" in material, "LabPBR no-emission sentinel is missing")
+    require("#define PBR_NORMAL_STRENGTH 1.0" in settings and "#define PBR_AO_STRENGTH 1.0" in settings
+            and "#define PBR_DEBUG 0" in settings, "PBR controls/debug defaults are missing")
+    require("PBR_NORMAL_STRENGTH" in properties and "PBR_AO_STRENGTH" in properties and "PBR_DEBUG" in properties,
+            "PBR controls must be visible in Iris settings")
+    for locale in (english, chinese):
+        require("option.PBR_NORMAL_STRENGTH" in locale and "option.PBR_DEBUG" in locale,
+                "PBR controls must be labeled in both supported Iris locales")
+    for name in ("gbuffers_main.glsl", "gbuffers_clrwl.glsl"):
+        gbuffer = (SHADERS / "program" / name).read_text(encoding="utf-8")
+        require("materialFromLabPBR(albedo.rgb, normalData, specularData)" in gbuffer,
+                f"{name} must use the shared LabPBR decoder")
+        require("vec3 mappedNormal = texture(normals, texcoord).rgb;" not in gbuffer,
+                f"{name} still contains dead/incorrect entity normal code")
+        require("pbrDebugColor(PBR_DEBUG, normalData, material)" in gbuffer,
+                f"{name} must expose the PBR channel debug view")
     require("6a591097b6348155a4ba5a1aab92b79a2c9896d3" in readme,
             "Upstream source revision must remain pinned in the shader notes")
     require("MIT License" in license_text and "Copyright (c) 2024 Josh Britain" in license_text,

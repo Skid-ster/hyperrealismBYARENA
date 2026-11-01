@@ -45,6 +45,9 @@ const float sunPathRotation = -40.0; // [-90.0 -85.0 -80.0 -75.0 -70.0 -65.0 -60
 #define SHADOW_SAMPLES 4 // [1 2 4 8 16 32]
 
 #define PBR_MODE 1 // [0 1]
+#define PBR_NORMAL_STRENGTH 1.0 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 2.0]
+#define PBR_AO_STRENGTH 1.0 // [0.0 0.25 0.5 0.75 1.0]
+#define PBR_DEBUG 0 // [0 1 2 3 4 5 6 7 8]
 
 // #define PIXEL_LOCKED_LIGHTING
 #define PIXEL_SIZE 16 // [1 2 4 8 16 32 64]

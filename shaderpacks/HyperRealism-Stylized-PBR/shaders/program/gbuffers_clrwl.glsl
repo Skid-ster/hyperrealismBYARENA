@@ -74,18 +74,6 @@ in float emission;
 in vec3 midblock;
 in vec2 midtexcoord;
 
-vec3 getMappedNormal(vec2 texcoord) {
-  #if PBR_MODE == 0
-  return tbnMatrix[2];
-  #endif
-
-  vec3 mappedNormal = texture(normals, texcoord).rgb;
-  mappedNormal = mappedNormal * 2.0 - 1.0;
-  mappedNormal.z = sqrt(1.0 - dot(mappedNormal.xy, mappedNormal.xy)); // reconstruct z due to labPBR encoding
-
-  return tbnMatrix * mappedNormal;
-}
-
 /* RENDERTARGETS: 0,1 */
 
 layout(location = 0) out vec4 color;
@@ -114,19 +102,18 @@ void main() {
 
   albedo.rgb = pow(albedo.rgb, vec3(2.2));
 
-  vec3 mappedNormal = getMappedNormal(texcoord);
-  if (renderStage == MC_RENDER_STAGE_ENTITIES) {
-    vec3 mappedNormal = texture(normals, texcoord).rgb;
-  }
-
-  #if PBR_MODE == 0
-  vec4 specularData = vec4(0.0);
-  #else
+  #if HYPERREALISM_LAB_PBR
+  vec4 normalData = texture(normals, texcoord);
   vec4 specularData = texture(specular, texcoord);
+  #else
+  vec4 normalData = vec4(0.5, 0.5, 1.0, 1.0);
+  vec4 specularData = vec4(0.0);
   #endif
-  Material material = materialFromSpecularMap(albedo.rgb, specularData);
-  material.ao = texture(normals, texcoord).z;
-  #ifndef MC_TEXTURE_FORMAT_LAB_PBR
+
+  vec3 mappedNormal = labPBRNormal(normalData, tbnMatrix);
+  Material material = materialFromLabPBR(albedo.rgb, normalData, specularData);
+
+  #if !HYPERREALISM_LAB_PBR
   material.f0 = vec3(0.04);
   if (
     material.emission == 0.0 &&
@@ -174,7 +161,7 @@ void main() {
     wetness *
     biomeCanRainSmooth *
     clamp01(dot(tbnMatrix[2], gbufferModelView[1].xyz)) *
-    mix(1.5, 1.0, texture(normals, texcoord).a);
+    mix(1.5, 1.0, normalData.a);
 
   rainFactor *= smoothstep(
     0.6,
@@ -187,7 +174,7 @@ void main() {
 
   rainFactor *= 1.0 - material.porosity;
 
-  rainFactor += step(texture(normals, texcoord).a, 0.5);
+  rainFactor += step(normalData.a, 0.5);
 
   material.f0 = mix(material.f0, vec3(0.02), rainFactor);
   material.roughness = mix(material.roughness, 0.0, rainFactor);
@@ -278,6 +265,12 @@ void main() {
   }
 
   color.a = albedo.a;
+
+  #if PBR_DEBUG > 0
+  if (!isWater(materialID) && renderStage != MC_RENDER_STAGE_OUTLINE) {
+    color.rgb = pbrDebugColor(PBR_DEBUG, normalData, material);
+  }
+  #endif
 
   outData1.xy = encodeNormal(mat3(gbufferModelViewInverse) * mappedNormal);
   outData1.z = lightmap.y;
