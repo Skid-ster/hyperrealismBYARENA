@@ -191,8 +191,6 @@ namespace HyperRealismInstaller
         private int transferGeneration;
         private bool automaticUpdates = true;
         private string deferredInstallerTag;
-        private string deferredPackUpdate;
-        private string deferredShaderUpdate;
         private string deferredBundleUpdate;
         private string bundleAssetLabel = "pack + shader";
         private static readonly string AutoCheckPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HyperRealism128", "auto-update-checks.txt");

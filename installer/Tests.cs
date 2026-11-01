@@ -309,7 +309,7 @@ internal static class InstallerTests
 
         // Cancellation after the first download must not commit either file.
         int before = fake.Downloads;
-        fake.CancelAfterDownload = 1;
+        fake.CancelAfterDownload = before + 1;
         Throws(() => BundleInstaller.Install(fake, folder, null, yes), "Cancelled bundle download accepted.");
         fake.CancelAfterDownload = -1;
         Assert(fake.Downloads == before + 1 && File.ReadAllText(packTarget) == "old pack" && File.ReadAllText(shaderTarget) == "old shader", "Cancellation committed or downloaded too much.");
