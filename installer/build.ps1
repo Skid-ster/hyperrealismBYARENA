@@ -23,5 +23,5 @@ if ($smoke.ExitCode -ne 0) {
 $image = Join-Path $out 'layout-smoke.png'
 $render = Start-Process -FilePath "$out\HyperRealism128-Installer.exe" -ArgumentList @('--capture-ui', "`"$image`"") -Wait -PassThru
 if ($render.ExitCode -ne 0 -or -not (Test-Path -LiteralPath $image) -or (Get-Item -LiteralPath $image).Length -lt 1000) { throw 'GUI render smoke test failed.' }
-Remove-Item -LiteralPath $image -Force
+Write-Host "Rendered installer UI smoke image: $image"
 Write-Host 'GUI build and smoke tests passed.'
