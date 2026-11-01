@@ -9,3 +9,10 @@
 /test-results/
 /.env
 *.log
+/installer-output/
+/pilot_output/
+/release_build/
+/release_assets/
+/shaderpacks/dist/
+__pycache__/
+*.pyc

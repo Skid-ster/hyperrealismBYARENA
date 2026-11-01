@@ -1,13 +1,10 @@
 # Rust resource-pack generator: research and implementation plan
 
-Status: **studio vertical slice complete; production pack incomplete**. The
-local-first web studio, Rust CPU engine, synthetic fixtures, import/edit/build/
-export workflow, and automated Rust/API/browser/production checks are implemented
-and verified in this checkout. Real asset acquisition, the audited 280-target
-catalog, GPU/Vulkan, hardware benchmarks, and Minecraft/shader in-game validation
-remain outstanding. This plan describes a new, independent implementation: there
-is no Python pipeline, manifest, palette, material set, or 280-texture inventory
-in the repository to reproduce or compare against.
+Status: **work in progress**. An initial CPU-only vertical slice and synthetic
+fixtures, PNG/JPEG material inputs, map filtering, optional JAR path checks
+and a 106-output CC0-material starter catalog are implemented; see the README for current capabilities and gaps. This plan describes a new, independent
+implementation: there is no Python pipeline, manifest, palette, material set,
+or 280-texture inventory in the repository to reproduce or compare against.
 
 ## Scope and success criteria
 
@@ -80,8 +77,9 @@ quality requires contact sheets and in-game review, not a file-count check.
 ## Pipeline and architecture
 
 1. Validate the manifest, catalog and target paths before creating a temporary
-   output tree. Resolve recipe seed by hashing the global seed and target path;
-   avoid randomized hash-map iteration. Every stage reports errors with material
+output tree. Resolve recipe seed by hashing the global seed and target path,
+unless an explicit shared `pattern_seed` aliases related outputs; avoid
+randomized hash-map iteration. Every stage reports errors with material
    and target name. Finish by atomically replacing output on success only.
 2. Decode input maps to a consistent intermediate format; do not decode 280
    materials concurrently. Generate at 512×512 with reusable buffers. Implement
@@ -127,14 +125,13 @@ quality requires contact sheets and in-game review, not a file-count check.
 
 ## Implementation milestones and checks
 
-- **M1 – Contract and CPU vertical slice: complete for the demo scope.** CLI,
-  manifest validation, PNG I/O, eight procedural recipe families, 24 synthetic
-  catalog entries, normal/specular encoding, wrap resize, pack metadata, ZIP,
-  contact sheet and report exist. Rust integration tests verify layout, channels,
-  dimensions, reproducibility, path safety and no-overwrite behavior. The web
-  studio adds import, editing, previews, settings, builds, history and downloads;
-  API and Playwright tests exercise the real engine and ZIP output. A Clap-based
-  CLI and an audited production catalog remain future work.
+- **M1 – Contract and CPU vertical slice:** The basic CPU CLI, manifest validation,
+  PNG I/O, example recipes and packaging now exist. Remaining work includes Clap,
+  a separately audited catalog and more complete safety and integration tests.
+  Original target: Clap CLI, schema/catalog validation,
+  PNG load/write, one synthetic recipe, normal/specular encoding, wrap resize,
+  pack metadata and ZIP. Integration test extracts the ZIP and verifies files,
+  channels, dimensions, reproducibility, path safety and error handling.
 - **M2 – Material families:** Implement and visually inspect each recipe with
   small fixtures; then enumerate and audit the target catalog using the supplied
   26.3 client JAR. Add coverage and omission reports; preserve alpha and animation

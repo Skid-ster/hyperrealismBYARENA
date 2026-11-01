@@ -10,7 +10,7 @@ fn sinc(x: f64) -> f64 {
     }
 }
 
-fn weights(source: usize, target: usize) -> Vec<Vec<(usize, f64)>> {
+fn weights(source: usize, target: usize, wrap: bool) -> Vec<Vec<(usize, f64)>> {
     let scale = (source as f64 / target as f64).max(1.0);
     (0..target)
         .map(|i| {
@@ -23,10 +23,12 @@ fn weights(source: usize, target: usize) -> Vec<Vec<(usize, f64)>> {
                     if d.abs() >= 3.0 {
                         None
                     } else {
-                        Some((
-                            j.rem_euclid(source as i64) as usize,
-                            sinc(d) * sinc(d / 3.0),
-                        ))
+                        let index = if wrap {
+                            j.rem_euclid(source as i64) as usize
+                        } else {
+                            j.clamp(0, source as i64 - 1) as usize
+                        };
+                        Some((index, sinc(d) * sinc(d / 3.0)))
                     }
                 })
                 .collect();
@@ -41,12 +43,13 @@ fn weights(source: usize, target: usize) -> Vec<Vec<(usize, f64)>> {
 
 /// Resize one scalar channel with periodic boundaries. Output may overshoot
 /// because Lanczos has negative lobes: clamp only when encoding a channel.
-pub fn resize_wrap(
+fn resize(
     input: &[f32],
     width: usize,
     height: usize,
     out_width: usize,
     out_height: usize,
+    wrap: bool,
 ) -> Result<Vec<f32>, &'static str> {
     if width == 0
         || height == 0
@@ -66,8 +69,8 @@ pub fn resize_wrap(
     {
         return Err("invalid input data");
     }
-    let wx = weights(width, out_width);
-    let wy = weights(height, out_height);
+    let wx = weights(width, out_width, wrap);
+    let wy = weights(height, out_height, wrap);
     let mut temp = vec![0.0f32; intermediate_len];
     for y in 0..height {
         for (x, w) in wx.iter().enumerate() {
@@ -89,6 +92,28 @@ pub fn resize_wrap(
     Ok(output)
 }
 
+/// Resize one scalar channel with periodic boundaries for seamless block tiles.
+pub fn resize_wrap(
+    input: &[f32],
+    width: usize,
+    height: usize,
+    out_width: usize,
+    out_height: usize,
+) -> Result<Vec<f32>, &'static str> {
+    resize(input, width, height, out_width, out_height, true)
+}
+
+/// Resize one scalar channel with clamped edges for non-tiling entity atlases.
+pub fn resize_clamp(
+    input: &[f32],
+    width: usize,
+    height: usize,
+    out_width: usize,
+    out_height: usize,
+) -> Result<Vec<f32>, &'static str> {
+    resize(input, width, height, out_width, out_height, false)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,6 +122,15 @@ mod tests {
         let result = resize_wrap(&vec![0.7; 16 * 16], 16, 16, 3, 5).unwrap();
         assert!(result.iter().all(|&v| (v - 0.7).abs() < 1e-6));
     }
+    #[test]
+    fn clamped_edges_do_not_wrap_entity_atlases() {
+        let edge = [1.0, 1.0, 0.0, 0.0];
+        let clamped = resize_clamp(&edge, 4, 1, 2, 1).unwrap();
+        let wrapped = resize_wrap(&edge, 4, 1, 2, 1).unwrap();
+        assert!(clamped[0] > wrapped[0]);
+        assert!(clamped[1] < wrapped[1]);
+    }
+
     #[test]
     fn integer_scale_shift_is_periodic() {
         let data = [1.0, 0.2, 0.5, 0.1, 0.4, 0.3, 0.8, 0.9];

@@ -1,282 +1,691 @@
 use crate::{
     labpbr::{normal_pixel, normals_from_height, specular_pixel, F0},
-    manifest::{self, Material, Texture},
-    png_io::{self, Rgba},
-    resample::resize_wrap,
+    manifest::{self, Texture},
+    material::{self, Prepared},
+    png_io, recipes,
+    resample::{resize_clamp, resize_wrap},
     zip,
 };
 use rayon::prelude::*;
-use std::{fs, path::{Path, PathBuf}, time::Instant};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
+const WORK: usize = material::WORK;
+const SHEET_TILE: usize = 128;
+const ARCHIVE: &str = "HyperRealism128-v1.0-MC26.3.zip";
 
-const WORK: usize = 512;
-#[derive(Clone, Debug)]
-pub struct Options {
-    pub resolution: usize,
-    pub seed: u32,
-    pub name: String,
-    pub include_normal: bool,
-    pub include_specular: bool,
-}
-impl Default for Options {
-    fn default() -> Self {
-        Self { resolution: 128, seed: 0, name: "HyperRealism".into(), include_normal: true, include_specular: true }
-    }
-}
-impl Options {
-    fn validate(&self) -> Result<(), String> {
-        if ![64, 128, 256].contains(&self.resolution) { return Err("resolution must be 64, 128, or 256".into()); }
-        if self.name.trim().is_empty() || self.name.len() > 60 || self.name.chars().any(|c| c.is_control() || "<>:\"/\\|?*".contains(c)) {
-            return Err("pack name must be 1..60 characters without path or control characters".into());
-        }
-        Ok(())
-    }
-    fn seed_for(&self, name: &str) -> u32 {
-        name.bytes().fold(self.seed, |hash, byte| hash.wrapping_mul(16777619) ^ u32::from(byte))
-    }
-}
-fn srgb_to_linear(v: f32) -> f32 {
-    if v <= 0.04045 { v / 12.92 } else { ((v + 0.055) / 1.055).powf(2.4) }
-}
 fn linear_to_srgb(v: f32) -> u8 {
     let v = v.clamp(0.0, 1.0);
-    let x = if v <= 0.0031308 { v * 12.92 } else { 1.055 * v.powf(1.0 / 2.4) - 0.055 };
+    let x = if v <= 0.0031308 {
+        v * 12.92
+    } else {
+        1.055 * v.powf(1.0 / 2.4) - 0.055
+    };
     (x * 255.0).round() as u8
 }
-fn unit(v: f32) -> u8 { (v.clamp(0.0, 1.0) * 255.0).round() as u8 }
-struct Images { albedo: Rgba, rough: Option<Rgba>, normal: Option<Rgba> }
-fn load(root: &Path, m: &Material) -> Result<Images, String> {
-    let load_one = |s: &str| png_io::read(&manifest::safe_file(root, s)?);
-    Ok(Images {
-        albedo: load_one(&m.albedo).map_err(|e| format!("albedo: {e}"))?,
-        rough: m.roughness.as_deref().map(load_one).transpose().map_err(|e| format!("roughness: {e}"))?,
-        normal: m.normal.as_deref().map(load_one).transpose().map_err(|e| format!("normal: {e}"))?,
-    })
+fn unit(v: f32) -> u8 {
+    (v.clamp(0.0, 1.0) * 255.0).round() as u8
 }
-/// Bilinear, wrap-aware source sampling. Data is decoded in its supplied color space.
-fn sample(img: &Rgba, x: usize, y: usize) -> [f32; 4] {
-    let fx = (x as f32 + 0.5) * img.width as f32 / WORK as f32 - 0.5;
-    let fy = (y as f32 + 0.5) * img.height as f32 / WORK as f32 - 0.5;
-    let ix = fx.floor() as i32; let iy = fy.floor() as i32;
-    let tx = fx - fx.floor(); let ty = fy - fy.floor();
-    let mut out = [0.0; 4];
-    for (dy, wy) in [(0, 1.0 - ty), (1, ty)] {
-        for (dx, wx) in [(0, 1.0 - tx), (1, tx)] {
-            let px = (ix + dx).rem_euclid(img.width as i32) as usize;
-            let py = (iy + dy).rem_euclid(img.height as i32) as usize;
-            let i = (py * img.width + px) * 4;
-            for c in 0..4 { out[c] += img.pixels[i + c] as f32 / 255.0 * wx * wy; }
-        }
-    }
-    out
-}
-fn hash(x: usize, y: usize, seed: u32) -> f32 {
-    let mut h = (x as u32).wrapping_mul(374761393).wrapping_add((y as u32).wrapping_mul(668265263)).wrapping_add(seed);
-    h = (h ^ (h >> 13)).wrapping_mul(1274126177);
-    ((h ^ (h >> 16)) & 65535) as f32 / 65535.0
-}
-/// Periodic value noise: all lattice coordinates wrap, so opposite edges match.
-fn noise(x: usize, y: usize, cells: usize, seed: u32) -> f32 {
-    let fx = x as f32 * cells as f32 / WORK as f32;
-    let fy = y as f32 * cells as f32 / WORK as f32;
-    let ix = fx.floor() as usize; let iy = fy.floor() as usize;
-    let tx = fx.fract(); let ty = fy.fract();
-    let tx = tx * tx * (3.0 - 2.0 * tx); let ty = ty * ty * (3.0 - 2.0 * ty);
-    let h = |dx, dy| hash((ix + dx) % cells, (iy + dy) % cells, seed);
-    let a = h(0, 0) * (1.0 - tx) + h(1, 0) * tx;
-    let b = h(0, 1) * (1.0 - tx) + h(1, 1) * tx;
-    a * (1.0 - ty) + b * ty
-}
-fn tile_pattern(recipe: &str, name: &str, x: usize, y: usize, seed: u32) -> (f32, f32, f32) {
-    let n = noise(x, y, 8, seed) * 0.55 + noise(x, y, 32, seed ^ 41) * 0.3 + noise(x, y, 128, seed ^ 97) * 0.15;
-    match recipe {
-        "brick" => {
-            let row = y / 64; let xx = (x + (row % 2) * 64) % 128;
-            let edge = (y % 64).min(63 - y % 64).min(xx).min(127 - xx);
-            if edge < 3 { (0.53 + n * 0.12, -0.14, 1.0) }
-            else { let bevel = if edge < 7 { 0.1 } else { 0.0 }; (0.77 + n * 0.3 + hash(xx / 128, row, seed) * 0.12, 0.035 + bevel, 1.0) }
-        }
-        "plank" => {
-            let row = y / 128; let seam = y % 128 < 3 || (x + row * 113) % 512 < 3;
-            let grain = noise(x, y * 12, 16, seed);
-            if seam { (0.42, -0.14, 1.0) } else { (0.76 + n * 0.14 + grain * 0.2, (grain - 0.5) * 0.035, 1.0) }
-        }
-        "moss" => (0.62 + n * 0.58, (n - 0.5) * 0.14, 1.0),
-        "glass" => {
-            let edge = x.min(511 - x).min(y).min(511 - y);
-            let glint = ((x + y) % 256) < 3 && x > 30 && x < 460 && y > 30 && y < 460;
-            if edge < 4 { (0.8, 0.04, 0.8) } else if glint { (1.1, 0.012, 0.28) } else { (1.0, 0.0, 0.045) }
-        }
-        "metal" => {
-            let brush = noise(x * 8, y * 8, 64, seed);
-            let edge = x.min(511 - x).min(y).min(511 - y);
-            if edge < 4 { (0.65, -0.05, 1.0) } else { (0.87 + brush * 0.13 + n * 0.05, (brush - 0.5) * 0.008, 1.0) }
-        }
-        "gem" => {
-            let xx = x % 128; let yy = y % 128;
-            let edge = xx.min(127 - xx).min(yy).min(127 - yy);
-            let facet = ((x / 128 + y / 128) % 2) as f32 * 0.12;
-            if edge < 5 { (0.65, -0.09, 1.0) } else if edge < 15 { (1.14, 0.09, 1.0) } else { (0.78 + facet + n * 0.13, facet * 0.15, 1.0) }
-        }
-        "leaves" => {
-            let cx = (x % 64) as f32 - 32.0; let cy = (y % 64) as f32 - 32.0;
-            let leaf = cx * cx / 600.0 + cy * cy / 260.0 < 0.75 + n * 0.55;
-            (0.62 + n * 0.55, (n - 0.5) * 0.09, if leaf { 1.0 } else { 0.0 })
-        }
-        _ if name == "cobblestone" => {
-            let row = y / 128; let xx = (x + (row % 2) * 64) % 128; let yy = y % 128;
-            let edge = xx.min(127 - xx).min(yy).min(127 - yy);
-            let joint = edge < 3 + (n * 6.0) as usize;
-            if joint { (0.48 + n * 0.16, -0.14, 1.0) } else { (0.7 + n * 0.4, 0.06 + (n - 0.5) * 0.07, 1.0) }
-        }
-        _ if name == "deepslate" => {
-            let layer = noise(x * 2, y * 16, 32, seed);
-            (0.65 + n * 0.5, (layer - 0.5) * 0.07, 1.0)
-        }
-        _ => (0.72 + n * 0.43, (n - 0.5) * 0.085, 1.0)
-    }
-}
+
 fn resize(values: &[f32], size: usize) -> Result<Vec<f32>, String> {
-    if size == WORK { return Ok(values.to_vec()); }
+    if size == WORK {
+        return Ok(values.to_vec());
+    }
     resize_wrap(values, WORK, WORK, size, size).map_err(str::to_string)
 }
-type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
-fn build(t: &Texture, m: &Material, img: &Images, options: &Options) -> Result<PackedMaps, String> {
-    let size = options.resolution; let n = WORK * WORK;
-    let seed = options.seed_for(&t.name);
-    let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
-    for y in 0..WORK {
-        for x in 0..WORK {
-            let i = y * WORK + x; let source = sample(&img.albedo, x, y);
-            let (shade, relief, opacity) = tile_pattern(&t.recipe, &t.name, x, y, seed);
-            let alpha = source[3] * opacity; channels[3][i] = alpha;
+
+#[derive(Clone, Copy)]
+enum EntityMap {
+    Albedo,
+    Normal,
+    Specular,
+}
+
+/// Downsample an entity atlas without wrapping its UV edges or changing its
+/// vanilla width-to-height aspect ratio. Continuous channels use clamped
+/// Lanczos; LabPBR IDs and the no-emission sentinel use nearest-neighbor.
+fn resize_entity_map(
+    source: &Path,
+    destination: &Path,
+    size: usize,
+    out_height: usize,
+    kind: EntityMap,
+) -> Result<(), String> {
+    let image = png_io::read(source)?;
+    if image.width == size && image.height == out_height {
+        fs::copy(source, destination).map_err(|e| format!("{}: {e}", destination.display()))?;
+        return Ok(());
+    }
+
+    let count = image.width * image.height;
+    let mut channels: Vec<Vec<f32>> = (0..4).map(|_| vec![0.0; count]).collect();
+    for i in 0..count {
+        let pixel = &image.pixels[i * 4..i * 4 + 4];
+        for c in 0..4 {
+            channels[c][i] = f32::from(pixel[c]) / 255.0;
+        }
+    }
+    let mut output = vec![0u8; size * out_height * 4];
+    match kind {
+        EntityMap::Albedo => {
+            let alpha = resize_clamp(&channels[3], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            let mut rgb = Vec::with_capacity(3);
             for c in 0..3 {
-                channels[c][i] = srgb_to_linear(source[c]) * srgb_to_linear(t.tint[c] as f32 / 255.0) * shade * alpha;
+                let premultiplied: Vec<f32> = channels[c]
+                    .iter()
+                    .zip(&channels[3])
+                    .map(|(&v, &a)| material::srgb_to_linear(v) * a)
+                    .collect();
+                rgb.push(
+                    resize_clamp(&premultiplied, image.width, image.height, size, out_height)
+                        .map_err(str::to_string)?,
+                );
             }
-            channels[4][i] = (0.5 + 0.12 * (source[0] + source[1] + source[2] - 1.5) + relief).clamp(0.0, 1.0);
-            channels[5][i] = img.rough.as_ref().map(|r| sample(r, x, y)[0]).unwrap_or(0.8) * t.roughness_scale;
-            channels[6][i] = (1.0 - relief.abs() * 1.2).clamp(0.0, 1.0);
+            for i in 0..size * out_height {
+                let a = alpha[i].clamp(0.0, 1.0);
+                for c in 0..3 {
+                    output[i * 4 + c] = if a > 1e-6 {
+                        linear_to_srgb((rgb[c][i] / a).clamp(0.0, 1.0))
+                    } else {
+                        0
+                    };
+                }
+                output[i * 4 + 3] = unit(a);
+            }
+        }
+        EntityMap::Normal => {
+            let mut xy = Vec::with_capacity(2);
+            for c in 0..2 {
+                let decoded: Vec<f32> = channels[c].iter().map(|v| v * 2.0 - 1.0).collect();
+                xy.push(
+                    resize_clamp(&decoded, image.width, image.height, size, out_height)
+                        .map_err(str::to_string)?,
+                );
+            }
+            let ao = resize_clamp(&channels[2], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            let height = resize_clamp(&channels[3], image.width, image.height, size, out_height)
+                .map_err(str::to_string)?;
+            for i in 0..size * out_height {
+                let mut x = xy[0][i];
+                let mut y = xy[1][i];
+                let length = (x * x + y * y).sqrt();
+                if length > 0.999 {
+                    x *= 0.999 / length;
+                    y *= 0.999 / length;
+                }
+                output[i * 4] = unit(0.5 + x * 0.5);
+                output[i * 4 + 1] = unit(0.5 + y * 0.5);
+                output[i * 4 + 2] = unit(ao[i]);
+                output[i * 4 + 3] = unit(height[i]).max(1);
+            }
+        }
+        EntityMap::Specular => {
+            for c in [0, 2] {
+                let resized = resize_clamp(&channels[c], image.width, image.height, size, out_height)
+                    .map_err(str::to_string)?;
+                for (i, value) in resized.into_iter().enumerate() {
+                    output[i * 4 + c] = unit(value);
+                }
+            }
+            // Green is the discrete LabPBR F0/metal ID; alpha may carry the
+            // 255 no-emission sentinel. Never interpolate either categorical
+            // channel across UV/material boundaries.
+            for y in 0..out_height {
+                for x in 0..size {
+                    let sx = (((x as f64 + 0.5) * image.width as f64 / size as f64).floor()
+                        as usize)
+                        .min(image.width - 1);
+                    let sy = (((y as f64 + 0.5) * image.height as f64 / out_height as f64).floor()
+                        as usize)
+                        .min(image.height - 1);
+                    let src = (sy * image.width + sx) * 4;
+                    let dst = (y * size + x) * 4;
+                    output[dst + 1] = image.pixels[src + 1];
+                    output[dst + 3] = image.pixels[src + 3];
+                }
+            }
         }
     }
-    let normals = normals_from_height(&channels[4], WORK, WORK, t.normal_strength).map_err(str::to_string)?;
-    let mut normal_channels: Vec<Vec<f32>> = (0..3).map(|_| vec![0.0; n]).collect();
+    png_io::write(destination, size, out_height, &output)
+}
+
+type PackedMaps = (Vec<u8>, Vec<u8>, Vec<u8>);
+
+fn build(
+    t: &Texture,
+    img: &Prepared,
+    root: &Path,
+    size: usize,
+    pbr_strength: f32,
+) -> Result<PackedMaps, String> {
+    let n = WORK * WORK;
+    let mut channels: Vec<Vec<f32>> = (0..7).map(|_| vec![0.0; n]).collect();
+    let mut relief_map = vec![0.0; n];
+    let layout = t
+        .layout
+        .as_ref()
+        .map(|path| {
+            let image = png_io::read(&manifest::safe_file(root, path)?)?;
+            if image.width != WORK || image.height != WORK {
+                return Err(format!(
+                    "{}: construction layout must be {}x{}",
+                    t.name, WORK, WORK
+                ));
+            }
+            Ok(image)
+        })
+        .transpose()?;
+    let mut hardware_map = layout.as_ref().map(|_| vec![0.0; n]);
+    let mut ore_map = if t.recipe == "ore" {
+        Some(vec![0.0; n])
+    } else {
+        None
+    };
+    let ore_color = t
+        .ore_color
+        .map(|rgb| rgb.map(|v| material::srgb_to_linear(v as f32 / 255.0)));
+    let tint = t.tint.map(|v| material::srgb_to_linear(v as f32 / 255.0));
+    // The target matches the approximate average in linear light. It is not a
+    // pixel-by-pixel vanilla palette copy; clipping and recipe shading affect it.
+    let gain: [f32; 3] = std::array::from_fn(|c| {
+        let target_gain = t
+            .target_color
+            .map(|rgb| {
+                let target = material::srgb_to_linear(rgb[c] as f32 / 255.0);
+                if img.mean_linear[c] > 1e-6 {
+                    (target / img.mean_linear[c]).min(16.0)
+                } else {
+                    0.0
+                }
+            })
+            .unwrap_or(1.0);
+        tint[c] * target_gain
+    });
+    let seed = recipes::seed(t.pattern_seed.as_deref().unwrap_or(&t.name));
     for y in 0..WORK {
         for x in 0..WORK {
-            let i = y * WORK + x; let mut normal = normals[i];
-            if let Some(map) = &img.normal {
-                let p = sample(map, x, y); let nx = p[0] * 2.0 - 1.0;
-                let mut ny = p[1] * 2.0 - 1.0;
-                if m.normal_y == "opengl" { ny = -ny; }
-                let scale = t.normal_strength / 2.5;
-                normal[0] += nx * scale; normal[1] += ny * scale;
+            let i = y * WORK + x;
+            let pattern = recipes::evaluate(&t.recipe, x, y, seed);
+            let mut shade = pattern.shade;
+            let mut relief = pattern.relief;
+            let mut opacity = pattern.opacity;
+            let mut hardware = 0.0;
+            if let Some(layout) = &layout {
+                let p = &layout.pixels[i * 4..i * 4 + 4];
+                shade *= f32::from(p[0]) / 255.0;
+                relief += (f32::from(p[1]) - 128.0) / 255.0 * 0.24;
+                hardware = f32::from(p[2]) / 255.0;
+                opacity *= f32::from(p[3]) / 255.0;
             }
-            let len = (normal[0] * normal[0] + normal[1] * normal[1] + normal[2] * normal[2]).sqrt().max(1e-12);
-            for c in 0..3 { normal_channels[c][i] = normal[c] / len; }
+            if let Some(mask) = &mut hardware_map {
+                mask[i] = hardware * opacity;
+            }
+            let source_alpha = img.albedo[3][i];
+            let alpha = source_alpha * opacity;
+            channels[3][i] = alpha;
+            // Normalized photographic luminance gives ore inclusions some of
+            // the underlying scan's fine structure rather than a flat fill.
+            let luminance = if source_alpha > 1e-6 {
+                (0.2126 * img.albedo[0][i] + 0.7152 * img.albedo[1][i] + 0.0722 * img.albedo[2][i])
+                    / source_alpha
+            } else {
+                0.5
+            };
+            let mean_luminance = 0.2126 * img.mean_linear[0]
+                + 0.7152 * img.mean_linear[1]
+                + 0.0722 * img.mean_linear[2];
+            let mineral_detail = if mean_luminance > 1e-6 {
+                (luminance / mean_luminance).clamp(0.55, 1.45)
+            } else {
+                1.0
+            };
+            for c in 0..3 {
+                let base = img.albedo[c][i] * gain[c] * shade * opacity;
+                // Moss is a separate, seed-stable coherent layer, not a
+                // solid green tint over the entire material.
+                let moss = [0.045, 0.12, 0.025][c] * alpha;
+                let surface = base * (1.0 - pattern.moss) + moss * pattern.moss;
+                let mixed = if let Some(color) = ore_color {
+                    let grain = pattern.shade * mineral_detail * color[c] * alpha;
+                    surface * (1.0 - pattern.ore) + grain * pattern.ore
+                } else {
+                    surface
+                };
+                // Independently drawn latches/bars use neutral iron color and
+                // a separate discrete metal ID, instead of recoloring the wood.
+                let iron = [0.20, 0.21, 0.22][c] * shade * alpha;
+                channels[c][i] = mixed * (1.0 - hardware) + iron * hardware;
+            }
+            // With no height map, a mild luminance heuristic preserves the old
+            // prototype's behavior. A normal map already supplies fine detail,
+            // so its generated normal receives only recipe-level relief.
+            let base_height = img
+                .height
+                .as_ref()
+                .map(|v| v[i])
+                .unwrap_or(0.5 + 0.22 * (luminance - 0.5));
+            channels[4][i] = (base_height + relief).clamp(0.0, 1.0);
+            let source_roughness = img.roughness.as_ref().map(|v| v[i]).unwrap_or(0.8);
+            channels[5][i] = source_roughness * (1.0 - hardware) + 0.32 * hardware;
+            channels[6][i] = (1.0 - relief.abs() * 1.2).clamp(0.0, 1.0)
+                * img.ao.as_ref().map(|v| v[i]).unwrap_or(1.0);
+            relief_map[i] = relief;
+            if let Some(map) = &mut ore_map {
+                map[i] = pattern.ore;
+            }
         }
     }
-    let channels: Vec<Vec<f32>> = channels.par_iter().map(|c| resize(c, size)).collect::<Result<_, _>>()?;
-    let ns: Vec<Vec<f32>> = normal_channels.par_iter().map(|c| resize(c, size)).collect::<Result<_, _>>()?;
+    let height_for_normals = if img.normal.is_some() {
+        &relief_map
+    } else {
+        &channels[4]
+    };
+    let normals =
+        normals_from_height(height_for_normals, WORK, WORK, 2.5).map_err(str::to_string)?;
+    let mut normal_channels: Vec<Vec<f32>> = (0..3).map(|_| vec![0.0; n]).collect();
+    for i in 0..n {
+        let detail = normals[i];
+        let normal = if let Some(map) = &img.normal {
+            let base = [map[0][i], map[1][i], map[2][i]];
+            combine_normals(base, detail)
+        } else {
+            detail
+        };
+        for c in 0..3 {
+            normal_channels[c][i] = normal[c];
+        }
+    }
+    let channels: Vec<Vec<f32>> = channels
+        .par_iter()
+        .map(|c| resize(c, size))
+        .collect::<Result<_, _>>()?;
+    let ns: Vec<Vec<f32>> = normal_channels
+        .par_iter()
+        .map(|c| resize(c, size))
+        .collect::<Result<_, _>>()?;
+    // Filter continuous masks first, then threshold material IDs. Never
+    // interpolate IDs or the 255 no-emission sentinel.
+    let id_mask = t
+        .f0_mask
+        .as_deref()
+        .map(|p| material::scalar(root, p).and_then(|v| resize(&v, size)))
+        .transpose()?;
+    let ore_mask = ore_map.as_ref().map(|v| resize(v, size)).transpose()?;
+    let hardware_mask = hardware_map.as_ref().map(|v| resize(v, size)).transpose()?;
+    let emission = t
+        .emissive_map
+        .as_deref()
+        .map(|p| material::scalar(root, p).and_then(|v| resize(&v, size)))
+        .transpose()?;
     let mut albedo = Vec::with_capacity(size * size * 4);
     let mut normal = Vec::with_capacity(size * size * 4);
     let mut spec = Vec::with_capacity(size * size * 4);
     for i in 0..size * size {
         let alpha = channels[3][i].clamp(0.0, 1.0);
-        for c in channels.iter().take(3) { albedo.push(if alpha > 1e-6 { linear_to_srgb(c[i] / alpha) } else { 0 }); }
+        for c in channels.iter().take(3) {
+            albedo.push(if alpha > 1e-6 {
+                linear_to_srgb(c[i] / alpha)
+            } else {
+                0
+            });
+        }
         albedo.push(unit(alpha));
-        normal.extend_from_slice(&normal_pixel([ns[0][i], ns[1][i], ns[2][i]], channels[6][i], channels[4][i]));
-        spec.extend_from_slice(&specular_pixel(channels[5][i], F0(t.f0), t.porosity, t.emissive));
+        // Scale tangent slopes (rather than encoded XY bytes) and compress the
+        // displacement around its midplane. AO fades toward unoccluded white.
+        // Keep normals unit length via normal_pixel and never emit zero height.
+        normal.extend_from_slice(&normal_pixel(
+            [ns[0][i] * pbr_strength, ns[1][i] * pbr_strength, ns[2][i]],
+            1.0 - (1.0 - channels[6][i].clamp(0.0, 1.0)) * pbr_strength,
+            (0.5 + (channels[4][i] - 0.5) * pbr_strength).max(1.0 / 255.0),
+        ));
+        let id = if hardware_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+            t.layout_metal_id.expect("validated layout metal ID")
+        } else if ore_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+            t.ore_f0.expect("validated ore F0")
+        } else if id_mask.as_ref().map(|m| m[i] >= 0.5).unwrap_or(false) {
+            t.masked_f0.expect("validated masked F0")
+        } else {
+            t.f0
+        };
+        let blue = if id >= 230 {
+            0
+        } else {
+            t.subsurface.unwrap_or(t.porosity)
+        };
+        let emissive = emission
+            .as_ref()
+            .map(|v| (v[i].clamp(0.0, 1.0) * 254.0).round() as u8)
+            .unwrap_or(t.emissive);
+        // LabPBR red is perceptual smoothness (1 - sqrt(roughness)). Scale
+        // that value, not the metal-ID, F0, subsurface, or emission channels.
+        let smoothness = (1.0 - channels[5][i].clamp(0.0, 1.0).sqrt()) * pbr_strength;
+        let roughness = (1.0 - smoothness).powi(2);
+        spec.extend_from_slice(&specular_pixel(roughness, F0(id), blue, emissive));
     }
     Ok((albedo, normal, spec))
 }
-/// Builds into an exclusive staging directory; existing output is never overwritten.
-pub fn generate(input: &Path, output: &Path) -> Result<(), String> { generate_with_options(input, output, &Options::default()) }
-pub fn generate_with_options(input: &Path, output: &Path, options: &Options) -> Result<(), String> {
-    options.validate()?;
-    let path = if input.is_dir() { input.join("material_manifest.json") } else { input.to_path_buf() };
-    let root = path.parent().filter(|p| !p.as_os_str().is_empty()).unwrap_or(Path::new("."));
-    let data = manifest::read(&path)?; manifest::validate(&data, root)?;
-    let names: std::collections::HashSet<_> = data.textures.iter().map(|t| &t.name).collect();
-    for t in &data.textures {
-        if options.include_normal && names.contains(&format!("{}_n", t.name)) { return Err(format!("{}: normal output name collides with another texture", t.name)); }
-        if options.include_specular && names.contains(&format!("{}_s", t.name)) { return Err(format!("{}: specular output name collides with another texture", t.name)); }
+
+/// Reoriented normal mapping: a flat detail normal leaves the source unchanged.
+fn combine_normals(base: [f32; 3], detail: [f32; 3]) -> [f32; 3] {
+    fn normalize(v: [f32; 3]) -> [f32; 3] {
+        let length = (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt();
+        if length > 1e-8 && length.is_finite() {
+            [v[0] / length, v[1] / length, v[2] / length]
+        } else {
+            [0.0, 0.0, 1.0]
+        }
     }
+    let b = normalize(base);
+    let t = [b[0], b[1], b[2] + 1.0];
+    if t[2] < 1e-6 {
+        return b;
+    }
+    let u = [-detail[0], -detail[1], detail[2]];
+    let scale = (t[0] * u[0] + t[1] * u[1] + t[2] * u[2]) / t[2];
+    normalize([
+        t[0] * scale - u[0],
+        t[1] * scale - u[1],
+        t[2] * scale - u[2],
+    ])
+}
+
+/// Builds into an exclusive staging directory; existing pack/dist output is never overwritten.
+pub fn generate(
+    input: &Path,
+    output: &Path,
+    minecraft_jar: Option<&Path>,
+    size: usize,
+) -> Result<(), String> {
+    if size != 128 && size != 256 && size != 512 {
+        return Err("resolution must be 128, 256, or 512".into());
+    }
+    let path = if input.is_dir() {
+        input.join("material_manifest.json")
+    } else {
+        input.to_path_buf()
+    };
+    let root = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    let data = manifest::read(&path)?;
+    manifest::validate(&data, root)?;
+    let hashes = manifest::input_hashes(&data, root)?;
+    let manifest_hash = manifest::sha256_file(&path)?;
+    let metadata = if let Some(jar) = minecraft_jar {
+        manifest::validate_against_jar(&data, jar)?
+    } else {
+        Default::default()
+    };
     fs::create_dir_all(output).map_err(|e| e.to_string())?;
     for name in ["pack", "dist", "contact_sheet.png", "build_report.json"] {
-        // Also reject broken symlinks, which Path::exists() does not detect.
-        if output.join(name).symlink_metadata().is_ok() { return Err(format!("refusing to overwrite {}", output.join(name).display())); }
+        if output.join(name).exists() {
+            return Err(format!(
+                "refusing to overwrite {}",
+                output.join(name).display()
+            ));
+        }
     }
     let stage = output.join(format!(".hyperrealism-stage-{}", std::process::id()));
     fs::create_dir(&stage).map_err(|e| format!("{}: {e}", stage.display()))?;
-    let result = build_stage(&data, root, &stage, options);
-    if let Err(err) = result { let _ = fs::remove_dir_all(&stage); return Err(err); }
-    let outputs = ["pack", "dist", "contact_sheet.png", "build_report.json"];
+    let info = BuildInfo {
+        hashes: &hashes,
+        manifest_hash: &manifest_hash,
+        client_paths_checked: minecraft_jar.is_some(),
+        metadata: &metadata,
+        size,
+    };
+    let result = build_stage(&data, root, &stage, &info);
+    if let Err(err) = result {
+        let _ = fs::remove_dir_all(&stage);
+        return Err(err);
+    }
+    // Move completed outputs only after all generation has succeeded.
     let mut moved = Vec::new();
-    for name in outputs {
+    for name in ["pack", "dist", "contact_sheet.png", "build_report.json"] {
         if let Err(e) = fs::rename(stage.join(name), output.join(name)) {
-            for previous in moved.iter().rev() { let _ = fs::rename(output.join(previous), stage.join(previous)); }
+            for previous in moved.iter().rev() {
+                let _ = fs::rename(output.join(previous), stage.join(previous));
+            }
             let _ = fs::remove_dir_all(&stage);
             return Err(format!("could not install {name}: {e}"));
         }
         moved.push(name);
     }
     fs::remove_dir(&stage).map_err(|e| e.to_string())?;
-    println!("Generated {} textures in {}", data.textures.len(), output.display());
+    println!(
+        "Generated {} textures in {}",
+        data.textures.len(),
+        output.display()
+    );
     Ok(())
 }
-fn build_stage(data: &manifest::Manifest, root: &Path, stage: &Path, options: &Options) -> Result<(), String> {
-    let start = Instant::now(); let size = options.resolution;
-    let pack = stage.join("pack"); let block = pack.join("assets/minecraft/textures/block");
+struct BuildInfo<'a> {
+    hashes: &'a std::collections::BTreeMap<String, String>,
+    manifest_hash: &'a str,
+    client_paths_checked: bool,
+    metadata: &'a std::collections::BTreeMap<String, Vec<u8>>,
+    size: usize,
+}
+fn build_stage(
+    data: &manifest::Manifest,
+    root: &Path,
+    stage: &Path,
+    info: &BuildInfo<'_>,
+) -> Result<(), String> {
+    let BuildInfo {
+        hashes,
+        manifest_hash,
+        client_paths_checked,
+        metadata,
+        size,
+    } = *info;
+    let pack = stage.join("pack");
+    let block = pack.join("assets/minecraft/textures/block");
     let optifine = pack.join("assets/minecraft/optifine");
     fs::create_dir_all(&block).map_err(|e| e.to_string())?;
     fs::create_dir_all(&optifine).map_err(|e| e.to_string())?;
-    let description = serde_json::to_string(&options.name).map_err(|e| e.to_string())?;
-    fs::write(pack.join("pack.mcmeta"), format!("{{\n  \"pack\": {{\n    \"description\": {description},\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }}\n}}\n")).map_err(|e| e.to_string())?;
-    fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n").map_err(|e| e.to_string())?;
-    let materials = manifest::by_id(data);
-    let cols = 4; let rows = data.textures.len().div_ceil(cols);
-    let mut sheet = vec![30; cols * size * rows * size * 4];
-    for i in 0..rows * size { for x in 0..cols * size { sheet[(i * cols * size + x) * 4 + 3] = 255; } }
-    let mut outputs = Vec::new();
-    for (index, t) in data.textures.iter().enumerate() {
-        let m = materials[t.material.as_str()];
-        let images = load(root, m).map_err(|e| format!("{}: {e}", t.name))?;
-        let (a, n, s) = build(t, m, &images, options).map_err(|e| format!("{}: {e}", t.name))?;
-        let mut maps = vec![("", &a)];
-        if options.include_normal { maps.push(("_n", &n)); }
-        if options.include_specular { maps.push(("_s", &s)); }
-        for (suffix, bytes) in maps {
-            let filename = format!("{}{suffix}.png", t.name);
-            png_io::write(&block.join(&filename), size, size, bytes)?;
-            outputs.push(serde_json::json!({"path": format!("assets/minecraft/textures/block/{filename}"), "width": size, "height": size}));
+    let metadata_json = format!(
+        "{{\n  \"pack\": {{\n    \"description\": \"HyperRealism {size}×{size} — LabPBR 1.3 (experimental)\",\n    \"min_format\": [97, 1],\n    \"max_format\": 97\n  }}\n}}\n"
+    );
+    fs::write(pack.join("pack.mcmeta"), metadata_json).map_err(|e| e.to_string())?;
+    fs::write(optifine.join("texture.properties"), "format=lab-pbr/1.3\n")
+        .map_err(|e| e.to_string())?;
+    let texture_root = pack.join("assets/minecraft/textures");
+    for entity in &data.entity_textures {
+        let destination = texture_root.join(format!("{}.png", entity.path));
+        let parent = destination
+            .parent()
+            .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        fs::create_dir_all(parent).map_err(|e| format!("{}: {e}", parent.display()))?;
+        let stem = entity
+            .path
+            .rsplit('/')
+            .next()
+            .ok_or_else(|| format!("invalid entity texture destination: {}", entity.path))?;
+        let albedo_source = manifest::safe_file(root, &entity.albedo)?;
+        let albedo_image = png_io::read(&albedo_source)?;
+        let (source_width, source_height) = (albedo_image.width, albedo_image.height);
+        let recognized_aspect = source_width == source_height
+            || source_width == source_height.saturating_mul(2)
+            || source_height == source_width.saturating_mul(2);
+        if !recognized_aspect {
+            return Err(format!(
+                "{}: unsupported entity atlas aspect ratio {}x{}",
+                entity.path, source_width, source_height
+            ));
         }
-        let ox = index % cols * size; let oy = index / cols * size;
-        for y in 0..size {
-            let dst = ((oy + y) * cols * size + ox) * 4; let src = y * size * 4;
-            sheet[dst..dst + size * 4].copy_from_slice(&a[src..src + size * 4]);
+        for source in [&entity.normal, &entity.specular] {
+            let image = png_io::read(&manifest::safe_file(root, source)?)?;
+            if (image.width, image.height) != (source_width, source_height) {
+                return Err(format!(
+                    "{}: entity albedo, normal and specular maps must have matching dimensions",
+                    entity.path
+                ));
+            }
         }
-        println!("PROGRESS {}/{} {}", index + 1, data.textures.len(), t.name);
+        let scaled_height = size
+            .checked_mul(source_height)
+            .and_then(|v| v.checked_add(source_width / 2))
+            .ok_or_else(|| format!("{}: entity dimensions overflow", entity.path))?
+            / source_width;
+        let output_height = scaled_height.max(1);
+        for (source, dest, kind) in [
+            (&entity.albedo, destination.clone(), EntityMap::Albedo),
+            (
+                &entity.normal,
+                destination.with_file_name(format!("{stem}_n.png")),
+                EntityMap::Normal,
+            ),
+            (
+                &entity.specular,
+                destination.with_file_name(format!("{stem}_s.png")),
+                EntityMap::Specular,
+            ),
+        ] {
+            resize_entity_map(
+                &manifest::safe_file(root, source)?,
+                &dest,
+                size,
+                output_height,
+                kind,
+            )
+                .map_err(|e| format!("{}: {e}", entity.path))?;
+        }
     }
-    png_io::write(&stage.join("contact_sheet.png"), cols * size, rows * size, &sheet)?;
-    let dist: PathBuf = stage.join("dist"); fs::create_dir_all(&dist).map_err(|e| e.to_string())?;
-    let archive = format!("HyperRealism{}-v1.0-MC26.3.zip", size);
-    zip::write(&pack, &dist.join(&archive))?;
-    let mut input_hashes = Vec::new();
-    for m in &data.materials {
-        for file in std::iter::once(&m.albedo).chain(m.normal.iter()).chain(m.roughness.iter()) {
-            let path = manifest::safe_file(root, file)?;
-            let bytes = fs::read(&path).map_err(|e| e.to_string())?;
-            let mut hasher = crc32fast::Hasher::new();
-            hasher.update(&bytes);
-            input_hashes.push(serde_json::json!({"material": m.id, "file": file, "crc32": format!("{:08x}", hasher.finalize())}));
+    let materials = manifest::by_id(data);
+    // Carry attribution and honest coverage information into the distributable
+    // ZIP. These fields are supplied by the manifest and are not independently
+    // license-verified by the generator.
+    let used: std::collections::BTreeSet<_> =
+        data.textures.iter().map(|t| t.material.as_str()).collect();
+    let mut credits = format!("HyperRealism {size}×{size} material credits\n\nGenerated from the following manifest-supplied materials.\nSource and license information is supplied by the manifest, not independently verified.\n\n");
+    for id in used {
+        let m = materials[id];
+        credits.push_str(&format!(
+            "Material: {}\nSource: {}\nLicense: {}\n\n",
+            id,
+            m.source.as_deref().unwrap_or("not specified"),
+            m.license.as_deref().unwrap_or("not specified")
+        ));
+    }
+    fs::write(pack.join("MATERIAL_CREDITS.txt"), credits).map_err(|e| e.to_string())?;
+    fs::write(pack.join("README.txt"), format!("HyperRealism {size}×{size} experimental preview for Minecraft Java 26.3\n\nThis preview replaces {} block textures at {}×{}, not the full game. It also replaces {} entity texture paths; other textures remain vanilla or come from other enabled packs.\nDesign target: Windows 11, NVIDIA RTX 5060 Ti 8GB, Intel i5-13400 and 16GB system RAM. No performance guarantee or target-hardware benchmark is implied.\nTo install, place this ZIP in the Minecraft resourcepacks folder and enable it in Resource Packs.\nA compatible LabPBR 1.3 shader setting is needed for normal/specular maps; support for optional channels and entity materials varies.\nConnected glass requires a compatible CTM mod; Iris alone does not add CTM.\nThis is an unfinished preview, not a production v1.0 release.\nSee MATERIAL_CREDITS.txt and ENTITY_TEXTURES.txt for material provenance.\n", data.textures.len(), size, size, data.entity_textures.len())).map_err(|e| e.to_string())?;
+    let mut entity_credits = String::from("Entity texture targets and provenance\n\n");
+    for entity in &data.entity_textures {
+        entity_credits.push_str(&format!(
+            "Path: {}\nSource: {}\nLicense: {}\n\n",
+            entity.path,
+            entity.source.as_deref().unwrap_or("not specified"),
+            entity.license.as_deref().unwrap_or("not specified")
+        ));
+    }
+    fs::write(pack.join("ENTITY_TEXTURES.txt"), entity_credits).map_err(|e| e.to_string())?;
+    let cols = 4;
+    let rows = data.textures.len().div_ceil(cols);
+    // Keep review thumbnails small even for the highest-resolution output.
+    let mut sheet = vec![0; cols * SHEET_TILE * rows * SHEET_TILE * 4];
+    // Keep only the most recently used prepared material; this bounds memory.
+    let mut cached: Option<(&str, Prepared)> = None;
+    for (index, t) in data.textures.iter().enumerate() {
+        println!("{} ({})", t.name, t.recipe);
+        let m = materials[t.material.as_str()];
+        if cached.as_ref().map(|(id, _)| *id) != Some(m.id.as_str()) {
+            drop(cached.take());
+            cached = Some((m.id.as_str(), material::load(root, m)?));
         }
+        let images = &cached.as_ref().expect("material just loaded").1;
+        let (a, n, s) = build(
+            t,
+            images,
+            root,
+            size,
+            data.pbr_strength,
+        )
+        .map_err(|e| format!("{}: {e}", t.name))?;
+        if t.connected_glass {
+            crate::connected::write(&pack, t, size, &a, &n, &s)?;
+        }
+        for (suffix, bytes) in [("", &a), ("_n", &n), ("_s", &s)] {
+            png_io::write(
+                &block.join(format!("{}{suffix}.png", t.name)),
+                size,
+                size,
+                bytes,
+            )?;
+        }
+        if let Some(meta) = metadata.get(&t.name) {
+            // Preserve validated metadata from the user's actual client JAR.
+            fs::write(block.join(format!("{}.png.mcmeta", t.name)), meta)
+                .map_err(|e| e.to_string())?;
+        } else if let Some(strategy) = &t.mipmap_strategy {
+            // The audited 26.3 textures use static mipmap strategies;
+            // unlike animation metadata this does not change frame layout.
+            let meta = serde_json::json!({"texture": {"mipmap_strategy": strategy}});
+            fs::write(
+                block.join(format!("{}.png.mcmeta", t.name)),
+                serde_json::to_vec(&meta).map_err(|e| e.to_string())?,
+            )
+            .map_err(|e| e.to_string())?;
+        }
+        let ox = index % cols * SHEET_TILE;
+        let oy = index / cols * SHEET_TILE;
+        let factor = size / SHEET_TILE;
+        for y in 0..SHEET_TILE {
+            for x in 0..SHEET_TILE {
+                let dst = ((oy + y) * cols * SHEET_TILE + ox + x) * 4;
+                for c in 0..4 {
+                    let mut sum = 0u32;
+                    for sy in 0..factor {
+                        for sx in 0..factor {
+                            sum += a[((y * factor + sy) * size + x * factor + sx) * 4 + c] as u32;
+                        }
+                    }
+                    sheet[dst + c] = (sum / (factor * factor) as u32) as u8;
+                }
+            }
+        }
+    }
+    let (verified, entity_verified) = crate::verify::full_pack(&pack)?;
+    if entity_verified != data.entity_textures.len() {
+        return Err(format!(
+            "entity pack verification: expected {} texture triples, got {entity_verified}",
+            data.entity_textures.len()
+        ));
+    }
+    if verified != data.textures.len() {
+        return Err(format!(
+            "pack verification: expected {} textures, got {verified}",
+            data.textures.len()
+        ));
     }
     let report = serde_json::json!({
-        "schema_version": 1, "pack_name": options.name, "backend": "cpu", "seed": options.seed,
-        "resolution": size, "texture_count": data.textures.len(), "files": outputs,
-        "archive": format!("dist/{archive}"), "normal_maps": options.include_normal,
-        "specular_maps": options.include_specular, "input_checksums": input_hashes,
-        "elapsed_ms": start.elapsed().as_millis(), "minecraft_validation": "not performed; target metadata 97.1",
-        "source_provenance": "User-supplied maps; bundled test fixtures and catalog are synthetic, not Poly Haven assets."
+        "generator_version": env!("CARGO_PKG_VERSION"),
+        "backend": "cpu",
+        "pbr_strength": data.pbr_strength,
+        "resolution": size,
+        "working_resolution": WORK,
+        "textures": data.textures.iter().map(|t| serde_json::json!({"name": t.name, "material": t.material, "recipe": t.recipe, "pattern_seed": t.pattern_seed, "tint": t.tint, "target_color": t.target_color, "mipmap_strategy": t.mipmap_strategy, "connected_glass": t.connected_glass, "layout": t.layout, "layout_metal_id": t.layout_metal_id, "ore_color": t.ore_color, "ore_f0": t.ore_f0, "f0": t.f0, "porosity": t.porosity, "subsurface": t.subsurface, "f0_mask": t.f0_mask, "masked_f0": t.masked_f0, "emissive": t.emissive, "emissive_map": t.emissive_map})).collect::<Vec<_>>(),
+        "entity_textures": data.entity_textures.iter().map(|e| serde_json::json!({"path": e.path, "albedo": e.albedo, "normal": e.normal, "specular": e.specular, "source": e.source, "license": e.license})).collect::<Vec<_>>(),
+        "materials": data.materials.iter().map(|m| serde_json::json!({"id": m.id, "source": m.source, "license": m.license, "albedo": m.albedo, "normal": m.normal, "normal_y": m.normal_y, "rotate_cw": m.rotate_cw, "roughness": m.roughness, "roughness_bias": m.roughness_bias, "roughness_from_height": m.roughness_from_height, "arm": m.arm, "height": m.height, "height_from_normal": m.height_from_normal, "ao": m.ao})).collect::<Vec<_>>(),
+        "manifest_sha256": manifest_hash,
+        "client_paths_checked": client_paths_checked,
+        "input_sha256": hashes,
     });
-    fs::write(stage.join("build_report.json"), serde_json::to_vec_pretty(&report).map_err(|e| e.to_string())?).map_err(|e| e.to_string())?;
+    let mut report_data = serde_json::to_vec_pretty(&report).map_err(|e| e.to_string())?;
+    report_data.push(b'\n');
+    fs::write(stage.join("build_report.json"), report_data).map_err(|e| e.to_string())?;
+    png_io::write(
+        &stage.join("contact_sheet.png"),
+        cols * SHEET_TILE,
+        rows * SHEET_TILE,
+        &sheet,
+    )?;
+    let dist: PathBuf = stage.join("dist");
+    fs::create_dir_all(&dist).map_err(|e| e.to_string())?;
+    zip::write(&pack, &dist.join(ARCHIVE))?;
     Ok(())
 }

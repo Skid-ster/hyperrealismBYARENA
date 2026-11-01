@@ -1,46 +1,112 @@
-name: CI
-
+name: Rust tests
 on: [push, pull_request]
-
 jobs:
-  core:
-    name: Rust (${{ matrix.os }})
+  test:
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
+      - name: Install GLSL compiler for Iris-stage validation
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes glslang-tools
+      - name: Check optional shader structure and MIT provenance
+        run: python scripts/check_stylized_shader.py
+      - name: Compile Iris 26.3 shader stages and feature matrix
+        if: runner.os == 'Linux'
+        run: python3 scripts/compile_stylized_shader.py
+      - name: Build and verify the installable Iris ZIP
+        if: runner.os == 'Linux'
+        run: python3 scripts/package_stylized_shader.py
       - run: cargo test --locked
-      - run: cargo build --locked --release
-      - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only --resolution 128 --seed 128042 --threads 2
+      - run: cargo run --locked --release -- --input test_assets --output test_output --cpu-only
+      - run: cargo run --locked --release -- --input work --output pilot_output --cpu-only --threads 2
+      - name: Verify generated LabPBR pack
+        run: cargo run --locked --release -- --verify-pack pilot_output/pack
+      - name: Test preview installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tests/install-preview.tests.ps1
+      - name: Upload experimental pack
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: HyperRealism128-MC26.3-experimental
+          path: |
+            pilot_output/dist/HyperRealism128-v1.0-MC26.3.zip
+            pilot_output/build_report.json
+            pilot_output/contact_sheet.png
+          if-no-files-found: error
+          retention-days: 30
 
-  studio:
-    name: Studio (ubuntu)
+  publish-preview-24:
+    # This explicitly requested prerelease only runs for its release commit on
+    # the assigned session branch, after Linux and Windows checks pass.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/65b59fff-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 24')
+    needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run format:check
-      - run: npm run typecheck
-      - run: npm run build:core
-      - run: npm test
-      - run: npm run build:web
-      - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
-      - run: npm run test:production
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          retention-days: 7
+      - run: cargo run --locked --release -- --input work --output release_build --cpu-only --threads 2
+      - name: Build and verify the distributable Iris shader ZIP
+        run: python3 scripts/package_stylized_shader.py
+      - name: Fetch the latest GUI installer for the pack release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release_assets
+          tag=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name'  | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-installer\.[0-9]+$' | sort -V | tail -n 1)
+          test -n "$tag"
+          gh release download "$tag" --dir release_assets --pattern 'HyperRealism128-Installer.exe*'
+          cd release_assets
+          sha256sum -c HyperRealism128-Installer.exe.sha256
+      - name: Prepare release assets and checksums
+        run: |
+          mkdir -p release_assets
+          cp release_build/dist/HyperRealism128-v1.0-MC26.3.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip
+          cp release_build/build_report.json release_assets/build_report.json
+          cp scripts/Install-HyperRealismPreview.ps1 release_assets/Install-HyperRealismPreview.ps1
+          cp shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip
+          cd release_assets
+          sha256sum HyperRealism128-MC26.3-EXPERIMENTAL.zip > HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum HyperRealism-Gilded-Dusk-MC-26.3.zip > HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
+          sha256sum -c HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum -c HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
+      - name: Verify resource-pack release archive
+        run: |
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip') as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+          pngs = [name for name in names if name.endswith('.png')]
+          expected = ['assets/minecraft/textures/entity/' + path + suffix + '.png'
+              for path in ['chicken/chicken_temperate', 'cow/cow_temperate', 'pig/pig_temperate', 'sheep/sheep', 'sheep/sheep_wool']
+              for suffix in ['', '_n', '_s']]
+          assert len(pngs) >= 1000, 'resource pack looks incomplete: ' + str(len(pngs)) + ' PNGs'
+          assert all(name in names for name in expected), 'one or more farm-mob targets are missing'
+          assert {'MATERIAL_CREDITS.txt', 'ENTITY_TEXTURES.txt', 'pack.mcmeta'} <= names
+          print('Verified resource pack with', len(pngs), 'PNG assets')
+          PY
+      - name: Verify Iris shader release archive
+        run: |
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip') as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+          assert {'shaders/shaders.properties', 'README.md', 'LICENSE'} <= names
+          assert sum(name.startswith('shaders/') and not name.endswith('/') for name in names) >= 300
+          assert not any(name.startswith('HyperRealism-Stylized-PBR/') for name in names)
+          print('Verified Iris shader ZIP root layout and contents')
+          PY
+      - name: Publish experimental prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0-preview.24 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 + Gilded Dusk — experimental 26.3 preview 24' --notes-file .github/preview-release-notes.md --prerelease
