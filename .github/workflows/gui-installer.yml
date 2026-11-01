@@ -15,7 +15,12 @@ jobs:
             & ./installer/build.ps1 *> "$env:RUNNER_TEMP\installer-build.log"
             if ($LASTEXITCODE -ne 0) { throw "Installer build failed with exit code $LASTEXITCODE" }
           } catch {
-            Get-Content "$env:RUNNER_TEMP\installer-build.log" | ForEach-Object { Write-Host "::error::$($_)" }
+            $details = ($_ | Out-String)
+            $log = "$env:RUNNER_TEMP\installer-build.log"
+            if (-not (Test-Path -LiteralPath $log) -or (Get-Item -LiteralPath $log).Length -eq 0) {
+              [System.IO.File]::WriteAllText($log, $details)
+            }
+            Get-Content -LiteralPath $log | ForEach-Object { Write-Host "::error::$($_)" }
             Write-Host "::error::$($_.Exception.Message)"
             exit 1
           }
