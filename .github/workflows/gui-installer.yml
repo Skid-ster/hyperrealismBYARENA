@@ -3,6 +3,9 @@ on: [push, pull_request]
 jobs:
   build-test:
     runs-on: windows-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - name: Compile and test installer
@@ -28,14 +31,24 @@ jobs:
         run: |
           $source = Join-Path $env:RUNNER_TEMP 'installer-build.log'
           if (Test-Path -LiteralPath $source) { Copy-Item -LiteralPath $source -Destination "$env:GITHUB_WORKSPACE\installer-build.log" -Force }
-      - name: Expose failed build details as an annotation
+      - name: Preserve failed build details in a neutral check
         if: failure()
-        shell: powershell
-        run: |
-          $log = Get-Content -LiteralPath "$env:GITHUB_WORKSPACE\installer-build.log" -Raw
-          $flat = $log -replace '[\r\n]+', ' | '
-          if ($flat.Length -gt 6000) { $flat = $flat.Substring(0, 6000) }
-          Write-Output "::error title=Installer build output::$flat"
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const log = fs.readFileSync('installer-build.log', 'utf8');
+            await github.rest.checks.create({
+              ...context.repo,
+              name: 'Temporary installer build diagnostics',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: 'neutral',
+              output: {
+                title: 'Windows installer build output',
+                summary: log.slice(0, 60000) || 'Build log was empty.'
+              }
+            });
       - uses: actions/upload-artifact@v4
         with:
           name: HyperRealism128-Windows-GUI-installer
