@@ -15,24 +15,90 @@ namespace HyperRealismInstaller
     internal interface ITransfer
     {
         string GetText(string url);
-        void Download(string url, string destination);
+        bool IsCancellationRequested { get; }
+        void Download(string url, string destination, long maxBytes);
     }
 
     internal sealed class WebTransfer : ITransfer
     {
+        private readonly Action<long, long> progress;
+        private readonly Func<bool> cancellationRequested;
+
+        internal WebTransfer(Action<long, long> progress = null, Func<bool> cancellationRequested = null)
+        {
+            this.progress = progress;
+            this.cancellationRequested = cancellationRequested;
+        }
+
+        public bool IsCancellationRequested
+        {
+            get { return cancellationRequested != null && cancellationRequested(); }
+        }
+
+        private sealed class TimedWebClient : WebClient
+        {
+            protected override WebRequest GetWebRequest(Uri address)
+            {
+                WebRequest request = base.GetWebRequest(address);
+                request.Timeout = 30000;
+                var http = request as HttpWebRequest;
+                if (http != null) http.ReadWriteTimeout = 30000;
+                return request;
+            }
+        }
+
         private static WebClient CreateClient()
         {
-            var client = new WebClient();
+            var client = new TimedWebClient();
             client.Headers[HttpRequestHeader.UserAgent] = "HyperRealism128-GUI-installer";
             return client;
         }
         public string GetText(string url)
         {
-            using (var client = CreateClient()) return client.DownloadString(url);
+            if (IsCancellationRequested) throw new OperationCanceledException("Update check cancelled.");
+            using (var client = CreateClient())
+            {
+                string text = client.DownloadString(url);
+                if (IsCancellationRequested) throw new OperationCanceledException("Update check cancelled.");
+                return text;
+            }
         }
-        public void Download(string url, string destination)
+        public void Download(string url, string destination, long maxBytes)
         {
-            using (var client = CreateClient()) client.DownloadFile(url, destination);
+            if (maxBytes <= 0) throw new ArgumentOutOfRangeException("maxBytes");
+            if (IsCancellationRequested) throw new OperationCanceledException("Download cancelled.");
+            using (var client = CreateClient())
+            using (var source = client.OpenRead(url))
+            {
+                long total;
+                string length = client.ResponseHeaders == null ? null : client.ResponseHeaders[HttpResponseHeader.ContentLength];
+                if (!Int64.TryParse(length, NumberStyles.None, CultureInfo.InvariantCulture, out total) || total < 0) total = -1;
+                if (total > maxBytes) throw new InvalidDataException("The download exceeds the installer's size limit.");
+                using (var output = new FileStream(destination, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                {
+                    byte[] buffer = new byte[64 * 1024];
+                    long received = 0;
+                    DateTime nextProgress = DateTime.UtcNow.AddMilliseconds(200);
+                    int count;
+                    while ((count = source.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        if (IsCancellationRequested) throw new OperationCanceledException("Download cancelled.");
+                        if (received > maxBytes - count) throw new InvalidDataException("The download exceeded the installer's size limit.");
+                        output.Write(buffer, 0, count);
+                        received += count;
+                        DateTime now = DateTime.UtcNow;
+                        if (progress != null && now >= nextProgress)
+                        {
+                            try { progress(received, total); } catch { }
+                            nextProgress = now.AddMilliseconds(200);
+                        }
+                    }
+                    if (IsCancellationRequested) throw new OperationCanceledException("Download cancelled.");
+                    if (total >= 0 && received != total) throw new EndOfStreamException("The download ended before all bytes arrived.");
+                    output.Flush(true);
+                    if (progress != null) { try { progress(received, total); } catch { } }
+                }
+            }
         }
     }
 
@@ -48,6 +114,7 @@ namespace HyperRealismInstaller
     internal static class PackInstaller
     {
         internal const string PackName = "HyperRealism128-MC26.3-EXPERIMENTAL.zip";
+        internal const long MaxPackBytes = 1024L * 1024L * 1024L;
         internal const string Api = "https://api.github.com/repos/Skid-ster/hyperrealismBYARENA/releases?per_page=100";
         private const string DownloadPrefix = "/Skid-ster/hyperrealismBYARENA/releases/download/";
 
@@ -82,12 +149,19 @@ namespace HyperRealismInstaller
                 throw new InvalidDataException("Refusing a download outside the project's GitHub releases.");
         }
 
+        internal static void CheckCancellation(ITransfer transfer)
+        {
+            if (transfer.IsCancellationRequested) throw new OperationCanceledException("Operation cancelled.");
+        }
+
         internal static ReleaseInfo Latest(ITransfer transfer)
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = 4 * 1024 * 1024;
-            var releases = serializer.DeserializeObject(transfer.GetText(Api)) as object[];
+            string response = transfer.GetText(Api);
+            CheckCancellation(transfer);
+            var releases = serializer.DeserializeObject(response) as object[];
             if (releases == null) throw new InvalidDataException("Unexpected GitHub release response.");
             var candidates = new List<ReleaseInfo>();
             foreach (object item in releases)
@@ -121,6 +195,7 @@ namespace HyperRealismInstaller
             ValidateUrl(latest.PackUrl);
             ValidateUrl(latest.ChecksumUrl);
             string text = transfer.GetText(latest.ChecksumUrl).Trim();
+            CheckCancellation(transfer);
             Match match = Regex.Match(text, @"\A([0-9a-fA-F]{64})\s+\*?HyperRealism128-MC26\.3-EXPERIMENTAL\.zip\z", RegexOptions.CultureInvariant);
             if (!match.Success) throw new InvalidDataException("The release checksum has an unexpected format.");
             latest.Checksum = match.Groups[1].Value;
@@ -149,6 +224,7 @@ namespace HyperRealismInstaller
         {
             path = ValidateFolder(path);
             ReleaseInfo release = Latest(transfer);
+            CheckCancellation(transfer);
             string temp = Path.Combine(Path.GetTempPath(), "hyperrealism-" + Guid.NewGuid().ToString("N"));
             string staged = Path.Combine(path, ".hyperrealism-" + Guid.NewGuid().ToString("N") + ".tmp");
             string target = Path.Combine(path, PackName);
@@ -156,15 +232,18 @@ namespace HyperRealismInstaller
             {
                 Directory.CreateDirectory(temp);
                 string downloaded = Path.Combine(temp, PackName);
-                transfer.Download(release.PackUrl, downloaded);
+                transfer.Download(release.PackUrl, downloaded, MaxPackBytes);
+                CheckCancellation(transfer);
                 if (!String.Equals(HashFile(downloaded), release.Checksum, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException("SHA-256 mismatch. Your existing pack was not changed.");
                 // Copy to the same volume, then atomically replace/move. If replacing is
                 // unsupported or denied, fail rather than damage the existing pack.
                 ValidateFolder(path);
+                CheckCancellation(transfer);
                 File.Copy(downloaded, staged, false);
                 if (!String.Equals(HashFile(staged), release.Checksum, StringComparison.OrdinalIgnoreCase))
                     throw new InvalidDataException("Staged file failed verification. Your existing pack was not changed.");
+                CheckCancellation(transfer);
                 if (File.Exists(target)) File.Replace(staged, target, null);
                 else File.Move(staged, target);
                 return "Installed " + release.Tag + ". Enable the pack in Minecraft.";

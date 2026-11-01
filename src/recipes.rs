@@ -164,6 +164,29 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
                 (0.91 + variation * 0.13, 0.02, 1.0, 0.0)
             }
         }
+        "bamboo" => {
+            // Bamboo-laminate boards: long subtle fibers, staggered board
+            // joints and a restrained node band. The scan underneath supplies
+            // fine photographic grain; this pattern adds broader identity.
+            let row = y / 128;
+            let local_y = (y % 128) as f32;
+            let shifted_x = (x + (row % 2) * 128) % PERIOD;
+            let local_x = (shifted_x % 256) as f32;
+            let seam = y % 128 < 3 || shifted_x % 256 < 3;
+            let node_center = 104.0 + 32.0 * point(shifted_x / 256, row, 4, seed ^ 0x71b3);
+            let node = (1.0 - (local_x - node_center).abs() / 3.0).clamp(0.0, 1.0);
+            let fiber = (local_y * std::f32::consts::TAU / 21.0
+                + 0.35 * noise(x, y, 32, seed ^ 0x528d))
+                .sin();
+            if seam {
+                (0.58, -0.075, 1.0, 0.0)
+            } else {
+                let shade = (0.99 + 0.025 * fiber + 0.02 * (fine - 0.5) - 0.09 * node)
+                    .clamp(0.82, 1.08);
+                let relief = 0.006 * fiber - 0.035 * node + 0.008 * (n - 0.5);
+                (shade, relief, 1.0, 0.0)
+            }
+        }
         "log_end" | "stripped_log_end" => {
             // A wood cross section, not plank joints: subtly irregular annual
             // rings and a darker bark rim. The scan underneath supplies grain.
@@ -186,23 +209,11 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             let m = ((n - 0.32) * 1.8).clamp(0.0, 0.7);
             (1.0, m * 0.06, 1.0, m)
         }
-        "glass" => {
-            let edge = x % 128 < 5 || y % 128 < 5;
-            if edge {
-                (0.8, 0.03, 0.75, 0.0)
-            } else {
-                (1.0, 0.0, 0.25, 0.0)
-            }
-        }
-        // The clear block uses a cutout layer, not alpha blending.
-        "glass_clear" => {
-            let rim = x < 8 || y < 8 || x >= 504 || y >= 504;
-            (1.0, 0.0, if rim { 1.0 } else { 0.0 }, 0.0)
-        }
-        "glass_stained" => {
-            let rim = x < 8 || y < 8 || x >= 504 || y >= 504;
-            (1.0, 0.0, if rim { 0.60 } else { 0.40 }, 0.0)
-        }
+        // Use a uniform translucent surface: no bright edge band or frame.
+        // Clear glass stays faintly visible at 12% opacity; stained glass keeps
+        // its established 40% translucent body opacity without a darker rim.
+        "glass" | "glass_clear" => (1.0, 0.0, 0.12, 0.0),
+        "glass_stained" => (1.0, 0.0, 0.40, 0.0),
         // Pane top/bottom sprites are only two vanilla pixels wide.
         "glass_pane_cap" => {
             let strip = (224..288).contains(&x);
@@ -217,6 +228,47 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
             0.0,
         ),
         "metal" => (0.97 + 0.04 * n, 0.003 * (fine - 0.5), 1.0, 0.0),
+        "metal_cut" => {
+            // Four-by-four copper sheet panels with narrow recessed joints.
+            // The 128px repeat maps to four Minecraft texels per panel at
+            // 512px resolution; a 7px joint is deliberately finer than a full
+            // source texel so the scan remains the dominant surface detail.
+            let local_x = x % 128;
+            let local_y = y % 128;
+            let seam = local_x < 7 || local_y < 7;
+            let bevel = !seam && (local_x < 12 || local_y < 12);
+            if seam {
+                (0.68, -0.055, 1.0, 0.0)
+            } else if bevel {
+                (0.91, -0.018, 1.0, 0.0)
+            } else {
+                let variation = point(x / 128, y / 128, 4, seed);
+                let panel_noise = noise(x, y, 64, seed ^ 0xa417);
+                let shade = 0.98 + 0.035 * variation + 0.012 * (panel_noise - 0.5);
+                let relief = 0.004 * (fine - 0.5) + 0.0015 * (n - 0.5);
+                (shade, relief, 1.0, 0.0)
+            }
+        }
+        "carved" => {
+            // Shallow hand-carved diamond bands add repeatable embossed
+            // identity without copying the low-resolution vanilla glyph.
+            let dx = (x as f32 + 0.5 - 256.0).abs();
+            let dy = (y as f32 + 0.5 - 256.0).abs();
+            let distance = dx + dy;
+            let nearest = [42.0, 86.0, 130.0, 174.0, 218.0]
+                .iter()
+                .map(|radius| (distance - radius).abs())
+                .fold(f32::MAX, f32::min);
+            if nearest < 2.5 {
+                (0.74, -0.045, 1.0, 0.0)
+            } else if nearest < 6.5 {
+                (0.90, -0.018, 1.0, 0.0)
+            } else if nearest < 9.5 {
+                (0.98, 0.006, 1.0, 0.0)
+            } else {
+                (0.99 + 0.018 * (fine - 0.5), 0.002 * (n - 0.5), 1.0, 0.0)
+            }
+        }
         "gem" => (0.90 + 0.16 * n, 0.03 * n, 1.0, 0.0),
         "leaves" => {
             let a = if (x / 16 + y / 16) % 7 == 0 && n < 0.6 {
@@ -248,11 +300,15 @@ pub fn evaluate(recipe: &str, x: usize, y: usize, seed: u32) -> Pattern {
 mod tests {
     use super::*;
     #[test]
-    fn glass_preserves_cutout_translucency_and_pane_shape() {
+    fn glass_has_uniform_translucency_without_rim_bands() {
         let sample = |r, x, y| evaluate(r, x, y, 1).opacity;
-        assert_eq!(sample("glass_clear", 0, 256), 1.0);
-        assert_eq!(sample("glass_clear", 256, 256), 0.0);
-        assert_eq!(sample("glass_stained", 256, 256), 0.4);
+        for &(x, y) in &[(0, 256), (3, 256), (4, 256), (256, 256), (511, 511)] {
+            assert_eq!(sample("glass", x, y), 0.12);
+            assert_eq!(sample("glass_clear", x, y), 0.12);
+            assert_eq!(sample("glass_stained", x, y), 0.40);
+        }
+        // Pane-cap transparency is a required vanilla UV silhouette, not a
+        // decorative rim, and remains unchanged.
         assert_eq!(sample("glass_pane_cap", 0, 256), 0.0);
         assert_eq!(sample("glass_pane_cap", 256, 256), 1.0);
     }
@@ -268,6 +324,7 @@ mod tests {
             "moss",
             "moss_brick",
             "plank",
+            "bamboo",
             "log_end",
             "stripped_log_end",
             "glass",
@@ -275,6 +332,8 @@ mod tests {
             "glass_stained",
             "glass_pane_cap",
             "metal",
+            "metal_cut",
+            "carved",
             "gem",
             "leaves",
             "material",
@@ -298,6 +357,67 @@ mod tests {
         assert_eq!(seed("stone"), seed("stone"));
         assert_ne!(seed("stone"), seed("bricks"));
     }
+    #[test]
+    fn bamboo_recipe_has_periodic_board_joints_and_subtle_relief() {
+        let seed = seed("bamboo_planks");
+        let mut minimum_shade = f32::MAX;
+        let mut maximum_shade = f32::MIN;
+        let mut recessed = 0;
+        let mut raised = 0;
+        for y in (0..PERIOD).step_by(4) {
+            for x in (0..PERIOD).step_by(4) {
+                let p = evaluate("bamboo", x, y, seed);
+                minimum_shade = minimum_shade.min(p.shade);
+                maximum_shade = maximum_shade.max(p.shade);
+                if p.relief < 0.0 {
+                    recessed += 1;
+                }
+                if p.relief > 0.0 {
+                    raised += 1;
+                }
+                assert_eq!(
+                    (p.shade, p.relief),
+                    (
+                        evaluate("bamboo", x + PERIOD, y, seed).shade,
+                        evaluate("bamboo", x, y + PERIOD, seed).relief
+                    )
+                );
+            }
+        }
+        assert!(maximum_shade - minimum_shade > 0.1);
+        assert!(recessed > 0 && raised > 0);
+    }
+
+    #[test]
+    fn cut_copper_has_recessed_joints_and_periodic_panels() {
+        let seed = seed("cut_copper");
+        let joint = evaluate("metal_cut", 2, 64, seed);
+        let bevel = evaluate("metal_cut", 9, 64, seed);
+        let face = evaluate("metal_cut", 64, 64, seed);
+        assert!(joint.shade < bevel.shade && bevel.shade < face.shade);
+        assert!(joint.relief < bevel.relief);
+        for &(x, y) in &[(2, 64), (9, 64), (64, 64), (127, 127)] {
+            let p = evaluate("metal_cut", x, y, seed);
+            let q = evaluate("metal_cut", x + PERIOD, y + PERIOD, seed);
+            assert_eq!((p.shade, p.relief), (q.shade, q.relief));
+        }
+    }
+
+    #[test]
+    fn carved_recipe_adds_shallow_embossed_bands_and_repeats() {
+        let seed = seed("chiseled_sandstone");
+        let groove = evaluate("carved", 298, 256, seed);
+        let bevel = evaluate("carved", 303, 256, seed);
+        let face = evaluate("carved", 310, 256, seed);
+        assert!(groove.shade < bevel.shade && bevel.shade < face.shade);
+        assert!(groove.relief < bevel.relief && bevel.relief < face.relief);
+        for &(x, y) in &[(0, 0), (298, 256), (303, 256), (511, 511)] {
+            let p = evaluate("carved", x, y, seed);
+            let q = evaluate("carved", x + PERIOD, y + PERIOD, seed);
+            assert_eq!((p.shade, p.relief), (q.shade, q.relief));
+        }
+    }
+
     #[test]
     fn geometry_has_joints_and_cracks() {
         let seed = seed("stone_bricks");

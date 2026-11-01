@@ -8,7 +8,8 @@
       "albedo": "materials/concrete_wall/color.jpg",
       "roughness": "materials/concrete_wall/roughness.jpg",
       "normal": "materials/concrete_wall/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true
     },
     {
       "id": "gravel_concrete",
@@ -17,7 +18,8 @@
       "albedo": "materials/gravel_concrete/color.jpg",
       "roughness": "materials/gravel_concrete/roughness.jpg",
       "normal": "materials/gravel_concrete/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true
     },
     {
       "id": "brick_red",
@@ -26,23 +28,20 @@
       "albedo": "materials/brick_red/color.jpg",
       "roughness": "materials/brick_red/roughness.jpg",
       "normal": "materials/brick_red/normal.jpg",
-      "normal_y": "opengl"
+      "normal_y": "opengl",
+      "height_from_normal": true
     },
     {
       "id": "walnut",
-      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator(s): Poly Haven",
+      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator: Jenelle van Heerden; verified CC0 source maps from H2 at 768413f5e3bf1f9572208566aab138c957374bc6",
       "license": "CC0-1.0",
       "albedo": "materials/walnut/color.jpg",
-      "roughness": "materials/walnut/roughness.jpg"
-    },
-    {
-      "id": "black_painted_planks",
-      "source": "Black Painted Planks: https://polyhaven.com/a/black_painted_planks; creator(s): Dimitrios Savva",
-      "license": "CC0-1.0",
-      "albedo": "materials/black_painted_planks/color.jpg",
-      "roughness": "materials/black_painted_planks/roughness.jpg",
-      "normal": "materials/black_painted_planks/normal.jpg",
-      "normal_y": "opengl"
+      "roughness": "materials/walnut/roughness.jpg",
+      "normal": "materials/walnut/normal.jpg",
+      "normal_y": "opengl",
+      "ao": "materials/walnut/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "rusted_shutter",
@@ -51,16 +50,9 @@
       "albedo": "materials/rusted_shutter/color.jpg",
       "roughness": "materials/rusted_shutter/roughness.jpg",
       "normal": "materials/rusted_shutter/normal.jpg",
-      "normal_y": "opengl"
-    },
-    {
-      "id": "cotton_jersey",
-      "source": "Cotton Jersey: https://polyhaven.com/a/cotton_jersey (wool stand-in); creator(s): Rico Cilliers, colormass",
-      "license": "CC0-1.0",
-      "albedo": "materials/cotton_jersey/color.jpg",
-      "normal": "materials/cotton_jersey/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/cotton_jersey/roughness.jpg"
+      "height_from_normal": true,
+      "roughness_bias": 0.08
     },
     {
       "id": "forest_ground",
@@ -69,7 +61,8 @@
       "albedo": "materials/forest_ground/color.jpg",
       "normal": "materials/forest_ground/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/forest_ground/arm.jpg"
+      "arm": "materials/forest_ground/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "sandstone_cracks",
@@ -78,7 +71,8 @@
       "albedo": "materials/sandstone_cracks/color.jpg",
       "normal": "materials/sandstone_cracks/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/sandstone_cracks/arm.jpg"
+      "arm": "materials/sandstone_cracks/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "aerial_sand",
@@ -87,21 +81,26 @@
       "albedo": "materials/aerial_sand/color.jpg",
       "normal": "materials/aerial_sand/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/aerial_sand/roughness.jpg"
+      "roughness": "materials/aerial_sand/roughness.jpg",
+      "height_from_normal": true,
+      "roughness_bias": 0.18
     },
     {
       "id": "cobble_photo",
       "source": "Cobblestone Floor 04: https://polyhaven.com/a/cobblestone_floor_04; creator: Rob Tuytel; modified CC0 source",
       "license": "CC0-1.0",
       "albedo": "materials/cobble_photo/gray_color.png",
-      "height": "materials/cobble_photo/height.png"
+      "height": "materials/cobble_photo/height.png",
+      "roughness_from_height": true
     },
     {
       "id": "mossy_cobble_photo",
       "source": "Cobblestone Floor 04: https://polyhaven.com/a/cobblestone_floor_04; creator: Rob Tuytel; modified CC0 source",
       "license": "CC0-1.0",
       "albedo": "materials/cobble_photo/mossy_color.png",
-      "height": "materials/cobble_photo/height.png"
+      "height": "materials/cobble_photo/height.png",
+      "roughness_from_height": true,
+      "roughness_bias": 0.04
     },
     {
       "id": "rock_face",
@@ -110,7 +109,8 @@
       "albedo": "materials/rock_face/color.jpg",
       "normal": "materials/rock_face/normal.jpg",
       "normal_y": "opengl",
-      "arm": "materials/rock_face/arm.jpg"
+      "arm": "materials/rock_face/arm.jpg",
+      "height_from_normal": true
     },
     {
       "id": "bark_willow_02",
@@ -120,7 +120,8 @@
       "normal": "materials/bark_willow_02/normal.jpg",
       "normal_y": "directx",
       "roughness": "materials/bark_willow_02/roughness.jpg",
-      "height": "materials/bark_willow_02/displacement.jpg"
+      "height": "materials/bark_willow_02/displacement.jpg",
+      "roughness_bias": 0.12
     },
     {
       "id": "oak_veneer_02",
@@ -130,7 +131,9 @@
       "normal": "materials/oak_veneer_02/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/oak_veneer_02/roughness.jpg",
-      "ao": "materials/oak_veneer_02/ao.jpg"
+      "ao": "materials/oak_veneer_02/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "cherry_veneer",
@@ -140,7 +143,9 @@
       "normal": "materials/cherry_veneer/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/cherry_veneer/roughness.jpg",
-      "ao": "materials/cherry_veneer/ao.jpg"
+      "ao": "materials/cherry_veneer/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "natural_walnut_veneer",
@@ -150,7 +155,9 @@
       "normal": "materials/natural_walnut_veneer/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/natural_walnut_veneer/roughness.jpg",
-      "ao": "materials/natural_walnut_veneer/ao.jpg"
+      "ao": "materials/natural_walnut_veneer/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "white_maple_veneer",
@@ -160,7 +167,9 @@
       "normal": "materials/white_maple_veneer/normal.jpg",
       "normal_y": "opengl",
       "roughness": "materials/white_maple_veneer/roughness.jpg",
-      "ao": "materials/white_maple_veneer/ao.jpg"
+      "ao": "materials/white_maple_veneer/ao.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "leafy_grass",
@@ -169,7 +178,8 @@
       "albedo": "materials/leafy_grass/neutral_color.png",
       "normal": "materials/leafy_grass/normal.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/leafy_grass/roughness.jpg"
+      "roughness": "materials/leafy_grass/roughness.jpg",
+      "height_from_normal": true
     },
     {
       "id": "snow_02",
@@ -199,7 +209,8 @@
       "normal": "materials/brown_mud_dry/normal.jpg",
       "normal_y": "opengl",
       "arm": "materials/brown_mud_dry/arm.jpg",
-      "height": "materials/brown_mud_dry/height.jpg"
+      "height": "materials/brown_mud_dry/height.jpg",
+      "roughness_bias": 0.22
     },
     {
       "id": "brown_mud_03",
@@ -209,7 +220,8 @@
       "normal": "materials/brown_mud_03/normal.jpg",
       "normal_y": "opengl",
       "arm": "materials/brown_mud_03/arm.jpg",
-      "height": "materials/brown_mud_03/height.jpg"
+      "height": "materials/brown_mud_03/height.jpg",
+      "roughness_bias": 0.2
     },
     {
       "id": "forest_leaves_04",
@@ -237,7 +249,10 @@
       "albedo": "materials/tree_leaves/neutral_color.png",
       "normal": "materials/tree_leaves/normal.png",
       "normal_y": "opengl",
-      "roughness": "materials/tree_leaves/roughness.png"
+      "roughness": "materials/tree_leaves/roughness.png",
+      "height": "materials/tree_leaves/height.png",
+      "ao": "materials/tree_leaves/ao.png",
+      "roughness_bias": -0.05
     },
     {
       "id": "clay_floor",
@@ -246,7 +261,9 @@
       "albedo": "materials/clay_floor/color.png",
       "normal": "materials/clay_floor/normal.png",
       "normal_y": "opengl",
-      "arm": "materials/clay_floor/arm.png"
+      "arm": "materials/clay_floor/arm.png",
+      "height_from_normal": true,
+      "roughness_bias": 0.12
     },
     {
       "id": "cherry_veneer_vertical",
@@ -257,7 +274,9 @@
       "normal_y": "opengl",
       "roughness": "materials/cherry_veneer/roughness.jpg",
       "ao": "materials/cherry_veneer/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "natural_walnut_veneer_vertical",
@@ -268,7 +287,9 @@
       "normal_y": "opengl",
       "roughness": "materials/natural_walnut_veneer/roughness.jpg",
       "ao": "materials/natural_walnut_veneer/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "oak_veneer_02_vertical",
@@ -279,7 +300,9 @@
       "normal_y": "opengl",
       "roughness": "materials/oak_veneer_02/roughness.jpg",
       "ao": "materials/oak_veneer_02/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "white_maple_veneer_vertical",
@@ -290,14 +313,17 @@
       "normal_y": "opengl",
       "roughness": "materials/white_maple_veneer/roughness.jpg",
       "ao": "materials/white_maple_veneer/ao.jpg",
-      "rotate_cw": true
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
     },
     {
       "id": "procedural_glass",
       "source": "Original procedural neutral glass base; no photographic scan",
       "license": "CC0-1.0",
       "albedo": "materials/procedural_glass/color.png",
-      "roughness": "materials/procedural_glass/roughness.png"
+      "roughness": "materials/procedural_glass/roughness.png",
+      "roughness_bias": -0.09
     },
     {
       "id": "metal_plate_02",
@@ -306,13 +332,89 @@
       "albedo": "materials/metal_plate_02/diff.jpg",
       "normal": "materials/metal_plate_02/nor.jpg",
       "normal_y": "opengl",
-      "roughness": "materials/metal_plate_02/rough.jpg"
+      "roughness": "materials/metal_plate_02/rough.jpg",
+      "height_from_normal": true,
+      "roughness_bias": -0.12
+    },
+    {
+      "id": "walnut_horizontal",
+      "source": "Walnut Veneer: https://polyhaven.com/a/walnut_veneer; creator: Jenelle van Heerden; verified CC0 source maps from H2 at 768413f5e3bf1f9572208566aab138c957374bc6; aligned maps rotated clockwise to horizontal grain",
+      "license": "CC0-1.0",
+      "albedo": "materials/walnut/color.jpg",
+      "normal": "materials/walnut/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/walnut/roughness.jpg",
+      "ao": "materials/walnut/ao.jpg",
+      "rotate_cw": true,
+      "height_from_normal": true,
+      "roughness_bias": -0.08
+    },
+    {
+      "id": "poly_wool_herringbone",
+      "source": "Poly Wool Herringbone: https://polyhaven.com/a/poly_wool_herringbone; creators: colormass (photography), Rico Cilliers (processing); CC0 source manifest mirrored at Abbott-game commit 0796b0a859aded9629cd802a0c132993b0c6e091",
+      "license": "CC0-1.0",
+      "albedo": "materials/poly_wool_herringbone/color.jpg",
+      "normal": "materials/poly_wool_herringbone/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/poly_wool_herringbone/roughness.jpg",
+      "height_from_normal": true
+    },
+    {
+      "id": "bark_brown_01",
+      "source": "Bark Brown 01: https://polyhaven.com/a/bark_brown_01; creator: Rob Tuytel; CC0 maps mirrored with source manifest at Abbott-game commit 0796b0a859aded9629cd802a0c132993b0c6e091",
+      "license": "CC0-1.0",
+      "albedo": "materials/bark_brown_01/color.jpg",
+      "normal": "materials/bark_brown_01/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/bark_brown_01/roughness.jpg",
+      "height_from_normal": true
+    },
+    {
+      "id": "bark_platanus",
+      "source": "Bark Platanus: https://polyhaven.com/a/bark_platanus; creator: Dimitrios Savva; CC0 maps mirrored with source manifest at Abbott-game commit 0796b0a859aded9629cd802a0c132993b0c6e091",
+      "license": "CC0-1.0",
+      "albedo": "materials/bark_platanus/color.jpg",
+      "normal": "materials/bark_platanus/normal.jpg",
+      "normal_y": "opengl",
+      "roughness": "materials/bark_platanus/roughness.jpg",
+      "height_from_normal": true
+    },
+    {
+      "id": "nether_lava_003",
+      "source": "Lava 003: https://ambientcg.com/view?id=Lava003; ambientCG CC0-1.0, creator Lennart Demes; aligned 1K albedo, OpenGL normal and packed AO/roughness/metal maps from the documented mirror at g0ddest/renethack commit 7cba95ae442dc4ccb174c965c3de91e0b2093bcd",
+      "license": "CC0-1.0",
+      "albedo": "materials/nether_lava_003/color.jpg",
+      "normal": "materials/nether_lava_003/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/nether_lava_003/arm.jpg",
+      "height_from_normal": true,
+      "roughness_bias": 0.18
+    },
+    {
+      "id": "nether_dark_rock",
+      "source": "Rock 058: https://ambientcg.com/view?id=Rock058; ambientCG CC0-1.0, creator Lennart Demes; aligned 1K albedo, OpenGL normal and packed AO/roughness/metal maps from the documented mirror at g0ddest/renethack commit 7cba95ae442dc4ccb174c965c3de91e0b2093bcd",
+      "license": "CC0-1.0",
+      "albedo": "materials/nether_dark_rock/color.jpg",
+      "normal": "materials/nether_dark_rock/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/nether_dark_rock/arm.jpg",
+      "height_from_normal": true
+    },
+    {
+      "id": "nether_lava_flow",
+      "source": "Volcanic Lava Flow ground_0027: https://www.texturecan.com (CC0-1.0; https://www.texturecan.com/terms/); 1K color, OpenGL normal, packed AO/roughness/metal and aligned emission map from the documented mirror at g0ddest/renethack commit 7cba95ae442dc4ccb174c965c3de91e0b2093bcd",
+      "license": "CC0-1.0",
+      "albedo": "materials/nether_lava_flow/color.jpg",
+      "normal": "materials/nether_lava_flow/normal.jpg",
+      "normal_y": "opengl",
+      "arm": "materials/nether_lava_flow/arm.jpg",
+      "roughness_bias": -0.12
     }
   ],
   "textures": [
     {
       "name": "stone",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "stone",
       "tint": [
         255,
@@ -325,12 +427,11 @@
         126
       ],
       "f0": 10,
-      "porosity": 30,
-      "pbr_strength": 0.65
+      "porosity": 30
     },
     {
       "name": "andesite",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "stone",
       "tint": [
         255,
@@ -398,7 +499,7 @@
     },
     {
       "name": "tuff",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "stone",
       "tint": [
         255,
@@ -1299,7 +1400,7 @@
     },
     {
       "name": "crimson_planks",
-      "material": "natural_walnut_veneer",
+      "material": "cherry_veneer",
       "recipe": "plank",
       "tint": [
         255,
@@ -1333,7 +1434,7 @@
     },
     {
       "name": "dark_oak_planks",
-      "material": "natural_walnut_veneer",
+      "material": "walnut_horizontal",
       "recipe": "plank",
       "tint": [
         255,
@@ -1347,6 +1448,472 @@
       ],
       "f0": 10,
       "porosity": 40
+    },
+    {
+      "name": "raw_copper_block",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        156,
+        106,
+        79
+      ],
+      "f0": 10,
+      "ore_color": [
+        151,
+        102,
+        68
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "raw_gold_block",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        221,
+        169,
+        47
+      ],
+      "f0": 10,
+      "ore_color": [
+        204,
+        161,
+        63
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "raw_iron_block",
+      "material": "rock_face",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        166,
+        136,
+        107
+      ],
+      "f0": 10,
+      "ore_color": [
+        180,
+        141,
+        119
+      ],
+      "ore_f0": 10
+    },
+    {
+      "name": "amethyst_block",
+      "material": "rock_face",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        134,
+        98,
+        191
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cinnabar",
+      "material": "rock_face",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        152,
+        83,
+        78
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "cinnabar_bricks",
+      "material": "rock_face",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        148,
+        56,
+        54
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_cinnabar",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        147,
+        55,
+        55
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "sulfur",
+      "material": "rock_face",
+      "recipe": "gem",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        190,
+        175,
+        102
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "sulfur_bricks",
+      "material": "rock_face",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        187,
+        168,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_sulfur",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        187,
+        170,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_deepslate",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        54,
+        54,
+        55
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_red_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        183,
+        97,
+        28
+      ],
+      "f0": 10
+    },
+    {
+      "name": "chiseled_sandstone",
+      "material": "sandstone_cracks",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        216,
+        203,
+        155
+      ],
+      "f0": 10
+    },
+    {
+      "name": "chiseled_stone_bricks",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        120,
+        119,
+        120
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        89,
+        94,
+        87
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff_bricks",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        99,
+        103,
+        96
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff_bricks_top",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        111,
+        114,
+        107
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_tuff_top",
+      "material": "rock_face",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        94,
+        99,
+        91
+      ],
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "chiseled_copper",
+      "material": "metal_plate_02",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        184,
+        101,
+        74
+      ],
+      "f0": 234
+    },
+    {
+      "name": "exposed_chiseled_copper",
+      "material": "rusted_shutter",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        155,
+        119,
+        101
+      ],
+      "f0": 10
+    },
+    {
+      "name": "weathered_chiseled_copper",
+      "material": "rusted_shutter",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        105,
+        151,
+        111
+      ],
+      "f0": 10
+    },
+    {
+      "name": "oxidized_chiseled_copper",
+      "material": "rusted_shutter",
+      "recipe": "carved",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        84,
+        162,
+        132
+      ],
+      "f0": 10
+    },
+    {
+      "name": "copper_block",
+      "material": "metal_plate_02",
+      "recipe": "metal",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        192,
+        108,
+        80
+      ],
+      "f0": 234
+    },
+    {
+      "name": "cut_copper",
+      "material": "metal_plate_02",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        191,
+        107,
+        81
+      ],
+      "f0": 234
+    },
+    {
+      "name": "exposed_cut_copper",
+      "material": "rusted_shutter",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        155,
+        122,
+        101
+      ],
+      "f0": 10,
+      "porosity": 0
+    },
+    {
+      "name": "weathered_cut_copper",
+      "material": "rusted_shutter",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        109,
+        145,
+        107
+      ],
+      "f0": 10,
+      "porosity": 0
+    },
+    {
+      "name": "oxidized_cut_copper",
+      "material": "rusted_shutter",
+      "recipe": "metal_cut",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        80,
+        154,
+        127
+      ],
+      "f0": 10,
+      "porosity": 0
     },
     {
       "name": "exposed_copper",
@@ -1401,7 +1968,7 @@
     },
     {
       "name": "white_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1418,7 +1985,7 @@
     },
     {
       "name": "orange_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1435,7 +2002,7 @@
     },
     {
       "name": "magenta_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1452,7 +2019,7 @@
     },
     {
       "name": "light_blue_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1469,7 +2036,7 @@
     },
     {
       "name": "yellow_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1486,7 +2053,7 @@
     },
     {
       "name": "lime_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1503,7 +2070,7 @@
     },
     {
       "name": "pink_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1520,7 +2087,7 @@
     },
     {
       "name": "gray_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1537,7 +2104,7 @@
     },
     {
       "name": "light_gray_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1554,7 +2121,7 @@
     },
     {
       "name": "cyan_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1571,7 +2138,7 @@
     },
     {
       "name": "purple_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1588,7 +2155,7 @@
     },
     {
       "name": "blue_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1605,7 +2172,7 @@
     },
     {
       "name": "brown_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1622,7 +2189,7 @@
     },
     {
       "name": "green_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1639,7 +2206,7 @@
     },
     {
       "name": "red_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1656,7 +2223,7 @@
     },
     {
       "name": "black_wool",
-      "material": "cotton_jersey",
+      "material": "poly_wool_herringbone",
       "recipe": "material",
       "tint": [
         255,
@@ -1673,7 +2240,7 @@
     },
     {
       "name": "coal_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1717,7 +2284,7 @@
     },
     {
       "name": "copper_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1761,7 +2328,7 @@
     },
     {
       "name": "diamond_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1805,7 +2372,7 @@
     },
     {
       "name": "emerald_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1849,7 +2416,7 @@
     },
     {
       "name": "gold_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1893,7 +2460,7 @@
     },
     {
       "name": "iron_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1937,7 +2504,7 @@
     },
     {
       "name": "lapis_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -1981,7 +2548,7 @@
     },
     {
       "name": "redstone_ore",
-      "material": "concrete_wall",
+      "material": "rock_face",
       "recipe": "ore",
       "tint": [
         255,
@@ -2130,7 +2697,7 @@
     },
     {
       "name": "netherrack",
-      "material": "rock_face",
+      "material": "nether_lava_003",
       "recipe": "material",
       "tint": [
         255,
@@ -2145,7 +2712,7 @@
     },
     {
       "name": "nether_gold_ore",
-      "material": "rock_face",
+      "material": "nether_lava_003",
       "recipe": "ore",
       "tint": [
         255,
@@ -2166,7 +2733,7 @@
     },
     {
       "name": "nether_quartz_ore",
-      "material": "rock_face",
+      "material": "nether_lava_003",
       "recipe": "ore",
       "tint": [
         255,
@@ -2187,7 +2754,7 @@
     },
     {
       "name": "oak_log",
-      "material": "bark_willow_02",
+      "material": "bark_brown_01",
       "recipe": "material",
       "tint": [
         255,
@@ -2221,7 +2788,7 @@
     },
     {
       "name": "dark_oak_log",
-      "material": "bark_willow_02",
+      "material": "bark_platanus",
       "recipe": "material",
       "tint": [
         255,
@@ -2255,7 +2822,7 @@
     },
     {
       "name": "jungle_log",
-      "material": "bark_willow_02",
+      "material": "bark_platanus",
       "recipe": "material",
       "tint": [
         255,
@@ -2856,7 +3423,7 @@
     },
     {
       "name": "blackstone",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2873,7 +3440,7 @@
     },
     {
       "name": "blackstone_top",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2890,7 +3457,7 @@
     },
     {
       "name": "polished_blackstone",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2907,7 +3474,7 @@
     },
     {
       "name": "smooth_basalt",
-      "material": "rock_face",
+      "material": "nether_dark_rock",
       "recipe": "material",
       "tint": [
         255,
@@ -2992,7 +3559,7 @@
     },
     {
       "name": "polished_blackstone_bricks",
-      "material": "concrete_wall",
+      "material": "nether_dark_rock",
       "recipe": "brick",
       "tint": [
         255,
@@ -3026,7 +3593,7 @@
     },
     {
       "name": "nether_bricks",
-      "material": "concrete_wall",
+      "material": "brick_red",
       "recipe": "brick",
       "tint": [
         255,
@@ -3043,7 +3610,7 @@
     },
     {
       "name": "red_nether_bricks",
-      "material": "concrete_wall",
+      "material": "brick_red",
       "recipe": "brick",
       "tint": [
         255,
@@ -3111,7 +3678,7 @@
     },
     {
       "name": "cracked_polished_blackstone_bricks",
-      "material": "concrete_wall",
+      "material": "nether_dark_rock",
       "recipe": "cracked_brick",
       "tint": [
         255,
@@ -3128,7 +3695,7 @@
     },
     {
       "name": "cracked_nether_bricks",
-      "material": "concrete_wall",
+      "material": "brick_red",
       "recipe": "cracked_brick",
       "tint": [
         255,
@@ -3621,7 +4188,7 @@
     },
     {
       "name": "stripped_dark_oak_log",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -3867,9 +4434,9 @@
         255
       ],
       "target_color": [
-        176,
-        214,
-        219
+        169,
+        205,
+        210
       ],
       "f0": 10,
       "mipmap_strategy": "mean",
@@ -3885,9 +4452,9 @@
         255
       ],
       "target_color": [
-        255,
-        255,
-        255
+        245,
+        245,
+        245
       ],
       "f0": 10,
       "connected_glass": true
@@ -3902,9 +4469,9 @@
         255
       ],
       "target_color": [
-        216,
-        127,
-        51
+        207,
+        122,
+        49
       ],
       "f0": 10,
       "connected_glass": true
@@ -3919,9 +4486,9 @@
         255
       ],
       "target_color": [
-        178,
-        76,
-        216
+        171,
+        73,
+        207
       ],
       "f0": 10,
       "connected_glass": true
@@ -3936,9 +4503,9 @@
         255
       ],
       "target_color": [
-        102,
-        153,
-        216
+        98,
+        147,
+        207
       ],
       "f0": 10,
       "connected_glass": true
@@ -3953,9 +4520,9 @@
         255
       ],
       "target_color": [
-        229,
-        229,
-        51
+        220,
+        220,
+        49
       ],
       "f0": 10,
       "connected_glass": true
@@ -3970,9 +4537,9 @@
         255
       ],
       "target_color": [
-        127,
-        204,
-        25
+        122,
+        196,
+        24
       ],
       "f0": 10,
       "connected_glass": true
@@ -3987,9 +4554,9 @@
         255
       ],
       "target_color": [
-        242,
-        127,
-        165
+        232,
+        122,
+        158
       ],
       "f0": 10,
       "connected_glass": true
@@ -4004,9 +4571,9 @@
         255
       ],
       "target_color": [
-        76,
-        76,
-        76
+        73,
+        73,
+        73
       ],
       "f0": 10,
       "connected_glass": true
@@ -4021,9 +4588,9 @@
         255
       ],
       "target_color": [
-        153,
-        153,
-        153
+        147,
+        147,
+        147
       ],
       "f0": 10,
       "connected_glass": true
@@ -4038,9 +4605,9 @@
         255
       ],
       "target_color": [
-        76,
-        127,
-        153
+        73,
+        122,
+        147
       ],
       "f0": 10,
       "connected_glass": true
@@ -4055,9 +4622,9 @@
         255
       ],
       "target_color": [
-        127,
-        63,
-        178
+        122,
+        60,
+        171
       ],
       "f0": 10,
       "connected_glass": true
@@ -4072,9 +4639,9 @@
         255
       ],
       "target_color": [
-        51,
-        76,
-        178
+        49,
+        73,
+        171
       ],
       "f0": 10,
       "connected_glass": true
@@ -4089,9 +4656,9 @@
         255
       ],
       "target_color": [
-        102,
-        76,
-        51
+        98,
+        73,
+        49
       ],
       "f0": 10,
       "connected_glass": true
@@ -4106,9 +4673,9 @@
         255
       ],
       "target_color": [
-        102,
-        127,
-        51
+        98,
+        122,
+        49
       ],
       "f0": 10,
       "connected_glass": true
@@ -4123,9 +4690,9 @@
         255
       ],
       "target_color": [
-        153,
-        51,
-        51
+        147,
+        49,
+        49
       ],
       "f0": 10,
       "connected_glass": true
@@ -4140,9 +4707,9 @@
         255
       ],
       "target_color": [
-        25,
-        25,
-        25
+        24,
+        24,
+        24
       ],
       "f0": 10,
       "connected_glass": true
@@ -4157,9 +4724,9 @@
         255
       ],
       "target_color": [
-        170,
-        210,
-        217
+        163,
+        202,
+        208
       ],
       "f0": 10
     },
@@ -4173,9 +4740,9 @@
         255
       ],
       "target_color": [
-        246,
-        246,
-        246
+        236,
+        236,
+        236
       ],
       "f0": 10
     },
@@ -4189,9 +4756,9 @@
         255
       ],
       "target_color": [
-        209,
-        123,
-        49
+        201,
+        118,
+        47
       ],
       "f0": 10
     },
@@ -4205,9 +4772,9 @@
         255
       ],
       "target_color": [
-        171,
-        74,
-        209
+        164,
+        71,
+        201
       ],
       "f0": 10
     },
@@ -4221,9 +4788,9 @@
         255
       ],
       "target_color": [
-        98,
-        147,
-        209
+        94,
+        141,
+        201
       ],
       "f0": 10
     },
@@ -4237,9 +4804,9 @@
         255
       ],
       "target_color": [
-        221,
-        221,
-        49
+        212,
+        212,
+        47
       ],
       "f0": 10
     },
@@ -4253,9 +4820,9 @@
         255
       ],
       "target_color": [
-        123,
-        197,
-        24
+        118,
+        189,
+        23
       ],
       "f0": 10
     },
@@ -4269,9 +4836,9 @@
         255
       ],
       "target_color": [
-        233,
-        123,
-        160
+        224,
+        118,
+        154
       ],
       "f0": 10
     },
@@ -4285,9 +4852,9 @@
         255
       ],
       "target_color": [
-        74,
-        74,
-        74
+        71,
+        71,
+        71
       ],
       "f0": 10
     },
@@ -4301,9 +4868,9 @@
         255
       ],
       "target_color": [
-        147,
-        147,
-        147
+        141,
+        141,
+        141
       ],
       "f0": 10
     },
@@ -4317,9 +4884,9 @@
         255
       ],
       "target_color": [
-        74,
-        123,
-        147
+        71,
+        118,
+        141
       ],
       "f0": 10
     },
@@ -4333,9 +4900,9 @@
         255
       ],
       "target_color": [
-        123,
-        61,
-        171
+        118,
+        59,
+        164
       ],
       "f0": 10
     },
@@ -4349,9 +4916,9 @@
         255
       ],
       "target_color": [
-        49,
-        74,
-        171
+        47,
+        71,
+        164
       ],
       "f0": 10
     },
@@ -4365,9 +4932,9 @@
         255
       ],
       "target_color": [
-        98,
-        74,
-        49
+        94,
+        71,
+        47
       ],
       "f0": 10
     },
@@ -4381,9 +4948,9 @@
         255
       ],
       "target_color": [
-        98,
-        123,
-        49
+        94,
+        118,
+        47
       ],
       "f0": 10
     },
@@ -4397,9 +4964,9 @@
         255
       ],
       "target_color": [
-        147,
-        49,
-        49
+        141,
+        47,
+        47
       ],
       "f0": 10
     },
@@ -4413,9 +4980,9 @@
         255
       ],
       "target_color": [
-        24,
-        24,
-        24
+        23,
+        23,
+        23
       ],
       "f0": 10
     },
@@ -4483,9 +5050,9 @@
         255
       ],
       "target_color": [
-        44,
-        38,
-        47
+        42,
+        36,
+        45
       ],
       "f0": 10,
       "connected_glass": true
@@ -4777,7 +5344,7 @@
     },
     {
       "name": "dark_oak_door_top",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -4796,7 +5363,7 @@
     },
     {
       "name": "dark_oak_door_bottom",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -4815,7 +5382,7 @@
     },
     {
       "name": "dark_oak_trapdoor",
-      "material": "natural_walnut_veneer_vertical",
+      "material": "walnut",
       "recipe": "material",
       "tint": [
         255,
@@ -5176,7 +5743,7 @@
     },
     {
       "name": "warped_door_top",
-      "material": "oak_veneer_02_vertical",
+      "material": "white_maple_veneer_vertical",
       "recipe": "material",
       "tint": [
         255,
@@ -5195,7 +5762,7 @@
     },
     {
       "name": "warped_door_bottom",
-      "material": "oak_veneer_02_vertical",
+      "material": "white_maple_veneer_vertical",
       "recipe": "material",
       "tint": [
         255,
@@ -5214,7 +5781,7 @@
     },
     {
       "name": "warped_trapdoor",
-      "material": "oak_veneer_02_vertical",
+      "material": "white_maple_veneer_vertical",
       "recipe": "material",
       "tint": [
         255,
@@ -5617,6 +6184,704 @@
       "layout_metal_id": 230,
       "f0": 10,
       "porosity": 30
+    },
+    {
+      "name": "bamboo_planks",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        193,
+        173,
+        80
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "bamboo_fence",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        186,
+        89
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "bamboo_fence_particle",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        186,
+        85
+      ],
+      "f0": 10,
+      "porosity": 40,
+      "pattern_seed": "bamboo_particle"
+    },
+    {
+      "name": "bamboo_fence_gate",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        206,
+        186,
+        87
+      ],
+      "f0": 10,
+      "porosity": 40
+    },
+    {
+      "name": "bamboo_fence_gate_particle",
+      "material": "white_maple_veneer",
+      "recipe": "bamboo",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        207,
+        186,
+        85
+      ],
+      "f0": 10,
+      "porosity": 40,
+      "pattern_seed": "bamboo_particle"
+    },
+    {
+      "name": "lever",
+      "material": "oak_veneer_02_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        111,
+        93,
+        67
+      ],
+      "layout": "materials/shaped_layouts/lever.png",
+      "layout_metal_id": 230,
+      "f0": 10,
+      "porosity": 30
+    },
+    {
+      "name": "ancient_debris_side",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        96,
+        64,
+        56
+      ]
+    },
+    {
+      "name": "ancient_debris_top",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        95,
+        66,
+        58
+      ]
+    },
+    {
+      "name": "basalt_side",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        73,
+        78
+      ]
+    },
+    {
+      "name": "basalt_top",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        81,
+        81,
+        86
+      ]
+    },
+    {
+      "name": "chiseled_nether_bricks",
+      "material": "brick_red",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        46,
+        23,
+        27
+      ]
+    },
+    {
+      "name": "chiseled_polished_blackstone",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        54,
+        49,
+        57
+      ]
+    },
+    {
+      "name": "chiseled_quartz_block",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        232,
+        227,
+        218
+      ]
+    },
+    {
+      "name": "chiseled_quartz_block_top",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        232,
+        227,
+        217
+      ]
+    },
+    {
+      "name": "crying_obsidian",
+      "material": "nether_lava_flow",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        33,
+        10,
+        60
+      ],
+      "emissive_map": "materials/nether_lava_flow/emission.jpg"
+    },
+    {
+      "name": "gilded_blackstone",
+      "material": "nether_dark_rock",
+      "recipe": "ore",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        56,
+        43,
+        38
+      ],
+      "ore_color": [
+        204,
+        161,
+        63
+      ],
+      "ore_f0": 231
+    },
+    {
+      "name": "glowstone",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        172,
+        131,
+        84
+      ],
+      "emissive": 112
+    },
+    {
+      "name": "netherite_block",
+      "material": "metal_plate_02",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        67,
+        61,
+        64
+      ],
+      "f0": 230
+    },
+    {
+      "name": "obsidian",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        15,
+        11,
+        25
+      ]
+    },
+    {
+      "name": "polished_basalt_side",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        89,
+        88,
+        92
+      ]
+    },
+    {
+      "name": "polished_basalt_top",
+      "material": "nether_dark_rock",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        99,
+        99,
+        101
+      ]
+    },
+    {
+      "name": "quartz_block_bottom",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        237,
+        230,
+        224
+      ]
+    },
+    {
+      "name": "quartz_block_side",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        236,
+        230,
+        223
+      ]
+    },
+    {
+      "name": "quartz_block_top",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        236,
+        230,
+        223
+      ]
+    },
+    {
+      "name": "quartz_bricks",
+      "material": "concrete_wall",
+      "recipe": "brick",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        235,
+        229,
+        222
+      ]
+    },
+    {
+      "name": "quartz_pillar_side",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        236,
+        231,
+        224
+      ]
+    },
+    {
+      "name": "quartz_pillar_top",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        235,
+        230,
+        223
+      ]
+    },
+    {
+      "name": "soul_sand",
+      "material": "brown_mud_dry",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        81,
+        62,
+        51
+      ]
+    },
+    {
+      "name": "soul_soil",
+      "material": "brown_mud_03",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        76,
+        58,
+        47
+      ]
+    },
+    {
+      "name": "shroomlight",
+      "material": "sandstone_cracks",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        241,
+        147,
+        71
+      ],
+      "emissive": 72
+    },
+    {
+      "name": "nether_wart_block",
+      "material": "brown_mud_03",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        115,
+        3,
+        2
+      ]
+    },
+    {
+      "name": "warped_wart_block",
+      "material": "concrete_wall",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        23,
+        120,
+        121
+      ]
+    },
+    {
+      "name": "crimson_nylium",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        131,
+        31,
+        31
+      ]
+    },
+    {
+      "name": "crimson_nylium_side",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        107,
+        27,
+        27
+      ]
+    },
+    {
+      "name": "warped_nylium",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        43,
+        114,
+        101
+      ]
+    },
+    {
+      "name": "warped_nylium_side",
+      "material": "forest_ground",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        73,
+        62,
+        60
+      ]
+    },
+    {
+      "name": "crimson_stem_top",
+      "material": "cherry_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        113,
+        50,
+        70
+      ]
+    },
+    {
+      "name": "stripped_crimson_stem",
+      "material": "cherry_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        137,
+        57,
+        90
+      ]
+    },
+    {
+      "name": "stripped_crimson_stem_top",
+      "material": "cherry_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        122,
+        56,
+        83
+      ]
+    },
+    {
+      "name": "warped_stem_top",
+      "material": "white_maple_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        53,
+        110,
+        110
+      ]
+    },
+    {
+      "name": "stripped_warped_stem",
+      "material": "white_maple_veneer_vertical",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        58,
+        151,
+        148
+      ]
+    },
+    {
+      "name": "stripped_warped_stem_top",
+      "material": "white_maple_veneer",
+      "recipe": "material",
+      "tint": [
+        255,
+        255,
+        255
+      ],
+      "target_color": [
+        52,
+        129,
+        124
+      ]
+    }
+  ],
+  "entity_textures": [
+    {
+      "path": "entity/chicken/chicken_temperate",
+      "albedo": "entity_textures/chicken/chicken_temperate.png",
+      "normal": "entity_textures/chicken/chicken_temperate_n.png",
+      "specular": "entity_textures/chicken/chicken_temperate_s.png",
+      "source": "Original procedural feathered texture generated by scripts/build_chicken_adult_pilot.py",
+      "license": "Project-created procedural artwork; no third-party image source"
+    },
+    {
+      "path": "entity/cow/cow_temperate",
+      "albedo": "entity_textures/cow/cow_temperate.png",
+      "normal": "entity_textures/cow/cow_temperate_n.png",
+      "specular": "entity_textures/cow/cow_temperate_s.png",
+      "source": "Original procedural hide pattern generated by scripts/build_common_mob_pilot.py",
+      "license": "Project-created procedural artwork; no third-party image source"
+    },
+    {
+      "path": "entity/pig/pig_temperate",
+      "albedo": "entity_textures/pig/pig_temperate.png",
+      "normal": "entity_textures/pig/pig_temperate_n.png",
+      "specular": "entity_textures/pig/pig_temperate_s.png",
+      "source": "Original procedural skin texture generated by scripts/build_common_mob_pilot.py",
+      "license": "Project-created procedural artwork; no third-party image source"
+    },
+    {
+      "path": "entity/sheep/sheep",
+      "albedo": "entity_textures/sheep/sheep.png",
+      "normal": "entity_textures/sheep/sheep_n.png",
+      "specular": "entity_textures/sheep/sheep_s.png",
+      "source": "Original procedural skin and face texture generated by scripts/build_common_mob_pilot.py",
+      "license": "Project-created procedural artwork; no third-party image source"
+    },
+    {
+      "path": "entity/sheep/sheep_wool",
+      "albedo": "entity_textures/sheep/sheep_wool.png",
+      "normal": "entity_textures/sheep/sheep_wool_n.png",
+      "specular": "entity_textures/sheep/sheep_wool_s.png",
+      "source": "Original procedural tintable wool texture generated by scripts/build_common_mob_pilot.py",
+      "license": "Project-created procedural artwork; no third-party image source"
     }
   ],
   "checksums": {
@@ -5629,17 +6894,11 @@
     "materials/brick_red/color.jpg": "09eae3f78d665a4308b3bb7e5f2c0a7e70ea52c6679f223b91230d762d586f01",
     "materials/brick_red/roughness.jpg": "702c1b3b1859ed7b1ba307eddb91499439f00b5ed6da1eeb15a2ee5d79d953db",
     "materials/brick_red/normal.jpg": "486bb646d2a07fdad5fb3e86a914389d660168992654e28eb0e1204e4468b455",
-    "materials/walnut/color.jpg": "86e77aef79e47642f261b5bc95b5569715da3350417f7b44830cc8f131876bd9",
-    "materials/walnut/roughness.jpg": "b37910b68632abd3df30a7cd343961267cba44b3519e1d3354dd450d8a907882",
-    "materials/black_painted_planks/color.jpg": "dcb953fb3f0a3d1d9ed4fb3bdd46012e839df53d0e7799b5cd6cedb7721418f7",
-    "materials/black_painted_planks/roughness.jpg": "aa05db7dd53149ca645e7d8984e2238382f5293d3dfeff09cc2d7246aa9d852e",
-    "materials/black_painted_planks/normal.jpg": "dbb9568078bed3275dd69eade2a3d102ac324c4f4239061e1142e8075098e021",
+    "materials/walnut/color.jpg": "d8c971e403b185b5c350d1e6fa75c3e7fcc36130781c7686263f6bcd23ac4db1",
+    "materials/walnut/roughness.jpg": "5cb9d78ec685155d2b66a1db01abc61049d00953d783d0c78d829512de9ab0b4",
     "materials/rusted_shutter/color.jpg": "7fdd58c32a2d4b0595441391e05ec15a228fab595d4b8eae1c57fdfbc700b9f9",
     "materials/rusted_shutter/roughness.jpg": "4f271d12346b2c73d57d858481bf9b6a9628f0031ffa50a07195df874c35d671",
     "materials/rusted_shutter/normal.jpg": "c140aafd2fb4f691aecca720c88bd1131f4bb03555efbaf3936997f2f52088a7",
-    "materials/cotton_jersey/color.jpg": "ac428ff21d00d3d92f780113c69978de6e8126a6d3b75e5bfba10404b97d981d",
-    "materials/cotton_jersey/normal.jpg": "c886ddf51c805aa1a16352fa2e2738944ed6aee79f17a9f1519548caddfa52f3",
-    "materials/cotton_jersey/roughness.jpg": "db14af3239b6f8cde9ab16c01c940eb66615dd7b635086e138494db871a3eb64",
     "materials/forest_ground/color.jpg": "892c12442d35cdd01a3b5af56447fa7ed0221157255a040c1442b60b8410cb40",
     "materials/forest_ground/normal.jpg": "cf4c1793a7cdb81e4fdff220222d42f549c0d2bde680f0f2ee2beccae324b82a",
     "materials/forest_ground/arm.jpg": "e2f4fe1721748dabe24e7649ce0d870c5c31163e56eea67f1ece4b685b16ed90",
@@ -5707,56 +6966,95 @@
     "materials/clay_floor/arm.png": "7d1023800e6f29e694f76cd996116df083fb5be9d85a115fa39c03781eba629f",
     "materials/procedural_glass/color.png": "28d42333599aea5d3d7c1476f17a5ae50bcc0e8d3f1dd09f0d77359b667adcde",
     "materials/procedural_glass/roughness.png": "c80b03e59db65ff6c5e7bf07d3e6f91c5aa3425b1a746df4420c7919a4179623",
-    "materials/shaped_layouts/acacia_door_top.png": "411867f5e257ce906ede45a757ad4be05022806f2b4c21c08c9fcbf9d2555dff",
-    "materials/shaped_layouts/acacia_trapdoor.png": "1247819f47b335f618cfcfb2f39b0fb388484634512787202d79e85c8399cb90",
-    "materials/shaped_layouts/acacia_door_bottom.png": "3d84365077d8161b85c38ccace7bd47a5eb7d489f57d698adbb821916b0513c3",
-    "materials/shaped_layouts/bamboo_door_top.png": "a78fc723b71925113eb86aef5d78afa99b9c233f366d7a2b30084d39a5d46b54",
-    "materials/shaped_layouts/bamboo_door_bottom.png": "9b4fb79094b7f9e410a6153fe2c6ad96e9cec9e304762922964a99e4b403e997",
-    "materials/shaped_layouts/bamboo_trapdoor.png": "611748c3529c011dac8220902e29644a4d756f3e5cf0d4e5cb23885536617212",
-    "materials/shaped_layouts/birch_door_top.png": "9eb4f2b4e444782b33f6a8df261fcac2cf838dac9820a6cfd816e2c3ef7bc189",
-    "materials/shaped_layouts/birch_door_bottom.png": "69414f4589d87688943234016f908b19fbd4ffce4fc00bd205faaf03a9383a79",
-    "materials/shaped_layouts/birch_trapdoor.png": "79d0b39461242ed63f8a37b079d5bfdbf20ae18c8560706484b1c756b43776ef",
-    "materials/shaped_layouts/cherry_door_top.png": "ea35b04e0673c3c9e39058c6eb9af286f4586eb9d35584ff5c44c7f3f94e1ded",
-    "materials/shaped_layouts/cherry_door_bottom.png": "f1945cf96e75de1243d207a41d831c329e0ce793ea65b4007f62706fe1e277e8",
-    "materials/shaped_layouts/cherry_trapdoor.png": "a00fd478436b16a44fa21e3e40fc846f5b67a255262f1e61d8c3b65821a9f20e",
-    "materials/shaped_layouts/copper_door_top.png": "a97735403c8d1aa9d52a8330d2b11403ab1eddcb1a0b94770d03907fa43bf363",
-    "materials/shaped_layouts/copper_door_bottom.png": "8d6d25ca5be4542d42c8d3d27e77c8bd4bb57f0f2ea61614e082432e0812604d",
-    "materials/shaped_layouts/copper_trapdoor.png": "fe23a5d49ec505015294eb4ead93d7a4bc09c0cad910a13ba5f21ca9af342be4",
-    "materials/shaped_layouts/crimson_door_top.png": "590356882d7ffe1e033e098519d92541b4e6b912084fe36cf3f4eb2ddb475b91",
-    "materials/shaped_layouts/crimson_door_bottom.png": "3d3c0742ec75a2de37e18ce4f12f68b57eb46bfe119cda1c2448303e4ca65735",
-    "materials/shaped_layouts/crimson_trapdoor.png": "fc16b97c178ea19c0cf03ebb6f760b688c70e462e417dfd020225bcc8387b9e3",
-    "materials/shaped_layouts/dark_oak_door_top.png": "0f6dc9bbd30659032a2670c9e086dce00481e27ebfc70787f3ec6167b093efdc",
-    "materials/shaped_layouts/dark_oak_door_bottom.png": "df13465e2d97d3068bdc6e012d1a03af32a7a6a1ca0622fc7fe1311ab250ed73",
-    "materials/shaped_layouts/dark_oak_trapdoor.png": "643098e16d0e05b92cf3fcd8c97ed8675ab7d8bc4d18f0c0a48152f2abfaa4ba",
-    "materials/shaped_layouts/iron_door_top.png": "59a69adb986aadbb6bd0125607b722662f9ec82c060fa28b02f5f1470a040a4d",
-    "materials/shaped_layouts/iron_door_bottom.png": "c484f31acd983eb05030cee4d5726eeefc95fad402e080146e6919d8a1f8c22b",
-    "materials/shaped_layouts/iron_trapdoor.png": "0badaa57e57cf9b4432ed601cfaae012183ec65ee55ce2085ff1edf59787a01a",
-    "materials/shaped_layouts/jungle_door_top.png": "4da83e4cd15a57f64d60558ba5fda75d931536fe9c374ca995dcea46c531a788",
-    "materials/shaped_layouts/jungle_door_bottom.png": "850e6414bcb789a7b468d756d8b9992a2383430bcf246a7e0b0b24f1567feecb",
-    "materials/shaped_layouts/jungle_trapdoor.png": "ef9c9fc7895fadeafba3bba6881e38ff846195f9b0389a57af379217d892e39d",
-    "materials/shaped_layouts/mangrove_door_top.png": "2aabee190e318ac5cfb491ac3112d718041203824df0487ab14b2a13657d7fcb",
-    "materials/shaped_layouts/mangrove_door_bottom.png": "ff2cba13d169ef88539325b7244edf2131465fd3f3981997ea9227d7cf9b60fe",
-    "materials/shaped_layouts/mangrove_trapdoor.png": "4cb05e8d1d3f4a32533e56f0e6ba2fc9f7e7717d01eafb65374fa5eeb9a549cb",
-    "materials/shaped_layouts/oak_door_top.png": "59a69adb986aadbb6bd0125607b722662f9ec82c060fa28b02f5f1470a040a4d",
-    "materials/shaped_layouts/oak_door_bottom.png": "c484f31acd983eb05030cee4d5726eeefc95fad402e080146e6919d8a1f8c22b",
-    "materials/shaped_layouts/oak_trapdoor.png": "0badaa57e57cf9b4432ed601cfaae012183ec65ee55ce2085ff1edf59787a01a",
-    "materials/shaped_layouts/pale_oak_door_top.png": "13dc2b09fc12565b2a4b2c1a5321121146114fc63b2fcd4829da8e42371bd408",
-    "materials/shaped_layouts/pale_oak_door_bottom.png": "b9c8e1f4040bb70acc62052bf71415723434b46c5581a9477f9d0481066f427e",
-    "materials/shaped_layouts/pale_oak_trapdoor.png": "79d0b39461242ed63f8a37b079d5bfdbf20ae18c8560706484b1c756b43776ef",
-    "materials/shaped_layouts/poplar_door_top.png": "085c7bd2ee34a00b3b199b41e947221a0a33d211ad2820874cfb4bac0d41fbc0",
-    "materials/shaped_layouts/poplar_door_bottom.png": "46353e2d114cf21b1187921ed120e54bf6342999b94dffca9eff9dd99b261b22",
-    "materials/shaped_layouts/poplar_trapdoor.png": "fba6426f05c8d42461e7b994fb6d59dd839a66f7b782e5635effcf426e59707e",
-    "materials/shaped_layouts/spruce_door_top.png": "9e638e64600be9514e0cbd4dfed5bb285184519b6939eb47562b69f7f23d0ee6",
-    "materials/shaped_layouts/spruce_door_bottom.png": "7ced15697287c2615da519bbbf019002b90119906553b23438d9481cbec28c28",
+    "materials/shaped_layouts/acacia_door_top.png": "2afa5a9204813fca3a4df9f6357b397d4f2367bc144b9b4db291dc7d55b0f593",
+    "materials/shaped_layouts/acacia_trapdoor.png": "ff532958d89d855ba0fd1f38c5402dacbc1b4e57b20b9fea60260236b9998612",
+    "materials/shaped_layouts/acacia_door_bottom.png": "18fb8296f8f59970c1ea7807d8181eecb424e2e7bb62a721d475ceb051b72b19",
+    "materials/shaped_layouts/bamboo_door_top.png": "8c85e5be3b41898a8598014cbcc19dde0d2aa5280b15da782ff9d5c839d8f2de",
+    "materials/shaped_layouts/bamboo_door_bottom.png": "70ca8bc2d1741898ad68344715f1ba8936c51e2ed87477d9d4f0a59fc1e694cb",
+    "materials/shaped_layouts/bamboo_trapdoor.png": "3df2d28df970c8e5f7b485bd2d5f35dd65ad0d926a7775884aa6118b006aa503",
+    "materials/shaped_layouts/birch_door_top.png": "1e03811db6d1b96d54fed1eb4ea6a88da796b93eb8d1ae2e301af692a157372c",
+    "materials/shaped_layouts/birch_door_bottom.png": "c475a0ff73df87d942d64d91d497ae8a39a7dd6cacd717dcb6a4a37c71fc5554",
+    "materials/shaped_layouts/birch_trapdoor.png": "b88fc9a77c5594c8eeb2931ca7092fb6f70236adb59a37b15a2d0bc8eac7e323",
+    "materials/shaped_layouts/cherry_door_top.png": "b247be274f709355beca41993c65497145dc670e06dd8567c50d097855a1bb47",
+    "materials/shaped_layouts/cherry_door_bottom.png": "7dd107ab2a7a359f59b9d1bdb2a92f1a1176a10a9a03af49bf07c2fa507e864f",
+    "materials/shaped_layouts/cherry_trapdoor.png": "9d35884601af555c7269a754013a01b122de9de3c384da7e53dfee8fd8f4c074",
+    "materials/shaped_layouts/copper_door_top.png": "92d3a27f87d2e875879b6ba7421e099defbeac0e6b40468c2ec8b244ba3b41a0",
+    "materials/shaped_layouts/copper_door_bottom.png": "dd70f73ea8b93d27466e05e129068967deb4fccc845bf9e2b4d18ae999af3755",
+    "materials/shaped_layouts/copper_trapdoor.png": "d7b1b27613b8557519601d9a3d07d5dfa38efea86910e380ef154bd8aff8b36c",
+    "materials/shaped_layouts/crimson_door_top.png": "6029620744b4db989d11766683c496a92c2a02615599aa57de5b7d6e59bc2b7d",
+    "materials/shaped_layouts/crimson_door_bottom.png": "31ee1ee302ef6cffdd80b86a7ee1ee41d1e290b0894b4908b25f5366b7ffc83b",
+    "materials/shaped_layouts/crimson_trapdoor.png": "436139f57b25a3070ae8faaf76b81b3786227b4da6024037f4d77bb3b3fb56d2",
+    "materials/shaped_layouts/dark_oak_door_top.png": "9b62f8f586ab26b717551e132745c8e2b685011046246cf7fcd1cfc7f7cc165d",
+    "materials/shaped_layouts/dark_oak_door_bottom.png": "f9b7bb40252d50fe65d23782caefe4fc6be46a46fb94d4ea51208c10a1a2aba7",
+    "materials/shaped_layouts/dark_oak_trapdoor.png": "752fde0f75fc5b92ff7097079c1151621942776841540338bf31fc501c03eaea",
+    "materials/shaped_layouts/iron_door_top.png": "04d96501621d4d7b22a15bec631e5d522d2e89271ce1e44ce08bf34e9fbab12b",
+    "materials/shaped_layouts/iron_door_bottom.png": "93b85e8d68b0f90e68ecab352ac998a26f301d0af9b1bf3a0ec14282777a3f65",
+    "materials/shaped_layouts/iron_trapdoor.png": "20d8769b542b798f3300cb117f4bf51969d9d5eb5190711300fa2a0aa8ae4f76",
+    "materials/shaped_layouts/jungle_door_top.png": "9296c961206baa8e7d55be6302cde7cbecb4cde66259eae4c23f9d1f18f77a1b",
+    "materials/shaped_layouts/jungle_door_bottom.png": "6da44b1561e1dc515514fb568b25bac763fa76752437ac95267240771bcd430e",
+    "materials/shaped_layouts/jungle_trapdoor.png": "c1bd2bea3d6ab51e306908e197434d969662af3c2ca6a529f90b5fb7265a2120",
+    "materials/shaped_layouts/mangrove_door_top.png": "895583118afb77c22ede0b52c9bce865213be4302c77bc4513997095e9a8de8b",
+    "materials/shaped_layouts/mangrove_door_bottom.png": "1ec1af80705f1b2c79a328a2e22121edc0d12890f977ab37cb4ab9771eef4b1c",
+    "materials/shaped_layouts/mangrove_trapdoor.png": "6842d19c8482865fdf3d0f6e961a1a43e3ae46a44f9f9bf008f3b2d7f06ed6b6",
+    "materials/shaped_layouts/oak_door_top.png": "04d96501621d4d7b22a15bec631e5d522d2e89271ce1e44ce08bf34e9fbab12b",
+    "materials/shaped_layouts/oak_door_bottom.png": "93b85e8d68b0f90e68ecab352ac998a26f301d0af9b1bf3a0ec14282777a3f65",
+    "materials/shaped_layouts/oak_trapdoor.png": "20d8769b542b798f3300cb117f4bf51969d9d5eb5190711300fa2a0aa8ae4f76",
+    "materials/shaped_layouts/pale_oak_door_top.png": "1e03811db6d1b96d54fed1eb4ea6a88da796b93eb8d1ae2e301af692a157372c",
+    "materials/shaped_layouts/pale_oak_door_bottom.png": "c475a0ff73df87d942d64d91d497ae8a39a7dd6cacd717dcb6a4a37c71fc5554",
+    "materials/shaped_layouts/pale_oak_trapdoor.png": "b88fc9a77c5594c8eeb2931ca7092fb6f70236adb59a37b15a2d0bc8eac7e323",
+    "materials/shaped_layouts/poplar_door_top.png": "1157da1678b385359302bc731c6fbaefddef13304bb26ff891f83bfcd03bc9c7",
+    "materials/shaped_layouts/poplar_door_bottom.png": "12ebce13e399b9ccd9848cc0f1f3f6fbf79825f22aa20025c059bc0fa2f01d66",
+    "materials/shaped_layouts/poplar_trapdoor.png": "4feb21cdefd92d3aa4f65252abf54122584b4fc56cc255b9090d5f55c92c4610",
+    "materials/shaped_layouts/spruce_door_top.png": "c65ea37024bf17a93c86a2eb9ffabd3c37f7a997fafdc6be4f8ad4164e1a4792",
+    "materials/shaped_layouts/spruce_door_bottom.png": "28721aa12bf1dd530223411a2fa539d450066810cd131e55a5e89030d947d699",
     "materials/shaped_layouts/spruce_trapdoor.png": "82d701abf3820271348ee0abc810ee04042afe10b7fbac14f46afa7a869030c2",
-    "materials/shaped_layouts/warped_door_top.png": "590356882d7ffe1e033e098519d92541b4e6b912084fe36cf3f4eb2ddb475b91",
-    "materials/shaped_layouts/warped_door_bottom.png": "3d3c0742ec75a2de37e18ce4f12f68b57eb46bfe119cda1c2448303e4ca65735",
-    "materials/shaped_layouts/warped_trapdoor.png": "fc16b97c178ea19c0cf03ebb6f760b688c70e462e417dfd020225bcc8387b9e3",
+    "materials/shaped_layouts/warped_door_top.png": "6029620744b4db989d11766683c496a92c2a02615599aa57de5b7d6e59bc2b7d",
+    "materials/shaped_layouts/warped_door_bottom.png": "31ee1ee302ef6cffdd80b86a7ee1ee41d1e290b0894b4908b25f5366b7ffc83b",
+    "materials/shaped_layouts/warped_trapdoor.png": "436139f57b25a3070ae8faaf76b81b3786227b4da6024037f4d77bb3b3fb56d2",
     "materials/shaped_layouts/ladder.png": "251f6b8b86a5308073608ae6e1297735049607d3a03cf46ed7d480edb3dcd739",
     "materials/shaped_layouts/bars.png": "45684048efa64577d10a25380e24eabf8bf6b6ace210d549e5afa2436a43d400",
     "materials/metal_plate_02/diff.jpg": "5ae0cf878a8ad486e59c982efcb39c13bfd0752a9906b8195fbaecaf428fc001",
     "materials/metal_plate_02/nor.jpg": "5bb27bb9ade25464648fcb99ca049db6edef823e281ddf60482d90080361e27c",
-    "materials/metal_plate_02/rough.jpg": "15c10e985bf4317393571fd7ec1b19de57177b7d88f2e4a5493ec9c290bac47b"
+    "materials/metal_plate_02/rough.jpg": "15c10e985bf4317393571fd7ec1b19de57177b7d88f2e4a5493ec9c290bac47b",
+    "materials/shaped_layouts/lever.png": "47e0081ecab32b13d18a4cb2abf5200bcf932d0d8a5cb28e8798ef2f087d07a5",
+    "materials/tree_leaves/height.png": "84fea151ce66f223046fa9f1698a2e7696512eebdbbf441fde9e0ec8cd3f2a27",
+    "materials/tree_leaves/ao.png": "694b2fa001e61839d13c85138ea44026ba3909957281144ca87b79502cb4e949",
+    "materials/walnut/normal.jpg": "de823c2e9942ea77caeddab08add49688a9792b79aac496640fecaee9fbcb5c4",
+    "materials/walnut/ao.jpg": "355d1028bd45868906563b1b446acbc0216b78e24ecca6256808e67f64237a94",
+    "materials/poly_wool_herringbone/color.jpg": "fd889a46f617efd331e522e36b8ad2548e16e1cb018c001872f17537d7666af5",
+    "materials/poly_wool_herringbone/normal.jpg": "314ac7c1b7c101a48106e05199bfdb24e33671e58a6ccb334249b441d8e8ac98",
+    "materials/poly_wool_herringbone/roughness.jpg": "028b4fb92c322a31b5374171f62f43af2cfd6a012748be175fd44dbf1109903c",
+    "materials/bark_brown_01/color.jpg": "4213441aebcb72b9911f5a860e9ce74a61a8f6ce3b9c23d1f204173e7e7f6066",
+    "materials/bark_brown_01/normal.jpg": "9d1537b3429579436a62890bb7c5050a0172a15ce768787eacde81c5ccefc9cc",
+    "materials/bark_brown_01/roughness.jpg": "4e7f62508cf77faebfeee15ffb571ff02c45c18d5174aa19fcb8b98506359c5c",
+    "materials/bark_platanus/color.jpg": "4e302eeb6a66d50880484a08bd2c6e43974eb1636397d94d9c8bc54d508c2c1b",
+    "materials/bark_platanus/normal.jpg": "af36a887dc9cac3ea70902bc6e26b1d3f2608f39f96880f6e7766d93fefe43f5",
+    "materials/bark_platanus/roughness.jpg": "778135a767d90cdcdc486d4351956652c41645b8fd205ee86d73bfd7134bd1de",
+    "materials/nether_lava_003/arm.jpg": "f520d5529d7a39aba340b3af25b868ce0ef195afdc6d9b18b6e328fac3c76b90",
+    "materials/nether_lava_003/color.jpg": "1437772f086ce99e2f7cb1f9a1de722440061948c769ae373a51d99db83eae61",
+    "materials/nether_lava_003/normal.jpg": "de340c971937614c9b5df21aef25d8e953c2317b2958f0297c09f0803ff44929",
+    "materials/nether_dark_rock/arm.jpg": "d9675beb1a392569c842b2a06b6052a4c6f6af0e032a94528a1bdd3493e279dd",
+    "materials/nether_dark_rock/color.jpg": "4eac4ee0a7689eb68e7d4cc9f7263bbfffcc4a74ff472aba9a638337317476fb",
+    "materials/nether_dark_rock/normal.jpg": "870e3dd01ae943fc6c38ffb5bb0c3e8f38f86ab0f3e6c5107427a6a31157ae69",
+    "materials/nether_lava_flow/arm.jpg": "6de2b5c47eddb729819a41603fe03ee2c4c111f861bba560e7cb95b8a5735d65",
+    "materials/nether_lava_flow/color.jpg": "40ba401c328cbaff8b0f81e6dfe069a954a2fad23f43302e75eb8fac4a6d8d71",
+    "materials/nether_lava_flow/emission.jpg": "b0f3f798557984137fb677202fbc162613bc22a3b2f51b55732e0b67940738af",
+    "materials/nether_lava_flow/normal.jpg": "221ce607269b33fc6d30a6a141768eb3eb48bc946233bfa7e8207ee82efe6fa6",
+    "entity_textures/chicken/chicken_temperate.png": "5dd49b8ae7e757c5ea18446e4570f3cf29842445fe51ac0a1886b45dac9a818f",
+    "entity_textures/chicken/chicken_temperate_n.png": "a1cd4549d799728140cca316be44ebd67dba49962c98fc5b2bfba05fd78f9513",
+    "entity_textures/chicken/chicken_temperate_s.png": "6195d47e7fbda3f81b69c0d77626efbca2ffbe92cd3de7197cfd93d0ad10c554",
+    "entity_textures/cow/cow_temperate.png": "34bdb673471930cc2491b95d9c6ea2670c29d7517906134e1884d5fecba2348f",
+    "entity_textures/cow/cow_temperate_n.png": "9d3aa6abed96a344242fdb8da09e9a8b8e350f629de2e03ddd078426dc228afc",
+    "entity_textures/cow/cow_temperate_s.png": "c40f7ab25673d99552b540cd6e9963ff4f9896815c11144df87b73630f864a40",
+    "entity_textures/pig/pig_temperate.png": "65f046970845c6f23c04c39d76cd1d524480330deb5ac8cd3be3889734555299",
+    "entity_textures/pig/pig_temperate_n.png": "f6c8a4d9724d0f2686fe5137ad60691d837f6e78f7f161cc09c4cbc71fc0b0ad",
+    "entity_textures/pig/pig_temperate_s.png": "7ffe11dc780ad1f2d90b3677a3d1e1f77847299a92597ac03e9192a200741d79",
+    "entity_textures/sheep/sheep.png": "c1f95ad24fcc182269ee57d713e6c1f716bf114fe05598c26f8764ffd9c29373",
+    "entity_textures/sheep/sheep_n.png": "5bd33a0d7c7515ba3304f9f25202fc701955b5b80f234a22f21ebee3140ce1b3",
+    "entity_textures/sheep/sheep_s.png": "4fda0a79981091573bb8d69111714552e7f2b519bdc6547991a8ecd7591011c8",
+    "entity_textures/sheep/sheep_wool.png": "12a0255f5fa34514b455a4db8ba793c7f924fa2c39df3f0c384a5fa21fe4ae03",
+    "entity_textures/sheep/sheep_wool_n.png": "8ba9b8c80058079d9ade1966d76ba11ccd329c7c408794497d3ef9ff9d8fa838",
+    "entity_textures/sheep/sheep_wool_s.png": "c167cc02a74a5c763be902b6655067cf8e728386ffcd4978a75469ba3ee819e7"
   },
-  "pbr_strength": 0.4
+  "pbr_strength": 0.2
 }

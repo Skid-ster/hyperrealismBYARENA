@@ -1,0 +1,592 @@
+{
+  "version": "26.3",
+  "source": "https://github.com/InventivetalentDev/minecraft-assets",
+  "source_commit": "6c088630459d8ca369ef0d6c07636d7d63a3b0f1",
+  "method": "Pinned vanilla blockstate variants and recursively inherited model texture variables resolved; only assets/minecraft/textures/block references included. This is reference metadata, not bundled Minecraft artwork. Interactive blockstate summary records powered, hinge/open and top/bottom model families from the same pinned tree.",
+  "blocks": {
+    "cobblestone": [
+      "cobblestone"
+    ],
+    "cobblestone_stairs": [
+      "cobblestone"
+    ],
+    "cobblestone_slab": [
+      "cobblestone"
+    ],
+    "cobblestone_wall": [
+      "cobblestone"
+    ],
+    "stone": [
+      "stone"
+    ],
+    "stone_stairs": [
+      "stone"
+    ],
+    "stone_slab": [
+      "stone"
+    ],
+    "stone_bricks": [
+      "stone_bricks"
+    ],
+    "stone_brick_stairs": [
+      "stone_bricks"
+    ],
+    "stone_brick_slab": [
+      "stone_bricks"
+    ],
+    "stone_brick_wall": [
+      "stone_bricks"
+    ],
+    "bricks": [
+      "bricks"
+    ],
+    "brick_stairs": [
+      "bricks"
+    ],
+    "brick_slab": [
+      "bricks"
+    ],
+    "brick_wall": [
+      "bricks"
+    ],
+    "oak_planks": [
+      "oak_planks"
+    ],
+    "oak_stairs": [
+      "oak_planks"
+    ],
+    "oak_slab": [
+      "oak_planks"
+    ],
+    "oak_fence": [
+      "oak_planks"
+    ],
+    "oak_fence_gate": [
+      "oak_planks"
+    ],
+    "oak_door": [
+      "oak_door_bottom",
+      "oak_door_top"
+    ],
+    "oak_trapdoor": [
+      "oak_trapdoor"
+    ],
+    "sandstone": [
+      "sandstone",
+      "sandstone_bottom",
+      "sandstone_top"
+    ],
+    "sandstone_stairs": [
+      "sandstone",
+      "sandstone_bottom",
+      "sandstone_top"
+    ],
+    "sandstone_slab": [
+      "sandstone",
+      "sandstone_bottom",
+      "sandstone_top"
+    ],
+    "sandstone_wall": [
+      "sandstone"
+    ],
+    "red_sandstone": [
+      "red_sandstone",
+      "red_sandstone_bottom",
+      "red_sandstone_top"
+    ],
+    "red_sandstone_stairs": [
+      "red_sandstone",
+      "red_sandstone_bottom",
+      "red_sandstone_top"
+    ],
+    "red_sandstone_slab": [
+      "red_sandstone",
+      "red_sandstone_bottom",
+      "red_sandstone_top"
+    ],
+    "red_sandstone_wall": [
+      "red_sandstone"
+    ],
+    "deepslate": [
+      "deepslate",
+      "deepslate_top"
+    ],
+    "cobbled_deepslate": [
+      "cobbled_deepslate"
+    ],
+    "cobbled_deepslate_stairs": [
+      "cobbled_deepslate"
+    ],
+    "cobbled_deepslate_slab": [
+      "cobbled_deepslate"
+    ],
+    "cobbled_deepslate_wall": [
+      "cobbled_deepslate"
+    ],
+    "deepslate_bricks": [
+      "deepslate_bricks"
+    ],
+    "deepslate_brick_stairs": [
+      "deepslate_bricks"
+    ],
+    "deepslate_brick_slab": [
+      "deepslate_bricks"
+    ],
+    "deepslate_brick_wall": [
+      "deepslate_bricks"
+    ],
+    "blackstone": [
+      "blackstone",
+      "blackstone_top"
+    ],
+    "blackstone_stairs": [
+      "blackstone",
+      "blackstone_top"
+    ],
+    "blackstone_slab": [
+      "blackstone",
+      "blackstone_top"
+    ],
+    "blackstone_wall": [
+      "blackstone"
+    ],
+    "polished_blackstone": [
+      "polished_blackstone"
+    ],
+    "polished_blackstone_bricks": [
+      "polished_blackstone_bricks"
+    ],
+    "polished_blackstone_brick_stairs": [
+      "polished_blackstone_bricks"
+    ],
+    "polished_blackstone_brick_slab": [
+      "polished_blackstone_bricks"
+    ],
+    "polished_blackstone_brick_wall": [
+      "polished_blackstone_bricks"
+    ],
+    "spruce_planks": [
+      "spruce_planks"
+    ],
+    "spruce_stairs": [
+      "spruce_planks"
+    ],
+    "spruce_slab": [
+      "spruce_planks"
+    ],
+    "spruce_fence": [
+      "spruce_planks"
+    ],
+    "spruce_fence_gate": [
+      "spruce_planks"
+    ],
+    "spruce_door": [
+      "spruce_door_bottom",
+      "spruce_door_top"
+    ],
+    "spruce_trapdoor": [
+      "spruce_trapdoor"
+    ],
+    "birch_planks": [
+      "birch_planks"
+    ],
+    "birch_stairs": [
+      "birch_planks"
+    ],
+    "birch_slab": [
+      "birch_planks"
+    ],
+    "birch_fence": [
+      "birch_planks"
+    ],
+    "birch_fence_gate": [
+      "birch_planks"
+    ],
+    "birch_door": [
+      "birch_door_bottom",
+      "birch_door_top"
+    ],
+    "birch_trapdoor": [
+      "birch_trapdoor"
+    ],
+    "jungle_planks": [
+      "jungle_planks"
+    ],
+    "jungle_stairs": [
+      "jungle_planks"
+    ],
+    "jungle_slab": [
+      "jungle_planks"
+    ],
+    "jungle_fence": [
+      "jungle_planks"
+    ],
+    "jungle_fence_gate": [
+      "jungle_planks"
+    ],
+    "jungle_door": [
+      "jungle_door_bottom",
+      "jungle_door_top"
+    ],
+    "jungle_trapdoor": [
+      "jungle_trapdoor"
+    ],
+    "acacia_planks": [
+      "acacia_planks"
+    ],
+    "acacia_stairs": [
+      "acacia_planks"
+    ],
+    "acacia_slab": [
+      "acacia_planks"
+    ],
+    "acacia_fence": [
+      "acacia_planks"
+    ],
+    "acacia_fence_gate": [
+      "acacia_planks"
+    ],
+    "acacia_door": [
+      "acacia_door_bottom",
+      "acacia_door_top"
+    ],
+    "acacia_trapdoor": [
+      "acacia_trapdoor"
+    ],
+    "dark_oak_planks": [
+      "dark_oak_planks"
+    ],
+    "dark_oak_stairs": [
+      "dark_oak_planks"
+    ],
+    "dark_oak_slab": [
+      "dark_oak_planks"
+    ],
+    "dark_oak_fence": [
+      "dark_oak_planks"
+    ],
+    "dark_oak_fence_gate": [
+      "dark_oak_planks"
+    ],
+    "dark_oak_door": [
+      "dark_oak_door_bottom",
+      "dark_oak_door_top"
+    ],
+    "dark_oak_trapdoor": [
+      "dark_oak_trapdoor"
+    ],
+    "mangrove_planks": [
+      "mangrove_planks"
+    ],
+    "mangrove_stairs": [
+      "mangrove_planks"
+    ],
+    "mangrove_slab": [
+      "mangrove_planks"
+    ],
+    "mangrove_fence": [
+      "mangrove_planks"
+    ],
+    "mangrove_fence_gate": [
+      "mangrove_planks"
+    ],
+    "mangrove_door": [
+      "mangrove_door_bottom",
+      "mangrove_door_top"
+    ],
+    "mangrove_trapdoor": [
+      "mangrove_trapdoor"
+    ],
+    "cherry_planks": [
+      "cherry_planks"
+    ],
+    "cherry_stairs": [
+      "cherry_planks"
+    ],
+    "cherry_slab": [
+      "cherry_planks"
+    ],
+    "cherry_fence": [
+      "cherry_planks"
+    ],
+    "cherry_fence_gate": [
+      "cherry_planks"
+    ],
+    "cherry_door": [
+      "cherry_door_bottom",
+      "cherry_door_top"
+    ],
+    "cherry_trapdoor": [
+      "cherry_trapdoor"
+    ],
+    "pale_oak_planks": [
+      "pale_oak_planks"
+    ],
+    "pale_oak_stairs": [
+      "pale_oak_planks"
+    ],
+    "pale_oak_slab": [
+      "pale_oak_planks"
+    ],
+    "pale_oak_fence": [
+      "pale_oak_planks"
+    ],
+    "pale_oak_fence_gate": [
+      "pale_oak_planks"
+    ],
+    "pale_oak_door": [
+      "pale_oak_door_bottom",
+      "pale_oak_door_top"
+    ],
+    "pale_oak_trapdoor": [
+      "pale_oak_trapdoor"
+    ],
+    "bamboo_planks": [
+      "bamboo_planks"
+    ],
+    "bamboo_stairs": [
+      "bamboo_planks"
+    ],
+    "bamboo_slab": [
+      "bamboo_planks"
+    ],
+    "bamboo_fence": [
+      "bamboo_fence",
+      "bamboo_fence_particle"
+    ],
+    "bamboo_fence_gate": [
+      "bamboo_fence_gate",
+      "bamboo_fence_gate_particle"
+    ],
+    "bamboo_door": [
+      "bamboo_door_bottom",
+      "bamboo_door_top"
+    ],
+    "bamboo_trapdoor": [
+      "bamboo_trapdoor"
+    ],
+    "crimson_planks": [
+      "crimson_planks"
+    ],
+    "crimson_stairs": [
+      "crimson_planks"
+    ],
+    "crimson_slab": [
+      "crimson_planks"
+    ],
+    "crimson_fence": [
+      "crimson_planks"
+    ],
+    "crimson_fence_gate": [
+      "crimson_planks"
+    ],
+    "crimson_door": [
+      "crimson_door_bottom",
+      "crimson_door_top"
+    ],
+    "crimson_trapdoor": [
+      "crimson_trapdoor"
+    ],
+    "warped_planks": [
+      "warped_planks"
+    ],
+    "warped_stairs": [
+      "warped_planks"
+    ],
+    "warped_slab": [
+      "warped_planks"
+    ],
+    "warped_fence": [
+      "warped_planks"
+    ],
+    "warped_fence_gate": [
+      "warped_planks"
+    ],
+    "warped_door": [
+      "warped_door_bottom",
+      "warped_door_top"
+    ],
+    "warped_trapdoor": [
+      "warped_trapdoor"
+    ],
+    "lever": [
+      "cobblestone",
+      "lever"
+    ],
+    "ancient_debris": [
+      "ancient_debris_side",
+      "ancient_debris_top"
+    ],
+    "basalt": [
+      "basalt_side",
+      "basalt_top"
+    ],
+    "chiseled_nether_bricks": [
+      "chiseled_nether_bricks"
+    ],
+    "chiseled_polished_blackstone": [
+      "chiseled_polished_blackstone"
+    ],
+    "chiseled_quartz_block": [
+      "chiseled_quartz_block",
+      "chiseled_quartz_block_top"
+    ],
+    "cracked_nether_bricks": [
+      "cracked_nether_bricks"
+    ],
+    "cracked_polished_blackstone_bricks": [
+      "cracked_polished_blackstone_bricks"
+    ],
+    "crying_obsidian": [
+      "crying_obsidian"
+    ],
+    "gilded_blackstone": [
+      "gilded_blackstone"
+    ],
+    "glowstone": [
+      "glowstone"
+    ],
+    "netherite_block": [
+      "netherite_block"
+    ],
+    "nether_gold_ore": [
+      "nether_gold_ore"
+    ],
+    "nether_quartz_ore": [
+      "nether_quartz_ore"
+    ],
+    "netherrack": [
+      "netherrack"
+    ],
+    "obsidian": [
+      "obsidian"
+    ],
+    "polished_basalt": [
+      "polished_basalt_side",
+      "polished_basalt_top"
+    ],
+    "quartz_block": [
+      "quartz_block_side",
+      "quartz_block_top"
+    ],
+    "quartz_bricks": [
+      "quartz_bricks"
+    ],
+    "quartz_pillar": [
+      "quartz_pillar_side",
+      "quartz_pillar_top"
+    ],
+    "soul_sand": [
+      "soul_sand"
+    ],
+    "soul_soil": [
+      "soul_soil"
+    ],
+    "shroomlight": [
+      "shroomlight"
+    ],
+    "nether_wart_block": [
+      "nether_wart_block"
+    ],
+    "warped_wart_block": [
+      "warped_wart_block"
+    ],
+    "crimson_nylium": [
+      "crimson_nylium",
+      "crimson_nylium_side",
+      "netherrack"
+    ],
+    "warped_nylium": [
+      "netherrack",
+      "warped_nylium",
+      "warped_nylium_side"
+    ],
+    "stripped_crimson_stem": [
+      "stripped_crimson_stem",
+      "stripped_crimson_stem_top"
+    ],
+    "stripped_warped_stem": [
+      "stripped_warped_stem",
+      "stripped_warped_stem_top"
+    ],
+    "nether_bricks": [
+      "nether_bricks"
+    ],
+    "nether_brick_stairs": [
+      "nether_bricks"
+    ],
+    "nether_brick_slab": [
+      "nether_bricks"
+    ],
+    "red_nether_bricks": [
+      "red_nether_bricks"
+    ],
+    "quartz_stairs": [
+      "quartz_block_side",
+      "quartz_block_top"
+    ],
+    "quartz_slab": [
+      "quartz_block_side",
+      "quartz_block_top"
+    ]
+  },
+  "interactive_states": {
+    "lever": {
+      "properties": [
+        "face",
+        "facing",
+        "powered"
+      ],
+      "variant_count": 24,
+      "powered_false_models": [
+        "minecraft:block/lever_on"
+      ],
+      "powered_true_models": [
+        "minecraft:block/lever"
+      ],
+      "textures": [
+        "cobblestone",
+        "lever"
+      ]
+    },
+    "oak_door": {
+      "properties": [
+        "facing",
+        "half",
+        "hinge",
+        "open"
+      ],
+      "variant_count": 32,
+      "models": [
+        "minecraft:block/oak_door_bottom_left",
+        "minecraft:block/oak_door_bottom_left_open",
+        "minecraft:block/oak_door_bottom_right",
+        "minecraft:block/oak_door_bottom_right_open",
+        "minecraft:block/oak_door_top_left",
+        "minecraft:block/oak_door_top_left_open",
+        "minecraft:block/oak_door_top_right",
+        "minecraft:block/oak_door_top_right_open"
+      ],
+      "textures": [
+        "oak_door_bottom",
+        "oak_door_top"
+      ]
+    },
+    "oak_trapdoor": {
+      "properties": [
+        "facing",
+        "half",
+        "open"
+      ],
+      "variant_count": 16,
+      "models": [
+        "minecraft:block/oak_trapdoor_bottom",
+        "minecraft:block/oak_trapdoor_open",
+        "minecraft:block/oak_trapdoor_top"
+      ],
+      "textures": [
+        "oak_trapdoor"
+      ]
+    }
+  }
+}
