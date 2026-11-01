@@ -27,11 +27,13 @@
 #define SILVER 8
 #define OTHER_METAL 9
 
-// LabPBR is only decoded when the user enabled PBR_MODE and Iris detected a
-// resource pack declaring format=lab-pbr/1.3. Without that declaration Iris
-// still binds default normal/specular textures, but their bytes are not a
-// LabPBR material and must not be interpreted as one.
-#if PBR_MODE == 1 && defined(MC_TEXTURE_FORMAT_LAB_PBR)
+// The user-selected LabPBR mode is authoritative. Iris loads _n/_s sidecars
+// independently of the global texture.properties macro, and that macro can be
+// absent/stale when another pack is above HyperRealism or resources were
+// reloaded without a shader rebuild. Missing sidecars fall back to Iris'
+// default flat normal / zero specular bytes, which decode safely to a rough
+// dielectric. MC_TEXTURE_FORMAT_LAB_PBR is retained for diagnostics only.
+#if PBR_MODE == 1
 #define HYPERREALISM_LAB_PBR 1
 #else
 #define HYPERREALISM_LAB_PBR 0
@@ -196,7 +198,7 @@ Material materialFromSpecularMap(vec3 albedo, vec4 specularData) {
 
 // Diagnostic views for verifying that the resource-pack channels reach the
 // shader. These are development views, not a physically based lighting mode.
-vec3 pbrDebugColor(int mode, vec4 normalData, Material material) {
+vec3 pbrDebugColor(int mode, vec4 normalData, vec4 specularData, Material material) {
   if (mode == 1) {
     vec2 xy = normalData.rg * 2.0 - 1.0;
     float z = sqrt(max(1.0 - dot(xy, xy), 0.0));
@@ -209,6 +211,19 @@ vec3 pbrDebugColor(int mode, vec4 normalData, Material material) {
   if (mode == 6) return vec3(normalData.a);
   if (mode == 7) return vec3(material.porosity);
   if (mode == 8) return vec3(material.sss);
+  if (mode == 9) {
+    // Green = both sidecars present, yellow = one sidecar, red = neither.
+    // Blue channel indicates Iris detected the LabPBR texture.properties flag.
+    bool hasNormal = distance(normalData, vec4(0.5, 0.5, 1.0, 1.0)) > 0.02;
+    bool hasSpecular = distance(specularData, vec4(0.0)) > 0.02;
+    float formatFlag = 0.0;
+    #ifdef MC_TEXTURE_FORMAT_LAB_PBR
+    formatFlag = 1.0;
+    #endif
+    if (hasNormal && hasSpecular) return vec3(0.0, 1.0, formatFlag);
+    if (hasNormal || hasSpecular) return vec3(1.0, 0.75, formatFlag);
+    return vec3(1.0, 0.0, formatFlag);
+  }
   return material.albedo;
 }
 

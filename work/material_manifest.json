@@ -7056,5 +7056,5 @@
     "entity_textures/sheep/sheep_wool_n.png": "8ba9b8c80058079d9ade1966d76ba11ccd329c7c408794497d3ef9ff9d8fa838",
     "entity_textures/sheep/sheep_wool_s.png": "c167cc02a74a5c763be902b6655067cf8e728386ffcd4978a75469ba3ee819e7"
   },
-  "pbr_strength": 0.2
+  "pbr_strength": 1.0
 }

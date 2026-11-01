@@ -32,8 +32,10 @@ def main() -> int:
     require("#define tonemap agxTonemap" in tonemap, "Expected AgX default is missing")
     require("materialFromLabPBR" in material and "specularData" in material,
             "LabPBR material parsing is missing")
-    require("HYPERREALISM_LAB_PBR" in material and "MC_TEXTURE_FORMAT_LAB_PBR" in material,
-            "LabPBR decoding must be gated on the detected resource-pack format")
+    require("#if PBR_MODE == 1\n#define HYPERREALISM_LAB_PBR 1" in material,
+            "Explicit LabPBR mode must decode sidecars without depending on a stale global format flag")
+    require("MC_TEXTURE_FORMAT_LAB_PBR" in material and "Map Presence" in english,
+            "LabPBR format flag must remain visible in the map-presence diagnostic")
     require("labPBRNormal" in material and "normalData.b" in material and "normalData.a" in material,
             "LabPBR normal/AO/height channel separation is missing")
     require("f0Byte < 230" in material and "f0Byte < 238" in material and "OTHER_METAL" in material,
@@ -43,7 +45,7 @@ def main() -> int:
             "LabPBR porosity/SSS multiplexing is missing")
     require("emissionByte == 255" in material, "LabPBR no-emission sentinel is missing")
     require("#define PBR_NORMAL_STRENGTH 1.0" in settings and "#define PBR_AO_STRENGTH 1.0" in settings
-            and "#define PBR_DEBUG 0" in settings, "PBR controls/debug defaults are missing")
+            and "#define PBR_DEBUG 0" in settings and "#define PARALLAX\n" in settings, "PBR controls/debug/POM defaults are missing")
     require("PBR_NORMAL_STRENGTH" in properties and "PBR_AO_STRENGTH" in properties and "PBR_DEBUG" in properties,
             "PBR controls must be visible in Iris settings")
     for locale in (english, chinese):
@@ -55,7 +57,7 @@ def main() -> int:
                 f"{name} must use the shared LabPBR decoder")
         require("vec3 mappedNormal = texture(normals, texcoord).rgb;" not in gbuffer,
                 f"{name} still contains dead/incorrect entity normal code")
-        require("pbrDebugColor(PBR_DEBUG, normalData, material)" in gbuffer,
+        require("pbrDebugColor(PBR_DEBUG, normalData, specularData, material)" in gbuffer,
                 f"{name} must expose the PBR channel debug view")
     require("6a591097b6348155a4ba5a1aab92b79a2c9896d3" in readme,
             "Upstream source revision must remain pinned in the shader notes")

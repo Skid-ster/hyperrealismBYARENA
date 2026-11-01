@@ -674,7 +674,7 @@ fn bundled_catalog_is_consistent_with_audited_26_3_inventory() {
         });
         assert_eq!(texture.target_color, Some(slightly_darker), "{}", texture.name);
     }
-    assert!((m.pbr_strength - 0.2).abs() < 1e-6);
+    assert!((m.pbr_strength - 1.0).abs() < 1e-6);
     assert!(m.textures.iter().all(|t| !t.name.starts_with("water_")));
     for wood in [
         "acacia",
@@ -825,7 +825,7 @@ fn geological_surfaces_and_ore_host_rock_use_rock_face_material() {
 fn wood_and_wool_materials_match_species_and_grain_orientation() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&fs::read("work/material_manifest.json").unwrap()).unwrap();
-    assert_eq!(manifest["pbr_strength"], 0.2);
+    assert_eq!(manifest["pbr_strength"], 1.0);
     let textures: std::collections::HashMap<&str, &str> = manifest["textures"]
         .as_array()
         .unwrap()
@@ -951,7 +951,7 @@ fn nether_surface_coverage_uses_matching_cc0_materials_and_keeps_animations() {
             "animated/cutout texture was modified: {name}"
         );
     }
-    assert_eq!(manifest["pbr_strength"], 0.2);
+    assert_eq!(manifest["pbr_strength"], 1.0);
     assert!(manifest["textures"]
         .as_array()
         .unwrap()

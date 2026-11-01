@@ -58,7 +58,7 @@ pack unless its license permits it.
 2. Put it in your Minecraft instance's `minecraft/shaderpacks` folder. For the
    supplied ElyPrism instance that is
    `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\shaderpacks`.
-3. The published Preview 24 is named **HyperRealism 512×512**; current development
+3. The published Preview 25 is named **HyperRealism 512×512**; current development
    builds are named **HyperRealism 256×256**. Enable the version you installed in
    **Options → Resource Packs** and put it above competing packs.
 4. With the already-installed Iris, select Photon in **Options → Video
@@ -122,13 +122,13 @@ In Complementary Reimagined, the pack must be enabled **above** competing packs
 and **RP Support** must be **labPBR (RP Required)**; in Photon, set the texture
 format to labPBR and enable normal/specular mapping. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
-without it. Preview 14 introduced a global PBR strength of `0.2`, with no
-per-texture overrides; the current development manifest applies that same global
-setting across all 371 texture targets. In this generator that scales
-tangent-space normal slopes, height deviations around neutral, and smoothness
-to 20% of unit-strength, while AO fades toward white. Albedo and discrete
-LabPBR metal/F0 IDs, porosity and emission are preserved. This is defined
-channel scaling, not a guarantee of 20% perceived brightness or relief. Preview
+without it. Preview 25 uses a global PBR strength of `1.0`, with no
+per-texture overrides, across all 371 texture targets. Earlier previews used
+`0.2`, which compressed normal slopes, height deviations and smoothness to 20%
+and made PBR very subtle. Albedo and discrete LabPBR metal/F0 IDs, porosity and
+emission are preserved. Full channel strength is not a guarantee of a particular
+perceived brightness or relief; lighting, pack order and shader settings still
+matter. Preview
 15 supplies explicit, normal-derived height and conservative cavity AO for the
 shared leaf atlas; use POM if you want to inspect the shallow surface relief.
 This does not change leaf block geometry or create a fuller canopy. Roughness
@@ -146,7 +146,7 @@ procedure, not proof of a test on your PC.
 
 The development build now defaults to 256px: that is one quarter the texel
 count of 512px, so it should reduce texture storage and atlas pressure, but no
-VRAM, load-time or FPS benchmark has been run. The published Preview 24 is still
+VRAM, load-time or FPS benchmark has been run. The published Preview 25 is still
 512px. Use the optional 128px build for a smaller pack or 512px for more detail;
 actual memory and performance depend on Minecraft, shader, driver and hardware.
 
@@ -175,9 +175,10 @@ Minecraft/Continuity world rendering and shader appearance remain untested. A
 clear cutout's invisible interior may not reflect in shaders; tinted glass is
 translucent.
 
-Stone had a temporary higher strength in earlier previews, but Preview 14
-removes all per-texture overrides: stone and every other covered block now use
-the same global 0.2 strength. Normal Mapping must be on to see normal detail;
-POM is optional and may still make estimated height look unnatural. If blocks
-appear to bulge, disable POM or reduce its depth/samples in the shader settings;
-test the same lit face and ensure no other pack overrides it.
+Stone had a temporary higher strength in earlier previews, and Preview 14
+removed all per-texture overrides. Preview 25 restores full authored strength:
+stone and every other covered block use the same global 1.0 strength. Normal
+Mapping must be on to see normal detail; Gilded Dusk enables conservative POM by
+default, but estimated height can still look unnatural. If blocks appear to
+bulge, disable POM or reduce its depth/samples in the shader settings; test the
+same lit face and ensure no other pack overrides it.

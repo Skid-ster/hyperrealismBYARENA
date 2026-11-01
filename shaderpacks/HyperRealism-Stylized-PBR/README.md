@@ -19,8 +19,9 @@ README and development notes are retained in `UPSTREAM_GLIMMER_README.md` and
 HyperRealism modifications: a final teal-shadow/amber-highlight grade, an
 adjustable **Teal–Amber Style** control, stronger contrast and saturation
 defaults, an AgX tonemapper default, pack-specific settings labels, and a
-corrected explicit LabPBR 1.3 decode path. The PBR fixes gate decoding on the
-detected resource-pack format, separate normal XY/AO/height channels, decode
+corrected explicit LabPBR 1.3 decode path. The PBR fixes follow the selected
+LabPBR mode without depending on a stale global format flag, separate normal
+XY/AO/height channels, decode
 dielectric/predefined-metal/other-metal F0 ranges without double-tinting
 predefined metals, treat porosity and subsurface as mutually exclusive, preserve
 the no-emission sentinel, and add Normal Map Strength, Material AO Strength, and
@@ -47,10 +48,12 @@ for your Minecraft version; it installs Iris and Sodium together.
    Shader Packs**.
 4. In shader settings, leave **PBR Support** on **LabPBR 1.3** for this pack.
    Under **Materials**, keep **Normal Map Strength** and **Material AO Strength**
-   at 1.0 for the authored pack response. Use **PBR Channel Debug** only to
-   verify that normal/roughness/F0/emission/AO/height/porosity/subsurface maps
-   reach the shader. Keep parallax mapping off initially; enable it only if you
-   want the height/depth effect. Adjust **Post-Processing → Teal–Amber Style**
+   at 1.0 for the authored pack response. Use **PBR Channel Debug** to verify
+   that normal/roughness/F0/emission/AO/height/porosity/subsurface maps reach the
+   shader; **Map Presence** shows green for both sidecars, yellow for one, red
+   for neither. Preview 25 enables conservative parallax by default; disable it
+   if you only want normal/specular PBR or see height artifacts. Adjust
+   **Post-Processing → Teal–Amber Style**
    from 0 (neutral) to 100 (strong split tone); the default is 70. See
    [`docs/PBR_VALIDATION.md`](../../docs/PBR_VALIDATION.md) for the in-game
    checklist.

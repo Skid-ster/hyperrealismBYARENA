@@ -1,35 +1,55 @@
-# HyperRealism 512×512 + Gilded Dusk — Minecraft Java 26.3 experimental Preview 24
+# HyperRealism 512×512 + Gilded Dusk — Minecraft Java 26.3 experimental Preview 25
 
-This 512×512 experimental resource pack remains a partial pack, not a replacement for every vanilla texture; animated and cutout Nether sprites that cannot yet be safely regenerated with their exact frame/alpha data remain vanilla. The resource-pack archive retains its legacy `HyperRealism128` filename for updater compatibility. Minecraft displays **HyperRealism 512×512**.
+Preview 25 is a PBR-focused update: the resource pack is rebuilt at **full
+authored LabPBR strength (1.0)** and the Gilded Dusk shader no longer waits for a
+possibly stale/global Iris texture-format flag before decoding LabPBR sidecars.
+It remains a **partial experimental pack**, not full vanilla coverage. The
+resource-pack archive keeps the legacy `HyperRealism128` filename for updater
+compatibility; Minecraft displays **HyperRealism 512×512**.
 
-Preview 24 also publishes the separate **HyperRealism: Gilded Dusk** Iris shader ZIP and checksum, plus Windows GUI installer 13. The installer can place the shader beside the selected instance's resourcepacks folder and update it later. The shader requires Iris and LabPBR 1.3; compiler validation passed, but it has not yet been runtime-tested inside Minecraft.
+## What changed for PBR
 
-## Nether material pass
+- Block normal slopes, height deviation, smoothness and AO are no longer
+  compressed to 20%. The manifest now uses `pbr_strength: 1.0`, preserving the
+  authored material response. Discrete metal/F0, porosity, subsurface and
+  emission fields remain unchanged.
+- Gilded Dusk decodes LabPBR whenever **PBR Support = LabPBR 1.3** is selected.
+  Iris still supplies safe default normal/specular textures for missing sidecars.
+  The `MC_TEXTURE_FORMAT_LAB_PBR` flag is used for diagnostics, not as a hard
+  gate that can disable PBR after pack-order/resource reloads.
+- Added **Materials → PBR Channel Debug → Map Presence**: green means both
+  normal and specular sidecars are present, yellow means one, red means neither;
+  a blue tint means Iris detected the LabPBR `texture.properties` flag.
+- Conservative parallax occlusion mapping is enabled by default at height 0.10
+  so authored height can produce visible relief. Low-end profiles disable it.
+  It is still UV relief, not real geometry.
+- The shader retains the corrected LabPBR channel decode: normal RG/AO B/height
+  A, perceptual smoothness, dielectric/predefined/other metal F0 ranges,
+  mutually exclusive porosity/SSS, and the no-emission sentinel.
 
-- Adds 36 static Nether texture paths: netherrack/ore hosts, basalt and polished basalt faces, blackstone/obsidian/ancient debris families, Nether and polished-blackstone masonry variants, quartz faces, soul sand/soil, crimson/warped nylium and wart blocks, stripped stems, glowstone and shroomlight.
-- Replaces the generic stone stand-in on netherrack and its ore hosts with ambientCG's CC0 **Lava 003** scan; the Nether ore recipes keep their distinct gold/quartz inclusions.
-- Uses ambientCG's CC0 **Rock 058** maps for dark basalt, blackstone, obsidian and related Nether stone, with its aligned OpenGL normal and packed AO/roughness/metal channels.
-- Uses the existing scanned red-brick source for Nether masonry, keeps bright quartz surfaces on a neutral light-stone scan, and separates soul sand/soil and nylium palettes using their existing ground scans.
-- Gives crying obsidian an aligned CC0 Volcanic Lava Flow fissure/emission mask; glowstone and shroomlight receive restrained LabPBR emission. Gilded blackstone uses sparse procedural metallic inclusions.
-- Recolors crimson and warped wood with wood sources selected for the respective palettes. The crimson and warped stem-side animations, magma animation, Nether portal, roots, vines, fungus sprites and other cutouts remain untouched so their original frames, alpha shapes and block behavior are preserved.
+## Install / update
 
-All three new scans are CC0 and their creators, provenance and SHA-256 hashes are recorded in `work/ASSET_CREDITS.md` and `work/material_manifest.json`. The current catalog covers 344 targets, not the entire 26.3 block-texture inventory. Source choices are material-informed approximations rather than exact scans of Minecraft's fictional blocks.
+Use Windows GUI installer 17 or newer: **Install / Update** for the resource
+pack and **Install shader** for Gilded Dusk. Both discover the newest published
+release containing the matching ZIP and SHA-256. Or download the two ZIPs from
+this release and place them in the active instance's `resourcepacks` and
+`shaderpacks` folders. Enable the HyperRealism resource pack above competing
+packs, select Gilded Dusk in Iris, set **PBR Support** to **LabPBR 1.3**, and
+reload resources with `F3+T`.
 
-The global PBR strength remains `0.2`; every generated target uses the same strength. Models, UVs, cutout silhouettes, block states and existing animations are unchanged. No Minecraft reference image pixels are redistributed.
+## Coverage and honesty
 
+The pack covers 371 block texture targets plus five farm-mob entity paths, not
+the entire Minecraft texture inventory. Uncovered blocks remain vanilla or come
+from other enabled packs. Models, UVs, cutout silhouettes, block states and
+existing animations are unchanged. No Minecraft reference-image pixels are
+redistributed. Source scans are CC0 and recorded in `MATERIAL_CREDITS.txt` and
+`work/material_manifest.json`.
 
-## Farm-mob texture pilot
-
-Preview 22 added five original, experimental adult temperate entity texture targets: chicken, cow, pig, sheep skin, and the tintable sheep wool layer. The chicken receives a soft feather/down surface; the cow and pig receive distinct hide/skin treatments; sheep keeps its wool tint behavior. Their vanilla UV layouts, models, animations, and behavior are unchanged.
-
-This is a limited pilot, not full mob coverage: babies, other biome variants, equipment, collars, and hostile mobs remain vanilla. These maps have structural and atlas checks, but have **not** been validated in-game with a shader or benchmarked for performance. Entity LabPBR support varies by shader.
-
-## Material-channel refinement
-
-The material catalog now applies modest, material-specific roughness calibration while retaining one global block PBR strength of 0.2. Finished glass, metal and wood receive smoother calibrated source roughness; sand, mud, bark, rust and oxidized materials retain rougher response. Cobblestone and mossy cobblestone now vary roughness between stone faces and joints using their height field. For 26 textured materials without a dedicated displacement scan, a conservative periodic height estimate is reconstructed from the aligned normal map. These estimates preserve original source maps and remain approximations, not measured geometry.
-
-## Automated checks and limitations
-
-Linux and Windows CI generate the 512px pack, run tests, verify LabPBR structure, check the target count and validate the archive. Static source-image hashes and target-to-material assignments are checked. These are automated and structural checks—not an in-game Complementary Reimagined render, CTM runtime test, or performance benchmark on the target RTX 5060 Ti. The new maps still need in-game review for scale, repetition, color and visual fit.
-
-For Complementary, choose **RP Support → labPBR (RP Required)** and keep **Block Reflection Quality** above OFF; POM is optional. See the [shader guide](https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/docs/SHADER_SETUP.md), [Continuity compatibility notes](https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/docs/CONTINUITY_SUPPORT.md), and [asset credits](https://github.com/Skid-ster/hyperrealismBYARENA/blob/arena/65b59fff-hyperrealismbyarena/work/ASSET_CREDITS.md).
+CI generates the 512px pack, verifies LabPBR triples and the release archive,
+checks the full-strength build report, compiles the Iris 26.3 shader matrix and
+LabPBR decode harness, and verifies the shader ZIP. These are compiler,
+structural and archive checks—not an in-game Minecraft/Iris GPU render,
+visual-quality certification, artifact review, or performance benchmark. Use
+`docs/PBR_VALIDATION.md` and the Map Presence debug view to verify channels on
+your machine.

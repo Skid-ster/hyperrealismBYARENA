@@ -268,7 +268,7 @@ void main() {
 
   #if PBR_DEBUG > 0
   if (!isWater(materialID) && renderStage != MC_RENDER_STAGE_OUTLINE) {
-    color.rgb = pbrDebugColor(PBR_DEBUG, normalData, material);
+    color.rgb = pbrDebugColor(PBR_DEBUG, normalData, specularData, material);
   }
   #endif
 

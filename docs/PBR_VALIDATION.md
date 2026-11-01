@@ -16,14 +16,18 @@ are actually reaching Gilded Dusk.
 4. Select **HyperRealism: Gilded Dusk** in Iris.
 5. In **Shader Pack Settings → Materials**, set **PBR Support** to **LabPBR 1.3**.
    Leave **Normal Map Strength** and **Material AO Strength** at 1.0 for the
-   authored pack response. Keep **PBR Channel Debug** off for normal play.
+   authored pack response. Preview 25 enables conservative parallax by default;
+   disable **Parallax** if you only want normal/specular PBR. Keep **PBR Channel
+   Debug** off for normal play.
 6. Reload resources with `F3+T` after changing packs or shader settings.
 
 ## Channel checks
 
 Use a covered block such as cobblestone, oak log/planks, iron door/bars, copper
 block, glass, glowstone, or leaves. Uncovered vanilla textures will not show
-HyperRealism PBR.
+HyperRealism PBR. First select **PBR Channel Debug → Map Presence**: green means
+both normal and specular sidecars reached the shader, yellow means one, red means
+neither. A blue tint means Iris also detected the LabPBR texture-format flag.
 
 - **Normal XY**: debug view should show non-flat color variation on covered
   surfaces. A uniform lavender/flat field means the normal map is missing,
@@ -53,6 +57,6 @@ HyperRealism PBR.
 ## Known limits
 
 - The resource pack is partial, not full vanilla coverage.
-- The pack’s authored global PBR strength is 0.2, so relief/smoothness are
-  conservative. The shader decodes the maps; it does not invent missing maps.
+- Preview 25 uses full authored PBR strength (1.0). Earlier 0.2 packs can look
+  almost flat. The shader decodes the maps; it does not invent missing maps.
 - No GPU/driver, visual-quality, artifact, or FPS certification is implied by CI.

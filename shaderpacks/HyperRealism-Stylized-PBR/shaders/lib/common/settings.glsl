@@ -47,7 +47,7 @@ const float sunPathRotation = -40.0; // [-90.0 -85.0 -80.0 -75.0 -70.0 -65.0 -60
 #define PBR_MODE 1 // [0 1]
 #define PBR_NORMAL_STRENGTH 1.0 // [0.0 0.25 0.5 0.75 1.0 1.25 1.5 2.0]
 #define PBR_AO_STRENGTH 1.0 // [0.0 0.25 0.5 0.75 1.0]
-#define PBR_DEBUG 0 // [0 1 2 3 4 5 6 7 8]
+#define PBR_DEBUG 0 // [0 1 2 3 4 5 6 7 8 9]
 
 // #define PIXEL_LOCKED_LIGHTING
 #define PIXEL_SIZE 16 // [1 2 4 8 16 32 64]
@@ -110,12 +110,12 @@ const float sunPathRotation = -40.0; // [-90.0 -85.0 -80.0 -75.0 -70.0 -65.0 -60
 #define DH_AO_RADIUS 4.0
 #define DH_AO_SAMPLES 32 // [4 8 16 32 64]
 
-// #define PARALLAX
+#define PARALLAX
 // #define SMOOTH_PARALLAX
 #define PARALLAX_DISTANCE 32.0 // [4.0 8.0 16.0 32.0 64.0 128.0 256.0 512.0 1024.0]
 #define PARALLAX_DISTANCE_CURVE 0.8
 #define PARALLAX_SAMPLES 32 // [4 8 16 32 64 128]
-#define PARALLAX_HEIGHT 0.25 // [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.0]
+#define PARALLAX_HEIGHT 0.10 // [0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.75 0.80 0.85 0.90 0.95 1.0]
 #define PARALLAX_SHADOW
 #define PARALLAX_SHADOW_SAMPLES 16 // [4 8 16 32 64 128]
 // #define SMOOTH_PARALLAX

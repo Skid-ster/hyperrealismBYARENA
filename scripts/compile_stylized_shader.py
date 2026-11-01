@@ -72,7 +72,6 @@ FEATURE_CHANGES = (
     ("// #define WATER_PARALLAX", "#define WATER_PARALLAX"),
     ("// #define CAUSTICS", "#define CAUSTICS"),
     ("// #define MOTION_BLUR", "#define MOTION_BLUR"),
-    ("// #define PARALLAX", "#define PARALLAX"),
     ("// #define SSR_JITTER", "#define SSR_JITTER"),
     ("#define STYLE_STRENGTH 70", "#define STYLE_STRENGTH 0"),
 )
@@ -169,8 +168,8 @@ void main() {{
   Material material = materialFromLabPBR(vec3(0.5), normalData, specularData);
   Material fallback = materialFromSpecularMap(vec3(0.5), specularData);
   vec3 debug = vec3(0.0);
-  for (int mode = 0; mode <= 8; mode++) {{
-    debug += pbrDebugColor(mode, normalData, material);
+  for (int mode = 0; mode <= 9; mode++) {{
+    debug += pbrDebugColor(mode, normalData, specularData, material);
   }}
   fragColor = vec4(normal + material.f0 + fallback.f0 + debug +
     vec3(material.roughness, material.ao, material.emission), 1.0);

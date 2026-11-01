@@ -51,7 +51,7 @@ lo, hi = np.quantile(samples, [0.03, 0.97])
 if hi - lo < 1e-8:
     raise SystemExit("normal scan did not produce a usable height range")
 # Preserve a neutral 0.5 midplane and use the robust scanned range for clear
-# relief. The pack's uniform 0.2 PBR strength compresses the packed LabPBR
+# relief. Earlier previews used 0.2 PBR strength; Preview 25 uses 1.0. The packed LabPBR
 # height to a restrained range around neutral.
 relief = np.clip((height - (lo + hi) * 0.5) / (hi - lo), -0.5, 0.5)
 height_u8 = np.clip(0.5 + relief * 0.46, 0.0, 1.0)

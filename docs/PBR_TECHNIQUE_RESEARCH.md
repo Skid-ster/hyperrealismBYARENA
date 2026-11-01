@@ -33,7 +33,7 @@ included in this project.
   handle was moved to the latch-side UV edge and raised within the lower-block
   sprite so it sits near mid-height on the assembled two-block door; hinge and
   face flips place it on the correct side. The panel's alpha/cutout remains
-  unchanged. The pack's global strength is 0.2, and the
+  unchanged. Earlier previews used global strength 0.2; Preview 25 uses 1.0, and the
   47 door/trapdoor/ladder/bar opacity masks are unchanged.
 - **Use aligned sidecars for partial/cutout sprites too.** The public
   [Vanilla Normals Renewed tree](https://github.com/Poudingue/Vanilla-Normals-Renewed/tree/70d89ee4d401a27c4518ebab3b13897c2a6b6921/assets/minecraft/textures/block)
