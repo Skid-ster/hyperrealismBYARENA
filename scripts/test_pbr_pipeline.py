@@ -33,7 +33,7 @@ def load_rgba(path: Path) -> Image.Image:
 
 
 def channel_stats(image: Image.Image, channel: int) -> dict[str, float]:
-    values = list(image.getdata(channel))
+    values = image.getchannel(channel).tobytes()
     return {
         "min": min(values),
         "max": max(values),
@@ -173,7 +173,7 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
         vec4 s = texture(specular, uv);
         vec3 a = texture(albedoTex, uv).rgb;
         Material m = materialFromLabPBR(a, n, s);
-        vec3 mapped = labPBRNormal(mat3(1.0), n);
+        vec3 mapped = labPBRNormal(n, mat3(1.0));
         outNormalHeight = vec4(mapped, n.a);
         outRoughF0EmissionAo = vec4(m.roughness, m.f0.r, m.emission, m.ao);
         outSssPorosityMetal = vec4(m.sss, m.porosity, float(m.metalID), m.f0.g);
