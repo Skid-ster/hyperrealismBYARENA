@@ -214,16 +214,20 @@ vec3 pbrDebugColor(int mode, vec4 normalData, vec4 specularData, Material materi
   if (mode == 7) return vec3(material.porosity);
   if (mode == 8) return vec3(material.sss);
   if (mode == 9) {
-    // Green = both sidecars present, yellow = one sidecar, red = neither.
-    // Blue channel indicates Iris detected the LabPBR texture.properties flag.
+    // PBR Activity: green = LabPBR specular/material data is active, yellow =
+    // only a non-default normal is active, red = neither sidecar is active.
+    // A flat normal is a valid authored normal (glass/gems), so specular data
+    // is the authoritative signal that LabPBR material response is enabled.
+    // Use Normal XY (mode 1) to inspect relief separately. Blue channel
+    // indicates Iris detected the LabPBR texture.properties flag.
     bool hasNormal = distance(normalData, vec4(0.5, 0.5, 1.0, 1.0)) > 0.02;
     bool hasSpecular = distance(specularData, vec4(0.0)) > 0.02;
     float formatFlag = 0.0;
     #ifdef MC_TEXTURE_FORMAT_LAB_PBR
     formatFlag = 1.0;
     #endif
-    if (hasNormal && hasSpecular) return vec3(0.0, 1.0, formatFlag);
-    if (hasNormal || hasSpecular) return vec3(1.0, 0.75, formatFlag);
+    if (hasSpecular) return vec3(0.0, 1.0, formatFlag);
+    if (hasNormal) return vec3(1.0, 0.75, formatFlag);
     return vec3(1.0, 0.0, formatFlag);
   }
   return material.albedo;

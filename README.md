@@ -3,7 +3,7 @@
 This is an **experimental partial preview**, not a complete production pack.
 The development build defaults to manifest-defined 256×256 Minecraft Java 26.3
 block textures and aligned LabPBR 1.3 maps using a CPU-only pipeline; optional
-outputs are 128×128 or 512×512. Preview 26 publishes the current 512×512 resource
+outputs are 128×128 or 512×512. Preview 27 publishes the current 512×512 resource
 pack and adds the separately installable experimental Gilded Dusk Iris shader. Most starter materials use 1K
 Poly Haven-derived maps; some older maps are 512px or 2K, and missing channels
 are approximated as described below. The current source catalog contains 380
@@ -22,7 +22,7 @@ surfaces with volcanic rock and aligned emission maps; animated and cutout Nethe
 sprites remain unchanged. Preview 22 adds five adult temperate farm-mob texture
 paths. Preview 23 calibrates roughness by material and reconstructs subtle height
 from 26 aligned normal maps; these remain experimental and need in-game review.
-Preview 26 adds the common iron, gold, diamond, emerald, lapis, redstone and
+Preview 27 adds the common iron, gold, diamond, emerald, lapis, redstone and
 coal storage blocks plus powered/unpowered redstone lamps, and CI now executes
 the shader's LabPBR decoder against generated maps in headless OpenGL. Pale oak keeps the color-matched maple source. These
 are targeted source improvements, not a complete or visually validated
@@ -97,17 +97,17 @@ release, not an independent signature. GUI source and offline tests are under
 ### Manual installation
 
 No Rust installation is needed to use the prebuilt resource pack or shader.
-Preview 25's resource pack uses 512×512 textures (the legacy `HyperRealism128`
+Preview 27's resource pack uses 512×512 textures (the legacy `HyperRealism128`
 archive name is retained for updater compatibility), which requires substantially
 more GPU memory than the previous 128×128 preview; performance on the RTX 5060 Ti
-has not been tested. Download [HyperRealism Preview 25 resource pack](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.25/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
+has not been tested. Download [HyperRealism Preview 27 resource pack](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.27/HyperRealism128-MC26.3-EXPERIMENTAL.zip),
 place the ZIP (do **not** extract it) in `%APPDATA%\.minecraft\resourcepacks`,
 and enable it in Minecraft Java 26.3 under **Options → Resource Packs**.
-For the experimental Iris shader, download [HyperRealism: Gilded Dusk](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.25/HyperRealism-Gilded-Dusk-MC-26.3.zip)
+For the experimental Iris shader, download [HyperRealism: Gilded Dusk](https://github.com/Skid-ster/hyperrealismBYARENA/releases/download/v0.1.0-preview.27/HyperRealism-Gilded-Dusk-MC-26.3.zip)
 and put the ZIP in the active instance's `shaderpacks` folder, not
 `resourcepacks`. Enable the HyperRealism resource pack and select the shader in
 Iris; keep PBR Support set to LabPBR 1.3. See the [shader guide](docs/SHADER_SETUP.md)
-for compatibility caveats. Preview 25 remains a partial experimental pack;
+for compatibility caveats. Preview 27 remains a partial experimental pack;
 all unmodified textures stay vanilla or come from other enabled packs. The
 current development build defaults to 256×256, one quarter as many block texels
 as the 512×512 preview, which should reduce texture storage, but no in-game
@@ -239,7 +239,7 @@ texture targets; per-texture overrides have been removed. This preserves the
 authored normal slope, height deviation, smoothness and AO response. Base colors
 and discrete metal/SSS/emission fields are not scaled. Actual appearance and
 reflection brightness still depend on the shader, lighting and pack order.
-Earlier previews used 0.2, which made PBR very subtle; Preview 25 restores full
+Earlier previews used 0.2, which made PBR very subtle; Preview 25 restored full
 authored strength. Source builders can set `pbr_strength` between 0 and 1 in the
 manifest (omitting it defaults to 1). This does not change water.
 

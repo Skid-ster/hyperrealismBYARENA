@@ -50,8 +50,9 @@ for your Minecraft version; it installs Iris and Sodium together.
    Under **Materials**, keep **Normal Map Strength** and **Material AO Strength**
    at 1.0 for the authored pack response. Use **PBR Channel Debug** to verify
    that normal/roughness/F0/emission/AO/height/porosity/subsurface maps reach the
-   shader; **Map Presence** shows green for both sidecars, yellow for one, red
-   for neither. Preview 25 enables conservative parallax by default; disable it
+   shader; **PBR Activity** shows green when LabPBR specular/material data is active
+   (a flat normal is valid), yellow for normal-only, red for no PBR sidecars.
+   Preview 27 enables conservative parallax by default; disable it
    if you only want normal/specular PBR or see height artifacts. Adjust
    **Post-Processing → Teal–Amber Style**
    from 0 (neutral) to 100 (strong split tone); the default is 70. See

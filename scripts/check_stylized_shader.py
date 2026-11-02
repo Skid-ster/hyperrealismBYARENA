@@ -34,8 +34,8 @@ def main() -> int:
             "LabPBR material parsing is missing")
     require("#if PBR_MODE == 1\n#define HYPERREALISM_LAB_PBR 1" in material,
             "Explicit LabPBR mode must decode sidecars without depending on a stale global format flag")
-    require("MC_TEXTURE_FORMAT_LAB_PBR" in material and "Map Presence" in english,
-            "LabPBR format flag must remain visible in the map-presence diagnostic")
+    require("MC_TEXTURE_FORMAT_LAB_PBR" in material and "PBR Activity" in english,
+            "LabPBR format flag must remain visible in the PBR Activity diagnostic")
     require("labPBRNormal" in material and "normalData.b" in material and "normalData.a" in material,
             "LabPBR normal/AO/height channel separation is missing")
     require("f0Byte < 230" in material and "f0Byte < 238" in material and "OTHER_METAL" in material,

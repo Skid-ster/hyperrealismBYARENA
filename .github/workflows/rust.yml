@@ -389,3 +389,118 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create v0.1.0-preview.26 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/pbr_pipeline_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 + Gilded Dusk — storage-block LabPBR preview 26' --notes-file .github/preview-release-notes.md --prerelease
+
+  publish-preview-27:
+    # Exhaustive headless LabPBR sweep + PBR Activity diagnostic.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/arena/4c25d324-hyperrealismbyarena' && startsWith(github.event.head_commit.message, 'Publish experimental preview 27')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Generate the 512px full-strength LabPBR pack
+        run: cargo run --locked --release -- --input work --output release_build --cpu-only --threads 2 --resolution 512
+      - name: Verify generated LabPBR triples
+        run: cargo run --locked --release -- --verify-pack release_build/pack
+      - name: Install headless OpenGL and Pillow for release PBR validation
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libegl1 libegl-mesa0 libgl1 libgl1-mesa-dri libglx-mesa0 libopengl0
+          python3 -m pip install --user pillow moderngl
+      - name: Execute the real LabPBR decoder against the release pack
+        run: |
+          set +e
+          python3 scripts/test_pbr_pipeline.py --pack release_build/pack --require-gl --report release_build/pbr_pipeline_report.json > pbr_decode_test.log 2>&1
+          code=$?
+          cat pbr_decode_test.log
+          if [ "$code" -ne 0 ]; then
+            tail -n 60 pbr_decode_test.log | while IFS= read -r line; do echo "::error::$line"; done
+            exit "$code"
+          fi
+      - name: Check build report declares full-strength 512px PBR
+        run: |
+          python - <<'PY'
+          import json
+          report = json.load(open('release_build/build_report.json'))
+          assert report['resolution'] == 512, report['resolution']
+          assert abs(report['pbr_strength'] - 1.0) < 1e-6, report['pbr_strength']
+          assert len(report['textures']) >= 380, len(report['textures'])
+          print('Full-strength 512px pack report:', len(report['textures']), 'block targets')
+          PY
+      - name: Install GLSL compiler for Iris-stage validation
+        run: sudo apt-get update && sudo apt-get install --yes glslang-tools
+      - name: Check and compile the explicit LabPBR shader
+        run: |
+          python3 scripts/check_stylized_shader.py
+          python3 scripts/compile_stylized_shader.py
+      - name: Build the distributable Iris shader ZIP
+        run: python3 scripts/package_stylized_shader.py
+      - name: Fetch the latest GUI installer for the pack release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release_assets
+          tag=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/releases?per_page=100" --jq '.[] | select(.draft == false) | .tag_name' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-installer\.[0-9]+$' | sort -V | tail -n 1)
+          test -n "$tag"
+          gh release download "$tag" --dir release_assets --pattern 'HyperRealism128-Installer.exe*'
+          cd release_assets
+          sha256sum -c HyperRealism128-Installer.exe.sha256
+      - name: Prepare release assets and checksums
+        run: |
+          mkdir -p release_assets
+          cp release_build/dist/HyperRealism128-v1.0-MC26.3.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip
+          cp release_build/build_report.json release_assets/build_report.json
+          cp release_build/pbr_pipeline_report.json release_assets/pbr_pipeline_report.json
+          cp scripts/Install-HyperRealismPreview.ps1 release_assets/Install-HyperRealismPreview.ps1
+          cp shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip
+          cd release_assets
+          sha256sum HyperRealism128-MC26.3-EXPERIMENTAL.zip > HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum HyperRealism-Gilded-Dusk-MC-26.3.zip > HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
+          sha256sum -c HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256
+          sha256sum -c HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256
+      - name: Verify resource-pack release archive and LabPBR declaration
+        run: |
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip') as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+              texture_properties = z.read('assets/minecraft/optifine/texture.properties').decode('utf-8')
+          assert 'format=lab-pbr/1.3' in texture_properties
+          pngs = [name for name in names if name.endswith('.png')]
+          block = 'assets/minecraft/textures/block/'
+          bases = [name for name in names if name.startswith(block) and name.endswith('.png')
+                   and not name.endswith('_n.png') and not name.endswith('_s.png')]
+          assert len(bases) >= 380, len(bases)
+          for base in bases:
+              stem = base[:-4]
+              assert stem + '_n.png' in names, base + ' missing normal'
+              assert stem + '_s.png' in names, base + ' missing specular'
+          expected = ['assets/minecraft/textures/entity/' + path + suffix + '.png'
+              for path in ['chicken/chicken_temperate', 'cow/cow_temperate', 'pig/pig_temperate', 'sheep/sheep', 'sheep/sheep_wool']
+              for suffix in ['', '_n', '_s']]
+          assert all(name in names for name in expected), 'one or more farm-mob targets are missing'
+          assert {'MATERIAL_CREDITS.txt', 'ENTITY_TEXTURES.txt', 'pack.mcmeta'} <= names
+          print('Verified resource pack with', len(pngs), 'PNG assets and', len(bases), 'block LabPBR triples')
+          PY
+      - name: Verify Iris shader release archive
+        run: |
+          python - <<'PY'
+          import zipfile
+          with zipfile.ZipFile('release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip') as z:
+              assert z.testzip() is None
+              names = set(z.namelist())
+              material = z.read('shaders/lib/common/material.glsl').decode('utf-8')
+          assert {'shaders/shaders.properties', 'README.md', 'LICENSE'} <= names
+          assert '#if PBR_MODE == 1' in material and 'pbrDebugColor' in material
+          assert sum(name.startswith('shaders/') and not name.endswith('/') for name in names) >= 300
+          assert not any(name.startswith('HyperRealism-Stylized-PBR/') for name in names)
+          print('Verified Iris shader ZIP root layout and explicit LabPBR decoder')
+          PY
+      - name: Publish experimental prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0-preview.27 release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip release_assets/HyperRealism128-MC26.3-EXPERIMENTAL.zip.sha256 release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip release_assets/HyperRealism-Gilded-Dusk-MC-26.3.zip.sha256 release_assets/Install-HyperRealismPreview.ps1 release_assets/build_report.json release_assets/pbr_pipeline_report.json release_assets/HyperRealism128-Installer.exe release_assets/HyperRealism128-Installer.exe.sha256 --target "$GITHUB_SHA" --title 'HyperRealism 512×512 + Gilded Dusk — exhaustive LabPBR validation preview 27' --notes-file .github/preview-release-notes.md --prerelease

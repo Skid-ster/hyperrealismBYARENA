@@ -22,7 +22,7 @@ Windows users can download **HyperRealism128-Installer.exe** from the
 select the intended existing `resourcepacks` folder, and use **Install both**.
 It verifies and installs the matching resource pack and shader together; the
 shader ZIP goes in the sibling `shaderpacks` folder for that instance.
-You can also download the ZIP from the [Preview 25 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-preview.25)
+You can also download the ZIP from the [Preview 27 release](https://github.com/Skid-ster/hyperrealismBYARENA/releases/tag/v0.1.0-preview.27)
 or build it with `python3 scripts/package_stylized_shader.py`; the generated
 archive is `shaderpacks/dist/HyperRealism-Gilded-Dusk-MC-26.3.zip` with
 `shaders/` at the ZIP root. For manual installation, put the ZIP (do not
@@ -59,7 +59,7 @@ pack unless its license permits it.
 2. Put it in your Minecraft instance's `minecraft/shaderpacks` folder. For the
    supplied ElyPrism instance that is
    `%APPDATA%\ElyPrismLauncher\instances\26.3(1)\minecraft\shaderpacks`.
-3. The published Preview 25 is named **HyperRealism 512×512**; current development
+3. The published Preview 27 is named **HyperRealism 512×512**; current development
    builds are named **HyperRealism 256×256**. Enable the version you installed in
    **Options → Resource Packs** and put it above competing packs.
 4. With the already-installed Iris, select Photon in **Options → Video
@@ -123,7 +123,7 @@ In Complementary Reimagined, the pack must be enabled **above** competing packs
 and **RP Support** must be **labPBR (RP Required)**; in Photon, set the texture
 format to labPBR and enable normal/specular mapping. POM is optional
 and requires the shader's parallax setting: height is not visible as geometry
-without it. Preview 26 uses a global PBR strength of `1.0`, with no
+without it. Preview 27 uses a global PBR strength of `1.0`, with no
 per-texture overrides, across all 380 texture targets. Earlier previews used
 `0.2`, which compressed normal slopes, height deviations and smoothness to 20%
 and made PBR very subtle. Albedo and discrete LabPBR metal/F0 IDs, porosity and
@@ -147,7 +147,7 @@ procedure, not proof of a test on your PC.
 
 The development build now defaults to 256px: that is one quarter the texel
 count of 512px, so it should reduce texture storage and atlas pressure, but no
-VRAM, load-time or FPS benchmark has been run. The published Preview 26 is still
+VRAM, load-time or FPS benchmark has been run. The published Preview 27 is still
 512px. Use the optional 128px build for a smaller pack or 512px for more detail;
 actual memory and performance depend on Minecraft, shader, driver and hardware.
 
@@ -177,7 +177,7 @@ clear cutout's invisible interior may not reflect in shaders; tinted glass is
 translucent.
 
 Stone had a temporary higher strength in earlier previews, and Preview 14
-removed all per-texture overrides. Preview 25 restores full authored strength:
+removed all per-texture overrides. Preview 25 restored full authored strength:
 stone and every other covered block use the same global 1.0 strength. Normal
 Mapping must be on to see normal detail; Gilded Dusk enables conservative POM by
 default, but estimated height can still look unnatural. If blocks appear to

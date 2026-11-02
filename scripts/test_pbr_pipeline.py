@@ -3,15 +3,18 @@
 
 CPU checks validate the published LabPBR byte contract and archive paths. When
 ModernGL/EGL is available, the script also compiles the *actual* material.glsl
-and runs it against the generated _n/_s maps, reading back decoded normals,
-roughness, metal IDs, emission, SSS and the Map Presence debug view. This is a
-software OpenGL test, not an Iris/Minecraft runtime test.
+and runs it against generated _n/_s maps, reading back decoded normals,
+roughness, metal IDs, emission, SSS and the PBR Activity debug view. By default
+it sweeps every generated block triple, one CTM tile per connected-glass
+directory, and every entity triple. This is software OpenGL validation, not an
+Iris/Minecraft runtime test.
 """
 from __future__ import annotations
 
 import argparse
 import array
 import json
+import math
 import sys
 import traceback
 from pathlib import Path
@@ -118,7 +121,7 @@ def cpu_checks(pack: Path) -> dict:
     }
 
 
-def gl_checks(pack: Path, shader_root: Path) -> dict:
+def gl_checks(pack: Path, shader_root: Path, sweep: bool = True) -> dict:
     try:
         import moderngl
     except ImportError:
@@ -197,6 +200,8 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
     vbo = ctx.buffer(array.array("f", [-1, -1, 3, -1, -1, 3]).tobytes())
     vao = ctx.vertex_array(program, [(vbo, "2f", "in_pos")])
     block = pack / "assets/minecraft/textures/block"
+    ctm = pack / "assets/minecraft/optifine/ctm"
+    entity = pack / "assets/minecraft/textures/entity"
 
     def make_texture(path: Path | None, fallback: tuple[int, int, int, int]):
         if path is None:
@@ -210,14 +215,14 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
         texture.repeat_y = False
         return texture
 
-    def render(name: str, missing: bool = False) -> dict:
-        albedo = make_texture(block / f"{name}.png", (128, 128, 128, 255))
-        normal = make_texture(
-            None if missing else block / f"{name}_n.png", (127, 127, 255, 255)
-        )
-        specular = make_texture(
-            None if missing else block / f"{name}_s.png", (0, 0, 0, 0)
-        )
+    def render_paths(
+        albedo_path: Path | None,
+        normal_path: Path | None,
+        specular_path: Path | None,
+    ) -> dict:
+        albedo = make_texture(albedo_path, (128, 128, 128, 255))
+        normal = make_texture(normal_path, (127, 127, 255, 255))
+        specular = make_texture(specular_path, (0, 0, 0, 0))
         albedo.use(0)
         normal.use(1)
         specular.use(2)
@@ -259,23 +264,40 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
             texture.release()
         return result
 
-    cases = {
-        name: render(name)
-        for name in (
-            "stone",
-            "cobblestone",
-            "oak_planks",
-            "iron_block",
-            "gold_block",
-            "glowstone",
-            "oak_leaves",
-            "redstone_lamp_on",
+    def render_block(name: str, use_normal: bool = True, use_specular: bool = True) -> dict:
+        return render_paths(
+            block / f"{name}.png",
+            block / f"{name}_n.png" if use_normal else None,
+            block / f"{name}_s.png" if use_specular else None,
         )
-    }
-    missing = render("stone", missing=True)
+
+    named = (
+        "stone",
+        "cobblestone",
+        "oak_planks",
+        "iron_block",
+        "gold_block",
+        "glowstone",
+        "oak_leaves",
+        "redstone_lamp_on",
+        "diamond_block",
+        "emerald_block",
+        "lapis_block",
+        "glass",
+        "coal_block",
+        "redstone_block",
+    )
+    cases = {name: render_block(name) for name in named}
+    missing = render_block("stone", use_normal=False, use_specular=False)
+    normal_only = render_block("stone", use_normal=True, use_specular=False)
+    specular_only = render_block("stone", use_normal=False, use_specular=True)
 
     def close(value: float, target: float, tolerance: float = 0.02) -> bool:
         return abs(value - target) <= tolerance
+
+    def assert_green(name: str, data: dict) -> None:
+        if data["debug_g"]["mean"] < 0.9 or data["debug_r"]["mean"] > 0.1:
+            fail(f"{name}: PBR Activity did not report active LabPBR specular data: {data}")
 
     if not close(cases["iron_block"]["metal_id"]["mean"], 1.0):
         fail(f"iron_block did not decode as LabPBR iron: {cases['iron_block']}")
@@ -287,16 +309,98 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
         fail(f"redstone_lamp_on emission did not decode: {cases['redstone_lamp_on']}")
     if cases["oak_leaves"]["sss"]["mean"] <= 0.1:
         fail(f"oak_leaves subsurface did not decode: {cases['oak_leaves']}")
+    for name in ("diamond_block", "emerald_block", "lapis_block", "glass"):
+        data = cases[name]
+        assert_green(name, data)
+        if data["metal_id"]["mean"] > 0.01:
+            fail(f"{name}: gem/glass should be dielectric: {data}")
+        if data["roughness"]["mean"] > 0.35:
+            fail(f"{name}: gem/glass should be smooth: {data}")
+    for name in ("coal_block", "redstone_block"):
+        assert_green(name, cases[name])
+        if cases[name]["roughness"]["mean"] <= 0.05:
+            fail(f"{name}: expected a rough dielectric response: {cases[name]}")
     for name in ("stone", "cobblestone", "iron_block", "gold_block"):
         data = cases[name]
-        if data["debug_g"]["mean"] < 0.9 or data["debug_r"]["mean"] > 0.1:
-            fail(f"{name}: Map Presence debug did not report both sidecars: {data}")
+        assert_green(name, data)
         if data["ndotl"]["max"] - data["ndotl"]["min"] < 0.005:
             fail(f"{name}: mapped normal produced no lighting variation: {data}")
     if missing["debug_r"]["mean"] < 0.9 or missing["debug_g"]["mean"] > 0.1:
         fail(f"missing-sidecar control did not report red: {missing}")
     if missing["roughness"]["mean"] < 0.99 or missing["metal_id"]["mean"] > 0.01:
         fail(f"missing-sidecar fallback was not rough dielectric: {missing}")
+    if normal_only["debug_r"]["mean"] < 0.9 or not close(normal_only["debug_g"]["mean"], 0.75):
+        fail(f"normal-only control did not report yellow: {normal_only}")
+    assert_green("specular-only control", specular_only)
+    if specular_only["normal_x"]["max"] - specular_only["normal_x"]["min"] > 0.01:
+        fail(f"specular-only control should have a flat default normal: {specular_only}")
+
+    sweep_report = {"enabled": sweep}
+    if sweep:
+        failures: list[str] = []
+        counts = {"block": 0, "ctm": 0, "entity": 0}
+        green_min = 1.0
+        roughness_min, roughness_max = 1.0, 0.0
+        metal_max = 0.0
+
+        def validate(label: str, data: dict) -> None:
+            nonlocal green_min, roughness_min, roughness_max, metal_max
+            green_min = min(green_min, data["debug_g"]["mean"])
+            roughness_min = min(roughness_min, data["roughness"]["min"])
+            roughness_max = max(roughness_max, data["roughness"]["max"])
+            metal_max = max(metal_max, data["metal_id"]["max"])
+            problems = []
+            if data["debug_g"]["mean"] < 0.9 or data["debug_r"]["mean"] > 0.1:
+                problems.append("PBR Activity not green")
+            for key in ("roughness", "emission", "ao", "sss", "porosity"):
+                lo, hi = data[key]["min"], data[key]["max"]
+                if not math.isfinite(lo) or not math.isfinite(hi) or lo < -0.001 or hi > 1.001:
+                    problems.append(f"{key} out of range [{lo}, {hi}]")
+            if data["metal_id"]["min"] < -0.001 or data["metal_id"]["max"] > 9.001:
+                problems.append(f"metal ID out of range: {data['metal_id']}")
+            for key in ("normal_x", "normal_y"):
+                if data[key]["min"] < -1.001 or data[key]["max"] > 1.001:
+                    problems.append(f"{key} out of range: {data[key]}")
+            if problems:
+                failures.append(f"{label}: {'; '.join(problems)}")
+
+        for base in sorted(block.glob("*.png")):
+            stem = base.name[:-4]
+            if stem.endswith("_n") or stem.endswith("_s"):
+                continue
+            counts["block"] += 1
+            validate(f"block/{stem}", render_block(stem))
+        for directory in sorted(ctm.glob("*")):
+            if not directory.is_dir():
+                continue
+            counts["ctm"] += 1
+            validate(
+                f"ctm/{directory.name}/0",
+                render_paths(
+                    directory / "0.png",
+                    directory / "0_n.png",
+                    directory / "0_s.png",
+                ),
+            )
+        for base in sorted(entity.rglob("*.png")):
+            stem = base.with_suffix("")
+            if stem.name.endswith("_n") or stem.name.endswith("_s"):
+                continue
+            counts["entity"] += 1
+            validate(
+                f"entity/{stem.relative_to(entity)}",
+                render_paths(base, Path(f"{stem}_n.png"), Path(f"{stem}_s.png")),
+            )
+        if failures:
+            fail("exhaustive LabPBR sweep failed: " + " | ".join(failures[:12]))
+        sweep_report.update(
+            {
+                "checked": counts,
+                "pbr_activity_green_min": green_min,
+                "roughness_range": [roughness_min, roughness_max],
+                "metal_id_max": metal_max,
+            }
+        )
 
     vao.release()
     vbo.release()
@@ -306,7 +410,14 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
     program.release()
     renderer = ctx.info.get("GL_RENDERER", "unknown")
     ctx.release()
-    return {"renderer": renderer, "cases": cases, "missing_sidecar_control": missing}
+    return {
+        "renderer": renderer,
+        "cases": cases,
+        "missing_sidecar_control": missing,
+        "normal_only_control": normal_only,
+        "specular_only_control": specular_only,
+        "sweep": sweep_report,
+    }
 
 
 def main() -> int:
@@ -314,22 +425,26 @@ def main() -> int:
     parser.add_argument("--pack", type=Path, default=ROOT / "pilot_output/pack")
     parser.add_argument("--shader-root", type=Path, default=DEFAULT_SHADER)
     parser.add_argument("--require-gl", action="store_true")
+    parser.add_argument("--skip-sweep", action="store_true", help="only run named controls")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
 
     report = {"cpu": cpu_checks(args.pack)}
-    report["gl"] = gl_checks(args.pack, args.shader_root)
+    report["gl"] = gl_checks(args.pack, args.shader_root, sweep=not args.skip_sweep)
     if args.require_gl and "skipped" in report["gl"]:
         fail(f"--require-gl requested but OpenGL was unavailable: {report['gl']['skipped']}")
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, indent=2) + "\n")
-    print(json.dumps({
+    summary = {
         "block_triples": report["cpu"]["block_triples"],
         "ctm_tiles": report["cpu"]["ctm_tiles"],
         "entity_triples": report["cpu"]["entity_triples"],
         "gl": "skipped" if "skipped" in report["gl"] else report["gl"]["renderer"],
-    }, indent=2))
+    }
+    if "sweep" in report["gl"]:
+        summary["sweep"] = report["gl"]["sweep"]
+    print(json.dumps(summary, indent=2))
     return 0
 
 
