@@ -41,6 +41,10 @@ def main() -> int:
     require("f0Byte < 230" in material and "f0Byte < 238" in material and "OTHER_METAL" in material,
             "LabPBR dielectric/predefined-metal/other-metal ranges are missing")
     require("getMetalF0" in material, "Predefined LabPBR metals need spectral F0, not albedo double-tinting")
+    require(all(f"#define {name} {value}u" in material for name, value in [
+        ("NO_METAL", 0), ("IRON", 1), ("GOLD", 2), ("ALUMINIUM", 3), ("CHROME", 4),
+        ("COPPER", 5), ("LEAD", 6), ("PLATINUM", 7), ("SILVER", 8), ("OTHER_METAL", 9),
+    ]), "LabPBR metal IDs must be unsigned literals for strict switch(uint) compilers")
     require("blueByte <= 64" in material and "blueByte - 64" in material,
             "LabPBR porosity/SSS multiplexing is missing")
     require("emissionByte == 255" in material, "LabPBR no-emission sentinel is missing")

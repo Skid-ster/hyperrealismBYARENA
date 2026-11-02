@@ -62,8 +62,10 @@ available, compiles the actual `lib/common/material.glsl` and renders the
 pack's `_n`/`_s` maps through it. It asserts iron/gold metal IDs, glowstone/
 redstone-lamp emission, leaf subsurface, Map Presence colors, normal-driven
 lighting variation, and the rough-dielectric fallback for missing sidecars.
-CI runs this on Linux with Mesa llvmpipe. This is stronger than a compile-only
-check, but it is still not Minecraft/Iris rendering on your GPU.
+CI runs this on Linux with Mesa llvmpipe. It already caught and fixed a
+strict-GLSL `switch(uint)` metal-ID type mismatch that glslang alone accepted.
+This is stronger than a compile-only check, but it is still not Minecraft/Iris
+rendering on your GPU.
 
 ## Known limits
 

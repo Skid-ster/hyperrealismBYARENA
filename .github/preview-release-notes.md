@@ -15,6 +15,10 @@ compatibility; Minecraft displays **HyperRealism 512×512**.
   dielectric gem recipes; redstone/coal are rough dielectrics; the powered
   redstone lamp carries an emission map. Target colors are audited against the
   pinned 26.3 vanilla metadata.
+- **Strict-driver decode fix:** the new headless test caught a GLSL
+  portability bug where LabPBR metal IDs were signed `int` case labels in a
+  `switch(uint)`. Mesa rejected it. The IDs are now unsigned literals, so the
+  decoder compiles on strict compilers as well as glslang.
 - **Headless LabPBR execution test:** `scripts/test_pbr_pipeline.py` checks all
   block/CTM/entity triples, then compiles the real `material.glsl` and renders
   generated `_n`/`_s` maps through it. It asserts metal IDs, emission,
