@@ -184,7 +184,13 @@ def gl_checks(pack: Path, shader_root: Path) -> dict:
     }
     """
     )
-    program = ctx.program(vertex_shader=vertex, fragment_shader=fragment)
+    try:
+        program = ctx.program(vertex_shader=vertex, fragment_shader=fragment)
+    except Exception as error:
+        fail(
+            "headless GLSL compile/link failed on "
+            f"{ctx.info.get('GL_RENDERER', 'unknown')} / OpenGL {ctx.version_code}: {error}"
+        )
     size = 64
     attachments = [ctx.texture((size, size), 4, dtype="f4") for _ in range(4)]
     fbo = ctx.framebuffer(color_attachments=attachments)
