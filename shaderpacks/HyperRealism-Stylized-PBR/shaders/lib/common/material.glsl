@@ -15,17 +15,19 @@
 #ifndef MATERIAL_GLSL
 #define MATERIAL_GLSL
 
-// enums for metal IDs
-#define NO_METAL 0
-#define IRON 1
-#define GOLD 2
-#define ALUMINIUM 3
-#define CHROME 4
-#define COPPER 5
-#define LEAD 6
-#define PLATINUM 7
-#define SILVER 8
-#define OTHER_METAL 9
+// enums for metal IDs. These must be unsigned literals: Metal IDs are uint,
+// and strict GLSL compilers (Mesa/AMD) reject switch case labels whose type
+// differs from the uint switch expression.
+#define NO_METAL 0u
+#define IRON 1u
+#define GOLD 2u
+#define ALUMINIUM 3u
+#define CHROME 4u
+#define COPPER 5u
+#define LEAD 6u
+#define PLATINUM 7u
+#define SILVER 8u
+#define OTHER_METAL 9u
 
 // The user-selected LabPBR mode is authoritative. Iris loads _n/_s sidecars
 // independently of the global texture.properties macro, and that macro can be
